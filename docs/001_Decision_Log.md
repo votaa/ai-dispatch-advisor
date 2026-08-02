@@ -1,0 +1,219 @@
+# Decision Log
+
+## Purpose
+
+This decision log records significant product, architecture, technology, security, and delivery decisions for the AI Dispatch Advisor implementation. It is intended to provide traceability for why the system is designed and implemented in a particular way.
+
+Each decision should capture the context, decision, rationale, consequences, and current status. Decisions may be amended, superseded, or retired, but historical entries should not be deleted.
+
+## Status Definitions
+
+| Status | Meaning |
+| --- | --- |
+| Proposed | Under discussion and not yet accepted |
+| Accepted | Approved for implementation |
+| Superseded | Replaced by a later decision |
+| Deferred | Not decided in the current implementation phase |
+| Retired | No longer relevant to the active system |
+
+## Decision Template
+
+```text
+## D-###: Decision Title
+
+- Status:
+- Date:
+- Owners:
+- Related Documents:
+
+### Context
+
+### Decision
+
+### Rationale
+
+### Consequences
+
+### Follow-Up Actions
+```
+
+## D-001: Use React for the Frontend Application
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: Product engineering, frontend engineering
+- Related Documents: `docs/100_Product/101_Project_Charter.md`, `docs/100_Product/102_Product_Vision.md`
+
+### Context
+
+The AI Dispatch Advisor requires a browser-based operational interface for dispatchers, supervisors, and operations users. The interface must support data-dense outage views, maps, crew panels, recommendation explanations, filtering, interaction history, and real-time or near-real-time updates.
+
+### Decision
+
+The frontend application will be implemented using React.
+
+### Rationale
+
+React is suitable for complex enterprise user interfaces with reusable components, stateful interaction, and incremental implementation. It also supports a broad ecosystem for routing, design systems, data fetching, testing, and integration with geospatial and visualization libraries.
+
+### Consequences
+
+- Frontend architecture must define component boundaries, state management conventions, routing, testing, and accessibility practices.
+- UX specifications should translate mockups into reusable React component patterns.
+- API contracts must be designed to support predictable frontend data loading and refresh behavior.
+
+### Follow-Up Actions
+
+- Define frontend application architecture in `docs/500_Frontend/501_Frontend_Architecture.md`.
+- Define component and state management standards in future frontend documentation.
+
+## D-002: Use FastAPI for the Backend Service Layer
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: Backend engineering, solution architecture
+- Related Documents: `docs/100_Product/101_Project_Charter.md`
+
+### Context
+
+The system requires backend APIs for outage data, crew data, dispatch recommendations, integration orchestration, authentication context, audit logging, and AI recommendation workflows. The backend must expose clear service boundaries while supporting Python-based optimization and AI components.
+
+### Decision
+
+The backend service layer will be implemented using FastAPI.
+
+### Rationale
+
+FastAPI provides a strong fit for Python-based enterprise APIs, including typed request and response models, OpenAPI generation, asynchronous request handling, and close alignment with Python AI and optimization libraries.
+
+### Consequences
+
+- API models should be defined with explicit schemas and validation.
+- OpenAPI documentation should be generated and treated as a reviewable contract.
+- Backend code organization must distinguish API routers, domain services, integration clients, optimization services, and persistence layers.
+
+### Follow-Up Actions
+
+- Define backend service design in `docs/400_Backend_API/401_Backend_Service_Design.md`.
+- Define API conventions and versioning in `docs/400_Backend_API/402_API_Overview.md`.
+
+## D-003: Provide AI-Assisted Recommendations, Not Fully Autonomous Dispatch
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: Product management, solution architecture, utility operations stakeholders
+- Related Documents: `docs/100_Product/102_Product_Vision.md`
+
+### Context
+
+Electric utility outage dispatch is operationally critical and affects public safety, regulatory commitments, service reliability, crew safety, and customer experience. AI can improve prioritization and decision support, but dispatch decisions require human accountability and situational judgment.
+
+### Decision
+
+The system will provide AI-assisted dispatch recommendations and explanations. It will not automatically dispatch crews without human review and approval in the initial implementation phase.
+
+### Rationale
+
+Human-in-the-loop operation improves trust, supports operational accountability, and allows dispatchers to incorporate real-world context that may not be available in source systems. This approach also reduces implementation risk while establishing the foundation for measured automation in later phases.
+
+### Consequences
+
+- The user experience must clearly distinguish recommendations from approved dispatch actions.
+- Recommendations must include rationale, confidence, constraints, and relevant tradeoffs.
+- The system must preserve user review, override, acceptance, and audit events.
+
+### Follow-Up Actions
+
+- Define recommendation interaction patterns in `docs/300_UX/303_Recommendation_Experience.md`.
+- Define audit logging requirements in `docs/800_Security_Operations/803_Audit_Logging.md`.
+
+## D-004: Require Explainability for Dispatch Recommendations
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: AI engineering, product management, operations stakeholders
+- Related Documents: `docs/100_Product/102_Product_Vision.md`
+
+### Context
+
+Dispatch users need to understand why the system recommends a crew assignment, restoration sequence, priority change, or resource allocation. Enterprise utility users are unlikely to trust opaque recommendations during high-pressure outage events.
+
+### Decision
+
+Every material dispatch recommendation must include explainability information appropriate for operational users.
+
+### Rationale
+
+Explainability supports trust, regulatory review, operational learning, and safe adoption. It also helps dispatchers identify when a recommendation is based on stale, incomplete, or conflicting data.
+
+### Consequences
+
+- Recommendation responses must include factors, constraints, assumptions, and relevant data inputs.
+- The frontend must expose explanations without overwhelming time-sensitive workflows.
+- AI and optimization components must produce structured explanation metadata, not only free text.
+
+### Follow-Up Actions
+
+- Define explainability model in `docs/600_Data_AI/604_Explainability_Model.md`.
+- Define trust-oriented UX patterns in `docs/300_UX/304_Explainability_and_Trust.md`.
+
+## D-005: Treat OMS, GIS, SCADA, and Crew Systems as Enterprise Integrations
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: Solution architecture, integration engineering
+- Related Documents: `docs/100_Product/101_Project_Charter.md`
+
+### Context
+
+The AI Dispatch Advisor depends on operational data from existing utility platforms. These platforms may vary by utility, may expose different interfaces, and may have different latency, reliability, and data ownership characteristics.
+
+### Decision
+
+OMS, GIS, SCADA, and crew or workforce management platforms will be treated as enterprise system integrations with explicit contracts, adapters, error handling, observability, and data quality controls.
+
+### Rationale
+
+Dispatch optimization quality depends on timely and accurate source data. Treating integrations as first-class architecture concerns reduces coupling, improves testability, and makes utility-specific implementation more manageable.
+
+### Consequences
+
+- Integration adapters should isolate vendor-specific protocols and schemas from domain services.
+- Data freshness, source confidence, and integration health should be visible to the application.
+- The system must handle partial data availability and degraded integration states.
+
+### Follow-Up Actions
+
+- Define integration architecture in `docs/200_Architecture/204_Integration_Architecture.md`.
+- Create dedicated integration documents under `docs/700_Integrations/`.
+
+## D-006: Optimize for Human Operational Workflow Before Automation Depth
+
+- Status: Accepted
+- Date: 2026-08-02
+- Owners: Product management, UX, engineering leadership
+- Related Documents: `docs/100_Product/102_Product_Vision.md`
+
+### Context
+
+The system is intended for dispatchers and operations users working under time pressure during outage events. A technically sophisticated recommendation engine will not create value unless its outputs fit naturally into the operational workflow.
+
+### Decision
+
+The initial implementation will prioritize operational usability, recommendation clarity, workflow fit, and auditability before pursuing deep automation.
+
+### Rationale
+
+Enterprise adoption depends on trust and low-friction integration into existing work practices. A focused, usable decision-support experience is more valuable than broad automation that operators cannot confidently evaluate.
+
+### Consequences
+
+- Product requirements should be organized around dispatcher and supervisor workflows.
+- AI capabilities should be surfaced as actionable recommendations with clear supporting evidence.
+- UI implementation should support fast scanning, comparison, filtering, acceptance, and override.
+
+### Follow-Up Actions
+
+- Define user workflows in `docs/100_Product/104_User_Workflows.md`.
+- Map completed UI mockups to functional requirements in future UX documentation.
+
