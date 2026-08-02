@@ -34,7 +34,7 @@ The documentation set uses numeric prefixes to preserve reading order in file br
 | `800-899` | Security and operations | Security architecture, compliance, observability, deployment, incident response |
 | `900-999` | Delivery | Testing, release management, implementation plan, backlog, runbooks |
 
-## Current Batch: Batch 0A
+## Documentation Batch Status
 
 Batch 0A establishes the initial project documentation foundation.
 
@@ -44,6 +44,17 @@ Batch 0A establishes the initial project documentation foundation.
 | `docs/001_Decision_Log.md` | Created | Initial architectural and product decision register |
 | `docs/100_Product/101_Project_Charter.md` | Created | Project purpose, scope, stakeholders, objectives, constraints, and success measures |
 | `docs/100_Product/102_Product_Vision.md` | Created | Product direction, user value, guiding principles, and target capabilities |
+
+Batch 0B establishes the product definition baseline and documentation roadmap.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/002_Documentation_Roadmap.md` | Drafted | Batch plan, documentation sequencing, and implementation checkpoint guidance |
+| `docs/003_Glossary.md` | Drafted | Shared terminology for utility, product, architecture, and implementation discussions |
+| `docs/100_Product/103_Stakeholders_and_Personas.md` | Drafted | Stakeholder groups, primary personas, secondary personas, and role implications |
+| `docs/100_Product/104_User_Workflows.md` | Drafted | Core dispatcher, supervisor, storm, override, and post-event review workflows |
+| `docs/100_Product/105_Product_Requirements.md` | Drafted | Initial functional requirements and MVP product boundary |
+| `docs/100_Product/106_Non_Functional_Requirements.md` | Drafted | Initial enterprise quality attributes and non-functional requirements |
 
 ## Planned Documentation Structure
 
@@ -153,6 +164,7 @@ Documents should avoid duplicating full content from other documents. Instead, t
 ## Related Documents
 
 - [Decision Log](001_Decision_Log.md)
+- [Documentation Roadmap](002_Documentation_Roadmap.md)
+- [Glossary](003_Glossary.md)
 - [Project Charter](100_Product/101_Project_Charter.md)
 - [Product Vision](100_Product/102_Product_Vision.md)
-
