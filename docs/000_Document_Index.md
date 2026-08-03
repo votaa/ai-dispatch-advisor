@@ -112,11 +112,22 @@ Batch 3B establishes the enterprise integration foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/700_Integrations/701_OMS_Integration.md` | Drafted | OMS role, outage data contracts, writeback governance, and POC-to-enterprise transition |
-| `docs/700_Integrations/702_GIS_Integration.md` | Drafted | GIS asset, topology, critical facility, map, and geospatial context integration |
-| `docs/700_Integrations/703_SCADA_Integration.md` | Drafted | SCADA/DMS telemetry, device state, operational constraints, and read-only control boundary |
-| `docs/700_Integrations/704_Crew_Management_Integration.md` | Drafted | Crew availability, capability, assignments, workforce data, and governed assignment writeback |
-| `docs/700_Integrations/705_Weather_and_External_Data.md` | Drafted | Weather, hazard, external event, storm mode, data freshness, and provider concerns |
+| `docs/700_Integrations/701_OMS_Integration.md` | Committed | OMS role, outage data contracts, writeback governance, and POC-to-enterprise transition |
+| `docs/700_Integrations/702_GIS_Integration.md` | Committed | GIS asset, topology, critical facility, map, and geospatial context integration |
+| `docs/700_Integrations/703_SCADA_Integration.md` | Committed | SCADA/DMS telemetry, device state, operational constraints, and read-only control boundary |
+| `docs/700_Integrations/704_Crew_Management_Integration.md` | Committed | Crew availability, capability, assignments, workforce data, and governed assignment writeback |
+| `docs/700_Integrations/705_Weather_and_External_Data.md` | Committed | Weather, hazard, external event, storm mode, data freshness, and provider concerns |
+
+Batch 4A establishes the security and operations foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/800_Security_Operations/801_Security_Architecture.md` | Drafted | Security goals, trust boundaries, sensitive data, controls, gaps, and production readiness |
+| `docs/800_Security_Operations/802_Identity_and_Access_Management.md` | Drafted | Enterprise identity, roles, permissions, backend authorization, and service accounts |
+| `docs/800_Security_Operations/803_Audit_Logging.md` | Drafted | Audit event types, event model, storage, visibility, retention, and privacy |
+| `docs/800_Security_Operations/804_Observability.md` | Drafted | Health checks, logs, metrics, tracing, integration visibility, and alerting |
+| `docs/800_Security_Operations/805_Deployment_and_Operations.md` | Drafted | Local and target deployment, environments, configuration, operations, and readiness gaps |
+| `docs/800_Security_Operations/806_Business_Continuity.md` | Drafted | Degraded modes, recovery, continuity goals, audit continuity, and enterprise transition |
 
 ## Planned Documentation Structure
 
@@ -243,3 +254,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Optimization Engine](600_Data_AI/602_Optimization_Engine.md)
 - [OMS Integration](700_Integrations/701_OMS_Integration.md)
 - [GIS Integration](700_Integrations/702_GIS_Integration.md)
+- [Security Architecture](800_Security_Operations/801_Security_Architecture.md)
+- [Identity and Access Management](800_Security_Operations/802_Identity_and_Access_Management.md)
