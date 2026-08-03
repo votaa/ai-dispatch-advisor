@@ -1,0 +1,4 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-5001,INC-1002,CR-02,active,2026-08-02T12:45:00-04:00,Vegetation crew assigned for tree on primary
+ASG-5002,INC-1008,CR-08,active,2026-08-02T12:52:00-04:00,Vegetation patrol and removal
+

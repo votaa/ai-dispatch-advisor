@@ -1,0 +1,10 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+CR-01,North Line Alpha,North,available,line,Millbrook Service Center,6,true,18
+CR-02,Central Veg Beta,Central,available,vegetation,Fairview Yard,7,true,28
+CR-03,South General Gamma,South,assigned,general,Lakemont Substation,4,false,35
+CR-04,East Line Delta,East,available,line,Riverton Staging Lot,5,true,22
+CR-05,West Trouble Echo,West,staged,general,Oak Ridge Depot,8,true,46
+CR-06,North Line Foxtrot,North,available,line,Hudson Falls Yard,3,true,31
+CR-07,Central Underground Hotel,Central,available,underground,Briarcliff Yard,6,false,40
+CR-08,South Veg India,South,assigned,vegetation,Greystone Yard,5,true,52
+

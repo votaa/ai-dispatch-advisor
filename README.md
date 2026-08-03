@@ -1,84 +1,147 @@
 # AI Dispatch Advisor
 
-AI Dispatch Advisor is an enterprise software project for AI-assisted electric utility outage dispatch optimization. The system is intended to help dispatchers, supervisors, and operations teams evaluate outage events, compare crew assignment options, and act on explainable dispatch recommendations.
+AI Dispatch Advisor is an enterprise software project for AI-assisted electric utility outage dispatch optimization. It helps dispatchers, supervisors, and operations teams evaluate outage events, compare crew assignment options, and act on explainable dispatch recommendations.
 
 The product is designed as a human-in-the-loop decision-support platform. It does not replace dispatcher judgment or existing utility systems of record. Instead, it brings together outage, crew, geospatial, operational, and environmental context so users can make faster, more consistent, and more transparent dispatch decisions.
 
-## Project Goals
+## Current Status
+
+This repository now includes the Developer Bootstrap MVP:
+
+- React + TypeScript + Vite frontend
+- FastAPI backend
+- Synthetic utility outage demo data
+- Initial SQLite schema and database initialization script
+- Initial API endpoints for dashboard, incidents, crews, assignments, optimization, and copilot responses
+- Docker Compose for local full-stack startup
+- GitHub Actions CI for frontend build and backend tests
+- Repository documentation under `docs/`
+
+This is a POC foundation, not a production utility dispatch system.
+
+## Local Development
+
+### Backend
+
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Backend API:
+
+```text
+http://localhost:8000
+```
+
+Health check:
+
+```text
+http://localhost:8000/health
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend app:
+
+```text
+http://localhost:5173
+```
+
+### Database Initialization
+
+The first MVP reads directly from CSV scenario files. A local SQLite database can also be created from the sample data:
+
+```bash
+python3 scripts/init_db.py
+```
+
+This creates:
+
+```text
+database/aida.db
+```
+
+### Docker Compose
+
+To start the backend and frontend together:
+
+```bash
+docker compose up
+```
+
+## Demo Data
+
+Synthetic demo data lives under:
+
+```text
+data/scenarios/base/
+```
+
+Current files:
+
+- `PendingIncidents.csv`
+- `Crews.csv`
+- `Assignments.csv`
+- `HistoricalRepairs.csv`
+- `Weather.csv`
+- `CriticalFacilities.csv`
+- `Topology.csv`
+
+For demo scenario changes, edit or duplicate the CSV files. Future iterations can add scenario selection through an environment variable or UI control.
+
+## Initial API Surface
+
+```text
+GET  /health
+GET  /api/dashboard
+GET  /api/incidents
+GET  /api/incidents/{incident_id}
+GET  /api/crews
+GET  /api/assignments
+GET  /api/weather
+GET  /api/critical-facilities
+GET  /api/topology
+POST /api/optimize
+POST /api/chat
+```
+
+## Repository Structure
+
+```text
+ai-dispatch-advisor/
+  backend/
+    app/
+    tests/
+  data/
+    scenarios/
+      base/
+  database/
+  docs/
+  frontend/
+    src/
+  scripts/
+  .github/
+    workflows/
+  docker-compose.yml
+```
+
+## Product Goals
 
 - Provide a modern operational console for outage dispatch decision support.
 - Generate explainable AI-assisted dispatch recommendations.
 - Help users compare outage priority, crew suitability, travel time, safety constraints, customer impact, and restoration benefit.
 - Support enterprise utility requirements for auditability, security, reliability, observability, and integration readiness.
 - Establish a repository-ready implementation using a React frontend, FastAPI backend, AI recommendation engine, database schema, and documented APIs.
-
-## Planned System Architecture
-
-The implementation is expected to include:
-
-- **Frontend:** React, TypeScript, Vite, routing, operational dashboards, dispatch console, crew board, incident views, scenario comparison, and AI copilot experience.
-- **Backend:** FastAPI service layer with typed API contracts, domain services, integration adapters, recommendation endpoints, and audit/event handling.
-- **AI and Optimization:** Recommendation engine for outage prioritization, crew matching, dispatch scenario comparison, and structured explainability.
-- **Data Layer:** Initial local database and sample utility datasets, evolving toward integration-backed operational data.
-- **Integrations:** Adapter-based architecture for OMS, GIS, SCADA, crew/workforce systems, weather data, and other enterprise platforms.
-- **Operations:** Documentation and implementation support for testing, observability, deployment, security, and release management.
-
-## Current Status
-
-This repository is in the implementation foundation phase.
-
-Completed planning inputs include:
-
-- Product concept
-- System architecture discussions
-- Initial design decisions
-- Ten UI mockups
-- Initial repository documentation batch
-
-The current repository contents begin with documentation artifacts under `docs/`. Application code, sample data, backend services, frontend UI, and developer bootstrap assets will be added in later implementation batches.
-
-## Documentation
-
-The documentation set starts with:
-
-- `docs/000_Document_Index.md`
-- `docs/001_Decision_Log.md`
-- `docs/100_Product/101_Project_Charter.md`
-- `docs/100_Product/102_Product_Vision.md`
-
-The documentation is organized using numeric prefixes so GitHub file browsing preserves the intended reading order.
-
-## Expected Repository Structure
-
-The repository is expected to evolve toward the following structure:
-
-```text
-ai-dispatch-advisor/
-  docs/
-  frontend/
-  backend/
-  ai/
-  optimizer/
-  database/
-  data/
-  scripts/
-  tests/
-  docker-compose.yml
-```
-
-## Development Direction
-
-The next major implementation step is a Developer Bootstrap MVP that makes the project runnable early. The target is to provide a functional application shell with sample data before replacing dummy behavior with real persistence, optimization, and integrations.
-
-Planned early milestones:
-
-1. Add repository documentation foundation.
-2. Create runnable React and FastAPI application shell.
-3. Add sample outage, crew, assignment, weather, facility, and topology data.
-4. Add initial SQLite schema and seed data.
-5. Implement first API endpoints for incidents, crews, assignments, dashboard metrics, optimization, and chat.
-6. Add CI checks for linting, tests, and builds.
-7. Add Docker Compose for local full-stack development.
 
 ## Product Positioning
 
@@ -93,6 +156,16 @@ Core product principles:
 - Actionable recommendations
 - Trust through user control
 - Enterprise readiness
+
+## Documentation
+
+Start with:
+
+- `docs/000_Document_Index.md`
+- `docs/001_Decision_Log.md`
+- `docs/002_Documentation_Roadmap.md`
+- `docs/100_Product/101_Project_Charter.md`
+- `docs/100_Product/102_Product_Vision.md`
 
 ## License
 

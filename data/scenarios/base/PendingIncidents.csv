@@ -1,0 +1,10 @@
+incident_id,region,municipality,feeder,severity,status,customers_out,critical_facility,hazard,required_skill,age_minutes,latitude,longitude,etr
+INC-1001,North,Millbrook,FDR-12,critical,unassigned,2840,true,downed wire,line,76,41.812,-73.694,2026-08-02T16:40:00-04:00
+INC-1002,Central,Fairview,FDR-07,high,assigned,1320,false,tree on primary,vegetation,58,41.701,-73.921,2026-08-02T15:55:00-04:00
+INC-1003,South,Lakemont,FDR-21,medium,unassigned,420,false,none,general,32,41.511,-73.781,2026-08-02T14:50:00-04:00
+INC-1004,East,Riverton,FDR-03,high,unassigned,970,true,blocked access,line,91,41.646,-73.543,2026-08-02T17:20:00-04:00
+INC-1005,West,Oak Ridge,FDR-16,low,monitoring,115,false,none,general,18,41.612,-74.031,2026-08-02T13:45:00-04:00
+INC-1006,North,Hudson Falls,FDR-18,medium,unassigned,610,false,flooded road,line,44,41.882,-73.812,2026-08-02T16:10:00-04:00
+INC-1007,Central,Briarcliff,FDR-09,critical,unassigned,2110,true,transformer fire,line,23,41.733,-73.842,2026-08-02T15:30:00-04:00
+INC-1008,South,Greystone,FDR-25,medium,assigned,530,false,tree limb,vegetation,67,41.466,-73.902,2026-08-02T16:05:00-04:00
+
