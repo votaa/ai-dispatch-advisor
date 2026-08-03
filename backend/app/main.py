@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, Literal, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from . import data_loader
+from .recommendation_actions import record_action, recent_actions
 from .recommendations import dashboard_summary, ranked_incidents, recommend_assignment
 
 
@@ -32,6 +33,13 @@ class OptimizeRequest(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     incident_id: Optional[str] = None
+
+
+class RecommendationActionRequest(BaseModel):
+    incident_id: str
+    action: Literal["accepted", "modified", "deferred", "overridden"]
+    recommendation: dict[str, Any]
+    note: Optional[str] = None
 
 
 @app.get("/health")
@@ -92,6 +100,32 @@ def optimize(request: OptimizeRequest) -> dict:
 
     incident = incident_rows[0]
     return recommend_assignment(incident, data_loader.crews(), data_loader.assignments())
+
+
+@app.post("/api/recommendation-actions")
+def recommendation_action(request: RecommendationActionRequest) -> dict:
+    incident = next(
+        (row for row in data_loader.incidents() if row.get("incident_id") == request.incident_id),
+        None,
+    )
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    note = request.note.strip() if request.note else None
+    if request.action == "overridden" and not note:
+        raise HTTPException(status_code=400, detail="Override reason is required")
+
+    return record_action(
+        incident_id=request.incident_id,
+        action=request.action,
+        note=note,
+        recommendation=request.recommendation,
+    )
+
+
+@app.get("/api/audit/events")
+def audit_events(limit: int = 25) -> list[dict]:
+    return recent_actions(limit=max(1, min(limit, 100)))
 
 
 @app.post("/api/chat")

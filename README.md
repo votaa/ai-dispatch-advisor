@@ -13,6 +13,7 @@ This repository now includes the Developer Bootstrap MVP:
 - Synthetic utility outage demo data
 - Initial SQLite schema and database initialization script
 - Initial API endpoints for dashboard, incidents, crews, assignments, optimization, and copilot responses
+- Demo recommendation action workflow with in-memory audit history
 - Docker Compose for local full-stack startup
 - GitHub Actions CI for frontend build and backend tests
 - Repository documentation under `docs/`
@@ -112,8 +113,12 @@ GET  /api/weather
 GET  /api/critical-facilities
 GET  /api/topology
 POST /api/optimize
+POST /api/recommendation-actions
+GET  /api/audit/events
 POST /api/chat
 ```
+
+Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override actions are stored in backend memory for the running API process; restarting the backend clears the audit history. Override requires a reason, while Modify can include a short note.
 
 ## Repository Structure
 
@@ -170,4 +175,3 @@ Start with:
 ## License
 
 License status is not yet finalized. Until a license is added, all rights are reserved by default.
-

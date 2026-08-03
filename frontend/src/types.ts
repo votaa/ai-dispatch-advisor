@@ -59,3 +59,14 @@ export type Recommendation = {
   alternatives: Crew[];
 };
 
+export type RecommendationActionType = "accepted" | "modified" | "deferred" | "overridden";
+
+export type RecommendationAction = {
+  event_id: string;
+  incident_id: string;
+  action: RecommendationActionType;
+  note: string | null;
+  recommendation: Recommendation;
+  created_at: string;
+  actor: string;
+};

@@ -1,8 +1,29 @@
-import { AlertTriangle, BarChart3, Bot, ClipboardList, CloudLightning, Map, RadioTower, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  Bot,
+  Check,
+  ClipboardList,
+  CloudLightning,
+  Map,
+  Pause,
+  Pencil,
+  RadioTower,
+  ShieldAlert,
+  Users
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ElementType } from "react";
 import { api } from "./api";
-import type { Assignment, Crew, DashboardSummary, Incident, Recommendation } from "./types";
+import type {
+  Assignment,
+  Crew,
+  DashboardSummary,
+  Incident,
+  Recommendation,
+  RecommendationAction,
+  RecommendationActionType
+} from "./types";
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
 type ChatTurn = { question: string; answer: string };
@@ -28,10 +49,13 @@ function App() {
   const [crews, setCrews] = useState<Crew[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [recommendationActions, setRecommendationActions] = useState<RecommendationAction[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | undefined>();
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<RecommendationActionType | null>(null);
+  const [actionMessage, setActionMessage] = useState("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -44,6 +68,10 @@ function App() {
         setSelectedIncidentId(incidentData[0]?.incident_id);
       })
       .catch((err: Error) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    api.auditEvents().then(setRecommendationActions).catch((err: Error) => setError(err.message));
   }, []);
 
   useEffect(() => {
@@ -75,6 +103,23 @@ function App() {
 
   function usePrompt(prompt: string) {
     setChatMessage(prompt);
+  }
+
+  async function recordRecommendationAction(action: RecommendationActionType, note?: string) {
+    if (!recommendation) return;
+
+    setActionLoading(action);
+    setActionMessage("");
+    try {
+      const event = await api.recordRecommendationAction(action, recommendation, note?.trim() || undefined);
+      setRecommendationActions((actions) => [event, ...actions.filter((item) => item.event_id !== event.event_id)]);
+      setActionMessage(`Recommendation ${action}.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Recommendation action failed";
+      setActionMessage(message);
+    } finally {
+      setActionLoading(null);
+    }
   }
 
   return (
@@ -131,7 +176,13 @@ function App() {
               <IncidentTable incidents={dashboard.top_incidents} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
             </section>
 
-            <RecommendationPanel recommendation={recommendation} />
+            <RecommendationPanel
+              actionLoading={actionLoading}
+              actionMessage={actionMessage}
+              onRecordAction={recordRecommendationAction}
+              recentActions={recommendationActions}
+              recommendation={recommendation}
+            />
           </section>
         )}
 
@@ -141,7 +192,14 @@ function App() {
               <PanelTitle icon={RadioTower} title="Incident Queue" />
               <IncidentTable incidents={incidents} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
             </section>
-            <RecommendationPanel recommendation={recommendation} selectedIncident={selectedIncident} />
+            <RecommendationPanel
+              actionLoading={actionLoading}
+              actionMessage={actionMessage}
+              onRecordAction={recordRecommendationAction}
+              recentActions={recommendationActions}
+              recommendation={recommendation}
+              selectedIncident={selectedIncident}
+            />
           </section>
         )}
 
@@ -201,7 +259,14 @@ function App() {
                 <span>Improves critical facility readiness but may increase restoration time for lower-severity incidents.</span>
               </div>
             </section>
-            <RecommendationPanel recommendation={recommendation} selectedIncident={selectedIncident} />
+            <RecommendationPanel
+              actionLoading={actionLoading}
+              actionMessage={actionMessage}
+              onRecordAction={recordRecommendationAction}
+              recentActions={recommendationActions}
+              recommendation={recommendation}
+              selectedIncident={selectedIncident}
+            />
           </section>
         )}
 
@@ -310,12 +375,45 @@ function IncidentTable({
 }
 
 function RecommendationPanel({
+  actionLoading,
+  actionMessage,
+  onRecordAction,
+  recentActions,
   recommendation,
   selectedIncident
 }: {
+  actionLoading: RecommendationActionType | null;
+  actionMessage: string;
+  onRecordAction: (action: RecommendationActionType, note?: string) => Promise<void>;
+  recentActions: RecommendationAction[];
   recommendation: Recommendation | null;
   selectedIncident?: Incident;
 }) {
+  const [draftAction, setDraftAction] = useState<RecommendationActionType | null>(null);
+  const [draftNote, setDraftNote] = useState("");
+  const [draftError, setDraftError] = useState("");
+  const incidentActions = recentActions.filter((action) => action.incident_id === recommendation?.incident_id).slice(0, 4);
+
+  function startDraft(action: RecommendationActionType) {
+    setDraftAction(action);
+    setDraftNote("");
+    setDraftError("");
+  }
+
+  async function submitDraftAction() {
+    if (!draftAction) return;
+    const note = draftNote.trim();
+    if (draftAction === "overridden" && !note) {
+      setDraftError("Override reason is required.");
+      return;
+    }
+
+    setDraftError("");
+    await onRecordAction(draftAction, note);
+    setDraftAction(null);
+    setDraftNote("");
+  }
+
   return (
     <section className="panel recommendation-panel">
       <PanelTitle icon={Bot} title="Recommendation" />
@@ -348,14 +446,86 @@ function RecommendationPanel({
             </div>
           </div>
           <div className="action-row">
-            <button type="button">Accept</button>
-            <button type="button">Modify</button>
-            <button type="button">Defer</button>
-            <button type="button">Override</button>
+            <button disabled={actionLoading !== null} onClick={() => onRecordAction("accepted")} type="button">
+              <Check size={16} />
+              Accept
+            </button>
+            <button disabled={actionLoading !== null} onClick={() => startDraft("modified")} type="button">
+              <Pencil size={16} />
+              Modify
+            </button>
+            <button disabled={actionLoading !== null} onClick={() => onRecordAction("deferred")} type="button">
+              <Pause size={16} />
+              Defer
+            </button>
+            <button disabled={actionLoading !== null} onClick={() => startDraft("overridden")} type="button">
+              <ShieldAlert size={16} />
+              Override
+            </button>
           </div>
+          {draftAction ? (
+            <div className="action-note-form">
+              <label htmlFor="recommendation-action-note">
+                {draftAction === "modified" ? "Modification note" : "Override reason"}
+              </label>
+              <textarea
+                id="recommendation-action-note"
+                onChange={(event) => setDraftNote(event.target.value)}
+                placeholder={
+                  draftAction === "modified"
+                    ? "Add a short note for the modified recommendation."
+                    : "Explain why this recommendation is being overridden."
+                }
+                value={draftNote}
+              />
+              {draftError ? <p className="action-error">{draftError}</p> : null}
+              <div className="note-action-row">
+                <button disabled={actionLoading !== null} onClick={submitDraftAction} type="button">
+                  {actionLoading === draftAction ? "Recording..." : "Record Action"}
+                </button>
+                <button
+                  disabled={actionLoading !== null}
+                  onClick={() => {
+                    setDraftAction(null);
+                    setDraftNote("");
+                    setDraftError("");
+                  }}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : null}
+          {actionMessage ? <p className="action-message">{actionMessage}</p> : null}
+          <RecentActions actions={incidentActions.length ? incidentActions : recentActions.slice(0, 4)} />
         </>
       ) : (
         <p>Loading recommendation...</p>
+      )}
+    </section>
+  );
+}
+
+function RecentActions({ actions }: { actions: RecommendationAction[] }) {
+  return (
+    <section className="recent-actions">
+      <h3>Recent Actions</h3>
+      {actions.length === 0 ? (
+        <p>No recommendation actions recorded yet.</p>
+      ) : (
+        <div className="action-history">
+          {actions.map((action) => (
+            <article className="action-event" key={action.event_id}>
+              <div>
+                <strong>{action.action}</strong>
+                <span>{action.incident_id} / {action.recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</span>
+              </div>
+              <time>{new Date(action.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+              {action.note ? <p>{action.note}</p> : null}
+            </article>
+          ))}
+        </div>
       )}
     </section>
   );

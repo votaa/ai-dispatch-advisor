@@ -1,4 +1,12 @@
-import type { Assignment, Crew, DashboardSummary, Incident, Recommendation } from "./types";
+import type {
+  Assignment,
+  Crew,
+  DashboardSummary,
+  Incident,
+  Recommendation,
+  RecommendationAction,
+  RecommendationActionType
+} from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
@@ -28,10 +36,21 @@ export const api = {
   crews: () => getJson<Crew[]>("/api/crews"),
   assignments: () => getJson<Assignment[]>("/api/assignments"),
   optimize: (incidentId?: string) => postJson<Recommendation>("/api/optimize", { incident_id: incidentId }),
+  auditEvents: () => getJson<RecommendationAction[]>("/api/audit/events"),
+  recordRecommendationAction: (
+    action: RecommendationActionType,
+    recommendation: Recommendation,
+    note?: string
+  ) =>
+    postJson<RecommendationAction>("/api/recommendation-actions", {
+      incident_id: recommendation.incident_id,
+      action,
+      recommendation,
+      note
+    }),
   chat: (message: string, incidentId?: string) =>
     postJson<{ answer: string; source: string; safety_note: string }>("/api/chat", {
       message,
       incident_id: incidentId
     })
 };
-
