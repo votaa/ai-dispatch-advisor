@@ -5,6 +5,7 @@ import { api } from "./api";
 import type { Assignment, Crew, DashboardSummary, Incident, Recommendation } from "./types";
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
+type ChatTurn = { question: string; answer: string };
 
 const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -29,7 +30,8 @@ function App() {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | undefined>();
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
-  const [chatAnswer, setChatAnswer] = useState<string>("");
+  const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -54,12 +56,25 @@ function App() {
     [incidents, selectedIncidentId]
   );
 
-  const activeAssignments = assignments.filter((assignment) => assignment.status === "active");
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
 
   async function askCopilot() {
-    const response = await api.chat(chatMessage, selectedIncidentId);
-    setChatAnswer(response.answer);
+    const question = chatMessage.trim();
+    if (!question) return;
+    setChatLoading(true);
+    try {
+      const response = await api.chat(question, selectedIncidentId);
+      setChatTurns((turns) => [{ question, answer: response.answer }, ...turns]);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Copilot request failed";
+      setChatTurns((turns) => [{ question, answer: `Unable to reach Copilot: ${message}` }, ...turns]);
+    } finally {
+      setChatLoading(false);
+    }
+  }
+
+  function usePrompt(prompt: string) {
+    setChatMessage(prompt);
   }
 
   return (
@@ -193,11 +208,35 @@ function App() {
         {view === "copilot" && (
           <section className="panel copilot">
             <PanelTitle icon={Bot} title="AI Copilot" />
+            <div className="prompt-row">
+              {[
+                "What should I focus on first?",
+                "How many crews are available?",
+                "What critical facilities are affected?",
+                "Why was this crew recommended?",
+                "Summarize storm status"
+              ].map((prompt) => (
+                <button key={prompt} onClick={() => usePrompt(prompt)} type="button">
+                  {prompt}
+                </button>
+              ))}
+            </div>
             <textarea value={chatMessage} onChange={(event) => setChatMessage(event.target.value)} />
-            <button className="primary-action" onClick={askCopilot} type="button">
-              Ask Copilot
+            <button className="primary-action" disabled={chatLoading} onClick={askCopilot} type="button">
+              {chatLoading ? "Asking..." : "Ask Copilot"}
             </button>
-            {chatAnswer ? <div className="copilot-answer">{chatAnswer}</div> : null}
+            <div className="chat-history">
+              {chatTurns.length === 0 ? (
+                <div className="copilot-answer">Ask one of the sample questions to query the synthetic dispatch data.</div>
+              ) : (
+                chatTurns.map((turn, index) => (
+                  <article className="chat-turn" key={`${turn.question}-${index}`}>
+                    <strong>{turn.question}</strong>
+                    <p>{turn.answer}</p>
+                  </article>
+                ))
+              )}
+            </div>
             <p className="safety-note">Copilot responses are advisory and cannot execute dispatch actions.</p>
           </section>
         )}
