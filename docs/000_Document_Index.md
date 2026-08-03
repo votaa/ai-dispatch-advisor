@@ -51,6 +51,7 @@ Batch 0B establishes the product definition baseline and documentation roadmap.
 | --- | --- | --- |
 | `docs/002_Documentation_Roadmap.md` | Committed | Batch plan, documentation sequencing, and implementation checkpoint guidance |
 | `docs/003_Glossary.md` | Committed | Shared terminology for utility, product, architecture, and implementation discussions |
+| `docs/004_POC_Feedback_Log.md` | Drafted | Cross-cutting feedback tracker for POC observations, enhancements, defects, and revision items |
 | `docs/100_Product/103_Stakeholders_and_Personas.md` | Committed | Stakeholder groups, primary personas, secondary personas, and role implications |
 | `docs/100_Product/104_User_Workflows.md` | Committed | Core dispatcher, supervisor, storm, override, and post-event review workflows |
 | `docs/100_Product/105_Product_Requirements.md` | Committed | Initial functional requirements and MVP product boundary |
@@ -187,6 +188,7 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Decision Log](001_Decision_Log.md)
 - [Documentation Roadmap](002_Documentation_Roadmap.md)
 - [Glossary](003_Glossary.md)
+- [POC Feedback Log](004_POC_Feedback_Log.md)
 - [Project Charter](100_Product/101_Project_Charter.md)
 - [Product Vision](100_Product/102_Product_Vision.md)
 - [System Context](200_Architecture/201_System_Context.md)
