@@ -102,11 +102,21 @@ Batch 3A establishes the data, AI, and optimization foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/600_Data_AI/601_Data_Model.md` | Drafted | Current synthetic data, target domain entities, source metadata, ownership, and data quality |
-| `docs/600_Data_AI/602_Optimization_Engine.md` | Drafted | Current deterministic scoring, target optimization scope, inputs, outputs, constraints, and validation |
-| `docs/600_Data_AI/603_AI_Recommendation_Engine.md` | Drafted | Recommendation engine boundaries, AI-assisted responsibilities, Copilot direction, and evaluation |
-| `docs/600_Data_AI/604_Explainability_Model.md` | Drafted | Structured explanation objects, factors, constraints, assumptions, alternatives, and confidence model |
-| `docs/600_Data_AI/605_Model_Governance.md` | Drafted | Versioning, change management, evaluation, auditability, and AI governance controls |
+| `docs/600_Data_AI/601_Data_Model.md` | Committed | Current synthetic data, target domain entities, source metadata, ownership, and data quality |
+| `docs/600_Data_AI/602_Optimization_Engine.md` | Committed | Current deterministic scoring, target optimization scope, inputs, outputs, constraints, and validation |
+| `docs/600_Data_AI/603_AI_Recommendation_Engine.md` | Committed | Recommendation engine boundaries, AI-assisted responsibilities, Copilot direction, and evaluation |
+| `docs/600_Data_AI/604_Explainability_Model.md` | Committed | Structured explanation objects, factors, constraints, assumptions, alternatives, and confidence model |
+| `docs/600_Data_AI/605_Model_Governance.md` | Committed | Versioning, change management, evaluation, auditability, and AI governance controls |
+
+Batch 3B establishes the enterprise integration foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/700_Integrations/701_OMS_Integration.md` | Drafted | OMS role, outage data contracts, writeback governance, and POC-to-enterprise transition |
+| `docs/700_Integrations/702_GIS_Integration.md` | Drafted | GIS asset, topology, critical facility, map, and geospatial context integration |
+| `docs/700_Integrations/703_SCADA_Integration.md` | Drafted | SCADA/DMS telemetry, device state, operational constraints, and read-only control boundary |
+| `docs/700_Integrations/704_Crew_Management_Integration.md` | Drafted | Crew availability, capability, assignments, workforce data, and governed assignment writeback |
+| `docs/700_Integrations/705_Weather_and_External_Data.md` | Drafted | Weather, hazard, external event, storm mode, data freshness, and provider concerns |
 
 ## Planned Documentation Structure
 
@@ -231,3 +241,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [State Management](500_Frontend/502_State_Management.md)
 - [Data Model](600_Data_AI/601_Data_Model.md)
 - [Optimization Engine](600_Data_AI/602_Optimization_Engine.md)
+- [OMS Integration](700_Integrations/701_OMS_Integration.md)
+- [GIS Integration](700_Integrations/702_GIS_Integration.md)
