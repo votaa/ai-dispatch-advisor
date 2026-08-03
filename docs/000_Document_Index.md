@@ -72,11 +72,22 @@ Batch 1B establishes the UX and dispatch experience foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/300_UX/301_UI_Information_Architecture.md` | Drafted | Navigation model, page responsibilities, information hierarchy, and UX evolution |
-| `docs/300_UX/302_Dispatch_Console_Specification.md` | Drafted | Core dispatch work surface, incident queue, recommendation panel, and action behavior |
-| `docs/300_UX/303_Recommendation_Experience.md` | Drafted | Recommendation states, action workflow, confidence, alternatives, and audit UX |
-| `docs/300_UX/304_Explainability_and_Trust.md` | Drafted | Trust model, explanation content, confidence guidance, and Copilot boundaries |
-| `docs/300_UX/305_Accessibility_Guidelines.md` | Drafted | Accessibility expectations for navigation, tables, actions, forms, Copilot, and responsive behavior |
+| `docs/300_UX/301_UI_Information_Architecture.md` | Committed | Navigation model, page responsibilities, information hierarchy, and UX evolution |
+| `docs/300_UX/302_Dispatch_Console_Specification.md` | Committed | Core dispatch work surface, incident queue, recommendation panel, and action behavior |
+| `docs/300_UX/303_Recommendation_Experience.md` | Committed | Recommendation states, action workflow, confidence, alternatives, and audit UX |
+| `docs/300_UX/304_Explainability_and_Trust.md` | Committed | Trust model, explanation content, confidence guidance, and Copilot boundaries |
+| `docs/300_UX/305_Accessibility_Guidelines.md` | Committed | Accessibility expectations for navigation, tables, actions, forms, Copilot, and responsive behavior |
+
+Batch 2A establishes the backend and API design foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/400_Backend_API/401_Backend_Service_Design.md` | Drafted | Backend service boundaries, current FastAPI design, target service structure, and gaps |
+| `docs/400_Backend_API/402_API_Overview.md` | Drafted | API principles, current endpoints, conventions, errors, versioning, and audit direction |
+| `docs/400_Backend_API/403_Outage_API.md` | Drafted | Incident and outage endpoint behavior, current data fields, and target outage API model |
+| `docs/400_Backend_API/404_Crew_API.md` | Drafted | Crew and assignment endpoint behavior, target crew suitability, and workforce data concerns |
+| `docs/400_Backend_API/405_Recommendation_API.md` | Drafted | Recommendation, Copilot, action, explainability, and audit API direction |
+| `docs/400_Backend_API/406_Integration_API.md` | Drafted | Integration health, source metadata, adapter contracts, degraded states, and writeback governance |
 
 ## Planned Documentation Structure
 
@@ -195,3 +206,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Solution Architecture](200_Architecture/202_Solution_Architecture.md)
 - [UI Information Architecture](300_UX/301_UI_Information_Architecture.md)
 - [Dispatch Console Specification](300_UX/302_Dispatch_Console_Specification.md)
+- [Backend Service Design](400_Backend_API/401_Backend_Service_Design.md)
+- [API Overview](400_Backend_API/402_API_Overview.md)
