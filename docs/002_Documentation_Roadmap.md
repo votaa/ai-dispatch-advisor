@@ -31,9 +31,9 @@ The documentation roadmap is organized around practical delivery:
 | Batch | Theme | Status | Recommended Commit Scope |
 | --- | --- | --- | --- |
 | Batch 0A | Documentation foundation | Committed | Index, decision log, charter, product vision |
-| Batch 0B | Product definition and roadmap | Drafted | Roadmap, glossary, stakeholders, workflows, requirements |
-| Developer Bootstrap MVP | Runnable application foundation | Not Started | Initial React, FastAPI, data, database, scripts, CI, Docker |
-| Batch 1A | Architecture foundation | Not Started | Context, solution, component, integration, data flow, deployment architecture |
+| Batch 0B | Product definition and roadmap | Committed | Roadmap, glossary, stakeholders, workflows, requirements |
+| Developer Bootstrap MVP | Runnable application foundation | Committed | Initial React, FastAPI, data, database, scripts, CI, Docker |
+| Batch 1A | Architecture foundation | Drafted | Context, solution, component, integration, data flow, deployment architecture |
 | Batch 1B | UX and dispatch experience | Not Started | Information architecture, dispatch console, recommendation UX, trust, accessibility |
 | Batch 2A | Backend and API design | Not Started | Backend service design and API contracts |
 | Batch 2B | Frontend engineering | Not Started | Frontend architecture, state, components, routing |
@@ -63,7 +63,7 @@ Review focus:
 
 ## Batch 0B: Product Definition and Roadmap
 
-Status: Drafted
+Status: Committed
 
 Purpose: Define the working documentation plan and product-level requirements that should guide the first runnable implementation.
 
@@ -91,7 +91,7 @@ Add product definition documentation
 
 ## Developer Bootstrap MVP
 
-Status: Not Started
+Status: Committed
 
 Purpose: Create the first runnable version of the repository so future documentation and implementation can align to real project structure.
 
@@ -127,7 +127,7 @@ Review focus:
 
 ## Batch 1A: Architecture Foundation
 
-Status: Not Started
+Status: Drafted
 
 Purpose: Document the architecture once the Developer Bootstrap MVP establishes real project structure.
 
@@ -280,4 +280,3 @@ This roadmap should be updated when:
 - A major decision changes the product or architecture direction.
 
 When updating this roadmap, also check whether `000_Document_Index.md` should be updated.
-

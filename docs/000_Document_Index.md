@@ -40,21 +40,32 @@ Batch 0A establishes the initial project documentation foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/000_Document_Index.md` | Created | Master documentation map and numbering system |
-| `docs/001_Decision_Log.md` | Created | Initial architectural and product decision register |
-| `docs/100_Product/101_Project_Charter.md` | Created | Project purpose, scope, stakeholders, objectives, constraints, and success measures |
-| `docs/100_Product/102_Product_Vision.md` | Created | Product direction, user value, guiding principles, and target capabilities |
+| `docs/000_Document_Index.md` | Committed | Master documentation map and numbering system |
+| `docs/001_Decision_Log.md` | Committed | Initial architectural and product decision register |
+| `docs/100_Product/101_Project_Charter.md` | Committed | Project purpose, scope, stakeholders, objectives, constraints, and success measures |
+| `docs/100_Product/102_Product_Vision.md` | Committed | Product direction, user value, guiding principles, and target capabilities |
 
 Batch 0B establishes the product definition baseline and documentation roadmap.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/002_Documentation_Roadmap.md` | Drafted | Batch plan, documentation sequencing, and implementation checkpoint guidance |
-| `docs/003_Glossary.md` | Drafted | Shared terminology for utility, product, architecture, and implementation discussions |
-| `docs/100_Product/103_Stakeholders_and_Personas.md` | Drafted | Stakeholder groups, primary personas, secondary personas, and role implications |
-| `docs/100_Product/104_User_Workflows.md` | Drafted | Core dispatcher, supervisor, storm, override, and post-event review workflows |
-| `docs/100_Product/105_Product_Requirements.md` | Drafted | Initial functional requirements and MVP product boundary |
-| `docs/100_Product/106_Non_Functional_Requirements.md` | Drafted | Initial enterprise quality attributes and non-functional requirements |
+| `docs/002_Documentation_Roadmap.md` | Committed | Batch plan, documentation sequencing, and implementation checkpoint guidance |
+| `docs/003_Glossary.md` | Committed | Shared terminology for utility, product, architecture, and implementation discussions |
+| `docs/100_Product/103_Stakeholders_and_Personas.md` | Committed | Stakeholder groups, primary personas, secondary personas, and role implications |
+| `docs/100_Product/104_User_Workflows.md` | Committed | Core dispatcher, supervisor, storm, override, and post-event review workflows |
+| `docs/100_Product/105_Product_Requirements.md` | Committed | Initial functional requirements and MVP product boundary |
+| `docs/100_Product/106_Non_Functional_Requirements.md` | Committed | Initial enterprise quality attributes and non-functional requirements |
+
+Batch 1A establishes the architecture foundation now that the Developer Bootstrap MVP exists.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/200_Architecture/201_System_Context.md` | Drafted | System boundary, actors, external systems, and current versus target context |
+| `docs/200_Architecture/202_Solution_Architecture.md` | Drafted | Overall solution layers, current MVP architecture, and target enterprise direction |
+| `docs/200_Architecture/203_Component_Architecture.md` | Drafted | Current and planned components, responsibilities, and boundaries |
+| `docs/200_Architecture/204_Integration_Architecture.md` | Drafted | Adapter-based enterprise integration model for utility systems |
+| `docs/200_Architecture/205_Data_Flow_Architecture.md` | Drafted | Current and target data flows, source data, recommendation flow, and audit data |
+| `docs/200_Architecture/206_Deployment_Architecture.md` | Drafted | Local, Docker, CI, and target enterprise deployment architecture |
 
 ## Planned Documentation Structure
 
@@ -168,3 +179,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Glossary](003_Glossary.md)
 - [Project Charter](100_Product/101_Project_Charter.md)
 - [Product Vision](100_Product/102_Product_Vision.md)
+- [System Context](200_Architecture/201_System_Context.md)
+- [Solution Architecture](200_Architecture/202_Solution_Architecture.md)
