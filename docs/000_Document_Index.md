@@ -122,12 +122,21 @@ Batch 4A establishes the security and operations foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/800_Security_Operations/801_Security_Architecture.md` | Drafted | Security goals, trust boundaries, sensitive data, controls, gaps, and production readiness |
-| `docs/800_Security_Operations/802_Identity_and_Access_Management.md` | Drafted | Enterprise identity, roles, permissions, backend authorization, and service accounts |
-| `docs/800_Security_Operations/803_Audit_Logging.md` | Drafted | Audit event types, event model, storage, visibility, retention, and privacy |
-| `docs/800_Security_Operations/804_Observability.md` | Drafted | Health checks, logs, metrics, tracing, integration visibility, and alerting |
-| `docs/800_Security_Operations/805_Deployment_and_Operations.md` | Drafted | Local and target deployment, environments, configuration, operations, and readiness gaps |
-| `docs/800_Security_Operations/806_Business_Continuity.md` | Drafted | Degraded modes, recovery, continuity goals, audit continuity, and enterprise transition |
+| `docs/800_Security_Operations/801_Security_Architecture.md` | Committed | Security goals, trust boundaries, sensitive data, controls, gaps, and production readiness |
+| `docs/800_Security_Operations/802_Identity_and_Access_Management.md` | Committed | Enterprise identity, roles, permissions, backend authorization, and service accounts |
+| `docs/800_Security_Operations/803_Audit_Logging.md` | Committed | Audit event types, event model, storage, visibility, retention, and privacy |
+| `docs/800_Security_Operations/804_Observability.md` | Committed | Health checks, logs, metrics, tracing, integration visibility, and alerting |
+| `docs/800_Security_Operations/805_Deployment_and_Operations.md` | Committed | Local and target deployment, environments, configuration, operations, and readiness gaps |
+| `docs/800_Security_Operations/806_Business_Continuity.md` | Committed | Degraded modes, recovery, continuity goals, audit continuity, and enterprise transition |
+
+Batch 4B establishes the delivery governance foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/900_Delivery/901_Test_Strategy.md` | Drafted | Test levels, quality gates, scenario data, recommendation validation, and automation roadmap |
+| `docs/900_Delivery/902_Implementation_Plan.md` | Drafted | Implementation phases, sequencing, definition of done, delivery risks, and documentation revision cycle |
+| `docs/900_Delivery/903_Release_Management.md` | Drafted | Versioning, branching, release types, CI gates, rollback, release notes, and approvals |
+| `docs/900_Delivery/904_Runbook.md` | Drafted | Local POC startup, validation, troubleshooting, demo checklist, shutdown, and future runbook areas |
 
 ## Planned Documentation Structure
 
@@ -256,3 +265,7 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [GIS Integration](700_Integrations/702_GIS_Integration.md)
 - [Security Architecture](800_Security_Operations/801_Security_Architecture.md)
 - [Identity and Access Management](800_Security_Operations/802_Identity_and_Access_Management.md)
+- [Test Strategy](900_Delivery/901_Test_Strategy.md)
+- [Implementation Plan](900_Delivery/902_Implementation_Plan.md)
+- [Release Management](900_Delivery/903_Release_Management.md)
+- [Runbook](900_Delivery/904_Runbook.md)
