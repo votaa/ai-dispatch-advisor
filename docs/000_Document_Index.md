@@ -51,7 +51,7 @@ Batch 0B establishes the product definition baseline and documentation roadmap.
 | --- | --- | --- |
 | `docs/002_Documentation_Roadmap.md` | Committed | Batch plan, documentation sequencing, and implementation checkpoint guidance |
 | `docs/003_Glossary.md` | Committed | Shared terminology for utility, product, architecture, and implementation discussions |
-| `docs/004_POC_Feedback_Log.md` | Drafted | Cross-cutting feedback tracker for POC observations, enhancements, defects, and revision items |
+| `docs/004_POC_Feedback_Log.md` | Committed | Cross-cutting feedback tracker for POC observations, enhancements, defects, and revision items |
 | `docs/100_Product/103_Stakeholders_and_Personas.md` | Committed | Stakeholder groups, primary personas, secondary personas, and role implications |
 | `docs/100_Product/104_User_Workflows.md` | Committed | Core dispatcher, supervisor, storm, override, and post-event review workflows |
 | `docs/100_Product/105_Product_Requirements.md` | Committed | Initial functional requirements and MVP product boundary |
@@ -93,10 +93,20 @@ Batch 2B establishes the frontend engineering foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/500_Frontend/501_Frontend_Architecture.md` | Drafted | Current React/Vite architecture, target frontend structure, layers, data flow, and refactor triggers |
-| `docs/500_Frontend/502_State_Management.md` | Drafted | Server state, UI state, workflow state, persistence boundaries, and future state tooling |
-| `docs/500_Frontend/503_Component_Guidelines.md` | Drafted | Component categories, naming, props, styling, accessibility, and refactor path |
-| `docs/500_Frontend/504_Routing_and_Navigation.md` | Drafted | Current local navigation, target route structure, deep links, role-aware navigation, and migration path |
+| `docs/500_Frontend/501_Frontend_Architecture.md` | Committed | Current React/Vite architecture, target frontend structure, layers, data flow, and refactor triggers |
+| `docs/500_Frontend/502_State_Management.md` | Committed | Server state, UI state, workflow state, persistence boundaries, and future state tooling |
+| `docs/500_Frontend/503_Component_Guidelines.md` | Committed | Component categories, naming, props, styling, accessibility, and refactor path |
+| `docs/500_Frontend/504_Routing_and_Navigation.md` | Committed | Current local navigation, target route structure, deep links, role-aware navigation, and migration path |
+
+Batch 3A establishes the data, AI, and optimization foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/600_Data_AI/601_Data_Model.md` | Drafted | Current synthetic data, target domain entities, source metadata, ownership, and data quality |
+| `docs/600_Data_AI/602_Optimization_Engine.md` | Drafted | Current deterministic scoring, target optimization scope, inputs, outputs, constraints, and validation |
+| `docs/600_Data_AI/603_AI_Recommendation_Engine.md` | Drafted | Recommendation engine boundaries, AI-assisted responsibilities, Copilot direction, and evaluation |
+| `docs/600_Data_AI/604_Explainability_Model.md` | Drafted | Structured explanation objects, factors, constraints, assumptions, alternatives, and confidence model |
+| `docs/600_Data_AI/605_Model_Governance.md` | Drafted | Versioning, change management, evaluation, auditability, and AI governance controls |
 
 ## Planned Documentation Structure
 
@@ -219,3 +229,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [API Overview](400_Backend_API/402_API_Overview.md)
 - [Frontend Architecture](500_Frontend/501_Frontend_Architecture.md)
 - [State Management](500_Frontend/502_State_Management.md)
+- [Data Model](600_Data_AI/601_Data_Model.md)
+- [Optimization Engine](600_Data_AI/602_Optimization_Engine.md)

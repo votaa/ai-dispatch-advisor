@@ -36,8 +36,8 @@ The documentation roadmap is organized around practical delivery:
 | Batch 1A | Architecture foundation | Committed | Context, solution, component, integration, data flow, deployment architecture |
 | Batch 1B | UX and dispatch experience | Committed | Information architecture, dispatch console, recommendation UX, trust, accessibility |
 | Batch 2A | Backend and API design | Committed | Backend service design and API contracts |
-| Batch 2B | Frontend engineering | Drafted | Frontend architecture, state, components, routing |
-| Batch 3A | Data, AI, and optimization | Not Started | Data model, optimization engine, AI recommendations, explainability, governance |
+| Batch 2B | Frontend engineering | Committed | Frontend architecture, state, components, routing |
+| Batch 3A | Data, AI, and optimization | Drafted | Data model, optimization engine, AI recommendations, explainability, governance |
 | Batch 3B | Enterprise integrations | Not Started | OMS, GIS, SCADA, crew management, weather and external data |
 | Batch 4A | Security and operations | Not Started | Security, identity, audit, observability, deployment operations, continuity |
 | Batch 4B | Delivery governance | Not Started | Test strategy, implementation plan, release management, runbook |
@@ -183,7 +183,7 @@ After the first FastAPI routes and Pydantic models exist.
 
 ## Batch 2B: Frontend Engineering
 
-Status: Drafted
+Status: Committed
 
 Purpose: Document frontend implementation conventions and component architecture.
 
@@ -200,7 +200,7 @@ After initial React application structure, routing, and shared layout components
 
 ## Batch 3A: Data, AI, and Optimization
 
-Status: Not Started
+Status: Drafted
 
 Purpose: Document the data model, recommendation engine, optimization logic, explainability model, and AI governance practices.
 
