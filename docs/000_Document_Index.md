@@ -78,6 +78,21 @@ Batch 1B establishes the UX and dispatch experience foundation.
 | `docs/300_UX/304_Explainability_and_Trust.md` | Committed | Trust model, explanation content, confidence guidance, and Copilot boundaries |
 | `docs/300_UX/305_Accessibility_Guidelines.md` | Committed | Accessibility expectations for navigation, tables, actions, forms, Copilot, and responsive behavior |
 
+Batch 1C establishes screen-level UX specifications with visual references.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/300_UX/310_Screen_Specifications/311_Dashboard.md` | Drafted | One-page specification for the operational dashboard screen |
+| `docs/300_UX/310_Screen_Specifications/312_Dispatch_Recommendation.md` | Drafted | One-page specification for dispatch recommendation review and action |
+| `docs/300_UX/310_Screen_Specifications/313_Incident_Management.md` | Drafted | One-page specification for incident list and incident management workflow |
+| `docs/300_UX/310_Screen_Specifications/314_Crew_Board.md` | Drafted | One-page specification for crew availability and crew context |
+| `docs/300_UX/310_Screen_Specifications/315_Storm_Mode.md` | Drafted | One-page specification for major event and storm response operations |
+| `docs/300_UX/310_Screen_Specifications/316_Scenario_Comparison.md` | Drafted | One-page specification for restoration and dispatch scenario comparison |
+| `docs/300_UX/310_Screen_Specifications/317_AI_Copilot.md` | Drafted | One-page specification for advisory Copilot interactions |
+| `docs/300_UX/310_Screen_Specifications/318_Audit_History.md` | Drafted | One-page specification for audit and recommendation history review |
+| `docs/300_UX/310_Screen_Specifications/319_Integration_Health.md` | Drafted | One-page specification for integration status and data freshness review |
+| `docs/300_UX/310_Screen_Specifications/320_Restoration_Timeline_Prediction.md` | Drafted | One-page specification for restoration timeline forecasting and prediction |
+
 Batch 2A establishes the backend and API design foundation.
 
 | Document | Status | Purpose |
@@ -172,6 +187,17 @@ docs/
     303_Recommendation_Experience.md
     304_Explainability_and_Trust.md
     305_Accessibility_Guidelines.md
+    310_Screen_Specifications/
+      311_Dashboard.md
+      312_Dispatch_Recommendation.md
+      313_Incident_Management.md
+      314_Crew_Board.md
+      315_Storm_Mode.md
+      316_Scenario_Comparison.md
+      317_AI_Copilot.md
+      318_Audit_History.md
+      319_Integration_Health.md
+      320_Restoration_Timeline_Prediction.md
 
   400_Backend_API/
     401_Backend_Service_Design.md
@@ -255,6 +281,8 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Solution Architecture](200_Architecture/202_Solution_Architecture.md)
 - [UI Information Architecture](300_UX/301_UI_Information_Architecture.md)
 - [Dispatch Console Specification](300_UX/302_Dispatch_Console_Specification.md)
+- [Dashboard Screen Specification](300_UX/310_Screen_Specifications/311_Dashboard.md)
+- [Dispatch Recommendation Screen Specification](300_UX/310_Screen_Specifications/312_Dispatch_Recommendation.md)
 - [Backend Service Design](400_Backend_API/401_Backend_Service_Design.md)
 - [API Overview](400_Backend_API/402_API_Overview.md)
 - [Frontend Architecture](500_Frontend/501_Frontend_Architecture.md)

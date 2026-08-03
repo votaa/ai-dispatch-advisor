@@ -35,6 +35,7 @@ The documentation roadmap is organized around practical delivery:
 | Developer Bootstrap MVP | Runnable application foundation | Committed | Initial React, FastAPI, data, database, scripts, CI, Docker |
 | Batch 1A | Architecture foundation | Committed | Context, solution, component, integration, data flow, deployment architecture |
 | Batch 1B | UX and dispatch experience | Committed | Information architecture, dispatch console, recommendation UX, trust, accessibility |
+| Batch 1C | Screen-level UX specifications | Drafted | One-page screen specifications and visual references for ten screens |
 | Batch 2A | Backend and API design | Committed | Backend service design and API contracts |
 | Batch 2B | Frontend engineering | Committed | Frontend architecture, state, components, routing |
 | Batch 3A | Data, AI, and optimization | Committed | Data model, optimization engine, AI recommendations, explainability, governance |
@@ -161,6 +162,41 @@ Documents:
 Recommended timing:
 
 After the frontend shell exists and the initial route structure is visible.
+
+## Batch 1C: Screen-Level UX Specifications
+
+Status: Drafted
+
+Purpose: Create one-page screen specification documents for the ten currently outlined POC and planned enterprise screens.
+
+Documents:
+
+- `docs/300_UX/310_Screen_Specifications/311_Dashboard.md`
+- `docs/300_UX/310_Screen_Specifications/312_Dispatch_Recommendation.md`
+- `docs/300_UX/310_Screen_Specifications/313_Incident_Management.md`
+- `docs/300_UX/310_Screen_Specifications/314_Crew_Board.md`
+- `docs/300_UX/310_Screen_Specifications/315_Storm_Mode.md`
+- `docs/300_UX/310_Screen_Specifications/316_Scenario_Comparison.md`
+- `docs/300_UX/310_Screen_Specifications/317_AI_Copilot.md`
+- `docs/300_UX/310_Screen_Specifications/318_Audit_History.md`
+- `docs/300_UX/310_Screen_Specifications/319_Integration_Health.md`
+- `docs/300_UX/310_Screen_Specifications/320_Restoration_Timeline_Prediction.md`
+
+Visual assets:
+
+- `docs/assets/screenshots/`
+
+Review focus:
+
+- Confirm that the ten screen names match the intended mockup set.
+- Replace placeholder visuals with approved mockup screenshots when available.
+- Confirm each screen has purpose, user, layout, data, API, AI, audit, accessibility, and acceptance criteria.
+
+Recommended commit message:
+
+```text
+Add screen-level UX specifications
+```
 
 ## Batch 2A: Backend and API Design
 
