@@ -40,7 +40,7 @@ The documentation roadmap is organized around practical delivery:
 | Batch 3A | Data, AI, and optimization | Committed | Data model, optimization engine, AI recommendations, explainability, governance |
 | Batch 3B | Enterprise integrations | Committed | OMS, GIS, SCADA, crew management, weather and external data |
 | Batch 4A | Security and operations | Committed | Security, identity, audit, observability, deployment operations, continuity |
-| Batch 4B | Delivery governance | Drafted | Test strategy, implementation plan, release management, runbook |
+| Batch 4B | Delivery governance | Committed | Test strategy, implementation plan, release management, runbook |
 
 ## Batch 0A: Documentation Foundation
 
@@ -255,7 +255,7 @@ After the application has defined service boundaries, API surfaces, and deployme
 
 ## Batch 4B: Delivery Governance
 
-Status: Drafted
+Status: Committed
 
 Purpose: Document testing, release, implementation, and operational support practices.
 
