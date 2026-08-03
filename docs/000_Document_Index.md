@@ -82,12 +82,21 @@ Batch 2A establishes the backend and API design foundation.
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/400_Backend_API/401_Backend_Service_Design.md` | Drafted | Backend service boundaries, current FastAPI design, target service structure, and gaps |
-| `docs/400_Backend_API/402_API_Overview.md` | Drafted | API principles, current endpoints, conventions, errors, versioning, and audit direction |
-| `docs/400_Backend_API/403_Outage_API.md` | Drafted | Incident and outage endpoint behavior, current data fields, and target outage API model |
-| `docs/400_Backend_API/404_Crew_API.md` | Drafted | Crew and assignment endpoint behavior, target crew suitability, and workforce data concerns |
-| `docs/400_Backend_API/405_Recommendation_API.md` | Drafted | Recommendation, Copilot, action, explainability, and audit API direction |
-| `docs/400_Backend_API/406_Integration_API.md` | Drafted | Integration health, source metadata, adapter contracts, degraded states, and writeback governance |
+| `docs/400_Backend_API/401_Backend_Service_Design.md` | Committed | Backend service boundaries, current FastAPI design, target service structure, and gaps |
+| `docs/400_Backend_API/402_API_Overview.md` | Committed | API principles, current endpoints, conventions, errors, versioning, and audit direction |
+| `docs/400_Backend_API/403_Outage_API.md` | Committed | Incident and outage endpoint behavior, current data fields, and target outage API model |
+| `docs/400_Backend_API/404_Crew_API.md` | Committed | Crew and assignment endpoint behavior, target crew suitability, and workforce data concerns |
+| `docs/400_Backend_API/405_Recommendation_API.md` | Committed | Recommendation, Copilot, action, explainability, and audit API direction |
+| `docs/400_Backend_API/406_Integration_API.md` | Committed | Integration health, source metadata, adapter contracts, degraded states, and writeback governance |
+
+Batch 2B establishes the frontend engineering foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/500_Frontend/501_Frontend_Architecture.md` | Drafted | Current React/Vite architecture, target frontend structure, layers, data flow, and refactor triggers |
+| `docs/500_Frontend/502_State_Management.md` | Drafted | Server state, UI state, workflow state, persistence boundaries, and future state tooling |
+| `docs/500_Frontend/503_Component_Guidelines.md` | Drafted | Component categories, naming, props, styling, accessibility, and refactor path |
+| `docs/500_Frontend/504_Routing_and_Navigation.md` | Drafted | Current local navigation, target route structure, deep links, role-aware navigation, and migration path |
 
 ## Planned Documentation Structure
 
@@ -208,3 +217,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Dispatch Console Specification](300_UX/302_Dispatch_Console_Specification.md)
 - [Backend Service Design](400_Backend_API/401_Backend_Service_Design.md)
 - [API Overview](400_Backend_API/402_API_Overview.md)
+- [Frontend Architecture](500_Frontend/501_Frontend_Architecture.md)
+- [State Management](500_Frontend/502_State_Management.md)

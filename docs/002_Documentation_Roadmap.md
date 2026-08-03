@@ -35,8 +35,8 @@ The documentation roadmap is organized around practical delivery:
 | Developer Bootstrap MVP | Runnable application foundation | Committed | Initial React, FastAPI, data, database, scripts, CI, Docker |
 | Batch 1A | Architecture foundation | Committed | Context, solution, component, integration, data flow, deployment architecture |
 | Batch 1B | UX and dispatch experience | Committed | Information architecture, dispatch console, recommendation UX, trust, accessibility |
-| Batch 2A | Backend and API design | Drafted | Backend service design and API contracts |
-| Batch 2B | Frontend engineering | Not Started | Frontend architecture, state, components, routing |
+| Batch 2A | Backend and API design | Committed | Backend service design and API contracts |
+| Batch 2B | Frontend engineering | Drafted | Frontend architecture, state, components, routing |
 | Batch 3A | Data, AI, and optimization | Not Started | Data model, optimization engine, AI recommendations, explainability, governance |
 | Batch 3B | Enterprise integrations | Not Started | OMS, GIS, SCADA, crew management, weather and external data |
 | Batch 4A | Security and operations | Not Started | Security, identity, audit, observability, deployment operations, continuity |
@@ -164,7 +164,7 @@ After the frontend shell exists and the initial route structure is visible.
 
 ## Batch 2A: Backend and API Design
 
-Status: Drafted
+Status: Committed
 
 Purpose: Document backend service structure and API contracts.
 
@@ -183,7 +183,7 @@ After the first FastAPI routes and Pydantic models exist.
 
 ## Batch 2B: Frontend Engineering
 
-Status: Not Started
+Status: Drafted
 
 Purpose: Document frontend implementation conventions and component architecture.
 
