@@ -60,12 +60,22 @@ Batch 1A establishes the architecture foundation now that the Developer Bootstra
 
 | Document | Status | Purpose |
 | --- | --- | --- |
-| `docs/200_Architecture/201_System_Context.md` | Drafted | System boundary, actors, external systems, and current versus target context |
-| `docs/200_Architecture/202_Solution_Architecture.md` | Drafted | Overall solution layers, current MVP architecture, and target enterprise direction |
-| `docs/200_Architecture/203_Component_Architecture.md` | Drafted | Current and planned components, responsibilities, and boundaries |
-| `docs/200_Architecture/204_Integration_Architecture.md` | Drafted | Adapter-based enterprise integration model for utility systems |
-| `docs/200_Architecture/205_Data_Flow_Architecture.md` | Drafted | Current and target data flows, source data, recommendation flow, and audit data |
-| `docs/200_Architecture/206_Deployment_Architecture.md` | Drafted | Local, Docker, CI, and target enterprise deployment architecture |
+| `docs/200_Architecture/201_System_Context.md` | Committed | System boundary, actors, external systems, and current versus target context |
+| `docs/200_Architecture/202_Solution_Architecture.md` | Committed | Overall solution layers, current MVP architecture, and target enterprise direction |
+| `docs/200_Architecture/203_Component_Architecture.md` | Committed | Current and planned components, responsibilities, and boundaries |
+| `docs/200_Architecture/204_Integration_Architecture.md` | Committed | Adapter-based enterprise integration model for utility systems |
+| `docs/200_Architecture/205_Data_Flow_Architecture.md` | Committed | Current and target data flows, source data, recommendation flow, and audit data |
+| `docs/200_Architecture/206_Deployment_Architecture.md` | Committed | Local, Docker, CI, and target enterprise deployment architecture |
+
+Batch 1B establishes the UX and dispatch experience foundation.
+
+| Document | Status | Purpose |
+| --- | --- | --- |
+| `docs/300_UX/301_UI_Information_Architecture.md` | Drafted | Navigation model, page responsibilities, information hierarchy, and UX evolution |
+| `docs/300_UX/302_Dispatch_Console_Specification.md` | Drafted | Core dispatch work surface, incident queue, recommendation panel, and action behavior |
+| `docs/300_UX/303_Recommendation_Experience.md` | Drafted | Recommendation states, action workflow, confidence, alternatives, and audit UX |
+| `docs/300_UX/304_Explainability_and_Trust.md` | Drafted | Trust model, explanation content, confidence guidance, and Copilot boundaries |
+| `docs/300_UX/305_Accessibility_Guidelines.md` | Drafted | Accessibility expectations for navigation, tables, actions, forms, Copilot, and responsive behavior |
 
 ## Planned Documentation Structure
 
@@ -181,3 +191,5 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Product Vision](100_Product/102_Product_Vision.md)
 - [System Context](200_Architecture/201_System_Context.md)
 - [Solution Architecture](200_Architecture/202_Solution_Architecture.md)
+- [UI Information Architecture](300_UX/301_UI_Information_Architecture.md)
+- [Dispatch Console Specification](300_UX/302_Dispatch_Console_Specification.md)

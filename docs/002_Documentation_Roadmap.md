@@ -33,8 +33,8 @@ The documentation roadmap is organized around practical delivery:
 | Batch 0A | Documentation foundation | Committed | Index, decision log, charter, product vision |
 | Batch 0B | Product definition and roadmap | Committed | Roadmap, glossary, stakeholders, workflows, requirements |
 | Developer Bootstrap MVP | Runnable application foundation | Committed | Initial React, FastAPI, data, database, scripts, CI, Docker |
-| Batch 1A | Architecture foundation | Drafted | Context, solution, component, integration, data flow, deployment architecture |
-| Batch 1B | UX and dispatch experience | Not Started | Information architecture, dispatch console, recommendation UX, trust, accessibility |
+| Batch 1A | Architecture foundation | Committed | Context, solution, component, integration, data flow, deployment architecture |
+| Batch 1B | UX and dispatch experience | Drafted | Information architecture, dispatch console, recommendation UX, trust, accessibility |
 | Batch 2A | Backend and API design | Not Started | Backend service design and API contracts |
 | Batch 2B | Frontend engineering | Not Started | Frontend architecture, state, components, routing |
 | Batch 3A | Data, AI, and optimization | Not Started | Data model, optimization engine, AI recommendations, explainability, governance |
@@ -127,7 +127,7 @@ Review focus:
 
 ## Batch 1A: Architecture Foundation
 
-Status: Drafted
+Status: Committed
 
 Purpose: Document the architecture once the Developer Bootstrap MVP establishes real project structure.
 
@@ -146,7 +146,7 @@ After Developer Bootstrap MVP is created and reviewed.
 
 ## Batch 1B: UX and Dispatch Experience
 
-Status: Not Started
+Status: Drafted
 
 Purpose: Translate the product workflows and completed mockups into implementation-ready UX documentation.
 
