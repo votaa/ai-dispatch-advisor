@@ -59,12 +59,8 @@ function App() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    Promise.all([api.dashboard(), api.incidents(), api.crews(), api.assignments()])
-      .then(([dashboardData, incidentData, crewData, assignmentData]) => {
-        setDashboard(dashboardData);
-        setIncidents(incidentData);
-        setCrews(crewData);
-        setAssignments(assignmentData);
+    refreshOperationalState()
+      .then(({ incidentData }) => {
         setSelectedIncidentId(incidentData[0]?.incident_id);
       })
       .catch((err: Error) => setError(err.message));
@@ -85,6 +81,22 @@ function App() {
   );
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
+
+  async function refreshOperationalState() {
+    const [dashboardData, incidentData, crewData, assignmentData, auditData] = await Promise.all([
+      api.dashboard(),
+      api.incidents(),
+      api.crews(),
+      api.assignments(),
+      api.auditEvents()
+    ]);
+    setDashboard(dashboardData);
+    setIncidents(incidentData);
+    setCrews(crewData);
+    setAssignments(assignmentData);
+    setRecommendationActions(auditData);
+    return { dashboardData, incidentData, crewData, assignmentData, auditData };
+  }
 
   async function askCopilot() {
     const question = chatMessage.trim();
@@ -112,8 +124,13 @@ function App() {
     setActionMessage("");
     try {
       const event = await api.recordRecommendationAction(action, recommendation, note?.trim() || undefined);
+      await refreshOperationalState();
+      if (selectedIncidentId) {
+        const nextRecommendation = await api.optimize(selectedIncidentId);
+        setRecommendation(nextRecommendation);
+      }
       setRecommendationActions((actions) => [event, ...actions.filter((item) => item.event_id !== event.event_id)]);
-      setActionMessage(`Recommendation ${action}.`);
+      setActionMessage(`Recommendation ${formatAction(action)}.`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Recommendation action failed";
       setActionMessage(message);
@@ -169,6 +186,7 @@ function App() {
             <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
             <Metric label="Active Incidents" value={dashboard.active_incidents} />
             <Metric label="Available Crews" value={dashboard.available_crews} />
+            <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
             <Metric label="Critical Facility Events" value={dashboard.critical_facility_incidents} />
 
             <section className="panel wide">
@@ -222,6 +240,16 @@ function App() {
                   </div>
                   <span className={`crew-status ${crew.status}`}>{crew.status}</span>
                   <p>{crew.current_location}</p>
+                  {crew.assigned_incidents.length ? (
+                    <div className="assignment-list">
+                      {crew.assigned_incidents.map((assignment) => (
+                        <span key={assignment.assignment_id}>
+                          Assigned to {assignment.incident_id}
+                          {assignment.municipality ? ` in ${assignment.municipality}` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                   <small>{crew.shift_remaining_hours} shift hours remaining</small>
                 </article>
               ))}
@@ -328,6 +356,16 @@ function PanelTitle({ icon: Icon, title }: { icon: ElementType; title: string })
   );
 }
 
+function formatAction(action: RecommendationActionType) {
+  const labels: Record<RecommendationActionType, string> = {
+    accepted: "Accepted",
+    modified: "Modified",
+    deferred: "Deferred",
+    overridden: "Overridden"
+  };
+  return labels[action];
+}
+
 function IncidentTable({
   incidents,
   selectedIncidentId,
@@ -347,6 +385,8 @@ function IncidentTable({
             <th>Customers</th>
             <th>Severity</th>
             <th>Hazard</th>
+            <th>Assigned Crews</th>
+            <th>Decision</th>
             <th>ETR</th>
           </tr>
         </thead>
@@ -365,6 +405,24 @@ function IncidentTable({
               <td>{incident.customers_out.toLocaleString()}</td>
               <td><span className={severityClass(incident.severity)}>{incident.severity}</span></td>
               <td>{incident.hazard}</td>
+              <td>
+                {incident.assigned_crews.length ? (
+                  incident.assigned_crews.map((crew) => (
+                    <span className="assignment-chip" key={crew.assignment_id}>{crew.crew_name}</span>
+                  ))
+                ) : (
+                  <span>Unassigned</span>
+                )}
+              </td>
+              <td>
+                {incident.current_decision ? (
+                  <span className={`decision-badge decision-${incident.current_decision.action}`}>
+                    {formatAction(incident.current_decision.action)}
+                  </span>
+                ) : (
+                  <span>No decision</span>
+                )}
+              </td>
               <td>{incident.etr}</td>
             </tr>
           ))}
@@ -393,6 +451,7 @@ function RecommendationPanel({
   const [draftNote, setDraftNote] = useState("");
   const [draftError, setDraftError] = useState("");
   const incidentActions = recentActions.filter((action) => action.incident_id === recommendation?.incident_id).slice(0, 4);
+  const currentDecision = selectedIncident?.current_decision ?? incidentActions[0] ?? null;
 
   function startDraft(action: RecommendationActionType) {
     setDraftAction(action);
@@ -403,8 +462,8 @@ function RecommendationPanel({
   async function submitDraftAction() {
     if (!draftAction) return;
     const note = draftNote.trim();
-    if (draftAction === "overridden" && !note) {
-      setDraftError("Override reason is required.");
+    if ((draftAction === "deferred" || draftAction === "overridden") && !note) {
+      setDraftError(`${formatAction(draftAction)} reason is required.`);
       return;
     }
 
@@ -430,6 +489,17 @@ function RecommendationPanel({
             <strong>{recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</strong>
             <small>Confidence: {recommendation.confidence}</small>
           </div>
+          <div className="decision-status">
+            <span>Current decision</span>
+            <strong>{currentDecision ? formatAction(currentDecision.action) : "Pending dispatcher action"}</strong>
+            {currentDecision?.reason ? <small>{currentDecision.reason}</small> : null}
+          </div>
+          {selectedIncident?.assigned_crews.length ? (
+            <div className="decision-status assigned-state">
+              <span>Assigned crew{selectedIncident.assigned_crews.length > 1 ? "s" : ""}</span>
+              <strong>{selectedIncident.assigned_crews.map((crew) => crew.crew_name).join(", ")}</strong>
+            </div>
+          ) : null}
           <p>{recommendation.expected_impact}</p>
           <div className="explain-grid">
             <div>
@@ -454,7 +524,7 @@ function RecommendationPanel({
               <Pencil size={16} />
               Modify
             </button>
-            <button disabled={actionLoading !== null} onClick={() => onRecordAction("deferred")} type="button">
+            <button disabled={actionLoading !== null} onClick={() => startDraft("deferred")} type="button">
               <Pause size={16} />
               Defer
             </button>
@@ -466,7 +536,7 @@ function RecommendationPanel({
           {draftAction ? (
             <div className="action-note-form">
               <label htmlFor="recommendation-action-note">
-                {draftAction === "modified" ? "Modification note" : "Override reason"}
+                {draftAction === "modified" ? "Modification note" : `${formatAction(draftAction)} reason`}
               </label>
               <textarea
                 id="recommendation-action-note"
@@ -474,6 +544,8 @@ function RecommendationPanel({
                 placeholder={
                   draftAction === "modified"
                     ? "Add a short note for the modified recommendation."
+                    : draftAction === "deferred"
+                      ? "Explain why this recommendation is being deferred."
                     : "Explain why this recommendation is being overridden."
                 }
                 value={draftNote}

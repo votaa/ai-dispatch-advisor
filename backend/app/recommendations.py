@@ -53,6 +53,7 @@ def recommend_assignment(
 
     if not selected:
         return {
+            "recommendation_id": f"REC-{incident.get('incident_id')}-REVIEW",
             "incident_id": incident.get("incident_id"),
             "recommended_action": "Defer and escalate",
             "recommended_crew": None,
@@ -65,6 +66,7 @@ def recommend_assignment(
 
     confidence = "high" if selected["suitability_score"] >= 115 else "medium"
     return {
+        "recommendation_id": f"REC-{incident.get('incident_id')}-{selected.get('crew_id')}",
         "incident_id": incident.get("incident_id"),
         "recommended_action": "Assign crew",
         "recommended_crew": selected,
@@ -93,11 +95,14 @@ def dashboard_summary(
     assignments: list[dict[str, Any]],
 ) -> dict[str, Any]:
     ranked = ranked_incidents(incidents)
+    active_assigned_crews = {row.get("crew_id") for row in assignments if row.get("status") == "active"}
     return {
         "active_incidents": len(incidents),
         "customers_out": sum(int(row.get("customers_out") or 0) for row in incidents),
-        "available_crews": sum(1 for row in crews if row.get("status") == "available"),
-        "assigned_crews": len({row.get("crew_id") for row in assignments if row.get("status") == "active"}),
+        "available_crews": sum(
+            1 for row in crews if row.get("status") == "available" and row.get("crew_id") not in active_assigned_crews
+        ),
+        "assigned_crews": len(active_assigned_crews),
         "critical_facility_incidents": sum(1 for row in incidents if row.get("critical_facility")),
         "high_priority_incidents": sum(
             1 for row in incidents if str(row.get("severity")).lower() in {"critical", "high"}
@@ -106,4 +111,3 @@ def dashboard_summary(
         "scenario": "base",
         "data_freshness": "Synthetic demo data loaded at backend startup",
     }
-

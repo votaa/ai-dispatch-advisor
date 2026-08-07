@@ -13,6 +13,8 @@ export type Incident = {
   latitude: number;
   longitude: number;
   etr: string;
+  assigned_crews: AssignedCrew[];
+  current_decision: RecommendationAction | null;
 };
 
 export type Crew = {
@@ -25,6 +27,22 @@ export type Crew = {
   shift_remaining_hours: number;
   storm_ready: boolean;
   travel_minutes_to_selected_incident: number;
+  assigned_incidents: AssignedIncident[];
+};
+
+export type AssignedCrew = {
+  crew_id: string;
+  crew_name: string;
+  assignment_id: string;
+  assigned_at: string;
+};
+
+export type AssignedIncident = {
+  incident_id: string;
+  assignment_id: string;
+  assigned_at: string;
+  municipality: string | null;
+  severity: string | null;
 };
 
 export type Assignment = {
@@ -49,6 +67,7 @@ export type DashboardSummary = {
 };
 
 export type Recommendation = {
+  recommendation_id: string;
   incident_id: string;
   recommended_action: string;
   recommended_crew: Crew | null;
@@ -63,8 +82,11 @@ export type RecommendationActionType = "accepted" | "modified" | "deferred" | "o
 
 export type RecommendationAction = {
   event_id: string;
+  recommendation_id: string;
   incident_id: string;
+  crew_id: string | null;
   action: RecommendationActionType;
+  reason: string | null;
   note: string | null;
   recommendation: Recommendation;
   created_at: string;

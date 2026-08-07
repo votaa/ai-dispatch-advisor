@@ -7,7 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from . import data_loader
-from .recommendation_actions import record_action, recent_actions
+from .decision_store import (
+    accepted_assignments,
+    latest_decisions_by_incident,
+    recent_decisions,
+    record_decision,
+)
 from .recommendations import dashboard_summary, ranked_incidents, recommend_assignment
 
 
@@ -39,7 +44,90 @@ class RecommendationActionRequest(BaseModel):
     incident_id: str
     action: Literal["accepted", "modified", "deferred", "overridden"]
     recommendation: dict[str, Any]
+    reason: Optional[str] = None
     note: Optional[str] = None
+
+
+def _active_assignments() -> list[dict]:
+    seen = set()
+    rows: list[dict] = []
+    for assignment in [*data_loader.assignments(), *accepted_assignments()]:
+        if assignment.get("status") != "active":
+            continue
+        key = (assignment.get("incident_id"), assignment.get("crew_id"))
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append(assignment)
+    return rows
+
+
+def _crew_name_map() -> dict[str, str]:
+    return {str(row.get("crew_id")): str(row.get("crew_name")) for row in data_loader.crews()}
+
+
+def _incidents_with_state() -> list[dict]:
+    assignments = _active_assignments()
+    latest_decisions = latest_decisions_by_incident()
+    crew_names = _crew_name_map()
+    assignments_by_incident: dict[str, list[dict]] = {}
+    for assignment in assignments:
+        assignments_by_incident.setdefault(str(assignment.get("incident_id")), []).append(assignment)
+
+    rows = []
+    for incident in data_loader.incidents():
+        incident_id = str(incident.get("incident_id"))
+        incident_assignments = assignments_by_incident.get(incident_id, [])
+        assigned_crews = [
+            {
+                "crew_id": assignment.get("crew_id"),
+                "crew_name": crew_names.get(str(assignment.get("crew_id")), str(assignment.get("crew_id"))),
+                "assignment_id": assignment.get("assignment_id"),
+                "assigned_at": assignment.get("assigned_at"),
+            }
+            for assignment in incident_assignments
+        ]
+        latest_decision = latest_decisions.get(incident_id)
+        rows.append(
+            {
+                **incident,
+                "status": "assigned" if assigned_crews else incident.get("status"),
+                "assigned_crews": assigned_crews,
+                "current_decision": latest_decision,
+            }
+        )
+    return rows
+
+
+def _crews_with_state() -> list[dict]:
+    assignments = _active_assignments()
+    incident_map = {str(row.get("incident_id")): row for row in data_loader.incidents()}
+    active_by_crew: dict[str, list[dict]] = {}
+    for assignment in assignments:
+        active_by_crew.setdefault(str(assignment.get("crew_id")), []).append(assignment)
+
+    rows = []
+    for crew in data_loader.crews():
+        crew_id = str(crew.get("crew_id"))
+        crew_assignments = active_by_crew.get(crew_id, [])
+        assigned_incidents = [
+            {
+                "incident_id": assignment.get("incident_id"),
+                "assignment_id": assignment.get("assignment_id"),
+                "assigned_at": assignment.get("assigned_at"),
+                "municipality": incident_map.get(str(assignment.get("incident_id")), {}).get("municipality"),
+                "severity": incident_map.get(str(assignment.get("incident_id")), {}).get("severity"),
+            }
+            for assignment in crew_assignments
+        ]
+        rows.append(
+            {
+                **crew,
+                "status": "assigned" if assigned_incidents else crew.get("status"),
+                "assigned_incidents": assigned_incidents,
+            }
+        )
+    return rows
 
 
 @app.get("/health")
@@ -49,17 +137,17 @@ def health() -> dict[str, str]:
 
 @app.get("/api/dashboard")
 def dashboard() -> dict:
-    return dashboard_summary(data_loader.incidents(), data_loader.crews(), data_loader.assignments())
+    return dashboard_summary(_incidents_with_state(), _crews_with_state(), _active_assignments())
 
 
 @app.get("/api/incidents")
 def incidents() -> list[dict]:
-    return ranked_incidents(data_loader.incidents())
+    return ranked_incidents(_incidents_with_state())
 
 
 @app.get("/api/incidents/{incident_id}")
 def incident_detail(incident_id: str) -> dict:
-    for incident in data_loader.incidents():
+    for incident in _incidents_with_state():
         if incident.get("incident_id") == incident_id:
             return incident
     raise HTTPException(status_code=404, detail="Incident not found")
@@ -67,12 +155,12 @@ def incident_detail(incident_id: str) -> dict:
 
 @app.get("/api/crews")
 def crews() -> list[dict]:
-    return data_loader.crews()
+    return _crews_with_state()
 
 
 @app.get("/api/assignments")
 def assignments() -> list[dict]:
-    return data_loader.assignments()
+    return _active_assignments()
 
 
 @app.get("/api/weather")
@@ -92,14 +180,14 @@ def topology() -> list[dict]:
 
 @app.post("/api/optimize")
 def optimize(request: OptimizeRequest) -> dict:
-    incident_rows = ranked_incidents(data_loader.incidents())
+    incident_rows = ranked_incidents(_incidents_with_state())
     if request.incident_id:
         incident_rows = [row for row in incident_rows if row.get("incident_id") == request.incident_id]
     if not incident_rows:
         raise HTTPException(status_code=404, detail="Incident not found")
 
     incident = incident_rows[0]
-    return recommend_assignment(incident, data_loader.crews(), data_loader.assignments())
+    return recommend_assignment(incident, _crews_with_state(), _active_assignments())
 
 
 @app.post("/api/recommendation-actions")
@@ -111,21 +199,22 @@ def recommendation_action(request: RecommendationActionRequest) -> dict:
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
 
-    note = request.note.strip() if request.note else None
-    if request.action == "overridden" and not note:
-        raise HTTPException(status_code=400, detail="Override reason is required")
+    reason_source = request.reason if request.reason is not None else request.note
+    reason = reason_source.strip() if reason_source else None
+    if request.action in {"deferred", "overridden"} and not reason:
+        raise HTTPException(status_code=400, detail=f"{request.action.title()} reason is required")
 
-    return record_action(
+    return record_decision(
         incident_id=request.incident_id,
         action=request.action,
-        note=note,
+        reason=reason,
         recommendation=request.recommendation,
     )
 
 
 @app.get("/api/audit/events")
 def audit_events(limit: int = 25) -> list[dict]:
-    return recent_actions(limit=max(1, min(limit, 100)))
+    return recent_decisions(limit=max(1, min(limit, 100)))
 
 
 @app.post("/api/chat")

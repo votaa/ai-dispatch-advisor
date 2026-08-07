@@ -25,7 +25,9 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body)
   });
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+    const payload = await response.json().catch(() => null);
+    const detail = payload && typeof payload.detail === "string" ? payload.detail : `Request failed: ${response.status}`;
+    throw new Error(detail);
   }
   return response.json() as Promise<T>;
 }
@@ -46,7 +48,7 @@ export const api = {
       incident_id: recommendation.incident_id,
       action,
       recommendation,
-      note
+      reason: note
     }),
   chat: (message: string, incidentId?: string) =>
     postJson<{ answer: string; source: string; safety_note: string }>("/api/chat", {

@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.recommendation_actions import clear_actions
+from app.decision_store import clear_decisions
 from app.main import app
 
 
@@ -26,7 +26,7 @@ def test_optimize() -> None:
 
 
 def test_recommendation_action_records_audit_event() -> None:
-    clear_actions()
+    clear_decisions()
     recommendation = client.post("/api/optimize", json={}).json()
 
     response = client.post(
@@ -41,6 +41,7 @@ def test_recommendation_action_records_audit_event() -> None:
     assert response.status_code == 200
     event = response.json()
     assert event["incident_id"] == recommendation["incident_id"]
+    assert event["recommendation_id"] == recommendation["recommendation_id"]
     assert event["action"] == "accepted"
     assert event["recommendation"]["recommended_action"] == recommendation["recommended_action"]
 
@@ -49,8 +50,57 @@ def test_recommendation_action_records_audit_event() -> None:
     assert history.json()[0]["event_id"] == event["event_id"]
 
 
+def test_accepting_recommendation_updates_assignment_state() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    crew_id = recommendation["recommended_crew"]["crew_id"]
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "accepted",
+            "recommendation": recommendation,
+        },
+    )
+
+    assert response.status_code == 200
+
+    assignments = client.get("/api/assignments").json()
+    assert any(
+        assignment["incident_id"] == "INC-1001" and assignment["crew_id"] == crew_id
+        for assignment in assignments
+    )
+
+    incident = client.get("/api/incidents/INC-1001").json()
+    assert incident["status"] == "assigned"
+    assert any(crew["crew_id"] == crew_id for crew in incident["assigned_crews"])
+
+    crews = client.get("/api/crews").json()
+    assigned_crew = next(crew for crew in crews if crew["crew_id"] == crew_id)
+    assert assigned_crew["status"] == "assigned"
+    assert assigned_crew["assigned_incidents"][0]["incident_id"] == "INC-1001"
+
+
+def test_defer_requires_reason() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={}).json()
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "deferred",
+            "recommendation": recommendation,
+            "reason": "   ",
+        },
+    )
+
+    assert response.status_code == 400
+
+
 def test_override_requires_reason() -> None:
-    clear_actions()
+    clear_decisions()
     recommendation = client.post("/api/optimize", json={}).json()
 
     response = client.post(

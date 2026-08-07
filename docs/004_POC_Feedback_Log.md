@@ -55,7 +55,7 @@ Recommended usage:
 
 | ID | Date | Category | Priority | Area | Observation | Suggested Next Step | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| POC-001 | 2026-08-02 | UX | P1 | Recommendation actions | Accept, Modify, Defer, and Override controls are visible but not yet demo-functional. | Implement lightweight action recording, confirmation, and recent history. | New |
+| POC-001 | 2026-08-02 | UX | P1 | Recommendation actions | Accept, Modify, Defer, and Override controls are visible but not yet demo-functional. | Implemented local decision persistence, required reasons for Defer and Override, visible decision status, recent history, and accepted assignment state. | Closed |
 | POC-002 | 2026-08-02 | AI | P2 | AI Copilot | Copilot responses are currently keyword-based demo responses, not real AI model output. | Keep advisory boundary clear; later define LLM-backed Copilot architecture and retrieval model. | New |
 
 ## Review Cadence
@@ -87,4 +87,3 @@ When an item is ready to act on:
 - [Documentation Roadmap](002_Documentation_Roadmap.md)
 - [Product Requirements](100_Product/105_Product_Requirements.md)
 - [Recommendation Experience](300_UX/303_Recommendation_Experience.md)
-
