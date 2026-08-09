@@ -16,11 +16,11 @@ GET /api/assignments
 Current source data:
 
 ```text
-data/scenarios/base/Crews.csv
-data/scenarios/base/Assignments.csv
+data/scenarios/{active-scenario}/Crews.csv
+data/scenarios/{active-scenario}/Assignments.csv
 ```
 
-The current implementation returns synthetic crew and assignment records. It does not yet support assignment updates, crew status changes, writeback to workforce systems, or durable audit events.
+The current implementation returns synthetic crew and active assignment records for the selected scenario. Accepted recommendations create local SQLite-backed demo assignments, and API responses overlay those assignments onto crew and incident state. It does not support general assignment editing, cancellation, historical assignment queries, or workforce-system writeback.
 
 ## Crew Data Model
 
@@ -59,8 +59,9 @@ Returns all synthetic crews in the active demo scenario.
 
 ### Current Behavior
 
-- Loads `Crews.csv`.
-- Returns the full crew list.
+- Loads `Crews.csv` for the active scenario.
+- Applies active seed and accepted demo assignment state.
+- Returns assigned incident context for each crew.
 
 ### Example Response Shape
 
@@ -100,16 +101,15 @@ Returns active assignment data.
 
 ### Current Behavior
 
-- Loads `Assignments.csv`.
-- Returns all synthetic assignment records.
+- Loads active seed assignments from `Assignments.csv` for the selected scenario.
+- Adds accepted demo assignments persisted under that scenario.
+- Returns the combined active assignment list with `scenario_id`.
 
 ### Target Enhancements
 
 Future assignment APIs should support:
 
-- Active assignments.
 - Historical assignments.
-- Assignment creation.
 - Assignment modification.
 - Assignment cancellation.
 - Assignment status update.
@@ -190,4 +190,3 @@ Crew APIs may expose sensitive workforce information. Future implementation shou
 - [Outage API](403_Outage_API.md)
 - [Recommendation API](405_Recommendation_API.md)
 - [Integration API](406_Integration_API.md)
-

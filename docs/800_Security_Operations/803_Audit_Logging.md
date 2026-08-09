@@ -6,9 +6,9 @@ This document defines audit logging requirements for the AI Dispatch Advisor. It
 
 ## Current Implementation State
 
-The current POC does not include durable audit logging. Recommendation actions are not yet persisted unless implemented by a later POC enhancement.
+The current POC persists recommendation decision events in local SQLite. Accept, Modify, Defer, and Override events include recommendation, incident, crew, action, reason, timestamp, scenario, and a `demo-dispatcher` actor placeholder. Recent events are exposed through `GET /api/audit/events` and displayed in the recommendation experience.
 
-The repository includes an initial SQLite schema concept for recommendation audit events, but the active backend currently reads data from CSV files.
+This is local POC persistence rather than production audit logging. It does not yet provide authenticated identity, role context, immutable retention controls, correlation identifiers, SIEM export, or centralized operational storage.
 
 ## Audit Goals
 
@@ -98,11 +98,11 @@ Example:
 
 ## Audit Storage
 
-POC options:
+Current POC implementation:
 
-- In-memory event list.
-- Local JSON file.
-- SQLite table.
+- Local SQLite tables for recommendation decision events and accepted demo assignments.
+- Scenario-scoped reads so switching scenarios does not mix decision history.
+- Local files ignored by Git and intended only for development and demonstrations.
 
 Production direction:
 
@@ -170,4 +170,3 @@ Known gaps:
 - [Identity and Access Management](802_Identity_and_Access_Management.md)
 - [Observability](804_Observability.md)
 - [Recommendation API](../400_Backend_API/405_Recommendation_API.md)
-

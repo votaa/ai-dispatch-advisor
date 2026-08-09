@@ -207,7 +207,7 @@ The UI should prioritize information in this order:
 | Local navigation state | React Router or equivalent route model |
 | Manual TypeScript types | Types aligned with backend schemas |
 | Static layout | Responsive operational shell with role-aware pages |
-| Placeholder action buttons | Persisted recommendation action workflow |
+| SQLite-backed POC recommendation actions | Enterprise workflow with authenticated identity and system-of-record coordination |
 | Demo Copilot responses | Controlled AI service with retrieved context |
 
 ## Role-Based Navigation Considerations
@@ -238,4 +238,3 @@ Future role-aware navigation may include:
 - [Recommendation Experience](303_Recommendation_Experience.md)
 - [Explainability and Trust](304_Explainability_and_Trust.md)
 - [Accessibility Guidelines](305_Accessibility_Guidelines.md)
-

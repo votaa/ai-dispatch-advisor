@@ -26,9 +26,10 @@ The current POC shows:
 - Expected impact.
 - Explanation factors.
 - Constraints.
-- Placeholder action buttons.
-
-The next POC feature should make Accept, Modify, Defer, and Override demo-functional.
+- Demo-functional Accept, Modify, Defer, and Override actions.
+- Required reasons for Defer and Override.
+- Visible current decision status and recent action history.
+- Scenario-isolated accepted assignments reflected in incident, crew, and dashboard state.
 
 ## Recommendation Object
 
@@ -105,7 +106,7 @@ Purpose:
 Expected behavior:
 
 - Record deferred status.
-- Optionally capture deferral reason.
+- Require a deferral reason.
 - Keep incident visible as requiring follow-up.
 
 ### Override
@@ -227,4 +228,3 @@ Failure states should be clear and operational, not technical stack traces.
 - [Dispatch Console Specification](302_Dispatch_Console_Specification.md)
 - [Explainability and Trust](304_Explainability_and_Trust.md)
 - [Accessibility Guidelines](305_Accessibility_Guidelines.md)
-

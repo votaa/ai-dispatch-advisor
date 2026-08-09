@@ -16,7 +16,9 @@ Current state includes:
 - Crew list.
 - Assignment list.
 - Current recommendation.
+- Recommendation action loading, feedback, and recent history.
 - Selected incident identifier.
+- Available scenarios, active scenario, and activation feedback.
 - Copilot prompt.
 - Copilot conversation state.
 - Loading and error feedback.
@@ -127,12 +129,14 @@ Recommended handling:
 | Incident data | `App.tsx` | Server-state hook with filters |
 | Crew data | `App.tsx` | Server-state hook with filters |
 | Recommendation | `App.tsx` | Recommendation query keyed by incident |
+| Recommendation actions | `App.tsx` and backend SQLite | Server state keyed by scenario and incident |
+| Active scenario | `App.tsx` and process-local backend state | Session- or environment-scoped application context |
 | Copilot turns | `App.tsx` | Copilot page state |
 | Errors | `App.tsx` | Shared error banner pattern |
 
 ## Recommendation Action State
 
-When Accept, Modify, Defer, and Override become demo-functional, state should include:
+The implemented Accept, Modify, Defer, and Override workflow includes:
 
 - Selected recommendation.
 - Pending action type.
@@ -141,7 +145,7 @@ When Accept, Modify, Defer, and Override become demo-functional, state should in
 - Action response.
 - Recent action history.
 
-Target flow:
+Current POC flow:
 
 ```mermaid
 sequenceDiagram
@@ -228,4 +232,3 @@ Examples:
 - [Component Guidelines](503_Component_Guidelines.md)
 - [Routing and Navigation](504_Routing_and_Navigation.md)
 - [Recommendation Experience](../300_UX/303_Recommendation_Experience.md)
-

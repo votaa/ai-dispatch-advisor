@@ -119,7 +119,7 @@ The dispatch console should support:
 | Defer | Records that action is delayed or requires later review |
 | Override | Requires an override reason before recording |
 
-For the POC, these actions may write to a lightweight backend memory store, JSON file, or SQLite-backed demo table. For production, these actions must create durable audit events and may require writeback to approved systems of record.
+The current POC writes these actions to local scenario-scoped SQLite tables and exposes recent decision history in the UI. For production, actions must use authenticated identity, durable audit controls, and approved system-of-record writeback where required.
 
 ## Action Feedback
 
@@ -183,4 +183,3 @@ The dispatch console is minimally acceptable when:
 - [Recommendation Experience](303_Recommendation_Experience.md)
 - [Explainability and Trust](304_Explainability_and_Trust.md)
 - [Accessibility Guidelines](305_Accessibility_Guidelines.md)
-

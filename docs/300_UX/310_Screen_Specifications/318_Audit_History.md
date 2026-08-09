@@ -49,9 +49,9 @@ Dispatch Supervisor, Operations Analyst, Compliance Reviewer
 
 ## Backend and API Dependencies
 
-- `Future: GET /api/audit-events`
-- `Future: GET /api/recommendation-actions`
+- `GET /api/audit/events` for current POC recommendation decisions
 - `Future: GET /api/recommendations/{id}/history`
+- `Future: GET /api/audit/events/export`
 
 ## AI and Recommendation Behavior
 

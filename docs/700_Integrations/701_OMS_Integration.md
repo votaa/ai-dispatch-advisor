@@ -9,8 +9,8 @@ This document defines the target Outage Management System integration for the AI
 The current Developer Bootstrap MVP does not connect to a live OMS. OMS-like outage data is simulated by:
 
 ```text
-data/scenarios/base/PendingIncidents.csv
-data/scenarios/base/Assignments.csv
+data/scenarios/{active-scenario}/PendingIncidents.csv
+data/scenarios/{active-scenario}/Assignments.csv
 ```
 
 The backend exposes this data through:
@@ -191,4 +191,3 @@ Audit events should be recorded for:
 - [Integration Architecture](../200_Architecture/204_Integration_Architecture.md)
 - [Outage API](../400_Backend_API/403_Outage_API.md)
 - [Recommendation API](../400_Backend_API/405_Recommendation_API.md)
-

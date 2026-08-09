@@ -98,35 +98,38 @@ Future recommendation responses should include:
 
 ## Recommendation Actions
 
-The next POC enhancement should add demo-functional actions:
+The current POC implements these demo-functional actions:
 
-| Action | Expected API Behavior |
+| Action | Current API Behavior |
 | --- | --- |
 | Accept | Record recommendation as accepted |
 | Modify | Record modification note and action |
-| Defer | Record deferred status |
+| Defer | Require a reason and record deferred status |
 | Override | Require override reason and record overridden status |
 
-Potential POC endpoint:
+Current endpoints:
 
 ```text
-POST /api/recommendations/{recommendation_id}/actions
-GET  /api/recommendation-actions
+POST /api/recommendation-actions
+GET  /api/audit/events
 ```
 
-Potential request shape:
+Current request shape:
 
 ```json
 {
-  "action": "override",
+  "action": "overridden",
   "incident_id": "INC-1001",
-  "crew_id": "CR-01",
   "reason": "Field condition",
-  "note": "Access road is blocked by flooding."
+  "recommendation": {
+    "recommendation_id": "REC-INC-1001-CR-01",
+    "incident_id": "INC-1001",
+    "recommended_action": "Assign crew"
+  }
 }
 ```
 
-Potential response shape:
+Current response shape includes:
 
 ```json
 {
@@ -135,8 +138,8 @@ Potential response shape:
   "recommendation_id": "REC-0001",
   "incident_id": "INC-1001",
   "crew_id": "CR-01",
-  "action": "override",
-  "reason": "Field condition",
+  "action": "overridden",
+  "reason": "Access road is blocked by flooding.",
   "note": "Access road is blocked by flooding.",
   "created_at": "2026-08-02T14:30:00-04:00"
 }

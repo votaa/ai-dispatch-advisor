@@ -58,8 +58,8 @@ Electric Distribution Dispatcher / Control Room Operator
 ## Backend and API Dependencies
 
 - `POST /api/optimize`
-- `Future: POST /api/recommendations/{recommendation_id}/actions`
-- `Future: GET /api/recommendation-actions`
+- `POST /api/recommendation-actions`
+- `GET /api/audit/events`
 
 ## AI and Recommendation Behavior
 

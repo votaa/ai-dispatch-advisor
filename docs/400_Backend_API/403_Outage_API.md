@@ -17,7 +17,7 @@ GET /api/dashboard
 Current source data:
 
 ```text
-data/scenarios/base/PendingIncidents.csv
+data/scenarios/{active-scenario}/PendingIncidents.csv
 ```
 
 The current API treats active outage records as incidents. Future implementations may distinguish outage events, trouble calls, hazards, work packages, and assignments more explicitly.
@@ -191,4 +191,3 @@ Expected target error cases:
 - [API Overview](402_API_Overview.md)
 - [Crew API](404_Crew_API.md)
 - [Recommendation API](405_Recommendation_API.md)
-

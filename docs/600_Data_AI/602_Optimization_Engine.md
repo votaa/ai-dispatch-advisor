@@ -198,7 +198,7 @@ Known gaps:
 - No optimization library usage.
 - No calibration against real operating policy.
 - No persistence of recommendation inputs or outputs.
-- No scenario manifest support.
+- Only four fixed synthetic validation scenarios.
 - No quantitative evaluation metrics.
 
 ## Related Documents
@@ -207,4 +207,3 @@ Known gaps:
 - [AI Recommendation Engine](603_AI_Recommendation_Engine.md)
 - [Explainability Model](604_Explainability_Model.md)
 - [Model Governance](605_Model_Governance.md)
-

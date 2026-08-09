@@ -12,9 +12,11 @@ The current project baseline includes:
 - Runnable React frontend.
 - Runnable FastAPI backend.
 - Synthetic CSV demo data.
-- Local SQLite persistence foundation.
+- Four validated, runtime-selectable synthetic scenarios.
+- Scenario-isolated local SQLite decision and accepted-assignment persistence.
 - Initial dashboard, dispatch, incidents, crew board, scenario, storm mode, and Copilot pages.
-- Demo recommendation behavior.
+- Demo-functional recommendation actions with visible status and history.
+- Backend scenario validation and initial frontend workflow tests.
 - Initial CI and Docker structure.
 - Enterprise documentation for product, architecture, UX, API, frontend, data, integrations, security, and operations.
 
@@ -58,6 +60,8 @@ Exit criteria:
 
 Objective: make Accept, Modify, Defer, and Override demo-functional.
 
+Status: Complete for the POC baseline as of 2026-08-09.
+
 Scope:
 
 - Add recommendation decision state.
@@ -79,6 +83,8 @@ Exit criteria:
 ## Phase 3: Scenario Data and Demo Management
 
 Objective: support multiple repeatable demo scenarios.
+
+Status: Complete for the POC baseline as of 2026-08-09.
 
 Scope:
 
@@ -237,15 +243,18 @@ Exit criteria:
 
 ## Workstream Sequencing
 
-Recommended near-term sequence:
+Completed near-term foundation:
 
 1. Make Accept, Modify, Defer, and Override demo-functional.
 2. Add decision persistence and audit event capture.
 3. Add scenario data management.
-4. Strengthen backend domain models and API tests.
-5. Improve recommendation scoring and explanation structure.
-6. Add frontend workflow tests.
-7. Prepare mock integration adapters.
+
+Recommended next sequence:
+
+1. Strengthen backend domain models and API tests.
+2. Improve recommendation scoring and explanation structure.
+3. Expand frontend workflow tests.
+4. Prepare mock integration adapters.
 
 This sequence preserves demo value while building toward the architecture already documented.
 

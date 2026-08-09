@@ -31,6 +31,8 @@ The current frontend:
 - Calls the FastAPI backend through `frontend/src/api.ts`.
 - Uses synthetic backend data.
 - Uses local React state.
+- Supports scenario selection, recommendation decisions, recent action history, and assignment-state refresh.
+- Includes initial Vitest and Testing Library workflow coverage.
 - Does not yet use React Router, a component library, a data grid library, map library, or global state library.
 
 ## Frontend Architecture Goals
@@ -248,11 +250,10 @@ Known frontend gaps:
 
 - Single large `App.tsx`.
 - No route URLs.
-- No persistent recommendation action workflow.
 - No map component.
 - No data grid library.
 - No formal design tokens.
-- No automated frontend tests.
+- Limited automated frontend workflow coverage.
 - No role-based navigation.
 - No production authentication handling.
 
@@ -260,7 +261,6 @@ Known frontend gaps:
 
 Refactor the frontend structure when:
 
-- Recommendation actions become demo-functional.
 - Multiple pages need shared selected incident or scenario state.
 - More than one table needs filtering or sorting.
 - Routing URLs become important.
@@ -274,4 +274,3 @@ Refactor the frontend structure when:
 - [Component Guidelines](503_Component_Guidelines.md)
 - [Routing and Navigation](504_Routing_and_Navigation.md)
 - [UI Information Architecture](../300_UX/301_UI_Information_Architecture.md)
-

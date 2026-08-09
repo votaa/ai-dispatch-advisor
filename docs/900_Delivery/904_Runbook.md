@@ -90,12 +90,31 @@ Before a stakeholder demo:
 - Open Copilot and confirm it responds to a simple advisory prompt.
 - Review `docs/004_POC_Feedback_Log.md` for known gaps before presenting functionality as complete.
 
+## Four-Scenario Smoke Test
+
+Use a fresh local decision database, or account for previously accepted demo assignments when comparing crew counts. Activate each scenario from the frontend selector and confirm:
+
+| Scenario | Active Incidents | Customers Out | Expected Highest-Priority Result |
+| --- | ---: | ---: | --- |
+| Base Operations | 8 | 8,915 | `INC-1001` recommends `CR-01` |
+| Major Storm | 10 | 20,300 | `STM-2001` recommends `SC-06` |
+| Crew Shortage | 7 | 7,370 | `CRS-3001` returns Defer and escalate with no available crew |
+| Critical Facility | 6 | 3,380 | `CFI-4001` recommends `FC-01` |
+
+For every scenario:
+
+- Confirm the active label, dashboard totals, incident prefixes, and crew board change together.
+- Confirm recommendation history from another scenario is not displayed.
+- Record one demo decision if action behavior is in scope for the smoke test; Defer is the least disruptive choice.
+- Switch away and back to confirm scenario-isolated history is restored.
+- Record any discrepancy in `docs/004_POC_Feedback_Log.md`.
+
 ## Known POC Limitations
 
 Current limitations:
 
-- Some visible controls may be partially implemented until the related workflow is completed.
-- Accept, Modify, Defer, and Override actions should be made fully demo-functional as a near-term implementation item.
+- Scenario activation is global to the running POC backend process rather than scoped to an authenticated user session.
+- Recommendation decisions use a placeholder dispatcher identity and local SQLite persistence.
 - Copilot responses are simple advisory demo responses, not production AI reasoning.
 - External integrations are mocked or absent.
 - Demo data is synthetic and should not be interpreted as real utility operational data.

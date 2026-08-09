@@ -26,7 +26,7 @@ database/seed.sql
 scripts/init_db.py
 ```
 
-The backend currently reads CSV files directly. The SQLite database can be generated locally for development, but it is not yet the active backend data source.
+The backend reads incident, crew, assignment, weather, facility, topology, and repair reference data from the active scenario CSV files. SQLite is active only for local recommendation decisions and accepted demo assignments; it is not yet the primary store for the broader domain model.
 
 Each scenario directory includes a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The backend scenario service validates metadata, required files, CSV headers, identifiers, and assignment references before process-local activation. Recommendation decisions and accepted demo assignments are filtered by `scenario_id` so state remains isolated while switching.
 

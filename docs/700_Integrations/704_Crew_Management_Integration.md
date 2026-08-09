@@ -9,8 +9,8 @@ This document defines the target crew and workforce management integration for t
 The current POC does not connect to a live crew or workforce management system. Crew data is simulated by:
 
 ```text
-data/scenarios/base/Crews.csv
-data/scenarios/base/Assignments.csv
+data/scenarios/{active-scenario}/Crews.csv
+data/scenarios/{active-scenario}/Assignments.csv
 ```
 
 The backend exposes this data through:
@@ -186,4 +186,3 @@ Expected crew integration errors:
 - [Crew API](../400_Backend_API/404_Crew_API.md)
 - [Recommendation API](../400_Backend_API/405_Recommendation_API.md)
 - [Optimization Engine](../600_Data_AI/602_Optimization_Engine.md)
-
