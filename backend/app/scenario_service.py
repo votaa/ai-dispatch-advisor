@@ -341,21 +341,58 @@ class ScenarioService:
         reference_files = {"Assignments.csv", "PendingIncidents.csv", "Crews.csv"}
         if reference_files.issubset(rows_by_file):
             assignments = rows_by_file["Assignments.csv"]
-            incident_ids = {row["incident_id"] for row in rows_by_file["PendingIncidents.csv"]}
-            crew_ids = {row["crew_id"] for row in rows_by_file["Crews.csv"]}
+            crews = rows_by_file["Crews.csv"]
+            incident_ids = {row["incident_id"].strip() for row in rows_by_file["PendingIncidents.csv"]}
+            crew_ids = {row["crew_id"].strip() for row in crews}
+            active_assignments_by_crew: Counter[str] = Counter()
             for row_number, assignment in enumerate(assignments, start=2):
-                if assignment["incident_id"] not in incident_ids:
+                incident_id = assignment["incident_id"].strip()
+                crew_id = assignment["crew_id"].strip()
+                if incident_id not in incident_ids:
                     issues.append(
                         {
                             "location": f"Assignments.csv:{row_number}.incident_id",
-                            "message": f"Unknown incident_id '{assignment['incident_id']}'",
+                            "message": f"Unknown incident_id '{incident_id}'",
                         }
                     )
-                if assignment["crew_id"] not in crew_ids:
+                if crew_id not in crew_ids:
                     issues.append(
                         {
                             "location": f"Assignments.csv:{row_number}.crew_id",
-                            "message": f"Unknown crew_id '{assignment['crew_id']}'",
+                            "message": f"Unknown crew_id '{crew_id}'",
+                        }
+                    )
+                if assignment["status"].strip().lower() == "active" and crew_id in crew_ids:
+                    active_assignments_by_crew[crew_id] += 1
+
+            for crew_id, count in active_assignments_by_crew.items():
+                if count > 1:
+                    issues.append(
+                        {
+                            "location": "Assignments.csv",
+                            "message": f"Crew '{crew_id}' has multiple active assignments",
+                        }
+                    )
+
+            for row_number, crew in enumerate(crews, start=2):
+                crew_id = crew["crew_id"].strip()
+                crew_status = crew["status"].strip().lower()
+                has_active_assignment = active_assignments_by_crew[crew_id] > 0
+                if has_active_assignment and crew_status != "assigned":
+                    issues.append(
+                        {
+                            "location": f"Crews.csv:{row_number}.status",
+                            "message": (
+                                f"Crew '{crew_id}' has an active assignment but status is "
+                                f"'{crew_status}'; expected 'assigned'"
+                            ),
+                        }
+                    )
+                if crew_status == "assigned" and not has_active_assignment:
+                    issues.append(
+                        {
+                            "location": f"Crews.csv:{row_number}.status",
+                            "message": f"Crew '{crew_id}' is assigned but has no active assignment",
                         }
                     )
         return issues

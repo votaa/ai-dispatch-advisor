@@ -58,6 +58,19 @@ Frontend app:
 http://localhost:5173
 ```
 
+### Automated Checks
+
+```bash
+cd backend
+./.venv/bin/python -m pytest
+
+cd ../frontend
+npm test
+npm run build
+```
+
+The backend suite validates scenario manifests and CSV relationships, runtime switching, scenario-isolated decisions, and deterministic recommendation fixtures. The frontend suite covers the recorded-decision confirmation workflow when switching scenarios.
+
 ### Database Initialization
 
 The first MVP reads directly from CSV scenario files. A local SQLite database can also be created from the sample data:

@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import json
 import shutil
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app import data_loader
@@ -95,12 +98,54 @@ def test_service_reports_invalid_csv_headers(tmp_path: Path) -> None:
         raise AssertionError("Expected invalid CSV headers to fail")
 
 
-def test_service_reports_unknown_assignment_reference(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("filename", "id_field"),
+    [
+        ("PendingIncidents.csv", "incident_id"),
+        ("Crews.csv", "crew_id"),
+    ],
+)
+def test_service_reports_duplicate_domain_identifiers(
+    tmp_path: Path,
+    filename: str,
+    id_field: str,
+) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    csv_path = scenario_directory / filename
+    lines = csv_path.read_text(encoding="utf-8").splitlines()
+    csv_path.write_text("\n".join([*lines, lines[1]]) + "\n", encoding="utf-8")
+
+    service = ScenarioService(tmp_path, "base")
+
+    with pytest.raises(ScenarioServiceError) as error:
+        service.active_scenario()
+
+    assert error.value.code == "scenario_validation_failed"
+    assert any(
+        detail["location"] == filename and detail["message"] == f"Duplicate {id_field} values found"
+        for detail in error.value.details
+    )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "existing_value", "unknown_value"),
+    [
+        ("incident_id", "INC-1002", "INC-UNKNOWN"),
+        ("crew_id", "CR-02", "CR-UNKNOWN"),
+    ],
+)
+def test_service_reports_unknown_assignment_reference(
+    tmp_path: Path,
+    field_name: str,
+    existing_value: str,
+    unknown_value: str,
+) -> None:
     scenario_directory = tmp_path / "base"
     shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
     assignment_path = scenario_directory / "Assignments.csv"
     assignment_path.write_text(
-        assignment_path.read_text(encoding="utf-8").replace("INC-1002", "INC-UNKNOWN", 1),
+        assignment_path.read_text(encoding="utf-8").replace(existing_value, unknown_value, 1),
         encoding="utf-8",
     )
 
@@ -111,11 +156,49 @@ def test_service_reports_unknown_assignment_reference(tmp_path: Path) -> None:
     except ScenarioServiceError as exc:
         assert exc.code == "scenario_validation_failed"
         assert {
-            "location": "Assignments.csv:2.incident_id",
-            "message": "Unknown incident_id 'INC-UNKNOWN'",
+            "location": f"Assignments.csv:2.{field_name}",
+            "message": f"Unknown {field_name} '{unknown_value}'",
         } in exc.details
     else:
         raise AssertionError("Expected unknown assignment reference to fail")
+
+
+@pytest.mark.parametrize(
+    ("old_row", "new_row", "expected_message"),
+    [
+        (
+            "CR-02,Central Veg Beta,Central,assigned",
+            "CR-02,Central Veg Beta,Central,available",
+            "Crew 'CR-02' has an active assignment but status is 'available'; expected 'assigned'",
+        ),
+        (
+            "CR-03,South General Gamma,South,available",
+            "CR-03,South General Gamma,South,assigned",
+            "Crew 'CR-03' is assigned but has no active assignment",
+        ),
+    ],
+)
+def test_service_reports_crew_assignment_status_mismatch(
+    tmp_path: Path,
+    old_row: str,
+    new_row: str,
+    expected_message: str,
+) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    crew_path = scenario_directory / "Crews.csv"
+    crew_path.write_text(
+        crew_path.read_text(encoding="utf-8").replace(old_row, new_row, 1),
+        encoding="utf-8",
+    )
+
+    service = ScenarioService(tmp_path, "base")
+
+    with pytest.raises(ScenarioServiceError) as error:
+        service.active_scenario()
+
+    assert error.value.code == "scenario_validation_failed"
+    assert any(detail["message"] == expected_message for detail in error.value.details)
 
 
 def test_active_endpoint_returns_structured_not_found_error(monkeypatch) -> None:
@@ -174,6 +257,51 @@ def test_runtime_activation_switches_loaded_scenario_and_dashboard_metadata() ->
     dashboard = client.get("/api/dashboard").json()
     assert dashboard["scenario"] == "storm"
     assert dashboard["active_incidents"] == 10
+
+
+def test_runtime_activation_loads_each_scenario_without_cached_data_leakage() -> None:
+    expected_scenarios = [
+        ("base", "INC-", 8),
+        ("storm", "STM-", 10),
+        ("crew-shortage", "CRS-", 7),
+        ("critical-facility", "CFI-", 6),
+        ("base", "INC-", 8),
+    ]
+
+    for scenario_id, incident_prefix, incident_count in expected_scenarios:
+        response = client.put("/api/scenarios/active", json={"scenario_id": scenario_id})
+        assert response.status_code == 200
+
+        incidents = client.get("/api/incidents").json()
+        dashboard = client.get("/api/dashboard").json()
+        assert len(incidents) == incident_count
+        assert all(incident["incident_id"].startswith(incident_prefix) for incident in incidents)
+        assert dashboard["scenario"] == scenario_id
+        assert dashboard["active_incidents"] == incident_count
+
+
+@pytest.mark.parametrize(
+    ("scenario_id", "incident_id", "crew_id", "recommended_action"),
+    [
+        ("base", "INC-1001", "CR-01", "Assign crew"),
+        ("storm", "STM-2001", "SC-06", "Assign crew"),
+        ("crew-shortage", "CRS-3001", None, "Defer and escalate"),
+        ("critical-facility", "CFI-4001", "FC-01", "Assign crew"),
+    ],
+)
+def test_scenario_has_expected_top_recommendation(
+    scenario_id: str,
+    incident_id: str,
+    crew_id: str | None,
+    recommended_action: str,
+) -> None:
+    assert client.put("/api/scenarios/active", json={"scenario_id": scenario_id}).status_code == 200
+
+    recommendation = client.post("/api/optimize", json={}).json()
+
+    assert recommendation["incident_id"] == incident_id
+    assert recommendation["recommended_action"] == recommended_action
+    assert (recommendation["recommended_crew"] or {}).get("crew_id") == crew_id
 
 
 def test_invalid_runtime_activation_preserves_current_scenario() -> None:

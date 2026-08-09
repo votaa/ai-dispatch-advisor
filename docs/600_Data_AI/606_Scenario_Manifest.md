@@ -107,6 +107,7 @@ A conforming version `1.0` manifest must meet these rules:
 - Every inventoried CSV file exists in the same scenario directory.
 - CSV headers conform to the domain definitions in the data model.
 - Identifiers are unique within their domain, and assignment references resolve to existing incident and crew identifiers.
+- A crew with an active assignment has `assigned` status, and every crew with `assigned` status has exactly one active assignment.
 
 The backend scenario service automatically enforces these rules when serving `GET /api/scenarios`, `GET /api/scenarios/active`, and `PUT /api/scenarios/active`. A validation failure prevents activation, preserves the current scenario, and returns structured error details.
 
