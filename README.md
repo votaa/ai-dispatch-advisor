@@ -13,7 +13,7 @@ This repository now includes the Developer Bootstrap MVP:
 - Synthetic utility outage demo data
 - Initial SQLite schema and database initialization script
 - Initial API endpoints for dashboard, incidents, crews, assignments, optimization, and copilot responses
-- Demo recommendation action workflow with in-memory audit history
+- Demo recommendation action workflow with SQLite-backed decision and audit history
 - Docker Compose for local full-stack startup
 - GitHub Actions CI for frontend build and backend tests
 - Repository documentation under `docs/`
@@ -118,7 +118,7 @@ GET  /api/audit/events
 POST /api/chat
 ```
 
-Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override actions are stored in backend memory for the running API process; restarting the backend clears the audit history. Override requires a reason, while Modify can include a short note.
+Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override decisions are persisted locally in `database/aida_decisions.db`, including a basic audit history. Accepted recommendations create local demo assignments that update incident, crew, and dashboard state. Defer and Override require a reason, while Modify can include a short note. The local SQLite database is ignored by Git and is not intended as production persistence.
 
 ## Repository Structure
 
