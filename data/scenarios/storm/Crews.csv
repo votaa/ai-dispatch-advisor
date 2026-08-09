@@ -1,0 +1,11 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+SC-01,Storm Line Alpha,North,assigned,line,Millbrook Service Center,5,true,14
+SC-02,Storm Vegetation Bravo,Central,assigned,vegetation,Fairview Yard,6,true,19
+SC-03,Storm General Charlie,South,available,general,Lakemont Substation,5,true,27
+SC-04,Storm Line Delta,East,assigned,line,Riverton Staging Lot,4,true,16
+SC-05,Storm Vegetation Echo,West,available,vegetation,Oak Ridge Depot,7,true,24
+SC-06,Storm Line Foxtrot,North,available,line,Hudson Falls Yard,3,true,21
+SC-07,Storm Underground Golf,Central,available,underground,Briarcliff Yard,6,false,33
+SC-08,Storm Vegetation Hotel,South,available,vegetation,Greystone Yard,4,true,29
+SC-09,Mutual Aid Line India,East,assigned,line,Pine Harbor Staging,8,true,31
+SC-10,Mutual Aid General Juliett,West,staged,general,Cedar Glen Depot,8,true,44

@@ -1,0 +1,6 @@
+weather_id,region,condition,wind_mph,precipitation_inches,lightning_risk,updated_at
+CWX-01,North,clear,7,0.00,low,2026-08-09T10:15:00-04:00
+CWX-02,Central,partly cloudy,9,0.00,low,2026-08-09T10:15:00-04:00
+CWX-03,South,clear,6,0.00,low,2026-08-09T10:15:00-04:00
+CWX-04,East,overcast,11,0.02,low,2026-08-09T10:15:00-04:00
+CWX-05,West,clear,8,0.00,low,2026-08-09T10:15:00-04:00

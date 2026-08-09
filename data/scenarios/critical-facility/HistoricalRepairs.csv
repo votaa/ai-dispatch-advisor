@@ -1,0 +1,7 @@
+repair_id,incident_type,region,average_duration_minutes,crew_type,notes
+FREP-01,downed wire,North,105,line,Hospital backup duration requires expedited isolation
+FREP-02,failed switch,East,150,line,Water treatment load transfer may be available
+FREP-03,transformer fire,Central,220,line,Emergency operations center has limited generator runtime
+FREP-04,tree limb,South,85,vegetation,Senior care facility access must remain clear
+FREP-05,cable fault,East,205,underground,Communications redundancy is degraded
+FREP-06,general outage,West,75,general,Noncritical incident provides prioritization contrast

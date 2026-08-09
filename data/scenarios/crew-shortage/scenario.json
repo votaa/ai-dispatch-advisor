@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "crew-shortage",
+  "name": "Crew Shortage",
+  "description": "Resource-constrained operations with most qualified crews already assigned and limited remaining coverage.",
+  "event_type": "crew_shortage",
+  "expected_conditions": [
+    "Most line and vegetation crews are already assigned",
+    "At least one high-priority incident has no immediately suitable crew",
+    "Dispatchers must weigh deferral, reassignment, or mutual aid",
+    "The remaining general-purpose crew is staged pending supervisor release"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  }
+}

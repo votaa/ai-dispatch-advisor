@@ -6,19 +6,17 @@ This document defines the data model direction for the AI Dispatch Advisor. It d
 
 ## Current Implementation State
 
-The Developer Bootstrap MVP uses synthetic CSV files as source data:
+The Developer Bootstrap MVP uses four synthetic scenarios as source data:
 
 ```text
-data/scenarios/base/
-  scenario.json
-  PendingIncidents.csv
-  Crews.csv
-  Assignments.csv
-  HistoricalRepairs.csv
-  Weather.csv
-  CriticalFacilities.csv
-  Topology.csv
+data/scenarios/
+  base/
+  storm/
+  crew-shortage/
+  critical-facility/
 ```
+
+Each directory contains a `scenario.json` manifest and the seven CSV domain files listed below. The scenarios cover routine blue-sky operations, high-volume storm response, constrained crew capacity, and critical-facility prioritization.
 
 The repository also includes an initial SQLite schema:
 

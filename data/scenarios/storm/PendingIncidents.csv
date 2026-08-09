@@ -1,0 +1,11 @@
+incident_id,region,municipality,feeder,severity,status,customers_out,critical_facility,hazard,required_skill,age_minutes,latitude,longitude,etr
+STM-2001,North,Millbrook,FDR-12,critical,assigned,4380,true,downed wire,line,104,41.812,-73.694,2026-08-09T13:40:00-04:00
+STM-2002,Central,Fairview,FDR-07,critical,assigned,3260,false,tree on primary,vegetation,88,41.701,-73.921,2026-08-09T14:20:00-04:00
+STM-2003,South,Lakemont,FDR-21,high,unassigned,1880,false,flooded road,general,73,41.511,-73.781,2026-08-09T15:10:00-04:00
+STM-2004,East,Riverton,FDR-03,critical,assigned,2710,true,substation flooding,line,121,41.646,-73.543,2026-08-09T16:00:00-04:00
+STM-2005,West,Oak Ridge,FDR-16,high,unassigned,1540,false,downed trees,vegetation,66,41.612,-74.031,2026-08-09T15:35:00-04:00
+STM-2006,North,Hudson Falls,FDR-18,high,unassigned,1320,false,blocked access,line,59,41.882,-73.812,2026-08-09T14:50:00-04:00
+STM-2007,Central,Briarcliff,FDR-09,critical,assigned,2950,true,transformer fire,line,47,41.733,-73.842,2026-08-09T15:05:00-04:00
+STM-2008,South,Greystone,FDR-25,high,unassigned,1130,true,tree on primary,vegetation,82,41.466,-73.902,2026-08-09T16:25:00-04:00
+STM-2009,East,Pine Harbor,FDR-05,medium,unassigned,740,false,lightning damage,line,38,41.691,-73.481,2026-08-09T14:45:00-04:00
+STM-2010,West,Cedar Glen,FDR-19,medium,monitoring,390,false,none,general,29,41.578,-74.112,2026-08-09T13:55:00-04:00

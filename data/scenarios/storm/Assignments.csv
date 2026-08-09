@@ -1,0 +1,5 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+SASG-6001,STM-2001,SC-01,active,2026-08-09T10:22:00-04:00,Downed-wire isolation and repair
+SASG-6002,STM-2002,SC-02,active,2026-08-09T10:31:00-04:00,Primary vegetation removal
+SASG-6003,STM-2004,SC-04,active,2026-08-09T10:18:00-04:00,Substation flood assessment and isolation
+SASG-6004,STM-2007,SC-09,active,2026-08-09T10:44:00-04:00,Transformer fire response

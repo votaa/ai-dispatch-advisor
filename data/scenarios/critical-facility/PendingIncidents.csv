@@ -1,0 +1,7 @@
+incident_id,region,municipality,feeder,severity,status,customers_out,critical_facility,hazard,required_skill,age_minutes,latitude,longitude,etr
+CFI-4001,North,Millbrook,FDR-12,critical,unassigned,840,true,downed wire,line,44,41.812,-73.694,2026-08-09T13:20:00-04:00
+CFI-4002,East,Riverton,FDR-03,critical,assigned,520,true,failed switch,line,69,41.646,-73.543,2026-08-09T14:05:00-04:00
+CFI-4003,Central,Briarcliff,FDR-09,critical,unassigned,310,true,transformer fire,line,31,41.733,-73.842,2026-08-09T13:45:00-04:00
+CFI-4004,South,Greystone,FDR-25,high,unassigned,190,true,tree limb,vegetation,57,41.466,-73.902,2026-08-09T14:30:00-04:00
+CFI-4005,East,Pine Harbor,FDR-05,critical,assigned,260,true,cable fault,underground,38,41.691,-73.481,2026-08-09T15:10:00-04:00
+CFI-4006,West,Oak Ridge,FDR-16,medium,unassigned,1260,false,none,general,24,41.612,-74.031,2026-08-09T12:50:00-04:00

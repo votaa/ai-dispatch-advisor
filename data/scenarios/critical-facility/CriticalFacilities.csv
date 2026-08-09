@@ -1,0 +1,6 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FFAC-01,Millbrook Regional Hospital,hospital,North,Millbrook,FDR-12,critical
+FFAC-02,Riverton Water Treatment,water,East,Riverton,FDR-03,critical
+FFAC-03,Briarcliff Emergency Operations Center,emergency_services,Central,Briarcliff,FDR-09,critical
+FFAC-04,Greystone Senior Care,healthcare,South,Greystone,FDR-25,high
+FFAC-05,Pine Harbor Communications Center,communications,East,Pine Harbor,FDR-05,critical

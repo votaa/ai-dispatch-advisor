@@ -1,0 +1,13 @@
+asset_id,asset_type,feeder,parent_asset_id,region,normal_status
+SSUB-01,substation,FDR-12,,North,energized
+SSW-1201,switch,FDR-12,SSUB-01,North,open
+STR-1209,transformer,FDR-12,SSW-1201,North,de-energized
+SSUB-02,substation,FDR-07,,Central,energized
+SSW-0702,switch,FDR-07,SSUB-02,Central,open
+STR-0714,transformer,FDR-07,SSW-0702,Central,de-energized
+SSUB-03,substation,FDR-03,,East,de-energized
+SSW-0306,switch,FDR-03,SSUB-03,East,open
+STR-0311,transformer,FDR-03,SSW-0306,East,de-energized
+SSUB-04,substation,FDR-09,,Central,energized
+SSW-0904,switch,FDR-09,SSUB-04,Central,open
+STR-0920,transformer,FDR-09,SSW-0904,Central,de-energized

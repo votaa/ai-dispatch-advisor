@@ -1,0 +1,5 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+CASG-7001,CRS-3001,CS-01,active,2026-08-09T10:12:00-04:00,Critical downed-wire response
+CASG-7002,CRS-3002,CS-02,active,2026-08-09T10:26:00-04:00,Vegetation removal on primary
+CASG-7003,CRS-3004,CS-04,active,2026-08-09T10:08:00-04:00,Underground cable fault isolation
+CASG-7004,CRS-3006,CS-05,active,2026-08-09T10:35:00-04:00,Equipment replacement in progress

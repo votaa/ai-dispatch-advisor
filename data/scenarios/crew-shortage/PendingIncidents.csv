@@ -1,0 +1,8 @@
+incident_id,region,municipality,feeder,severity,status,customers_out,critical_facility,hazard,required_skill,age_minutes,latitude,longitude,etr
+CRS-3001,North,Millbrook,FDR-12,critical,assigned,2180,true,downed wire,line,96,41.812,-73.694,2026-08-09T15:30:00-04:00
+CRS-3002,Central,Fairview,FDR-07,high,assigned,1240,false,tree on primary,vegetation,74,41.701,-73.921,2026-08-09T14:55:00-04:00
+CRS-3003,South,Lakemont,FDR-21,high,unassigned,980,false,broken crossarm,line,61,41.511,-73.781,2026-08-09T16:10:00-04:00
+CRS-3004,East,Riverton,FDR-03,critical,assigned,1760,true,cable fault,underground,83,41.646,-73.543,2026-08-09T17:05:00-04:00
+CRS-3005,West,Oak Ridge,FDR-16,medium,unassigned,460,false,tree limb,vegetation,42,41.612,-74.031,2026-08-09T15:45:00-04:00
+CRS-3006,North,Hudson Falls,FDR-18,medium,assigned,610,false,equipment failure,line,55,41.882,-73.812,2026-08-09T16:25:00-04:00
+CRS-3007,Central,Briarcliff,FDR-09,low,monitoring,140,false,none,general,21,41.733,-73.842,2026-08-09T14:10:00-04:00

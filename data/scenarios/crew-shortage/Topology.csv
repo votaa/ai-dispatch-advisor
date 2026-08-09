@@ -1,0 +1,10 @@
+asset_id,asset_type,feeder,parent_asset_id,region,normal_status
+CSUB-01,substation,FDR-12,,North,energized
+CSW-1201,switch,FDR-12,CSUB-01,North,open
+CTR-1209,transformer,FDR-12,CSW-1201,North,de-energized
+CSUB-02,substation,FDR-07,,Central,energized
+CSW-0702,switch,FDR-07,CSUB-02,Central,open
+CTR-0714,transformer,FDR-07,CSW-0702,Central,de-energized
+CSUB-03,substation,FDR-03,,East,energized
+CSW-0306,switch,FDR-03,CSUB-03,East,open
+CTR-0311,transformer,FDR-03,CSW-0306,East,de-energized

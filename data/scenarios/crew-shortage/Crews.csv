@@ -1,0 +1,6 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+CS-01,Limited Line Alpha,North,assigned,line,Millbrook Service Center,3,true,17
+CS-02,Limited Vegetation Bravo,Central,assigned,vegetation,Fairview Yard,4,true,25
+CS-03,Limited General Charlie,South,staged,general,Lakemont Substation,5,false,34
+CS-04,Limited Underground Delta,East,assigned,underground,Riverton Staging Lot,4,false,22
+CS-05,Limited Line Echo,North,assigned,line,Hudson Falls Yard,2,true,39

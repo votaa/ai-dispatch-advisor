@@ -1,0 +1,7 @@
+repair_id,incident_type,region,average_duration_minutes,crew_type,notes
+CREP-01,downed wire,North,120,line,Qualified line crew required
+CREP-02,tree on primary,Central,145,vegetation,Vegetation crew required before line inspection
+CREP-03,broken crossarm,South,165,line,Line construction capability required
+CREP-04,cable fault,East,230,underground,Specialized underground crew required
+CREP-05,tree limb,West,90,vegetation,May be held until vegetation crew is released
+CREP-06,equipment failure,North,150,line,Replacement material availability affects duration

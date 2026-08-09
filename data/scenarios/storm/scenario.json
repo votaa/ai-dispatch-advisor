@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "storm",
+  "name": "Major Storm Operations",
+  "description": "Severe thunderstorm operations with widespread outages, access hazards, and elevated crew utilization.",
+  "event_type": "storm",
+  "expected_conditions": [
+    "High outage volume across all operating regions",
+    "Strong winds, heavy precipitation, and lightning hazards",
+    "Multiple crews already assigned to restoration work",
+    "Several critical facilities affected"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  }
+}

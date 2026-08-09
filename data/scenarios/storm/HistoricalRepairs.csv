@@ -1,0 +1,7 @@
+repair_id,incident_type,region,average_duration_minutes,crew_type,notes
+SREP-01,downed wire,North,145,line,Storm access and safety isolation extend repair duration
+SREP-02,tree on primary,Central,175,vegetation,Vegetation removal required before line work
+SREP-03,substation flooding,East,260,line,Pumping and equipment inspection required
+SREP-04,transformer fire,Central,235,line,Replacement equipment may be required
+SREP-05,lightning damage,East,155,line,Patrol required to locate damaged equipment
+SREP-06,downed trees,West,130,vegetation,Road clearance coordination may be required

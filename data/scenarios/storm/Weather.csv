@@ -1,0 +1,6 @@
+weather_id,region,condition,wind_mph,precipitation_inches,lightning_risk,updated_at
+SWX-01,North,severe thunderstorms,52,1.34,high,2026-08-09T10:15:00-04:00
+SWX-02,Central,heavy thunderstorms,47,1.58,high,2026-08-09T10:15:00-04:00
+SWX-03,South,torrential rain,38,2.12,medium,2026-08-09T10:15:00-04:00
+SWX-04,East,flash flooding,41,2.46,high,2026-08-09T10:15:00-04:00
+SWX-05,West,damaging wind gusts,56,0.94,medium,2026-08-09T10:15:00-04:00

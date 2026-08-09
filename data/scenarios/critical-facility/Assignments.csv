@@ -1,0 +1,3 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+FASG-8001,CFI-4002,FC-05,active,2026-08-09T10:14:00-04:00,Water treatment feeder switch replacement
+FASG-8002,CFI-4005,FC-04,active,2026-08-09T10:28:00-04:00,Communications center cable fault isolation

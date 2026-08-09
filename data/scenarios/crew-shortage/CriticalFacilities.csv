@@ -1,0 +1,4 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+CFAC-01,Millbrook Regional Hospital,hospital,North,Millbrook,FDR-12,critical
+CFAC-02,Riverton Water Treatment,water,East,Riverton,FDR-03,critical
+CFAC-03,Briarcliff Emergency Operations Center,emergency_services,Central,Briarcliff,FDR-09,critical

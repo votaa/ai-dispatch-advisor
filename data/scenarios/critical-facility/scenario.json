@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "critical-facility",
+  "name": "Critical Facility Outages",
+  "description": "Priority restoration operations involving hospital, water, emergency-services, and communications facilities.",
+  "event_type": "critical_facility",
+  "expected_conditions": [
+    "Multiple critical facilities are affected simultaneously",
+    "Public-safety impact outweighs raw customer-count ordering",
+    "Qualified crews remain available for dispatcher comparison",
+    "Explanations should surface critical-facility impact"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  }
+}

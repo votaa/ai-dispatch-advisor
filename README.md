@@ -85,10 +85,14 @@ docker compose up
 Synthetic demo data lives under:
 
 ```text
-data/scenarios/base/
+data/scenarios/
+  base/
+  storm/
+  crew-shortage/
+  critical-facility/
 ```
 
-Current files:
+Each scenario contains:
 
 - `scenario.json` (scenario metadata and CSV inventory)
 - `PendingIncidents.csv`
@@ -99,7 +103,7 @@ Current files:
 - `CriticalFacilities.csv`
 - `Topology.csv`
 
-For demo scenario changes, edit or duplicate the CSV files. Future iterations can add scenario selection through an environment variable or UI control.
+The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. The backend can load a scenario selected through `AIDA_DEMO_SCENARIO` at startup; a future iteration can add runtime API or UI selection.
 
 The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The current backend does not yet load or validate the manifest.
 
