@@ -4,7 +4,7 @@
 
 This document defines the metadata contract for synthetic AI Dispatch Advisor demo scenarios. Each scenario directory should contain one `scenario.json` manifest that identifies the scenario, describes its operating conditions, and inventories the CSV files that belong to it.
 
-The backend scenario service loads and validates this contract for scenario discovery and active-scenario inspection. Runtime scenario activation and frontend selection remain separate implementation work.
+The backend scenario service loads and validates this contract for discovery, active-scenario inspection, and controlled process-local activation. Frontend scenario selection remains separate implementation work.
 
 ## Location and Naming
 
@@ -108,7 +108,7 @@ A conforming version `1.0` manifest must meet these rules:
 - CSV headers conform to the domain definitions in the data model.
 - Identifiers are unique within their domain, and assignment references resolve to existing incident and crew identifiers.
 
-The backend scenario service automatically enforces these rules when serving `GET /api/scenarios` and `GET /api/scenarios/active`. A validation failure prevents the endpoint from presenting the affected scenario as valid and returns structured error details.
+The backend scenario service automatically enforces these rules when serving `GET /api/scenarios`, `GET /api/scenarios/active`, and `PUT /api/scenarios/active`. A validation failure prevents activation, preserves the current scenario, and returns structured error details.
 
 ## Change Management
 

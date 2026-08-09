@@ -28,7 +28,7 @@ def test_scenario_endpoints_list_and_identify_active_scenario() -> None:
 
     active_response = client.get("/api/scenarios/active")
     assert active_response.status_code == 200
-    assert active_response.json()["scenario_id"] == data_loader.DEFAULT_SCENARIO
+    assert active_response.json()["scenario_id"] == data_loader.get_active_scenario()
     assert active_response.json()["is_active"] is True
 
 
@@ -119,7 +119,7 @@ def test_service_reports_unknown_assignment_reference(tmp_path: Path) -> None:
 
 
 def test_active_endpoint_returns_structured_not_found_error(monkeypatch) -> None:
-    monkeypatch.setattr(data_loader, "DEFAULT_SCENARIO", "does-not-exist")
+    monkeypatch.setattr(data_loader, "_active_scenario_id", "does-not-exist")
 
     response = client.get("/api/scenarios/active")
 
@@ -144,7 +144,7 @@ def test_active_endpoint_returns_structured_validation_error(tmp_path: Path, mon
     shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
     (scenario_directory / "Crews.csv").unlink()
     monkeypatch.setattr(data_loader, "DATA_ROOT", tmp_path)
-    monkeypatch.setattr(data_loader, "DEFAULT_SCENARIO", "base")
+    monkeypatch.setattr(data_loader, "_active_scenario_id", "base")
 
     response = client.get("/api/scenarios/active")
 
@@ -157,3 +157,70 @@ def test_active_endpoint_returns_structured_validation_error(tmp_path: Path, mon
             "details": [{"location": "Crews.csv", "message": "Required CSV file is missing"}],
         }
     }
+
+
+def test_runtime_activation_switches_loaded_scenario_and_dashboard_metadata() -> None:
+    response = client.put("/api/scenarios/active", json={"scenario_id": "storm"})
+
+    assert response.status_code == 200
+    assert response.json()["scenario_id"] == "storm"
+    assert response.json()["is_active"] is True
+    assert client.get("/api/scenarios/active").json()["scenario_id"] == "storm"
+
+    incidents = client.get("/api/incidents").json()
+    assert len(incidents) == 10
+    assert all(incident["incident_id"].startswith("STM-") for incident in incidents)
+
+    dashboard = client.get("/api/dashboard").json()
+    assert dashboard["scenario"] == "storm"
+    assert dashboard["active_incidents"] == 10
+
+
+def test_invalid_runtime_activation_preserves_current_scenario() -> None:
+    response = client.put("/api/scenarios/active", json={"scenario_id": "does-not-exist"})
+
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "scenario_not_found"
+    assert client.get("/api/scenarios/active").json()["scenario_id"] == "base"
+    assert all(
+        incident["incident_id"].startswith("INC-")
+        for incident in client.get("/api/incidents").json()
+    )
+
+
+def test_decisions_and_demo_assignments_are_isolated_between_scenarios() -> None:
+    base_recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    base_event = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": "INC-1001",
+            "action": "accepted",
+            "recommendation": base_recommendation,
+        },
+    ).json()
+    assert base_event["scenario_id"] == "base"
+    assert len(client.get("/api/audit/events").json()) == 1
+
+    client.put("/api/scenarios/active", json={"scenario_id": "storm"})
+    assert client.get("/api/audit/events").json() == []
+    storm_seed_assignments = client.get("/api/assignments").json()
+    assert len(storm_seed_assignments) == 4
+    assert all(assignment["scenario_id"] == "storm" for assignment in storm_seed_assignments)
+
+    storm_recommendation = client.post("/api/optimize", json={"incident_id": "STM-2003"}).json()
+    storm_event = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": "STM-2003",
+            "action": "accepted",
+            "recommendation": storm_recommendation,
+        },
+    ).json()
+    assert storm_event["scenario_id"] == "storm"
+    assert len(client.get("/api/audit/events").json()) == 1
+    assert len(client.get("/api/assignments").json()) == 5
+
+    client.put("/api/scenarios/active", json={"scenario_id": "base"})
+    base_history = client.get("/api/audit/events").json()
+    assert [event["event_id"] for event in base_history] == [base_event["event_id"]]
+    assert len(client.get("/api/assignments").json()) == 3

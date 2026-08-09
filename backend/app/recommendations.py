@@ -93,6 +93,7 @@ def dashboard_summary(
     incidents: list[dict[str, Any]],
     crews: list[dict[str, Any]],
     assignments: list[dict[str, Any]],
+    scenario_id: str = "base",
 ) -> dict[str, Any]:
     ranked = ranked_incidents(incidents)
     active_assigned_crews = {row.get("crew_id") for row in assignments if row.get("status") == "active"}
@@ -108,6 +109,6 @@ def dashboard_summary(
             1 for row in incidents if str(row.get("severity")).lower() in {"critical", "high"}
         ),
         "top_incidents": ranked[:5],
-        "scenario": "base",
+        "scenario": scenario_id,
         "data_freshness": "Synthetic demo data loaded at backend startup",
     }

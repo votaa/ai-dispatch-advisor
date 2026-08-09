@@ -131,6 +131,7 @@ Potential response shape:
 ```json
 {
   "event_id": "EVT-0001",
+  "scenario_id": "base",
   "recommendation_id": "REC-0001",
   "incident_id": "INC-1001",
   "crew_id": "CR-01",
@@ -141,7 +142,7 @@ Potential response shape:
 }
 ```
 
-For POC use, this may be stored in memory or a local lightweight store. Production must use durable audit persistence.
+The current POC stores recommendation decisions and accepted demo assignments in local SQLite, scoped by `scenario_id`. Existing pre-migration records are assigned to the `base` scenario. Production must use durable audit persistence with enterprise identity, retention, and access controls.
 
 ## POST /api/chat
 
@@ -231,4 +232,3 @@ Tests should cover:
 - [Outage API](403_Outage_API.md)
 - [Crew API](404_Crew_API.md)
 - [Integration API](406_Integration_API.md)
-

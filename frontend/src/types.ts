@@ -47,6 +47,7 @@ export type AssignedIncident = {
 
 export type Assignment = {
   assignment_id: string;
+  scenario_id: string;
   incident_id: string;
   crew_id: string;
   status: string;
@@ -82,6 +83,7 @@ export type RecommendationActionType = "accepted" | "modified" | "deferred" | "o
 
 export type RecommendationAction = {
   event_id: string;
+  scenario_id: string;
   recommendation_id: string;
   incident_id: string;
   crew_id: string | null;

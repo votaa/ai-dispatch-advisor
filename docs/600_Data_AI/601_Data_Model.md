@@ -28,7 +28,7 @@ scripts/init_db.py
 
 The backend currently reads CSV files directly. The SQLite database can be generated locally for development, but it is not yet the active backend data source.
 
-Each scenario directory includes a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The backend scenario service discovers these manifests and validates their metadata, required files, CSV headers, identifiers, and assignment references. Runtime scenario activation is not yet implemented.
+Each scenario directory includes a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The backend scenario service validates metadata, required files, CSV headers, identifiers, and assignment references before process-local activation. Recommendation decisions and accepted demo assignments are filtered by `scenario_id` so state remains isolated while switching.
 
 ## Data Model Goals
 

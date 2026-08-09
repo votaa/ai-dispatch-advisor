@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS assignments (
 
 CREATE TABLE IF NOT EXISTS recommendation_audit_events (
   event_id TEXT PRIMARY KEY,
+  scenario_id TEXT NOT NULL,
   recommendation_id TEXT NOT NULL,
   incident_id TEXT NOT NULL,
   crew_id TEXT,
@@ -51,6 +52,7 @@ CREATE TABLE IF NOT EXISTS recommendation_audit_events (
 
 CREATE TABLE IF NOT EXISTS demo_assignments (
   assignment_id TEXT PRIMARY KEY,
+  scenario_id TEXT NOT NULL,
   incident_id TEXT NOT NULL,
   crew_id TEXT NOT NULL,
   status TEXT NOT NULL,
@@ -58,3 +60,9 @@ CREATE TABLE IF NOT EXISTS demo_assignments (
   notes TEXT NOT NULL,
   decision_event_id TEXT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_recommendation_audit_events_scenario_incident
+  ON recommendation_audit_events (scenario_id, incident_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_demo_assignments_scenario_active
+  ON demo_assignments (scenario_id, crew_id, status);

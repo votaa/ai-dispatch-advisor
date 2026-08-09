@@ -32,6 +32,7 @@ def init_store() -> None:
             """
             CREATE TABLE IF NOT EXISTS recommendation_audit_events (
               event_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
               recommendation_id TEXT NOT NULL,
               incident_id TEXT NOT NULL,
               crew_id TEXT,
@@ -46,6 +47,7 @@ def init_store() -> None:
 
             CREATE TABLE IF NOT EXISTS demo_assignments (
               assignment_id TEXT PRIMARY KEY,
+              scenario_id TEXT NOT NULL,
               incident_id TEXT NOT NULL,
               crew_id TEXT NOT NULL,
               status TEXT NOT NULL,
@@ -54,19 +56,48 @@ def init_store() -> None:
               decision_event_id TEXT NOT NULL
             );
 
-            CREATE INDEX IF NOT EXISTS idx_recommendation_audit_events_incident
-              ON recommendation_audit_events (incident_id, created_at DESC);
-
-            CREATE INDEX IF NOT EXISTS idx_demo_assignments_active
-              ON demo_assignments (crew_id, status);
             """
         )
+        _add_column_if_missing(
+            connection,
+            table="recommendation_audit_events",
+            column="scenario_id",
+            definition="TEXT NOT NULL DEFAULT 'base'",
+        )
+        _add_column_if_missing(
+            connection,
+            table="demo_assignments",
+            column="scenario_id",
+            definition="TEXT NOT NULL DEFAULT 'base'",
+        )
+        connection.executescript(
+            """
+            CREATE INDEX IF NOT EXISTS idx_recommendation_audit_events_scenario_incident
+              ON recommendation_audit_events (scenario_id, incident_id, created_at DESC);
+
+            CREATE INDEX IF NOT EXISTS idx_demo_assignments_scenario_active
+              ON demo_assignments (scenario_id, crew_id, status);
+            """
+        )
+
+
+def _add_column_if_missing(
+    connection: sqlite3.Connection,
+    *,
+    table: str,
+    column: str,
+    definition: str,
+) -> None:
+    columns = {row["name"] for row in connection.execute(f"PRAGMA table_info({table})")}
+    if column not in columns:
+        connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
 
 
 def _row_to_event(row: sqlite3.Row) -> dict[str, Any]:
     recommendation = json.loads(row["explanation_json"])
     return {
         "event_id": row["event_id"],
+        "scenario_id": row["scenario_id"],
         "recommendation_id": row["recommendation_id"],
         "incident_id": row["incident_id"],
         "crew_id": row["crew_id"],
@@ -81,6 +112,7 @@ def _row_to_event(row: sqlite3.Row) -> dict[str, Any]:
 
 def record_decision(
     *,
+    scenario_id: str,
     incident_id: str,
     action: ActionStatus,
     recommendation: dict[str, Any],
@@ -99,13 +131,14 @@ def record_decision(
         connection.execute(
             """
             INSERT INTO recommendation_audit_events (
-              event_id, recommendation_id, incident_id, crew_id, action, reason,
+              event_id, scenario_id, recommendation_id, incident_id, crew_id, action, reason,
               actor, confidence, explanation_json, created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 event_id,
+                scenario_id,
                 recommendation_id,
                 incident_id,
                 crew_id,
@@ -123,20 +156,22 @@ def record_decision(
                 """
                 SELECT assignment_id
                 FROM demo_assignments
-                WHERE crew_id = ? AND status = 'active'
+                WHERE scenario_id = ? AND crew_id = ? AND status = 'active'
                 """,
-                (crew_id,),
+                (scenario_id, crew_id),
             ).fetchone()
             if not existing:
                 connection.execute(
                     """
                     INSERT INTO demo_assignments (
-                      assignment_id, incident_id, crew_id, status, assigned_at, notes, decision_event_id
+                      assignment_id, scenario_id, incident_id, crew_id, status,
+                      assigned_at, notes, decision_event_id
                     )
-                    VALUES (?, ?, ?, 'active', ?, ?, ?)
+                    VALUES (?, ?, ?, ?, 'active', ?, ?, ?)
                     """,
                     (
                         f"ASG-DEMO-{uuid4().hex[:8].upper()}",
+                        scenario_id,
                         incident_id,
                         crew_id,
                         created_at,
@@ -147,6 +182,7 @@ def record_decision(
 
     return {
         "event_id": event_id,
+        "scenario_id": scenario_id,
         "recommendation_id": recommendation_id,
         "incident_id": incident_id,
         "crew_id": crew_id,
@@ -159,44 +195,50 @@ def record_decision(
     }
 
 
-def recent_decisions(limit: int = 25) -> list[dict[str, Any]]:
+def recent_decisions(scenario_id: str, limit: int = 25) -> list[dict[str, Any]]:
     init_store()
     with _lock, _connect() as connection:
         rows = connection.execute(
             """
             SELECT *
             FROM recommendation_audit_events
+            WHERE scenario_id = ?
             ORDER BY created_at DESC
             LIMIT ?
             """,
-            (limit,),
+            (scenario_id, limit),
         ).fetchall()
     return [_row_to_event(row) for row in rows]
 
 
-def latest_decisions_by_incident() -> dict[str, dict[str, Any]]:
+def latest_decisions_by_incident(scenario_id: str) -> dict[str, dict[str, Any]]:
     decisions: dict[str, dict[str, Any]] = {}
-    for event in recent_decisions(limit=500):
+    for event in recent_decisions(scenario_id, limit=500):
         decisions.setdefault(event["incident_id"], event)
     return decisions
 
 
-def accepted_assignments() -> list[dict[str, Any]]:
+def accepted_assignments(scenario_id: str) -> list[dict[str, Any]]:
     init_store()
     with _lock, _connect() as connection:
         rows = connection.execute(
             """
-            SELECT assignment_id, incident_id, crew_id, status, assigned_at, notes
+            SELECT assignment_id, scenario_id, incident_id, crew_id, status, assigned_at, notes
             FROM demo_assignments
-            WHERE status = 'active'
+            WHERE scenario_id = ? AND status = 'active'
             ORDER BY assigned_at ASC
-            """
+            """,
+            (scenario_id,),
         ).fetchall()
     return [dict(row) for row in rows]
 
 
-def clear_decisions() -> None:
+def clear_decisions(scenario_id: str | None = None) -> None:
     init_store()
     with _lock, _connect() as connection:
-        connection.execute("DELETE FROM demo_assignments")
-        connection.execute("DELETE FROM recommendation_audit_events")
+        if scenario_id is None:
+            connection.execute("DELETE FROM demo_assignments")
+            connection.execute("DELETE FROM recommendation_audit_events")
+        else:
+            connection.execute("DELETE FROM demo_assignments WHERE scenario_id = ?", (scenario_id,))
+            connection.execute("DELETE FROM recommendation_audit_events WHERE scenario_id = ?", (scenario_id,))

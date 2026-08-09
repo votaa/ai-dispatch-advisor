@@ -176,6 +176,9 @@ class ScenarioService:
     def active_scenario(self) -> ScenarioDescriptor:
         return self._descriptor_for(self.active_scenario_id)
 
+    def scenario(self, scenario_id: str) -> ScenarioDescriptor:
+        return self._descriptor_for(scenario_id)
+
     def _descriptor_for(self, scenario_id: str) -> ScenarioDescriptor:
         if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
             raise ScenarioServiceError(

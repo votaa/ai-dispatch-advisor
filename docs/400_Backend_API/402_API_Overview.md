@@ -64,7 +64,7 @@ The API should not:
 | Group | Current Endpoints | Purpose |
 | --- | --- | --- |
 | Health | `/health` | Local service health |
-| Scenarios | `/api/scenarios`, `/api/scenarios/active` | Validated scenario discovery and active-scenario metadata |
+| Scenarios | `GET /api/scenarios`, `GET /api/scenarios/active`, `PUT /api/scenarios/active` | Validated discovery, active metadata, and process-local activation |
 | Dashboard | `/api/dashboard` | Summary metrics and top incidents |
 | Incidents | `/api/incidents`, `/api/incidents/{incident_id}` | Active incident data |
 | Crews | `/api/crews` | Crew availability and capability |

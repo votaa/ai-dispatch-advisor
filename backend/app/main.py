@@ -58,24 +58,29 @@ class RecommendationActionRequest(BaseModel):
     note: Optional[str] = None
 
 
+class ScenarioActivationRequest(BaseModel):
+    scenario_id: str
+
+
 def _scenario_service() -> ScenarioService:
     return ScenarioService(
         data_root=data_loader.DATA_ROOT,
-        active_scenario_id=data_loader.DEFAULT_SCENARIO,
+        active_scenario_id=data_loader.get_active_scenario(),
     )
 
 
 def _active_assignments() -> list[dict]:
     seen = set()
     rows: list[dict] = []
-    for assignment in [*data_loader.assignments(), *accepted_assignments()]:
+    scenario_id = data_loader.get_active_scenario()
+    for assignment in [*data_loader.assignments(), *accepted_assignments(scenario_id)]:
         if assignment.get("status") != "active":
             continue
         key = (assignment.get("incident_id"), assignment.get("crew_id"))
         if key in seen:
             continue
         seen.add(key)
-        rows.append(assignment)
+        rows.append({**assignment, "scenario_id": assignment.get("scenario_id") or scenario_id})
     return rows
 
 
@@ -85,7 +90,7 @@ def _crew_name_map() -> dict[str, str]:
 
 def _incidents_with_state() -> list[dict]:
     assignments = _active_assignments()
-    latest_decisions = latest_decisions_by_incident()
+    latest_decisions = latest_decisions_by_incident(data_loader.get_active_scenario())
     crew_names = _crew_name_map()
     assignments_by_incident: dict[str, list[dict]] = {}
     for assignment in assignments:
@@ -162,9 +167,21 @@ def active_scenario() -> ScenarioDescriptor:
     return _scenario_service().active_scenario()
 
 
+@app.put("/api/scenarios/active")
+def activate_scenario(request: ScenarioActivationRequest) -> ScenarioDescriptor:
+    candidate = _scenario_service().scenario(request.scenario_id)
+    data_loader.set_active_scenario(candidate.scenario_id)
+    return _scenario_service().active_scenario()
+
+
 @app.get("/api/dashboard")
 def dashboard() -> dict:
-    return dashboard_summary(_incidents_with_state(), _crews_with_state(), _active_assignments())
+    return dashboard_summary(
+        _incidents_with_state(),
+        _crews_with_state(),
+        _active_assignments(),
+        scenario_id=data_loader.get_active_scenario(),
+    )
 
 
 @app.get("/api/incidents")
@@ -232,6 +249,7 @@ def recommendation_action(request: RecommendationActionRequest) -> dict:
         raise HTTPException(status_code=400, detail=f"{request.action.title()} reason is required")
 
     return record_decision(
+        scenario_id=data_loader.get_active_scenario(),
         incident_id=request.incident_id,
         action=request.action,
         reason=reason,
@@ -241,7 +259,10 @@ def recommendation_action(request: RecommendationActionRequest) -> dict:
 
 @app.get("/api/audit/events")
 def audit_events(limit: int = 25) -> list[dict]:
-    return recent_decisions(limit=max(1, min(limit, 100)))
+    return recent_decisions(
+        data_loader.get_active_scenario(),
+        limit=max(1, min(limit, 100)),
+    )
 
 
 @app.post("/api/chat")

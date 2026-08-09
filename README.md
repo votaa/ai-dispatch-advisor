@@ -103,9 +103,9 @@ Each scenario contains:
 - `CriticalFacilities.csv`
 - `Topology.csv`
 
-The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. The backend can load a scenario selected through `AIDA_DEMO_SCENARIO` at startup; a future iteration can add runtime API or UI selection.
+The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed for that backend process through the validated activation API; frontend selection is not yet implemented.
 
-The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend discovers and validates manifests and their CSV inventories through read-only scenario endpoints. Runtime scenario activation is not yet implemented.
+The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend validates a manifest and its complete CSV inventory before activating it. Runtime activation is process-local and affects every user of that POC backend instance.
 
 ## Initial API Surface
 
@@ -113,6 +113,7 @@ The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Sce
 GET  /health
 GET  /api/scenarios
 GET  /api/scenarios/active
+PUT  /api/scenarios/active
 GET  /api/dashboard
 GET  /api/incidents
 GET  /api/incidents/{incident_id}
@@ -127,7 +128,17 @@ GET  /api/audit/events
 POST /api/chat
 ```
 
-Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override decisions are persisted locally in `database/aida_decisions.db`, including a basic audit history. Accepted recommendations create local demo assignments that update incident, crew, and dashboard state. Defer and Override require a reason, while Modify can include a short note. The local SQLite database is ignored by Git and is not intended as production persistence.
+To activate a validated scenario for the running backend process:
+
+```bash
+curl -X PUT http://localhost:8000/api/scenarios/active \
+  -H "Content-Type: application/json" \
+  -d '{"scenario_id":"storm"}'
+```
+
+The active scenario resets to `AIDA_DEMO_SCENARIO` when the backend restarts. Runtime activation is currently global to the single POC backend process rather than scoped to an authenticated user session.
+
+Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override decisions are persisted locally in `database/aida_decisions.db`, including a basic audit history. Decisions and accepted demo assignments are scoped to their scenario so runtime switching does not mix operational state. Existing local rows are migrated to the `base` scenario. Defer and Override require a reason, while Modify can include a short note. The local SQLite database is ignored by Git and is not intended as production persistence.
 
 ## Repository Structure
 
