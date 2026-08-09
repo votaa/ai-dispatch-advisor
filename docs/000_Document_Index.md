@@ -122,6 +122,7 @@ Batch 3A establishes the data, AI, and optimization foundation.
 | `docs/600_Data_AI/603_AI_Recommendation_Engine.md` | Committed | Recommendation engine boundaries, AI-assisted responsibilities, Copilot direction, and evaluation |
 | `docs/600_Data_AI/604_Explainability_Model.md` | Committed | Structured explanation objects, factors, constraints, assumptions, alternatives, and confidence model |
 | `docs/600_Data_AI/605_Model_Governance.md` | Committed | Versioning, change management, evaluation, auditability, and AI governance controls |
+| `docs/600_Data_AI/606_Scenario_Manifest.md` | Drafted | Scenario metadata contract, event types, CSV inventory, and validation rules |
 
 Batch 3B establishes the enterprise integration foundation.
 

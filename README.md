@@ -90,6 +90,7 @@ data/scenarios/base/
 
 Current files:
 
+- `scenario.json` (scenario metadata and CSV inventory)
 - `PendingIncidents.csv`
 - `Crews.csv`
 - `Assignments.csv`
@@ -99,6 +100,8 @@ Current files:
 - `Topology.csv`
 
 For demo scenario changes, edit or duplicate the CSV files. Future iterations can add scenario selection through an environment variable or UI control.
+
+The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The current backend does not yet load or validate the manifest.
 
 ## Initial API Surface
 

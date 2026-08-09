@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "base",
+  "name": "Base Operations",
+  "description": "Standard blue-sky outage and crew dispatch demonstration.",
+  "event_type": "blue_sky",
+  "expected_conditions": [
+    "Normal staffing levels",
+    "Multiple active outages",
+    "No major weather constraints"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  }
+}

@@ -10,6 +10,7 @@ The Developer Bootstrap MVP uses synthetic CSV files as source data:
 
 ```text
 data/scenarios/base/
+  scenario.json
   PendingIncidents.csv
   Crews.csv
   Assignments.csv
@@ -28,6 +29,8 @@ scripts/init_db.py
 ```
 
 The backend currently reads CSV files directly. The SQLite database can be generated locally for development, but it is not yet the active backend data source.
+
+Each scenario directory should include a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The manifest is not yet loaded or validated by the backend.
 
 ## Data Model Goals
 
@@ -251,4 +254,3 @@ POC and demo data must remain fictional. It should not include:
 - [AI Recommendation Engine](603_AI_Recommendation_Engine.md)
 - [Explainability Model](604_Explainability_Model.md)
 - [Model Governance](605_Model_Governance.md)
-
