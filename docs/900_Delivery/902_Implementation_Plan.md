@@ -22,6 +22,21 @@ The current project baseline includes:
 
 This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and iterative requirement discovery.
 
+## Phase Status Overview
+
+| Phase | Status | Current Position |
+| --- | --- | --- |
+| Phase 1: POC Stabilization | In progress | Startup, sample-data consistency, backend tests, frontend build validation, and known-limitations documentation are in place. Broader empty/loading/error-state verification and the documented four-scenario browser smoke test remain. |
+| Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
+| Phase 3: Scenario Data and Demo Management | Complete | Four manifested scenarios, runtime activation, frontend selection, scenario-isolated state, validation, and deterministic fixtures are implemented. |
+| Phase 4: Backend Domain Model | Next | This is the next implementation phase. Domain entities, service boundaries, migrations, structured errors, and stronger API contracts remain pending. |
+| Phase 5: Recommendation and Optimization Engine | Pending | Deterministic POC scoring exists; configurable factors, explicit hard constraints, richer explanations, and evaluation remain pending. |
+| Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and one frontend workflow test exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
+| Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
+| Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
+| Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
+| Phase 10: Pilot Readiness | Pending | SME validation, pilot criteria, readiness reviews, release controls, and support procedures remain pending. |
+
 ## Delivery Principles
 
 Implementation should follow these principles:
@@ -38,6 +53,8 @@ Implementation should follow these principles:
 ## Phase 1: POC Stabilization
 
 Objective: make the current MVP reliable for repeated demonstrations.
+
+Status: In progress. Core stabilization is implemented; final POC verification items remain on the checklist below.
 
 Scope:
 
@@ -105,6 +122,8 @@ Exit criteria:
 
 Objective: move from demo-oriented endpoints toward a durable backend model.
 
+Status: Next phase pending.
+
 Scope:
 
 - Define persistent entities for incidents, crews, assignments, recommendations, decisions, audit events, and scenario metadata.
@@ -123,6 +142,8 @@ Exit criteria:
 ## Phase 5: Recommendation and Optimization Engine
 
 Objective: make recommendation generation explainable, testable, and configurable.
+
+Status: Pending after the Phase 4 domain and API foundation.
 
 Scope:
 
@@ -143,6 +164,8 @@ Exit criteria:
 ## Phase 6: Frontend Workflow Maturity
 
 Objective: improve the dispatcher experience from demo shell to operational workflow.
+
+Status: Pending, with scenario controls, decision history, and initial workflow-test groundwork complete.
 
 Scope:
 
@@ -165,6 +188,8 @@ Exit criteria:
 
 Objective: prepare for controlled integration with utility systems.
 
+Status: Pending.
+
 Scope:
 
 - Define adapter interfaces for OMS, GIS, SCADA/DMS, crew management, and weather data.
@@ -183,6 +208,8 @@ Exit criteria:
 ## Phase 8: Security, IAM, and Audit
 
 Objective: add enterprise controls required for pilot readiness.
+
+Status: Pending, with local POC decision-audit persistence already implemented.
 
 Scope:
 
@@ -205,6 +232,8 @@ Exit criteria:
 
 Objective: make the system deployable and supportable beyond a local laptop.
 
+Status: Pending, with basic health, CI, Docker, and local runbook foundations already present.
+
 Scope:
 
 - Add structured logging.
@@ -225,6 +254,8 @@ Exit criteria:
 
 Objective: prepare the application for controlled utility pilot evaluation.
 
+Status: Pending.
+
 Scope:
 
 - Validate workflows with dispatch SMEs.
@@ -241,22 +272,53 @@ Exit criteria:
 - Pilot workflows are tested.
 - Release, support, and escalation procedures are in place.
 
-## Workstream Sequencing
+## Implementation Checklist and Next Sequence
 
-Completed near-term foundation:
+### Completed Foundation
 
-1. Make Accept, Modify, Defer, and Override demo-functional.
-2. Add decision persistence and audit event capture.
-3. Add scenario data management.
+- [x] Establish the React, FastAPI, synthetic-data, SQLite, CI, and Docker bootstrap.
+- [x] Implement Accept, Modify, Defer, and Override with required reasons where applicable.
+- [x] Persist scenario-scoped decision events and accepted demo assignments in local SQLite.
+- [x] Reflect accepted assignments in incident, crew, assignment, and dashboard state.
+- [x] Provide four version-controlled scenarios with manifests and complete CSV inventories.
+- [x] Add runtime scenario activation, frontend selection, and a recorded-decision switch warning.
+- [x] Validate scenario manifests, CSV schemas, identifiers, references, and crew-assignment consistency.
+- [x] Add deterministic recommendation fixtures for all four scenarios.
+- [x] Add initial frontend scenario-switch workflow coverage.
+- [x] Align product, UX, API, frontend, data, audit, test, implementation, and runbook documentation with Phases 2 and 3.
 
-Recommended next sequence:
+### Phase 1 Closure
 
-1. Strengthen backend domain models and API tests.
-2. Improve recommendation scoring and explanation structure.
-3. Expand frontend workflow tests.
-4. Prepare mock integration adapters.
+- [x] Confirm local frontend and backend startup paths.
+- [x] Add core backend API and scenario tests.
+- [x] Add frontend build validation and an initial workflow test.
+- [x] Correct known scenario data inconsistencies.
+- [x] Document current POC limitations and troubleshooting guidance.
+- [ ] Complete and record the manual four-scenario browser smoke test in the runbook workflow.
+- [ ] Verify useful empty, loading, and error states across every primary page.
+- [ ] Record any new smoke-test findings in `docs/004_POC_Feedback_Log.md` and resolve or defer them explicitly.
 
-This sequence preserves demo value while building toward the architecture already documented.
+### Phase 4: Next Implementation Phase
+
+- [ ] Confirm the persistence boundary between version-controlled scenario data and mutable operational entities.
+- [ ] Define explicit backend entities for incidents, crews, assignments, recommendations, decisions, audit events, and scenario metadata.
+- [ ] Introduce service-layer boundaries instead of composing domain state directly in API handlers.
+- [ ] Add Pydantic request and response models for the core API surface.
+- [ ] Select and document a database migration approach.
+- [ ] Add structured domain and validation errors consistently across core endpoints.
+- [ ] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
+- [ ] Update architecture, API, and data documentation for the implemented Phase 4 design.
+
+### Later Pending Phases
+
+- [ ] Phase 5: strengthen configurable recommendation scoring, constraints, explanations, uncertainty, and evaluation.
+- [ ] Phase 6: mature dispatcher navigation, filtering, comparison, detail, accessibility, and frontend test coverage.
+- [ ] Phase 7: implement enterprise integration adapter contracts, mocks, quality metadata, and failure handling.
+- [ ] Phase 8: implement authentication, role authorization, enterprise audit controls, configuration protection, and security tests.
+- [ ] Phase 9: add structured logs, readiness, metrics, hardened deployment, environment configuration, and operational support tooling.
+- [ ] Phase 10: complete SME validation, pilot success criteria, readiness reviews, release controls, rollback, and support procedures.
+
+The sequence remains Phase 1 closure, Phase 4 backend foundations, Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
 
 ## Definition of Done
 

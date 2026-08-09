@@ -150,7 +150,7 @@ Batch 4B establishes the delivery governance foundation.
 | Document | Status | Purpose |
 | --- | --- | --- |
 | `docs/900_Delivery/901_Test_Strategy.md` | Committed | Test levels, quality gates, scenario data, recommendation validation, and automation roadmap |
-| `docs/900_Delivery/902_Implementation_Plan.md` | Committed | Implementation phases, sequencing, definition of done, delivery risks, and documentation revision cycle |
+| `docs/900_Delivery/902_Implementation_Plan.md` | Committed | Phase status, completed and pending checklist, sequencing, definition of done, delivery risks, and documentation revision cycle |
 | `docs/900_Delivery/903_Release_Management.md` | Committed | Versioning, branching, release types, CI gates, rollback, release notes, and approvals |
 | `docs/900_Delivery/904_Runbook.md` | Committed | Local POC startup, validation, troubleshooting, demo checklist, shutdown, and future runbook areas |
 
