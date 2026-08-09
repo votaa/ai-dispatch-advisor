@@ -64,6 +64,7 @@ The API should not:
 | Group | Current Endpoints | Purpose |
 | --- | --- | --- |
 | Health | `/health` | Local service health |
+| Scenarios | `/api/scenarios`, `/api/scenarios/active` | Validated scenario discovery and active-scenario metadata |
 | Dashboard | `/api/dashboard` | Summary metrics and top incidents |
 | Incidents | `/api/incidents`, `/api/incidents/{incident_id}` | Active incident data |
 | Crews | `/api/crews` | Crew availability and capability |
@@ -124,7 +125,7 @@ The target API should standardize error responses:
 }
 ```
 
-Current MVP uses FastAPI default error responses.
+Most current MVP endpoints use FastAPI default error responses. The read-only scenario service establishes the initial structured error contract for missing scenario configuration and invalid manifest or CSV data.
 
 ## Versioning Direction
 
@@ -200,4 +201,3 @@ Additional tests should be added as endpoint behavior matures.
 - [Crew API](404_Crew_API.md)
 - [Recommendation API](405_Recommendation_API.md)
 - [Integration API](406_Integration_API.md)
-

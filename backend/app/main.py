@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Literal, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from . import data_loader
@@ -14,6 +15,7 @@ from .decision_store import (
     record_decision,
 )
 from .recommendations import dashboard_summary, ranked_incidents, recommend_assignment
+from .scenario_service import ScenarioDescriptor, ScenarioService, ScenarioServiceError
 
 
 app = FastAPI(
@@ -31,6 +33,14 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(ScenarioServiceError)
+async def scenario_service_error_handler(
+    _request: Request,
+    exc: ScenarioServiceError,
+) -> JSONResponse:
+    return JSONResponse(status_code=exc.status_code, content=exc.response_content())
+
+
 class OptimizeRequest(BaseModel):
     incident_id: Optional[str] = None
 
@@ -46,6 +56,13 @@ class RecommendationActionRequest(BaseModel):
     recommendation: dict[str, Any]
     reason: Optional[str] = None
     note: Optional[str] = None
+
+
+def _scenario_service() -> ScenarioService:
+    return ScenarioService(
+        data_root=data_loader.DATA_ROOT,
+        active_scenario_id=data_loader.DEFAULT_SCENARIO,
+    )
 
 
 def _active_assignments() -> list[dict]:
@@ -133,6 +150,16 @@ def _crews_with_state() -> list[dict]:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "ai-dispatch-advisor-api"}
+
+
+@app.get("/api/scenarios")
+def scenarios() -> list[ScenarioDescriptor]:
+    return _scenario_service().list_scenarios()
+
+
+@app.get("/api/scenarios/active")
+def active_scenario() -> ScenarioDescriptor:
+    return _scenario_service().active_scenario()
 
 
 @app.get("/api/dashboard")

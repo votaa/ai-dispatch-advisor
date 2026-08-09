@@ -105,12 +105,14 @@ Each scenario contains:
 
 The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. The backend can load a scenario selected through `AIDA_DEMO_SCENARIO` at startup; a future iteration can add runtime API or UI selection.
 
-The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The current backend does not yet load or validate the manifest.
+The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend discovers and validates manifests and their CSV inventories through read-only scenario endpoints. Runtime scenario activation is not yet implemented.
 
 ## Initial API Surface
 
 ```text
 GET  /health
+GET  /api/scenarios
+GET  /api/scenarios/active
 GET  /api/dashboard
 GET  /api/incidents
 GET  /api/incidents/{incident_id}
