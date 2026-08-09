@@ -132,6 +132,15 @@ function App() {
   async function activateScenario(scenarioId: string) {
     if (scenarioLoading || scenarioId === activeScenario?.scenario_id) return;
 
+    if (recommendationActions.length > 0) {
+      const targetScenario = scenarios.find((scenario) => scenario.scenario_id === scenarioId);
+      const shouldSwitch = window.confirm(
+        `The active scenario has recorded dispatch decisions. Switch to ${targetScenario?.name ?? scenarioId}?\n\n` +
+          "Existing decisions will remain saved under the current scenario and will reappear when you switch back."
+      );
+      if (!shouldSwitch) return;
+    }
+
     setScenarioLoading(true);
     setScenarioMessage("");
     setError("");

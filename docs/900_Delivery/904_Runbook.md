@@ -83,6 +83,7 @@ Before a stakeholder demo:
 - Confirm the browser is using `http://127.0.0.1:5173/`.
 - Refresh the dashboard and confirm outage totals display.
 - Use the scenario selector to activate the intended demo scenario and confirm the dashboard totals and active label update.
+- If the current scenario has recorded dispatch decisions, confirm that the selector warns before switching and that canceling leaves the current scenario active.
 - Open the dispatch view and confirm incidents and recommendations display.
 - Open the crew board and confirm crew data displays.
 - Open storm mode if that scenario is part of the demo.
