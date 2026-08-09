@@ -103,7 +103,7 @@ Each scenario contains:
 - `CriticalFacilities.csv`
 - `Topology.csv`
 
-The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed for that backend process through the validated activation API; frontend selection is not yet implemented.
+The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed from the frontend selector or through the validated activation API.
 
 The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend validates a manifest and its complete CSV inventory before activating it. Runtime activation is process-local and affects every user of that POC backend instance.
 

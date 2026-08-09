@@ -67,6 +67,28 @@ export type DashboardSummary = {
   data_freshness: string;
 };
 
+export type ScenarioEventType = "blue_sky" | "storm" | "crew_shortage" | "critical_facility";
+
+export type ScenarioDescriptor = {
+  schema_version: "1.0";
+  scenario_id: string;
+  name: string;
+  description: string;
+  event_type: ScenarioEventType;
+  expected_conditions: string[];
+  files: {
+    incidents: string;
+    crews: string;
+    assignments: string;
+    historical_repairs: string;
+    weather: string;
+    critical_facilities: string;
+    topology: string;
+  };
+  validation_status: "valid";
+  is_active: boolean;
+};
+
 export type Recommendation = {
   recommendation_id: string;
   incident_id: string;

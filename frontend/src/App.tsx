@@ -22,7 +22,8 @@ import type {
   Incident,
   Recommendation,
   RecommendationAction,
-  RecommendationActionType
+  RecommendationActionType,
+  ScenarioDescriptor
 } from "./types";
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
@@ -56,23 +57,38 @@ function App() {
   const [chatLoading, setChatLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<RecommendationActionType | null>(null);
   const [actionMessage, setActionMessage] = useState("");
+  const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
+  const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
+  const [scenarioLoading, setScenarioLoading] = useState(false);
+  const [scenarioMessage, setScenarioMessage] = useState("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    refreshOperationalState()
-      .then(({ incidentData }) => {
+    Promise.all([refreshOperationalState(), api.scenarios(), api.activeScenario()])
+      .then(([{ incidentData }, scenarioData, activeScenarioData]) => {
         setSelectedIncidentId(incidentData[0]?.incident_id);
+        setScenarios(scenarioData);
+        setActiveScenario(activeScenarioData);
       })
       .catch((err: Error) => setError(err.message));
   }, []);
 
   useEffect(() => {
-    api.auditEvents().then(setRecommendationActions).catch((err: Error) => setError(err.message));
-  }, []);
-
-  useEffect(() => {
-    if (!selectedIncidentId) return;
-    api.optimize(selectedIncidentId).then(setRecommendation).catch((err: Error) => setError(err.message));
+    let cancelled = false;
+    if (!selectedIncidentId) {
+      setRecommendation(null);
+      return;
+    }
+    api.optimize(selectedIncidentId)
+      .then((nextRecommendation) => {
+        if (!cancelled) setRecommendation(nextRecommendation);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [selectedIncidentId]);
 
   const selectedIncident = useMemo(
@@ -110,6 +126,34 @@ function App() {
       setChatTurns((turns) => [{ question, answer: `Unable to reach Copilot: ${message}` }, ...turns]);
     } finally {
       setChatLoading(false);
+    }
+  }
+
+  async function activateScenario(scenarioId: string) {
+    if (scenarioLoading || scenarioId === activeScenario?.scenario_id) return;
+
+    setScenarioLoading(true);
+    setScenarioMessage("");
+    setError("");
+    try {
+      const activatedScenario = await api.activateScenario(scenarioId);
+      setActiveScenario(activatedScenario);
+      setScenarios((items) =>
+        items.map((item) => ({ ...item, is_active: item.scenario_id === activatedScenario.scenario_id }))
+      );
+      setSelectedIncidentId(undefined);
+      setRecommendation(null);
+      setActionMessage("");
+      setChatTurns([]);
+
+      const { incidentData } = await refreshOperationalState();
+      setSelectedIncidentId(incidentData[0]?.incident_id);
+      setScenarioMessage(`${activatedScenario.name} activated.`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Scenario activation failed";
+      setScenarioMessage(message);
+    } finally {
+      setScenarioLoading(false);
     }
   }
 
@@ -173,13 +217,34 @@ function App() {
             <p className="eyebrow">Developer Bootstrap MVP</p>
             <h1>{navItems.find((item) => item.key === view)?.label}</h1>
           </div>
-          <div className="status-pill">
-            <span className="pulse" />
-            Synthetic scenario: base
+          <div className="scenario-selector">
+            <label htmlFor="active-scenario">
+              <span className="pulse" />
+              Synthetic scenario
+            </label>
+            <select
+              aria-label="Active synthetic scenario"
+              disabled={scenarioLoading || scenarios.length === 0}
+              id="active-scenario"
+              onChange={(event) => activateScenario(event.target.value)}
+              value={activeScenario?.scenario_id ?? ""}
+            >
+              {!activeScenario ? <option value="">Loading scenarios...</option> : null}
+              {scenarios.map((scenario) => (
+                <option key={scenario.scenario_id} value={scenario.scenario_id}>
+                  {scenario.name}
+                </option>
+              ))}
+            </select>
           </div>
         </header>
 
         {error ? <div className="error-banner">Backend unavailable: {error}</div> : null}
+        {scenarioMessage ? (
+          <div className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}>
+            {scenarioMessage}
+          </div>
+        ) : null}
 
         {view === "dashboard" && dashboard && (
           <section className="view-grid">
@@ -273,19 +338,30 @@ function App() {
         {view === "scenario" && (
           <section className="split-layout">
             <section className="panel">
-              <PanelTitle icon={Map} title="Scenario Comparison" />
-              <div className="scenario-row">
-                <strong>Base Recommendation</strong>
-                <span>{recommendation?.expected_impact ?? "Select an incident to calculate a recommendation."}</span>
-              </div>
-              <div className="scenario-row">
-                <strong>Alternative</strong>
-                <span>Hold nearest crew for critical facility response and assign next best available crew.</span>
-              </div>
-              <div className="scenario-row">
-                <strong>Tradeoff</strong>
-                <span>Improves critical facility readiness but may increase restoration time for lower-severity incidents.</span>
-              </div>
+              <PanelTitle icon={Map} title="Active Demo Scenario" />
+              {activeScenario ? (
+                <>
+                  <div className="scenario-heading">
+                    <div>
+                      <span className="scenario-type">{formatScenarioType(activeScenario.event_type)}</span>
+                      <h3>{activeScenario.name}</h3>
+                    </div>
+                    <span className="validation-badge">Validated</span>
+                  </div>
+                  <p>{activeScenario.description}</p>
+                  <h3>Expected conditions</h3>
+                  <ul className="condition-list">
+                    {activeScenario.expected_conditions.map((condition) => (
+                      <li key={condition}>{condition}</li>
+                    ))}
+                  </ul>
+                  <p className="scenario-note">
+                    Selection affects every user connected to this POC backend and resets when the backend restarts.
+                  </p>
+                </>
+              ) : (
+                <p>Loading scenario metadata...</p>
+              )}
             </section>
             <RecommendationPanel
               actionLoading={actionLoading}
@@ -364,6 +440,10 @@ function formatAction(action: RecommendationActionType) {
     overridden: "Overridden"
   };
   return labels[action];
+}
+
+function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
+  return eventType.replace(/_/g, " ");
 }
 
 function IncidentTable({

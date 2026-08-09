@@ -4,7 +4,7 @@
 
 This document defines the metadata contract for synthetic AI Dispatch Advisor demo scenarios. Each scenario directory should contain one `scenario.json` manifest that identifies the scenario, describes its operating conditions, and inventories the CSV files that belong to it.
 
-The backend scenario service loads and validates this contract for discovery, active-scenario inspection, and controlled process-local activation. Frontend scenario selection remains separate implementation work.
+The backend scenario service loads and validates this contract for discovery, active-scenario inspection, and controlled process-local activation. The frontend uses the validated scenario metadata to populate its runtime selector and active-scenario details.
 
 ## Location and Naming
 

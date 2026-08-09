@@ -5,34 +5,59 @@ import type {
   Incident,
   Recommendation,
   RecommendationAction,
-  RecommendationActionType
+  RecommendationActionType,
+  ScenarioDescriptor
 } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
-async function getJson<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`);
+type ErrorPayload = {
+  detail?: string;
+  error?: {
+    message?: string;
+    details?: Array<{ location?: string; message?: string }>;
+  };
+};
+
+async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, init);
   if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+    const payload = (await response.json().catch(() => null)) as ErrorPayload | null;
+    const message = payload?.error?.message ?? payload?.detail ?? `Request failed: ${response.status}`;
+    const issue = payload?.error?.details?.[0];
+    const issueText = issue?.message
+      ? `${issue.location ? `${issue.location}: ` : ""}${issue.message}`
+      : "";
+    throw new Error(issueText ? `${message} ${issueText}` : message);
   }
   return response.json() as Promise<T>;
 }
 
+async function getJson<T>(path: string): Promise<T> {
+  return requestJson<T>(path);
+}
+
 async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  return requestJson<T>(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  if (!response.ok) {
-    const payload = await response.json().catch(() => null);
-    const detail = payload && typeof payload.detail === "string" ? payload.detail : `Request failed: ${response.status}`;
-    throw new Error(detail);
-  }
-  return response.json() as Promise<T>;
+}
+
+async function putJson<T>(path: string, body: unknown): Promise<T> {
+  return requestJson<T>(path, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
 }
 
 export const api = {
+  scenarios: () => getJson<ScenarioDescriptor[]>("/api/scenarios"),
+  activeScenario: () => getJson<ScenarioDescriptor>("/api/scenarios/active"),
+  activateScenario: (scenarioId: string) =>
+    putJson<ScenarioDescriptor>("/api/scenarios/active", { scenario_id: scenarioId }),
   dashboard: () => getJson<DashboardSummary>("/api/dashboard"),
   incidents: () => getJson<Incident[]>("/api/incidents"),
   crews: () => getJson<Crew[]>("/api/crews"),

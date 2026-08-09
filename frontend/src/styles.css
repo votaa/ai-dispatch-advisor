@@ -13,6 +13,7 @@ body {
 }
 
 button,
+select,
 textarea {
   font: inherit;
 }
@@ -116,15 +117,40 @@ h1 {
   margin-bottom: 0;
 }
 
-.status-pill {
+.scenario-selector {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: #ffffff;
   border: 1px solid #d8e0e8;
-  border-radius: 999px;
+  border-radius: 8px;
   color: #526170;
-  padding: 8px 12px;
+  padding: 7px 8px 7px 12px;
+}
+
+.scenario-selector label {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.scenario-selector select {
+  background: #f7f9fb;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  color: #17202a;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 34px;
+  padding: 5px 30px 5px 9px;
+}
+
+.scenario-selector select:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .pulse {
@@ -139,6 +165,15 @@ h1 {
   border: 1px solid #f2b8b8;
   border-radius: 8px;
   color: #8f1d1d;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+}
+
+.success-banner {
+  background: #e8f7ec;
+  border: 1px solid #a8ddb5;
+  border-radius: 8px;
+  color: #17652a;
   margin-bottom: 18px;
   padding: 12px 14px;
 }
@@ -564,6 +599,61 @@ tbody tr:hover,
   display: grid;
   gap: 6px;
   padding: 14px 0;
+}
+
+.scenario-heading {
+  align-items: flex-start;
+  border-bottom: 1px solid #e4e9ef;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+}
+
+.scenario-heading h3 {
+  margin: 4px 0 0;
+}
+
+.scenario-type {
+  color: #607080;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.validation-badge {
+  background: #ddf7e5;
+  border-radius: 999px;
+  color: #17652a;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 9px;
+}
+
+.condition-list {
+  color: #526170;
+  display: grid;
+  gap: 8px;
+  padding-left: 20px;
+}
+
+.scenario-note {
+  background: #fff8e6;
+  border-left: 4px solid #f2b84b;
+  margin: 18px 0 0;
+  padding: 12px;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .scenario-selector {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }
 
 .copilot {

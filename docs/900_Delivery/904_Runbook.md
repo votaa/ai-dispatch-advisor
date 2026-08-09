@@ -82,6 +82,7 @@ Before a stakeholder demo:
 - Confirm the frontend and backend are both running.
 - Confirm the browser is using `http://127.0.0.1:5173/`.
 - Refresh the dashboard and confirm outage totals display.
+- Use the scenario selector to activate the intended demo scenario and confirm the dashboard totals and active label update.
 - Open the dispatch view and confirm incidents and recommendations display.
 - Open the crew board and confirm crew data displays.
 - Open storm mode if that scenario is part of the demo.
@@ -158,6 +159,7 @@ Symptoms:
 
 Actions:
 
+- Confirm the intended scenario is selected in the frontend header.
 - Review the relevant CSV files.
 - Confirm required columns were preserved.
 - Check that identifiers match across incident, crew, assignment, topology, and critical facility data.
