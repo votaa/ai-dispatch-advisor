@@ -4,7 +4,6 @@ import csv
 import json
 import random
 import re
-import shutil
 import tempfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -15,7 +14,6 @@ from zoneinfo import ZoneInfo
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-BASE_SCENARIO_DIR = REPO_ROOT / "data" / "scenarios" / "base"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "scenario-previews"
 DEFAULT_LOOKUP_PATH = REPO_ROOT / "data" / "generator-lookups" / "LongIslandMunicipalities.csv"
 LOCAL_TIMEZONE = ZoneInfo("America/New_York")
@@ -60,6 +58,7 @@ MUA_CONTRACTOR_LOCATIONS = {
     "Eastern Suffolk": ("RDAMUA16 Staging", "RDA19MUA Staging"),
 }
 DEFAULT_START_DAY_LOCATION_RATE = 0.35
+DEFAULT_CRITICAL_FACILITY_RATE = 0.04
 
 INCIDENT_HEADERS = [
     "incident_id",
@@ -96,13 +95,40 @@ ASSIGNMENT_HEADERS = [
     "assigned_at",
     "notes",
 ]
-
-REFERENCE_FILES = (
-    "HistoricalRepairs.csv",
-    "Weather.csv",
-    "CriticalFacilities.csv",
-    "Topology.csv",
-)
+HISTORICAL_REPAIR_HEADERS = [
+    "repair_id",
+    "incident_type",
+    "region",
+    "average_duration_minutes",
+    "crew_type",
+    "notes",
+]
+WEATHER_HEADERS = [
+    "weather_id",
+    "region",
+    "condition",
+    "wind_mph",
+    "precipitation_inches",
+    "lightning_risk",
+    "updated_at",
+]
+CRITICAL_FACILITY_HEADERS = [
+    "facility_id",
+    "facility_name",
+    "facility_type",
+    "region",
+    "municipality",
+    "feeder",
+    "priority_level",
+]
+TOPOLOGY_HEADERS = [
+    "asset_id",
+    "asset_type",
+    "feeder",
+    "parent_asset_id",
+    "region",
+    "normal_status",
+]
 
 
 @dataclass(frozen=True)
@@ -135,6 +161,10 @@ class GeneratedScenario:
     incidents: list[dict[str, Any]]
     crews: list[dict[str, Any]]
     assignments: list[dict[str, Any]]
+    historical_repairs: list[dict[str, Any]]
+    weather: list[dict[str, Any]]
+    critical_facilities: list[dict[str, Any]]
+    topology: list[dict[str, Any]]
     crew_types: dict[str, str]
 
     def summary(self) -> dict[str, Any]:
@@ -144,6 +174,10 @@ class GeneratedScenario:
             "crews": len(self.crews),
             "assigned_incidents": sum(row["status"] == "assigned" for row in self.incidents),
             "assignments": len(self.assignments),
+            "historical_repairs": len(self.historical_repairs),
+            "weather_observations": len(self.weather),
+            "critical_facilities": len(self.critical_facilities),
+            "topology_assets": len(self.topology),
             "crew_distribution": dict(sorted(Counter(self.crew_types.values()).items())),
             "regions": dict(sorted(Counter(row["region"] for row in self.incidents).items())),
         }
@@ -378,6 +412,157 @@ def _suffix_region(crew_id: str) -> str | None:
     return REGIONS[first_digit - 1] if 1 <= first_digit <= 4 else None
 
 
+def _generate_weather(observation_date: date, rng: random.Random) -> list[dict[str, Any]]:
+    profiles = (
+        ("thunderstorms", (25, 45), (0.30, 1.20), "high"),
+        ("heavy rain", (15, 30), (0.35, 0.95), "medium"),
+        ("light rain", (8, 20), (0.05, 0.30), "low"),
+        ("wind gusts", (22, 42), (0.00, 0.15), "low"),
+        ("overcast", (5, 18), (0.00, 0.08), "low"),
+    )
+    rows: list[dict[str, Any]] = []
+    for region in REGIONS:
+        condition, wind_range, precipitation_range, lightning_risk = rng.choice(profiles)
+        rows.append(
+            {
+                "weather_id": f"WX-{REGION_CODES[region]}-01",
+                "region": region,
+                "condition": condition,
+                "wind_mph": rng.randint(*wind_range),
+                "precipitation_inches": round(rng.uniform(*precipitation_range), 2),
+                "lightning_risk": lightning_risk,
+                "updated_at": _iso_at(observation_date, 7),
+            }
+        )
+    return rows
+
+
+def _feeders_by_region(incidents: list[dict[str, Any]]) -> dict[str, list[str]]:
+    return {
+        region: sorted({row["feeder"] for row in incidents if row["region"] == region})
+        or [f"FDR-{REGION_CODES[region]}-01"]
+        for region in REGIONS
+    }
+
+
+def _generate_critical_facilities(
+    incidents: list[dict[str, Any]],
+    municipalities: dict[str, list[dict[str, Any]]],
+    rng: random.Random,
+    facilities_per_region: int | None,
+) -> list[dict[str, Any]]:
+    facility_profiles = (
+        ("Regional Medical Center", "hospital", "critical"),
+        ("Water Treatment Facility", "water", "critical"),
+        ("Emergency Services Center", "emergency_services", "critical"),
+        ("Senior Care Center", "healthcare", "high"),
+        ("Public Safety Communications Center", "communications", "critical"),
+        ("Fire District Headquarters", "emergency_services", "high"),
+        ("Police Precinct", "emergency_services", "high"),
+        ("Emergency Shelter", "shelter", "high"),
+        ("Wastewater Pump Station", "water", "high"),
+        ("Transit Operations Center", "transportation", "high"),
+    )
+    feeders = _feeders_by_region(incidents)
+    incident_counts = Counter(row["region"] for row in incidents)
+    rows: list[dict[str, Any]] = []
+    for region in REGIONS:
+        facility_count = facilities_per_region or max(
+            1,
+            round(incident_counts[region] * DEFAULT_CRITICAL_FACILITY_RATE),
+        )
+        localities = list(municipalities[region])
+        rng.shuffle(localities)
+        for index in range(1, facility_count + 1):
+            name_suffix, facility_type, priority = facility_profiles[(index - 1) % len(facility_profiles)]
+            locality = localities[(index - 1) % len(localities)]
+            region_feeders = feeders[region]
+            feeder = region_feeders[(index - 1) % len(region_feeders)]
+            rows.append(
+                {
+                    "facility_id": f"FAC-{REGION_CODES[region]}-{index:02d}",
+                    "facility_name": f"{locality['municipality']} {name_suffix}",
+                    "facility_type": facility_type,
+                    "region": region,
+                    "municipality": locality["municipality"],
+                    "feeder": feeder,
+                    "priority_level": priority,
+                }
+            )
+    return rows
+
+
+def _generate_topology(incidents: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    feeders = _feeders_by_region(incidents)
+    for region in REGIONS:
+        for index, feeder in enumerate(feeders[region], start=1):
+            code = REGION_CODES[region]
+            substation_id = f"SUB-{code}-{index:03d}"
+            switch_id = f"SW-{code}-{index:03d}"
+            transformer_id = f"TR-{code}-{index:03d}"
+            rows.extend(
+                [
+                    {
+                        "asset_id": substation_id,
+                        "asset_type": "substation",
+                        "feeder": feeder,
+                        "parent_asset_id": "",
+                        "region": region,
+                        "normal_status": "energized",
+                    },
+                    {
+                        "asset_id": switch_id,
+                        "asset_type": "switch",
+                        "feeder": feeder,
+                        "parent_asset_id": substation_id,
+                        "region": region,
+                        "normal_status": "closed",
+                    },
+                    {
+                        "asset_id": transformer_id,
+                        "asset_type": "transformer",
+                        "feeder": feeder,
+                        "parent_asset_id": switch_id,
+                        "region": region,
+                        "normal_status": "energized",
+                    },
+                ]
+            )
+    return rows
+
+
+def _generate_historical_repairs(rng: random.Random) -> list[dict[str, Any]]:
+    profiles = (
+        ("downed wire", 118, "line", "Requires safety isolation before repair"),
+        ("burning wire", 135, "line", "Requires isolation and damaged-conductor replacement"),
+        ("tree on primary", 142, "vegetation", "Vegetation removal normally precedes line repair"),
+        ("tree limb", 95, "vegetation", "Often resolved by a vegetation crew"),
+        ("transformer fire", 210, "line", "May require equipment replacement"),
+        ("feeder lockout", 165, "line", "Includes patrol isolation and restoration switching"),
+        ("broken crossarm", 150, "line", "Requires pole-top hardware repair"),
+        ("underground cable fault", 190, "underground", "Includes fault location and cable isolation"),
+        ("damaged service drop", 75, "low_voltage", "Normally affects a single customer"),
+        ("partial outage", 65, "general", "Troubleshooter diagnosis may precede repair"),
+    )
+    rows: list[dict[str, Any]] = []
+    repair_number = 1
+    for region in REGIONS:
+        for incident_type, baseline_minutes, crew_type, notes in profiles:
+            rows.append(
+                {
+                    "repair_id": f"REP-{repair_number:03d}",
+                    "incident_type": incident_type,
+                    "region": region,
+                    "average_duration_minutes": max(30, baseline_minutes + rng.randint(-15, 20)),
+                    "crew_type": crew_type,
+                    "notes": notes,
+                }
+            )
+            repair_number += 1
+    return rows
+
+
 def generate_scenario(
     *,
     scenario_id: str,
@@ -389,6 +574,7 @@ def generate_scenario(
     dual_tree_incidents: int = 5,
     seed: int = 20260810,
     start_day_location_rate: float = DEFAULT_START_DAY_LOCATION_RATE,
+    critical_facilities_per_region: int | None = None,
     lookup_path: Path = DEFAULT_LOOKUP_PATH,
 ) -> GeneratedScenario:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
@@ -399,6 +585,8 @@ def generate_scenario(
         raise ValueError("assignment_rate must be between 0 and 1")
     if not 0 <= start_day_location_rate <= 1:
         raise ValueError("start_day_location_rate must be between 0 and 1")
+    if critical_facilities_per_region is not None and critical_facilities_per_region <= 0:
+        raise ValueError("critical_facilities_per_region must be positive")
     end_date = end_date or start_date
     rng = random.Random(seed)
     municipalities = load_municipalities(lookup_path)
@@ -464,7 +652,26 @@ def generate_scenario(
             }
         )
 
-    result = GeneratedScenario(scenario_id, incidents, crews, assignments, crew_types)
+    weather = _generate_weather(start_date, rng)
+    critical_facilities = _generate_critical_facilities(
+        incidents,
+        municipalities,
+        rng,
+        critical_facilities_per_region,
+    )
+    topology = _generate_topology(incidents)
+    historical_repairs = _generate_historical_repairs(rng)
+    result = GeneratedScenario(
+        scenario_id=scenario_id,
+        incidents=incidents,
+        crews=crews,
+        assignments=assignments,
+        historical_repairs=historical_repairs,
+        weather=weather,
+        critical_facilities=critical_facilities,
+        topology=topology,
+        crew_types=crew_types,
+    )
     validate_generated_scenario(result, assigned_incident_count, dual_tree_incidents)
     return result
 
@@ -507,6 +714,26 @@ def validate_generated_scenario(
         raise ValueError("Assigned incident count does not match the configured assignment rate")
     if expected_dual_tree_incidents is not None and sum(count == 2 for count in assignments_by_incident.values()) != expected_dual_tree_incidents:
         raise ValueError("Dual-crew incident count does not match configuration")
+    if {row["region"] for row in scenario.weather} != set(REGIONS):
+        raise ValueError("Weather observations must cover all configured regions")
+    if {row["region"] for row in scenario.critical_facilities} != set(REGIONS):
+        raise ValueError("Critical facilities must cover all configured regions")
+    if {row["region"] for row in scenario.historical_repairs} != set(REGIONS):
+        raise ValueError("Historical repairs must cover all configured regions")
+    topology_by_id = {row["asset_id"]: row for row in scenario.topology}
+    if len(topology_by_id) != len(scenario.topology):
+        raise ValueError("Generated topology asset IDs are not unique")
+    topology_feeders = {(row["region"], row["feeder"]) for row in scenario.topology}
+    required_feeders = {
+        (row["region"], row["feeder"])
+        for row in [*scenario.incidents, *scenario.critical_facilities]
+    }
+    if not required_feeders.issubset(topology_feeders):
+        raise ValueError("Topology does not cover every incident and critical-facility feeder")
+    for asset in scenario.topology:
+        parent_id = asset["parent_asset_id"]
+        if parent_id and parent_id not in topology_by_id:
+            raise ValueError(f"Topology asset {asset['asset_id']} has an unknown parent")
 
 
 def _write_csv(path: Path, headers: list[str], rows: Iterable[dict[str, Any]]) -> None:
@@ -529,8 +756,10 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
         _write_csv(temporary_path / "PendingIncidents.csv", INCIDENT_HEADERS, scenario.incidents)
         _write_csv(temporary_path / "Crews.csv", CREW_HEADERS, scenario.crews)
         _write_csv(temporary_path / "Assignments.csv", ASSIGNMENT_HEADERS, scenario.assignments)
-        for filename in REFERENCE_FILES:
-            shutil.copy2(BASE_SCENARIO_DIR / filename, temporary_path / filename)
+        _write_csv(temporary_path / "HistoricalRepairs.csv", HISTORICAL_REPAIR_HEADERS, scenario.historical_repairs)
+        _write_csv(temporary_path / "Weather.csv", WEATHER_HEADERS, scenario.weather)
+        _write_csv(temporary_path / "CriticalFacilities.csv", CRITICAL_FACILITY_HEADERS, scenario.critical_facilities)
+        _write_csv(temporary_path / "Topology.csv", TOPOLOGY_HEADERS, scenario.topology)
         manifest = {
             "schema_version": "1.0",
             "scenario_id": scenario.scenario_id,

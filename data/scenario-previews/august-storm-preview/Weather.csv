@@ -1,7 +1,5 @@
 weather_id,region,condition,wind_mph,precipitation_inches,lightning_risk,updated_at
-WX-01,North,thunderstorms,34,0.42,high,2026-08-02T13:05:00-04:00
-WX-02,Central,heavy rain,22,0.68,medium,2026-08-02T13:05:00-04:00
-WX-03,South,light rain,14,0.18,low,2026-08-02T13:05:00-04:00
-WX-04,East,wind gusts,29,0.31,medium,2026-08-02T13:05:00-04:00
-WX-05,West,overcast,11,0.05,low,2026-08-02T13:05:00-04:00
-
+WX-QN-01,Queens-Nassau,thunderstorms,37,0.81,high,2026-08-10T07:00:00-04:00
+WX-CN-01,Central-Nassau,wind gusts,39,0.03,low,2026-08-10T07:00:00-04:00
+WX-WS-01,Western Suffolk,overcast,5,0.03,low,2026-08-10T07:00:00-04:00
+WX-ES-01,Eastern Suffolk,wind gusts,22,0.07,low,2026-08-10T07:00:00-04:00

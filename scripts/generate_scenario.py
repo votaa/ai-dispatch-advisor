@@ -15,10 +15,14 @@ sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 from app.scenario_generator import (  # noqa: E402
     ASSIGNMENT_HEADERS,
+    CRITICAL_FACILITY_HEADERS,
     CREW_HEADERS,
     DEFAULT_OUTPUT_ROOT,
     DEFAULT_START_DAY_LOCATION_RATE,
+    HISTORICAL_REPAIR_HEADERS,
     INCIDENT_HEADERS,
+    TOPOLOGY_HEADERS,
+    WEATHER_HEADERS,
     generate_scenario,
     write_scenario,
 )
@@ -41,6 +45,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--crews", type=int, default=500)
     parser.add_argument("--assignment-rate", type=float, default=0.05)
     parser.add_argument("--dual-tree-incidents", type=int, default=5)
+    parser.add_argument(
+        "--critical-facilities-per-region",
+        type=int,
+        help="Fixed facility count for each region; omit to use 4 percent of each region's incident count",
+    )
     parser.add_argument("--seed", type=int, default=20260810)
     parser.add_argument(
         "--start-day-location-rate",
@@ -64,6 +73,7 @@ def main() -> None:
         crew_count=args.crews,
         assignment_rate=args.assignment_rate,
         dual_tree_incidents=args.dual_tree_incidents,
+        critical_facilities_per_region=args.critical_facilities_per_region,
         seed=args.seed,
         start_day_location_rate=args.start_day_location_rate,
     )
@@ -74,6 +84,14 @@ def main() -> None:
     print(_csv_preview(INCIDENT_HEADERS, scenario.incidents, args.preview_rows))
     print("\nAssignments.csv preview")
     print(_csv_preview(ASSIGNMENT_HEADERS, scenario.assignments, args.preview_rows))
+    print("\nWeather.csv preview")
+    print(_csv_preview(WEATHER_HEADERS, scenario.weather, args.preview_rows))
+    print("\nCriticalFacilities.csv preview")
+    print(_csv_preview(CRITICAL_FACILITY_HEADERS, scenario.critical_facilities, args.preview_rows))
+    print("\nTopology.csv preview")
+    print(_csv_preview(TOPOLOGY_HEADERS, scenario.topology, args.preview_rows))
+    print("\nHistoricalRepairs.csv preview")
+    print(_csv_preview(HISTORICAL_REPAIR_HEADERS, scenario.historical_repairs, args.preview_rows))
     if args.write:
         print(f"\nCreated {write_scenario(scenario, args.output_root)}")
     else:

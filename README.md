@@ -148,6 +148,8 @@ Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4
 
 By default, 35% of crews start at an approved home facility and the rest use a plain municipality name to represent their last completed job. Adjust that mix with `--start-day-location-rate`. Internal, LKP, WW, and CG crews use the Hewlett, Hicksville, Brentwood, or Riverhead service location for their region; TREE crews use the corresponding Vegetation Staging Area; and MUA/CNTR crews use the configured RDA MUA locations. No generic municipality-based `Staging Area` names are generated.
 
+Each run generates all seven scenario CSVs. `Weather.csv` contains one observation per Long Island operating region. By default, `CriticalFacilities.csv` contains facilities equal to 4% of each region's actual incident count, which produces approximately 80 facilities for a 2,000-incident scenario. Use `--critical-facilities-per-region` to override the percentage with a fixed count for every region; for example, `--critical-facilities-per-region 10` produces 40 facilities. `Topology.csv` creates a substation, switch, and transformer chain for every feeder used by incidents or facilities, and `HistoricalRepairs.csv` provides repair-duration examples for every supported incident type in each region. The generator does not copy these supporting files from `base`, so a generated scenario remains geographically consistent when moved into `data/scenarios/`.
+
 ## Initial API Surface
 
 ```text

@@ -11,6 +11,7 @@ from app.scenario_generator import (
     MUA_CONTRACTOR_LOCATIONS,
     SERVICE_LOCATIONS,
     VEGETATION_LOCATIONS,
+    REGIONS,
     generate_scenario,
     load_municipalities,
     write_scenario,
@@ -30,6 +31,18 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
     assert len(scenario.assignments) == 105
     assert len({row["crew_id"] for row in scenario.assignments}) == 105
     assert all(row["assignment_id"].startswith("ASG-20260810-") for row in scenario.assignments)
+    assert len(scenario.weather) == 4
+    incident_counts = Counter(row["region"] for row in scenario.incidents)
+    expected_facility_counts = {
+        region: max(1, round(count * 0.04))
+        for region, count in incident_counts.items()
+    }
+    assert len(scenario.critical_facilities) == sum(expected_facility_counts.values()) == 80
+    assert Counter(row["region"] for row in scenario.critical_facilities) == expected_facility_counts
+    assert len(scenario.historical_repairs) == 40
+    assert {row["region"] for row in scenario.weather} == set(REGIONS)
+    assert {row["region"] for row in scenario.critical_facilities} == set(REGIONS)
+    assert {row["region"] for row in scenario.historical_repairs} == set(REGIONS)
 
     distribution = Counter(scenario.crew_types.values())
     assert distribution == {
@@ -49,6 +62,11 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
 
     incidents = {row["incident_id"]: row for row in scenario.incidents}
     crews = {row["crew_id"]: row for row in scenario.crews}
+    topology_assets = {row["asset_id"]: row for row in scenario.topology}
+    topology_feeders = {(row["region"], row["feeder"]) for row in scenario.topology}
+    assert {(row["region"], row["feeder"]) for row in scenario.incidents}.issubset(topology_feeders)
+    assert {(row["region"], row["feeder"]) for row in scenario.critical_facilities}.issubset(topology_feeders)
+    assert all(not row["parent_asset_id"] or row["parent_asset_id"] in topology_assets for row in scenario.topology)
     dual_counts = Counter(row["incident_id"] for row in scenario.assignments)
     assert sum(count == 2 for count in dual_counts.values()) == 5
 
@@ -125,6 +143,7 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
         crew_count=80,
         assignment_rate=0.1,
         dual_tree_incidents=1,
+        critical_facilities_per_region=3,
         seed=7,
     )
     target = write_scenario(scenario, tmp_path)
@@ -133,6 +152,14 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
     assert descriptor.validation_status == "valid"
     with (target / "PendingIncidents.csv").open(newline="", encoding="utf-8") as handle:
         assert len(list(csv.DictReader(handle))) == 80
+    with (target / "Weather.csv").open(newline="", encoding="utf-8") as handle:
+        assert {row["region"] for row in csv.DictReader(handle)} == set(REGIONS)
+    with (target / "CriticalFacilities.csv").open(newline="", encoding="utf-8") as handle:
+        assert len(list(csv.DictReader(handle))) == 12
+    with (target / "HistoricalRepairs.csv").open(newline="", encoding="utf-8") as handle:
+        assert len(list(csv.DictReader(handle))) == 40
+    with (target / "Topology.csv").open(newline="", encoding="utf-8") as handle:
+        assert len(list(csv.DictReader(handle))) == len(scenario.topology)
 
 
 def test_generator_refuses_to_replace_base_or_existing_output(tmp_path: Path) -> None:
