@@ -1,0 +1,7 @@
+repair_id,incident_type,region,average_duration_minutes,crew_type,notes
+REP-01,downed wire,North,118,line,Requires safety isolation before repair
+REP-02,tree on primary,Central,142,vegetation,Vegetation removal before line work
+REP-03,transformer fire,Central,210,line,May require equipment replacement
+REP-04,flooded road,North,180,line,Access delay likely during storm conditions
+REP-05,tree limb,South,95,vegetation,Often resolved by vegetation crew
+

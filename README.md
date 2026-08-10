@@ -120,6 +120,34 @@ The scenarios represent routine blue-sky operations, a major storm, constrained 
 
 The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend validates a manifest and its complete CSV inventory before activating it. Runtime activation is process-local and affects every user of that POC backend instance.
 
+### Generate synthetic Long Island scenarios
+
+The scenario generator is dry-run-first and leaves `data/scenarios/base` protected. This command creates the approved 500-crew and 2,000-incident data in memory and prints sample rows without writing files:
+
+```bash
+python scripts/generate_scenario.py \
+  --scenario-id august-storm-preview \
+  --start-date 2026-08-10
+```
+
+After reviewing the preview, add `--write` to create a new folder under `data/scenario-previews/`. The generator refuses to overwrite an existing scenario directory. Use `--output-root` to select another isolated destination.
+
+Use `--crews` and `--incidents` to set the size of each run instead of accepting the default 500 crews and 2,000 incidents:
+
+```bash
+python scripts/generate_scenario.py \
+  --scenario-id custom-event-preview \
+  --start-date 2026-08-10 \
+  --crews 300 \
+  --incidents 1200
+```
+
+The approved crew-type distribution scales proportionally to the requested crew count. Assigned incidents are calculated from `--assignment-rate`, which defaults to `0.05` (5%). Use `--dual-tree-incidents` to specify how many assigned incidents receive an additional TREE crew. For example, 1,200 incidents at the default assignment rate produce 60 assigned incidents; specifying three dual-TREE incidents produces 63 assignment records.
+
+Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`.
+
+By default, 35% of crews start at an approved home facility and the rest use a plain municipality name to represent their last completed job. Adjust that mix with `--start-day-location-rate`. Internal, LKP, WW, and CG crews use the Hewlett, Hicksville, Brentwood, or Riverhead service location for their region; TREE crews use the corresponding Vegetation Staging Area; and MUA/CNTR crews use the configured RDA MUA locations. No generic municipality-based `Staging Area` names are generated.
+
 ## Initial API Surface
 
 ```text

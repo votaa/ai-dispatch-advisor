@@ -1,0 +1,6 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-01,Millbrook Regional Hospital,hospital,North,Millbrook,FDR-12,critical
+FAC-02,Riverton Water Treatment,water,East,Riverton,FDR-03,critical
+FAC-03,Briarcliff Emergency Operations Center,emergency_services,Central,Briarcliff,FDR-09,critical
+FAC-04,Greystone Senior Care,healthcare,South,Greystone,FDR-25,high
+

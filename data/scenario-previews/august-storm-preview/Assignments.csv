@@ -1,0 +1,106 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-20260810-0001,ESD-20260810-0061,CNTR-2196,active,2026-08-10T08:26:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260810-0002,ESD-20260810-0061,TREE-2578,active,2026-08-10T08:34:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260810-0003,ESD-20260810-0133,2337,active,2026-08-10T08:59:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0004,ESD-20260810-0141,CNTR-3896,active,2026-08-10T08:06:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260810-0005,ESD-20260810-0141,TREE-3274,active,2026-08-10T08:45:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260810-0006,ESD-20260810-0187,MUA-2696,active,2026-08-10T08:22:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0007,ESD-20260810-0188,3911,active,2026-08-10T08:20:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0008,ESD-20260810-0269,WW-3986,active,2026-08-10T08:21:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0009,ESD-20260810-0286,6943,active,2026-08-10T08:45:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0010,ESD-20260810-0293,5303,active,2026-08-10T08:57:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0011,ESD-20260810-0297,5566,active,2026-08-10T08:53:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0012,ESD-20260810-0311,1493,active,2026-08-10T08:59:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0013,ESD-20260810-0334,1641,active,2026-08-10T08:31:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0014,ESD-20260810-0343,LKP-1165,active,2026-08-10T08:07:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0015,ESD-20260810-0363,1755,active,2026-08-10T08:13:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0016,ESD-20260810-0373,2592,active,2026-08-10T08:51:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0017,ESD-20260810-0401,MUA-3157,active,2026-08-10T08:17:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0018,ESD-20260810-0434,5240,active,2026-08-10T08:04:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0019,ESD-20260810-0474,WW-3612,active,2026-08-10T08:29:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0020,ESD-20260810-0486,1450,active,2026-08-10T08:09:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0021,ESD-20260810-0500,WW-1439,active,2026-08-10T08:25:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0022,ESD-20260810-0503,3277,active,2026-08-10T08:29:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0023,ESD-20260810-0519,5296,active,2026-08-10T08:36:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0024,ESD-20260810-0546,6079,active,2026-08-10T08:17:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0025,ESD-20260810-0581,MUA-4359,active,2026-08-10T08:56:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0026,ESD-20260810-0588,CNTR-2963,active,2026-08-10T08:28:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0027,ESD-20260810-0623,LKP-3652,active,2026-08-10T08:02:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0028,ESD-20260810-0626,3682,active,2026-08-10T08:09:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0029,ESD-20260810-0651,WW-2627,active,2026-08-10T08:49:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0030,ESD-20260810-0652,LKP-2941,active,2026-08-10T08:31:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0031,ESD-20260810-0679,LKP-2682,active,2026-08-10T08:48:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0032,ESD-20260810-0734,LKP-3712,active,2026-08-10T08:12:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0033,ESD-20260810-0761,6140,active,2026-08-10T08:26:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0034,ESD-20260810-0768,TREE-4448,active,2026-08-10T08:43:00-04:00,Tree crew assigned to vegetation removal
+ASG-20260810-0035,ESD-20260810-0775,5490,active,2026-08-10T08:08:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0036,ESD-20260810-0776,MUA-1733,active,2026-08-10T08:52:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260810-0037,ESD-20260810-0776,TREE-1338,active,2026-08-10T08:28:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260810-0038,ESD-20260810-0781,MUA-1263,active,2026-08-10T08:21:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260810-0039,ESD-20260810-0781,TREE-1406,active,2026-08-10T08:25:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260810-0040,ESD-20260810-0789,MUA-4127,active,2026-08-10T08:39:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0041,ESD-20260810-0848,CG-3857,active,2026-08-10T08:16:00-04:00,Crew guide assigned to lead repair resources to the incident
+ASG-20260810-0042,ESD-20260810-0866,MUA-4597,active,2026-08-10T08:56:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0043,ESD-20260810-0872,CG-2622,active,2026-08-10T08:06:00-04:00,Crew guide assigned to lead repair resources to the incident
+ASG-20260810-0044,ESD-20260810-0873,6883,active,2026-08-10T08:52:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0045,ESD-20260810-0876,5898,active,2026-08-10T08:18:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0046,ESD-20260810-0885,TREE-3314,active,2026-08-10T08:58:00-04:00,Tree crew assigned to vegetation removal
+ASG-20260810-0047,ESD-20260810-0908,6375,active,2026-08-10T08:09:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0048,ESD-20260810-0922,CNTR-2795,active,2026-08-10T08:06:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0049,ESD-20260810-0937,6227,active,2026-08-10T08:13:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0050,ESD-20260810-0946,MUA-1321,active,2026-08-10T08:52:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0051,ESD-20260810-0982,1239,active,2026-08-10T08:05:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0052,ESD-20260810-1004,TREE-4970,active,2026-08-10T08:42:00-04:00,Tree crew assigned to vegetation removal
+ASG-20260810-0053,ESD-20260810-1052,5631,active,2026-08-10T08:30:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0054,ESD-20260810-1098,LKP-1496,active,2026-08-10T08:06:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0055,ESD-20260810-1124,MUA-4139,active,2026-08-10T08:52:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0056,ESD-20260810-1135,WW-2302,active,2026-08-10T08:22:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0057,ESD-20260810-1141,WW-1133,active,2026-08-10T08:29:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0058,ESD-20260810-1158,MUA-4697,active,2026-08-10T08:52:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0059,ESD-20260810-1159,2502,active,2026-08-10T08:44:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0060,ESD-20260810-1166,4839,active,2026-08-10T08:57:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0061,ESD-20260810-1179,LKP-1456,active,2026-08-10T08:58:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0062,ESD-20260810-1180,MUA-3128,active,2026-08-10T08:21:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0063,ESD-20260810-1208,CNTR-3794,active,2026-08-10T08:36:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0064,ESD-20260810-1226,2162,active,2026-08-10T08:02:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0065,ESD-20260810-1267,MUA-4289,active,2026-08-10T08:58:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0066,ESD-20260810-1269,6960,active,2026-08-10T08:46:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0067,ESD-20260810-1276,2091,active,2026-08-10T08:20:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0068,ESD-20260810-1340,CNTR-1651,active,2026-08-10T08:20:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260810-0069,ESD-20260810-1340,TREE-1805,active,2026-08-10T08:53:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260810-0070,ESD-20260810-1341,6879,active,2026-08-10T08:23:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0071,ESD-20260810-1346,WW-1259,active,2026-08-10T08:39:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0072,ESD-20260810-1366,CNTR-3154,active,2026-08-10T08:01:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0073,ESD-20260810-1376,6918,active,2026-08-10T08:04:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0074,ESD-20260810-1400,6752,active,2026-08-10T08:47:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0075,ESD-20260810-1421,2276,active,2026-08-10T08:57:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0076,ESD-20260810-1427,5961,active,2026-08-10T08:29:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0077,ESD-20260810-1429,7191,active,2026-08-10T08:39:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0078,ESD-20260810-1430,CNTR-2072,active,2026-08-10T08:08:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0079,ESD-20260810-1436,LKP-2242,active,2026-08-10T08:16:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0080,ESD-20260810-1465,CNTR-4573,active,2026-08-10T08:06:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0081,ESD-20260810-1469,5168,active,2026-08-10T08:46:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0082,ESD-20260810-1472,6334,active,2026-08-10T08:01:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0083,ESD-20260810-1494,CNTR-4582,active,2026-08-10T08:24:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0084,ESD-20260810-1508,CG-4288,active,2026-08-10T08:56:00-04:00,Crew guide assigned to lead repair resources to the incident
+ASG-20260810-0085,ESD-20260810-1530,5868,active,2026-08-10T08:45:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0086,ESD-20260810-1600,6819,active,2026-08-10T08:52:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0087,ESD-20260810-1616,LKP-4551,active,2026-08-10T08:59:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0088,ESD-20260810-1660,6422,active,2026-08-10T08:16:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0089,ESD-20260810-1678,5655,active,2026-08-10T08:11:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0090,ESD-20260810-1683,MUA-2571,active,2026-08-10T08:56:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0091,ESD-20260810-1736,MUA-3651,active,2026-08-10T08:01:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0092,ESD-20260810-1738,CNTR-4910,active,2026-08-10T08:07:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0093,ESD-20260810-1746,1708,active,2026-08-10T08:09:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0094,ESD-20260810-1750,6971,active,2026-08-10T08:11:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0095,ESD-20260810-1777,1596,active,2026-08-10T08:18:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260810-0096,ESD-20260810-1809,MUA-3745,active,2026-08-10T08:48:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0097,ESD-20260810-1816,TREE-2124,active,2026-08-10T08:02:00-04:00,Tree crew assigned to vegetation removal
+ASG-20260810-0098,ESD-20260810-1825,5617,active,2026-08-10T08:44:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260810-0099,ESD-20260810-1829,LKP-4665,active,2026-08-10T08:58:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0100,ESD-20260810-1836,WW-4413,active,2026-08-10T08:45:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260810-0101,ESD-20260810-1841,CG-4572,active,2026-08-10T08:38:00-04:00,Crew guide assigned to lead repair resources to the incident
+ASG-20260810-0102,ESD-20260810-1882,MUA-4133,active,2026-08-10T08:47:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0103,ESD-20260810-1899,MUA-3173,active,2026-08-10T08:31:00-04:00,Repair crew assigned to primary restoration
+ASG-20260810-0104,ESD-20260810-1941,6310,active,2026-08-10T08:31:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260810-0105,ESD-20260810-1989,3688,active,2026-08-10T08:27:00-04:00,ESD troubleshooter assigned as first responder
