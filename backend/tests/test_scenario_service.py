@@ -20,12 +20,12 @@ def test_scenario_endpoints_list_and_identify_active_scenario() -> None:
 
     assert response.status_code == 200
     scenarios = response.json()
-    assert {scenario["scenario_id"] for scenario in scenarios} == {
-        "base",
-        "storm",
-        "crew-shortage",
-        "critical-facility",
+    expected_scenario_ids = {
+        path.name
+        for path in data_loader.DATA_ROOT.iterdir()
+        if path.is_dir() and not path.name.startswith(".")
     }
+    assert {scenario["scenario_id"] for scenario in scenarios} == expected_scenario_ids
     assert all(scenario["validation_status"] == "valid" for scenario in scenarios)
     assert sum(scenario["is_active"] for scenario in scenarios) == 1
 
