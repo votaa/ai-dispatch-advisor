@@ -141,6 +141,7 @@ flowchart TB
 | Backend API | Containerized service, app platform, Kubernetes, or enterprise Python runtime |
 | Recommendation Service | Same backend initially; separable service if computation or scaling requires it |
 | Database | Managed relational database for operational state, audit events, and recommendation history |
+| Scenario and reference data | Controlled deployment artifact or enterprise-managed object store, database, configuration service, or integration pipeline; not a developer-writable bind mount |
 | Integration Workers | Separately scalable workers for source-system polling, subscriptions, or message handling |
 | Observability | Logs, metrics, traces, alerts, dashboards, and correlation identifiers |
 | Identity | Enterprise SSO, role claims, and access policies |
@@ -186,6 +187,7 @@ The current MVP is not production-ready. Gaps include:
 - No high availability design.
 - No release promotion workflow.
 - No backup or disaster recovery plan.
+- Scenario files are supplied through a local developer directory rather than a controlled, versioned production data source.
 
 ## Deployment Principles
 
@@ -206,4 +208,3 @@ The deployment architecture should follow these principles:
 - [Component Architecture](203_Component_Architecture.md)
 - [Integration Architecture](204_Integration_Architecture.md)
 - [Data Flow Architecture](205_Data_Flow_Architecture.md)
-

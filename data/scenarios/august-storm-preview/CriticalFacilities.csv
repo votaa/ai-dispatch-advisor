@@ -1,0 +1,81 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-QN-01,Valley Stream Regional Medical Center,hospital,Queens-Nassau,Valley Stream,FDR-QN-01,critical
+FAC-QN-02,Elmont Water Treatment Facility,water,Queens-Nassau,Elmont,FDR-QN-02,critical
+FAC-QN-03,Floral Park Emergency Services Center,emergency_services,Queens-Nassau,Floral Park,FDR-QN-03,critical
+FAC-QN-04,Edgemere Senior Care Center,healthcare,Queens-Nassau,Edgemere,FDR-QN-04,high
+FAC-QN-05,Far Rockaway Public Safety Communications Center,communications,Queens-Nassau,Far Rockaway,FDR-QN-05,critical
+FAC-QN-06,Cedarhurst Fire District Headquarters,emergency_services,Queens-Nassau,Cedarhurst,FDR-QN-06,high
+FAC-QN-07,Woodmere Police Precinct,emergency_services,Queens-Nassau,Woodmere,FDR-QN-07,high
+FAC-QN-08,Hewlett Emergency Shelter,shelter,Queens-Nassau,Hewlett,FDR-QN-08,high
+FAC-QN-09,Rockaway Park Wastewater Pump Station,water,Queens-Nassau,Rockaway Park,FDR-QN-09,high
+FAC-QN-10,Lawrence Transit Operations Center,transportation,Queens-Nassau,Lawrence,FDR-QN-10,high
+FAC-QN-11,Arverne Regional Medical Center,hospital,Queens-Nassau,Arverne,FDR-QN-11,critical
+FAC-QN-12,Inwood Water Treatment Facility,water,Queens-Nassau,Inwood,FDR-QN-12,critical
+FAC-QN-13,Valley Stream Emergency Services Center,emergency_services,Queens-Nassau,Valley Stream,FDR-QN-13,critical
+FAC-QN-14,Elmont Senior Care Center,healthcare,Queens-Nassau,Elmont,FDR-QN-14,high
+FAC-QN-15,Floral Park Public Safety Communications Center,communications,Queens-Nassau,Floral Park,FDR-QN-15,critical
+FAC-QN-16,Edgemere Fire District Headquarters,emergency_services,Queens-Nassau,Edgemere,FDR-QN-16,high
+FAC-QN-17,Far Rockaway Police Precinct,emergency_services,Queens-Nassau,Far Rockaway,FDR-QN-17,high
+FAC-QN-18,Cedarhurst Emergency Shelter,shelter,Queens-Nassau,Cedarhurst,FDR-QN-18,high
+FAC-QN-19,Woodmere Wastewater Pump Station,water,Queens-Nassau,Woodmere,FDR-QN-19,high
+FAC-QN-20,Hewlett Transit Operations Center,transportation,Queens-Nassau,Hewlett,FDR-QN-20,high
+FAC-CN-01,Massapequa Regional Medical Center,hospital,Central-Nassau,Massapequa,FDR-CN-01,critical
+FAC-CN-02,Hempstead Water Treatment Facility,water,Central-Nassau,Hempstead,FDR-CN-02,critical
+FAC-CN-03,Levittown Emergency Services Center,emergency_services,Central-Nassau,Levittown,FDR-CN-03,critical
+FAC-CN-04,Wantagh Senior Care Center,healthcare,Central-Nassau,Wantagh,FDR-CN-04,high
+FAC-CN-05,Merrick Public Safety Communications Center,communications,Central-Nassau,Merrick,FDR-CN-05,critical
+FAC-CN-06,Hicksville Fire District Headquarters,emergency_services,Central-Nassau,Hicksville,FDR-CN-06,high
+FAC-CN-07,East Meadow Police Precinct,emergency_services,Central-Nassau,East Meadow,FDR-CN-07,high
+FAC-CN-08,Mineola Emergency Shelter,shelter,Central-Nassau,Mineola,FDR-CN-08,high
+FAC-CN-09,Freeport Wastewater Pump Station,water,Central-Nassau,Freeport,FDR-CN-09,high
+FAC-CN-10,Garden City Transit Operations Center,transportation,Central-Nassau,Garden City,FDR-CN-10,high
+FAC-CN-11,Uniondale Regional Medical Center,hospital,Central-Nassau,Uniondale,FDR-CN-11,critical
+FAC-CN-12,Westbury Water Treatment Facility,water,Central-Nassau,Westbury,FDR-CN-12,critical
+FAC-CN-13,Massapequa Emergency Services Center,emergency_services,Central-Nassau,Massapequa,FDR-CN-13,critical
+FAC-CN-14,Hempstead Senior Care Center,healthcare,Central-Nassau,Hempstead,FDR-CN-14,high
+FAC-CN-15,Levittown Public Safety Communications Center,communications,Central-Nassau,Levittown,FDR-CN-15,critical
+FAC-CN-16,Wantagh Fire District Headquarters,emergency_services,Central-Nassau,Wantagh,FDR-CN-16,high
+FAC-CN-17,Merrick Police Precinct,emergency_services,Central-Nassau,Merrick,FDR-CN-17,high
+FAC-CN-18,Hicksville Emergency Shelter,shelter,Central-Nassau,Hicksville,FDR-CN-18,high
+FAC-CN-19,East Meadow Wastewater Pump Station,water,Central-Nassau,East Meadow,FDR-CN-19,high
+FAC-CN-20,Mineola Transit Operations Center,transportation,Central-Nassau,Mineola,FDR-CN-20,high
+FAC-WS-01,Copiague Regional Medical Center,hospital,Western Suffolk,Copiague,FDR-WS-01,critical
+FAC-WS-02,Amityville Water Treatment Facility,water,Western Suffolk,Amityville,FDR-WS-02,critical
+FAC-WS-03,Lindenhurst Emergency Services Center,emergency_services,Western Suffolk,Lindenhurst,FDR-WS-03,critical
+FAC-WS-04,Brentwood Senior Care Center,healthcare,Western Suffolk,Brentwood,FDR-WS-04,high
+FAC-WS-05,Bay Shore Public Safety Communications Center,communications,Western Suffolk,Bay Shore,FDR-WS-05,critical
+FAC-WS-06,Babylon Fire District Headquarters,emergency_services,Western Suffolk,Babylon,FDR-WS-06,high
+FAC-WS-07,Ronkonkoma Police Precinct,emergency_services,Western Suffolk,Ronkonkoma,FDR-WS-07,high
+FAC-WS-08,Huntington Emergency Shelter,shelter,Western Suffolk,Huntington,FDR-WS-08,high
+FAC-WS-09,Smithtown Wastewater Pump Station,water,Western Suffolk,Smithtown,FDR-WS-09,high
+FAC-WS-10,Islip Transit Operations Center,transportation,Western Suffolk,Islip,FDR-WS-10,high
+FAC-WS-11,Deer Park Regional Medical Center,hospital,Western Suffolk,Deer Park,FDR-WS-11,critical
+FAC-WS-12,Commack Water Treatment Facility,water,Western Suffolk,Commack,FDR-WS-12,critical
+FAC-WS-13,Copiague Emergency Services Center,emergency_services,Western Suffolk,Copiague,FDR-WS-13,critical
+FAC-WS-14,Amityville Senior Care Center,healthcare,Western Suffolk,Amityville,FDR-WS-14,high
+FAC-WS-15,Lindenhurst Public Safety Communications Center,communications,Western Suffolk,Lindenhurst,FDR-WS-15,critical
+FAC-WS-16,Brentwood Fire District Headquarters,emergency_services,Western Suffolk,Brentwood,FDR-WS-16,high
+FAC-WS-17,Bay Shore Police Precinct,emergency_services,Western Suffolk,Bay Shore,FDR-WS-17,high
+FAC-WS-18,Babylon Emergency Shelter,shelter,Western Suffolk,Babylon,FDR-WS-18,high
+FAC-WS-19,Ronkonkoma Wastewater Pump Station,water,Western Suffolk,Ronkonkoma,FDR-WS-19,high
+FAC-WS-20,Huntington Transit Operations Center,transportation,Western Suffolk,Huntington,FDR-WS-20,high
+FAC-ES-01,Center Moriches Regional Medical Center,hospital,Eastern Suffolk,Center Moriches,FDR-ES-01,critical
+FAC-ES-02,Manorville Water Treatment Facility,water,Eastern Suffolk,Manorville,FDR-ES-02,critical
+FAC-ES-03,Wading River Emergency Services Center,emergency_services,Eastern Suffolk,Wading River,FDR-ES-03,critical
+FAC-ES-04,Southampton Senior Care Center,healthcare,Eastern Suffolk,Southampton,FDR-ES-04,high
+FAC-ES-05,Montauk Public Safety Communications Center,communications,Eastern Suffolk,Montauk,FDR-ES-05,critical
+FAC-ES-06,Westhampton Beach Fire District Headquarters,emergency_services,Eastern Suffolk,Westhampton Beach,FDR-ES-06,high
+FAC-ES-07,Riverhead Police Precinct,emergency_services,Eastern Suffolk,Riverhead,FDR-ES-07,high
+FAC-ES-08,East Hampton Emergency Shelter,shelter,Eastern Suffolk,East Hampton,FDR-ES-08,high
+FAC-ES-09,Yaphank Wastewater Pump Station,water,Eastern Suffolk,Yaphank,FDR-ES-09,high
+FAC-ES-10,Calverton Transit Operations Center,transportation,Eastern Suffolk,Calverton,FDR-ES-10,high
+FAC-ES-11,Hampton Bays Regional Medical Center,hospital,Eastern Suffolk,Hampton Bays,FDR-ES-11,critical
+FAC-ES-12,Greenport Water Treatment Facility,water,Eastern Suffolk,Greenport,FDR-ES-12,critical
+FAC-ES-13,Center Moriches Emergency Services Center,emergency_services,Eastern Suffolk,Center Moriches,FDR-ES-13,critical
+FAC-ES-14,Manorville Senior Care Center,healthcare,Eastern Suffolk,Manorville,FDR-ES-14,high
+FAC-ES-15,Wading River Public Safety Communications Center,communications,Eastern Suffolk,Wading River,FDR-ES-15,critical
+FAC-ES-16,Southampton Fire District Headquarters,emergency_services,Eastern Suffolk,Southampton,FDR-ES-16,high
+FAC-ES-17,Montauk Police Precinct,emergency_services,Eastern Suffolk,Montauk,FDR-ES-17,high
+FAC-ES-18,Westhampton Beach Emergency Shelter,shelter,Eastern Suffolk,Westhampton Beach,FDR-ES-18,high
+FAC-ES-19,Riverhead Wastewater Pump Station,water,Eastern Suffolk,Riverhead,FDR-ES-19,high
+FAC-ES-20,East Hampton Transit Operations Center,transportation,Eastern Suffolk,East Hampton,FDR-ES-20,high

@@ -95,6 +95,23 @@ Target configuration:
 
 Configuration should be environment-specific and should not include raw secrets in source control.
 
+## Production Scenario Data Requirements
+
+The Docker Compose read-only bind mount for `data/scenarios/` is a local development and demonstration convenience. It must not be treated as the production data-distribution model. Read-only container access prevents the backend from changing host files, but a developer-writable host directory remains outside production change control and can expose incomplete, stale, or unauthorized scenario data to the running service.
+
+Pilot and production environments should obtain scenario, reference, and operational input data through a controlled deployment artifact or an enterprise-managed source such as an approved object store, database, configuration service, or integration pipeline. The production design should include:
+
+- Least-privilege service identity and access controls.
+- Versioned, immutable, or otherwise controlled data releases.
+- Schema and referential-integrity validation before publication.
+- Integrity verification, such as checksums or signed artifacts where appropriate.
+- Formal approval, promotion, rollback, and retention procedures.
+- Audit logging for data publication and activation.
+- Encryption, backup, recovery, and availability controls appropriate to the data classification.
+- Separation of synthetic training/demo scenarios from operational utility data.
+
+Production deployments should not mount a developer-writable scenario directory into the backend container, even when the mount is read-only from the container's perspective.
+
 ## Release Operations
 
 Future release process should include:
@@ -162,4 +179,3 @@ Major implementation changes should update:
 - [Deployment Architecture](../200_Architecture/206_Deployment_Architecture.md)
 - [Observability](804_Observability.md)
 - [Business Continuity](806_Business_Continuity.md)
-

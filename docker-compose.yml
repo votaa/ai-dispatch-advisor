@@ -7,6 +7,8 @@ services:
       - "8000:8000"
     environment:
       AIDA_DEMO_SCENARIO: base
+    volumes:
+      - ./data/scenarios:/app/data/scenarios:ro
 
   frontend:
     image: node:20-slim
@@ -20,4 +22,3 @@ services:
       - .:/app
     depends_on:
       - backend
-
