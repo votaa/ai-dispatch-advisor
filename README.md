@@ -6,6 +6,8 @@ The product is designed as a human-in-the-loop decision-support platform. It doe
 
 ## Current Status
 
+[![CI](https://github.com/votaa/ai-dispatch-advisor/actions/workflows/ci.yml/badge.svg)](https://github.com/votaa/ai-dispatch-advisor/actions/workflows/ci.yml)
+
 This repository now includes the Developer Bootstrap MVP:
 
 - React + TypeScript + Vite frontend
