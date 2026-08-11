@@ -12,11 +12,11 @@ The current project baseline includes:
 - Runnable React frontend.
 - Runnable FastAPI backend.
 - Synthetic CSV demo data.
-- Four validated, runtime-selectable synthetic scenarios.
+- Five currently version-controlled, dynamically discovered synthetic scenarios, including four canonical regression fixtures.
 - Scenario-isolated local SQLite decision and accepted-assignment persistence.
 - Initial dashboard, dispatch, incidents, crew board, scenario, storm mode, and Copilot pages.
 - Demo-functional recommendation actions with visible status and history.
-- Backend scenario validation and initial frontend workflow tests.
+- Backend scenario validation plus focused frontend workflow and application-state tests.
 - Initial CI and Docker structure.
 - Enterprise documentation for product, architecture, UX, API, frontend, data, integrations, security, and operations.
 
@@ -26,12 +26,12 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 
 | Phase | Status | Current Position |
 | --- | --- | --- |
-| Phase 1: POC Stabilization | In progress | Startup, sample-data consistency, backend tests, frontend build validation, and known-limitations documentation are in place. Broader empty/loading/error-state verification and the documented four-scenario browser smoke test remain. |
+| Phase 1: POC Stabilization | Complete | Startup, sample-data consistency, backend and frontend checks, primary-page loading/empty/error states, canonical regression testing, dynamic-discovery smoke testing, and known-limitations documentation are in place. |
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
-| Phase 3: Scenario Data and Demo Management | Complete | Four manifested scenarios, runtime activation, frontend selection, scenario-isolated state, validation, and deterministic fixtures are implemented. |
+| Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Next | This is the next implementation phase. Domain entities, service boundaries, migrations, structured errors, and stronger API contracts remain pending. |
 | Phase 5: Recommendation and Optimization Engine | Pending | Deterministic POC scoring exists; configurable factors, explicit hard constraints, richer explanations, and evaluation remain pending. |
-| Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and one frontend workflow test exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
+| Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
 | Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
@@ -54,7 +54,7 @@ Implementation should follow these principles:
 
 Objective: make the current MVP reliable for repeated demonstrations.
 
-Status: In progress. Core stabilization is implemented; final POC verification items remain on the checklist below.
+Status: Complete for the POC baseline as of 2026-08-10.
 
 Scope:
 
@@ -280,10 +280,10 @@ Exit criteria:
 - [x] Implement Accept, Modify, Defer, and Override with required reasons where applicable.
 - [x] Persist scenario-scoped decision events and accepted demo assignments in local SQLite.
 - [x] Reflect accepted assignments in incident, crew, assignment, and dashboard state.
-- [x] Provide four version-controlled scenarios with manifests and complete CSV inventories.
+- [x] Provide dynamically discovered version-controlled scenarios with manifests and complete CSV inventories, including four canonical regression fixtures.
 - [x] Add runtime scenario activation, frontend selection, and a recorded-decision switch warning.
 - [x] Validate scenario manifests, CSV schemas, identifiers, references, and crew-assignment consistency.
-- [x] Add deterministic recommendation fixtures for all four scenarios.
+- [x] Add deterministic recommendation fixtures for all four canonical scenarios.
 - [x] Add initial frontend scenario-switch workflow coverage.
 - [x] Align product, UX, API, frontend, data, audit, test, implementation, and runbook documentation with Phases 2 and 3.
 
@@ -294,9 +294,9 @@ Exit criteria:
 - [x] Add frontend build validation and an initial workflow test.
 - [x] Correct known scenario data inconsistencies.
 - [x] Document current POC limitations and troubleshooting guidance.
-- [ ] Complete and record the manual four-scenario browser smoke test in the runbook workflow.
-- [ ] Verify useful empty, loading, and error states across every primary page.
-- [ ] Record any new smoke-test findings in `docs/004_POC_Feedback_Log.md` and resolve or defer them explicitly.
+- [x] Complete and record the canonical scenario regression and dynamically discovered scenario browser smoke tests in the runbook workflow.
+- [x] Verify useful empty, loading, and error states across every primary page.
+- [x] Record new smoke-test findings in `docs/004_POC_Feedback_Log.md` and resolve or defer them explicitly.
 
 ### Phase 4: Next Implementation Phase
 
@@ -318,7 +318,7 @@ Exit criteria:
 - [ ] Phase 9: add structured logs, readiness, metrics, hardened deployment, environment configuration, and operational support tooling.
 - [ ] Phase 10: complete SME validation, pilot success criteria, readiness reviews, release controls, rollback, and support procedures.
 
-The sequence remains Phase 1 closure, Phase 4 backend foundations, Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
+The sequence now continues with Phase 4 backend foundations, Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
 
 ## Definition of Done
 

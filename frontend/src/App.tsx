@@ -62,34 +62,40 @@ function App() {
   const [scenarioLoading, setScenarioLoading] = useState(false);
   const [scenarioMessage, setScenarioMessage] = useState("");
   const [error, setError] = useState<string>("");
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [recommendationLoading, setRecommendationLoading] = useState(false);
+  const [recommendationError, setRecommendationError] = useState("");
+  const [recommendationRequestVersion, setRecommendationRequestVersion] = useState(0);
 
   useEffect(() => {
-    Promise.all([refreshOperationalState(), api.scenarios(), api.activeScenario()])
-      .then(([{ incidentData }, scenarioData, activeScenarioData]) => {
-        setSelectedIncidentId(incidentData[0]?.incident_id);
-        setScenarios(scenarioData);
-        setActiveScenario(activeScenarioData);
-      })
-      .catch((err: Error) => setError(err.message));
+    loadApplication();
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     if (!selectedIncidentId) {
       setRecommendation(null);
+      setRecommendationError("");
+      setRecommendationLoading(false);
       return;
     }
+    setRecommendation(null);
+    setRecommendationError("");
+    setRecommendationLoading(true);
     api.optimize(selectedIncidentId)
       .then((nextRecommendation) => {
         if (!cancelled) setRecommendation(nextRecommendation);
       })
       .catch((err: Error) => {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) setRecommendationError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setRecommendationLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, [selectedIncidentId]);
+  }, [selectedIncidentId, recommendationRequestVersion]);
 
   const selectedIncident = useMemo(
     () => incidents.find((incident) => incident.incident_id === selectedIncidentId) ?? incidents[0],
@@ -97,6 +103,27 @@ function App() {
   );
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
+  const operationalDataUnavailable = Boolean(error && !dashboard && incidents.length === 0 && crews.length === 0);
+
+  async function loadApplication() {
+    setInitialLoading(true);
+    setError("");
+    try {
+      const [{ incidentData }, scenarioData, activeScenarioData] = await Promise.all([
+        refreshOperationalState(),
+        api.scenarios(),
+        api.activeScenario()
+      ]);
+      setSelectedIncidentId(incidentData[0]?.incident_id);
+      setScenarios(scenarioData);
+      setActiveScenario(activeScenarioData);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Application data could not be loaded";
+      setError(message);
+    } finally {
+      setInitialLoading(false);
+    }
+  }
 
   async function refreshOperationalState() {
     const [dashboardData, incidentData, crewData, assignmentData, auditData] = await Promise.all([
@@ -152,6 +179,7 @@ function App() {
       );
       setSelectedIncidentId(undefined);
       setRecommendation(null);
+      setRecommendationError("");
       setActionMessage("");
       setChatTurns([]);
 
@@ -248,14 +276,34 @@ function App() {
           </div>
         </header>
 
-        {error ? <div className="error-banner">Backend unavailable: {error}</div> : null}
         {scenarioMessage ? (
           <div className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}>
             {scenarioMessage}
           </div>
         ) : null}
 
-        {view === "dashboard" && dashboard && (
+        {error ? (
+          <div className="error-banner system-banner" role="alert">
+            <div>
+              <strong>Backend unavailable</strong>
+              <span>{error}</span>
+            </div>
+            <button disabled={initialLoading} onClick={loadApplication} type="button">
+              {initialLoading ? "Retrying..." : "Retry connection"}
+            </button>
+          </div>
+        ) : null}
+
+        {view === "dashboard" && (initialLoading ? (
+          <ViewState title="Loading dashboard..." message="Retrieving outage, crew, and recommendation data." />
+        ) : operationalDataUnavailable || !dashboard ? (
+          <ViewState
+            actionLabel="Retry connection"
+            message="Dashboard data could not be loaded from the backend."
+            onAction={loadApplication}
+            title="Dashboard unavailable"
+          />
+        ) : (
           <section className="view-grid">
             <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
             <Metric label="Active Incidents" value={dashboard.active_incidents} />
@@ -265,7 +313,12 @@ function App() {
 
             <section className="panel wide">
               <PanelTitle icon={AlertTriangle} title="Priority Dispatch Queue" />
-              <IncidentTable incidents={dashboard.top_incidents} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
+              <IncidentTable
+                emptyMessage="No priority incidents are active in this scenario."
+                incidents={dashboard.top_incidents}
+                selectedIncidentId={selectedIncidentId}
+                onSelect={setSelectedIncidentId}
+              />
             </section>
 
             <RecommendationPanel
@@ -274,15 +327,32 @@ function App() {
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
+              recommendationError={recommendationError}
+              recommendationLoading={recommendationLoading}
+              onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
             />
           </section>
-        )}
+        ))}
 
-        {view === "dispatch" && (
+        {view === "dispatch" && (initialLoading ? (
+          <ViewState title="Loading dispatch workspace..." message="Retrieving incidents and recommendations." />
+        ) : operationalDataUnavailable ? (
+          <ViewState
+            actionLabel="Retry connection"
+            message="Dispatch data could not be loaded from the backend."
+            onAction={loadApplication}
+            title="Dispatch unavailable"
+          />
+        ) : (
           <section className="split-layout">
             <section className="panel">
               <PanelTitle icon={RadioTower} title="Incident Queue" />
-              <IncidentTable incidents={incidents} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
+              <IncidentTable
+                emptyMessage="No active incidents are available for dispatch."
+                incidents={incidents}
+                selectedIncidentId={selectedIncidentId}
+                onSelect={setSelectedIncidentId}
+              />
             </section>
             <RecommendationPanel
               actionLoading={actionLoading}
@@ -290,22 +360,51 @@ function App() {
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
+              recommendationError={recommendationError}
+              recommendationLoading={recommendationLoading}
+              onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               selectedIncident={selectedIncident}
             />
           </section>
-        )}
+        ))}
 
-        {view === "incidents" && (
+        {view === "incidents" && (initialLoading ? (
+          <ViewState title="Loading incidents..." message="Retrieving the active incident queue." />
+        ) : operationalDataUnavailable ? (
+          <ViewState
+            actionLabel="Retry connection"
+            message="Incident data could not be loaded from the backend."
+            onAction={loadApplication}
+            title="Incidents unavailable"
+          />
+        ) : (
           <section className="panel">
             <PanelTitle icon={ClipboardList} title="Active Incidents" />
-            <IncidentTable incidents={incidents} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
+            <IncidentTable
+              emptyMessage="No active incidents are available in this scenario."
+              incidents={incidents}
+              selectedIncidentId={selectedIncidentId}
+              onSelect={setSelectedIncidentId}
+            />
           </section>
-        )}
+        ))}
 
-        {view === "crews" && (
+        {view === "crews" && (initialLoading ? (
+          <ViewState title="Loading crew board..." message="Retrieving crew availability and assignments." />
+        ) : operationalDataUnavailable ? (
+          <ViewState
+            actionLabel="Retry connection"
+            message="Crew data could not be loaded from the backend."
+            onAction={loadApplication}
+            title="Crew board unavailable"
+          />
+        ) : (
           <section className="panel">
             <PanelTitle icon={Users} title="Crew Board" />
-            <div className="crew-grid">
+            {crews.length === 0 ? (
+              <EmptyState message="No crews are available in this scenario." />
+            ) : (
+              <div className="crew-grid">
               {crews.map((crew) => (
                 <article className="crew-card" key={crew.crew_id}>
                   <div>
@@ -327,11 +426,21 @@ function App() {
                   <small>{crew.shift_remaining_hours} shift hours remaining</small>
                 </article>
               ))}
-            </div>
+              </div>
+            )}
           </section>
-        )}
+        ))}
 
-        {view === "storm" && dashboard && (
+        {view === "storm" && (initialLoading ? (
+          <ViewState title="Loading storm mode..." message="Retrieving high-priority and critical-facility events." />
+        ) : operationalDataUnavailable || !dashboard ? (
+          <ViewState
+            actionLabel="Retry connection"
+            message="Storm-mode data could not be loaded from the backend."
+            onAction={loadApplication}
+            title="Storm mode unavailable"
+          />
+        ) : (
           <section className="view-grid">
             <Metric label="High Priority Incidents" value={dashboard.high_priority_incidents} />
             <Metric label="Critical Facilities" value={criticalIncidents.length} />
@@ -339,16 +448,23 @@ function App() {
             <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
             <section className="panel wide">
               <PanelTitle icon={CloudLightning} title="Storm Exceptions" />
-              <IncidentTable incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)} selectedIncidentId={selectedIncidentId} onSelect={setSelectedIncidentId} />
+              <IncidentTable
+                emptyMessage="No storm exceptions are active in this scenario."
+                incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)}
+                selectedIncidentId={selectedIncidentId}
+                onSelect={setSelectedIncidentId}
+              />
             </section>
           </section>
-        )}
+        ))}
 
         {view === "scenario" && (
           <section className="split-layout">
             <section className="panel">
               <PanelTitle icon={Map} title="Active Demo Scenario" />
-              {activeScenario ? (
+              {initialLoading ? (
+                <ViewState compact title="Loading scenario metadata..." message="Validating the active scenario manifest." />
+              ) : activeScenario ? (
                 <>
                   <div className="scenario-heading">
                     <div>
@@ -369,7 +485,7 @@ function App() {
                   </p>
                 </>
               ) : (
-                <p>Loading scenario metadata...</p>
+                <EmptyState message="Scenario metadata is unavailable. Retry the backend connection." />
               )}
             </section>
             <RecommendationPanel
@@ -378,6 +494,9 @@ function App() {
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
+              recommendationError={recommendationError}
+              recommendationLoading={recommendationLoading || initialLoading}
+              onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               selectedIncident={selectedIncident}
             />
           </section>
@@ -403,7 +522,7 @@ function App() {
             <button className="primary-action" disabled={chatLoading} onClick={askCopilot} type="button">
               {chatLoading ? "Asking..." : "Ask Copilot"}
             </button>
-            <div className="chat-history">
+            <div aria-live="polite" className="chat-history">
               {chatTurns.length === 0 ? (
                 <div className="copilot-answer">Ask one of the sample questions to query the synthetic dispatch data.</div>
               ) : (
@@ -441,6 +560,32 @@ function PanelTitle({ icon: Icon, title }: { icon: ElementType; title: string })
   );
 }
 
+function ViewState({
+  actionLabel,
+  compact = false,
+  message,
+  onAction,
+  title
+}: {
+  actionLabel?: string;
+  compact?: boolean;
+  message: string;
+  onAction?: () => void;
+  title: string;
+}) {
+  return (
+    <section aria-live="polite" className={compact ? "view-state compact" : "panel view-state"}>
+      <strong>{title}</strong>
+      <p>{message}</p>
+      {actionLabel && onAction ? <button onClick={onAction} type="button">{actionLabel}</button> : null}
+    </section>
+  );
+}
+
+function EmptyState({ message }: { message: string }) {
+  return <p className="empty-state">{message}</p>;
+}
+
 function formatAction(action: RecommendationActionType) {
   const labels: Record<RecommendationActionType, string> = {
     accepted: "Accepted",
@@ -456,14 +601,20 @@ function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
 }
 
 function IncidentTable({
+  emptyMessage,
   incidents,
   selectedIncidentId,
   onSelect
 }: {
+  emptyMessage: string;
   incidents: Incident[];
   selectedIncidentId?: string;
   onSelect: (incidentId: string) => void;
 }) {
+  if (incidents.length === 0) {
+    return <EmptyState message={emptyMessage} />;
+  }
+
   return (
     <div className="table-shell">
       <table>
@@ -525,15 +676,21 @@ function RecommendationPanel({
   actionLoading,
   actionMessage,
   onRecordAction,
+  onRetryRecommendation,
   recentActions,
   recommendation,
+  recommendationError,
+  recommendationLoading,
   selectedIncident
 }: {
   actionLoading: RecommendationActionType | null;
   actionMessage: string;
   onRecordAction: (action: RecommendationActionType, note?: string) => Promise<void>;
+  onRetryRecommendation: () => void;
   recentActions: RecommendationAction[];
   recommendation: Recommendation | null;
+  recommendationError: string;
+  recommendationLoading: boolean;
   selectedIncident?: Incident;
 }) {
   const [draftAction, setDraftAction] = useState<RecommendationActionType | null>(null);
@@ -571,7 +728,17 @@ function RecommendationPanel({
           <strong>{selectedIncident.incident_id} · {selectedIncident.municipality}</strong>
         </div>
       ) : null}
-      {recommendation ? (
+      {recommendationLoading ? (
+        <ViewState compact title="Loading recommendation..." message="Evaluating the selected incident and available crews." />
+      ) : recommendationError ? (
+        <ViewState
+          actionLabel="Retry recommendation"
+          compact
+          message={recommendationError}
+          onAction={onRetryRecommendation}
+          title="Recommendation unavailable"
+        />
+      ) : recommendation ? (
         <>
           <div className="recommendation-hero">
             <span>{recommendation.recommended_action}</span>
@@ -662,7 +829,7 @@ function RecommendationPanel({
           <RecentActions actions={incidentActions.length ? incidentActions : recentActions.slice(0, 4)} />
         </>
       ) : (
-        <p>Loading recommendation...</p>
+        <EmptyState message="No recommendation is available because there are no active incidents." />
       )}
     </section>
   );

@@ -90,9 +90,9 @@ Before a stakeholder demo:
 - Open Copilot and confirm it responds to a simple advisory prompt.
 - Review `docs/004_POC_Feedback_Log.md` for known gaps before presenting functionality as complete.
 
-## Four-Scenario Smoke Test
+## Canonical Scenario Regression Test
 
-Use a fresh local decision database, or account for previously accepted demo assignments when comparing crew counts. Activate each scenario from the frontend selector and confirm:
+The four canonical scenarios below are deterministic regression fixtures. They provide stable expected results but do not limit how many scenarios the application supports. Use a fresh local decision database, or account for previously accepted demo assignments when comparing crew counts. Activate each canonical scenario from the frontend selector and confirm:
 
 | Scenario | Active Incidents | Customers Out | Expected Highest-Priority Result |
 | --- | ---: | ---: | --- |
@@ -101,13 +101,62 @@ Use a fresh local decision database, or account for previously accepted demo ass
 | Crew Shortage | 7 | 7,370 | `CRS-3001` returns Defer and escalate with no available crew |
 | Critical Facility | 6 | 3,380 | `CFI-4001` recommends `FC-01` |
 
-For every scenario:
+For every canonical scenario:
 
 - Confirm the active label, dashboard totals, incident prefixes, and crew board change together.
-- Confirm recommendation history from another scenario is not displayed.
-- Record one demo decision if action behavior is in scope for the smoke test; Defer is the least disruptive choice.
-- Switch away and back to confirm scenario-isolated history is restored.
 - Record any discrepancy in `docs/004_POC_Feedback_Log.md`.
+
+## Discovered Scenario Smoke Test
+
+The application discovers valid scenario folders dynamically. It is not limited to the four canonical regression fixtures.
+
+1. Call `GET /api/scenarios` and note every returned scenario.
+2. Confirm every returned scenario appears once in the frontend selector.
+3. Activate each returned scenario from the selector.
+4. Confirm the selected label, dashboard scenario, incident identifiers, totals, crew board, and recommendation refresh together without a backend or browser error.
+5. For non-canonical generated scenarios, compare displayed totals with their API responses rather than the canonical table above.
+6. Record any discrepancy in `docs/004_POC_Feedback_Log.md`.
+
+## Representative Decision-Isolation Check
+
+Decision persistence and isolation need one representative browser path rather than a repeated decision in every scenario:
+
+1. Start with a fresh local decision database.
+2. Activate Base Operations and record a Defer decision with a reason.
+3. Switch to Major Storm and confirm the Base Operations decision is not displayed.
+4. Switch back to Base Operations and confirm its decision history is restored.
+5. Record any discrepancy in `docs/004_POC_Feedback_Log.md`.
+
+The backend suite also verifies scenario-isolated decision and accepted-assignment persistence automatically.
+
+## Loading, Empty, and Error-State Verification
+
+Run the frontend test suite with `npm test`. The Phase 1 suite verifies:
+
+- Purposeful loading messages for Dashboard, Dispatch, Incidents, Crew Board, Storm Mode, and Scenario.
+- Explicit empty messages for priority incidents, dispatch incidents, incident lists, crews, storm exceptions, and recommendations.
+- A backend-unavailable message with a connection retry.
+- A recommendation-specific failure message with a recommendation retry.
+- Scenario-activation failure feedback that preserves the current selection.
+- Copilot's initial guidance, in-progress label, and inline failure response.
+
+## Phase 1 Closeout Verification Record
+
+Verification completed on 2026-08-10 using local frontend and backend processes with an isolated, fresh SQLite decision database.
+
+| Check | Result |
+| --- | --- |
+| Backend suite | Pass: 33 tests |
+| Frontend suite | Pass: 7 tests |
+| Frontend production build | Pass |
+| Canonical regression | Pass: all four expected incident counts, customer totals, top incident identifiers, and recommendation outcomes matched |
+| Dynamic discovery | Pass: all five current `/api/scenarios` results appeared once in the selector and activated without error |
+| Generated scenario | Pass: `august-storm-preview` rendered 2,000 incidents, 500 crews, consistent dashboard totals, and a recommendation |
+| Primary-page navigation | Pass: Dashboard, Dispatch, Incidents, Crew Board, Storm Mode, Scenario, and AI Copilot rendered without browser errors |
+| Representative decision isolation | Pass: a Base Operations Defer decision was absent in Major Storm and restored after switching back |
+| Copilot smoke path | Pass: the default advisory prompt returned a scenario-backed response |
+
+The closeout review identified the blank/indefinite frontend states and ambiguous four-scenario wording recorded as `POC-003` and `POC-004`; both were resolved. No additional unresolved Phase 1 findings were observed.
 
 ## Known POC Limitations
 

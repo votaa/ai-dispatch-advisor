@@ -169,6 +169,41 @@ h1 {
   padding: 12px 14px;
 }
 
+.system-banner {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.system-banner strong,
+.system-banner span {
+  display: block;
+}
+
+.system-banner span {
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.system-banner button,
+.view-state button {
+  background: #8f1d1d;
+  border: 0;
+  border-radius: 7px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 36px;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.system-banner button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .success-banner {
   background: #e8f7ec;
   border: 1px solid #a8ddb5;
@@ -215,6 +250,48 @@ h1 {
 
 .panel {
   padding: 18px;
+}
+
+.view-state {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-height: 150px;
+  place-content: center;
+  text-align: center;
+}
+
+.view-state strong {
+  font-size: 18px;
+}
+
+.view-state p,
+.empty-state {
+  color: #607080;
+  margin: 0;
+}
+
+.view-state.compact {
+  justify-items: start;
+  min-height: 110px;
+  place-content: center start;
+  text-align: left;
+}
+
+.view-state.compact strong {
+  font-size: 16px;
+}
+
+.view-state.compact button {
+  background: #12212f;
+}
+
+.empty-state {
+  background: #f7f9fb;
+  border: 1px dashed #cfd8e3;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
 }
 
 .panel.wide {

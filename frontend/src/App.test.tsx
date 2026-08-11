@@ -105,7 +105,18 @@ function dashboard(scenario: string) {
   };
 }
 
-describe("scenario switching", () => {
+function emptyDashboard(scenario: string) {
+  return {
+    ...dashboard(scenario),
+    active_incidents: 0,
+    customers_out: 0,
+    critical_facility_incidents: 0,
+    high_priority_incidents: 0,
+    top_incidents: []
+  };
+}
+
+describe("application states and scenario switching", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     apiMocks.scenarios.mockResolvedValue([baseScenario, stormScenario]);
@@ -122,6 +133,114 @@ describe("scenario switching", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+  });
+
+  it("shows purposeful loading states across data-backed primary views", () => {
+    apiMocks.dashboard.mockReturnValue(new Promise(() => undefined));
+    render(<App />);
+
+    expect(screen.getByText("Loading dashboard...")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    expect(screen.getByText("Loading dispatch workspace...")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    expect(screen.getByText("Loading incidents...")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    expect(screen.getByText("Loading crew board...")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
+    expect(screen.getByText("Loading storm mode...")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Scenario" }));
+    expect(screen.getByText("Loading scenario metadata...")).toBeTruthy();
+  });
+
+  it("shows useful empty states instead of blank tables and panels", async () => {
+    apiMocks.dashboard.mockResolvedValue(emptyDashboard("base"));
+    apiMocks.incidents.mockResolvedValue([]);
+    apiMocks.crews.mockResolvedValue([]);
+    apiMocks.assignments.mockResolvedValue([]);
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    expect(await screen.findByText("No priority incidents are active in this scenario.")).toBeTruthy();
+    expect(screen.getByText("No recommendation is available because there are no active incidents.")).toBeTruthy();
+    expect(apiMocks.optimize).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    expect(screen.getByText("No active incidents are available for dispatch.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    expect(screen.getByText("No active incidents are available in this scenario.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    expect(screen.getByText("No crews are available in this scenario.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
+    expect(screen.getByText("No storm exceptions are active in this scenario.")).toBeTruthy();
+  });
+
+  it("shows a backend error with a working connection retry", async () => {
+    apiMocks.dashboard.mockRejectedValueOnce(new Error("Network request failed"));
+    render(<App />);
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Network request failed");
+    apiMocks.dashboard.mockResolvedValue(dashboard("base"));
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Retry connection" })[0]);
+
+    expect(await screen.findByText("Customers Out")).toBeTruthy();
+    await waitFor(() => expect(screen.queryByRole("alert")).toBeNull());
+  });
+
+  it("shows optimization failures separately and retries the recommendation", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.optimize.mockRejectedValueOnce(new Error("Optimization service unavailable"));
+    render(<App />);
+
+    expect(await screen.findByText("Recommendation unavailable")).toBeTruthy();
+    expect(screen.getByText("Optimization service unavailable")).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
+
+    apiMocks.optimize.mockResolvedValue(recommendation);
+    fireEvent.click(screen.getByRole("button", { name: "Retry recommendation" }));
+
+    expect(await screen.findByText("Supervisor review")).toBeTruthy();
+    expect(apiMocks.optimize).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows Copilot guidance, progress, and inline failure feedback", async () => {
+    let rejectChat: (reason?: unknown) => void = () => undefined;
+    apiMocks.chat.mockReturnValue(new Promise((_, reject) => {
+      rejectChat = reject;
+    }));
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    expect(screen.getByText("Ask one of the sample questions to query the synthetic dispatch data.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+    expect(screen.getByRole("button", { name: "Asking..." })).toBeTruthy();
+    rejectChat(new Error("Copilot service unavailable"));
+
+    expect(await screen.findByText(/Unable to reach Copilot: Copilot service unavailable/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Ask Copilot" })).toBeTruthy();
+  });
+
+  it("keeps the current scenario selected when activation fails", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.activateScenario.mockRejectedValue(new Error("Scenario validation failed"));
+    render(<App />);
+
+    const selector = await screen.findByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    await waitFor(() => expect(selector.value).toBe("base"));
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    expect(await screen.findByText("Scenario validation failed")).toBeTruthy();
+    expect(selector.value).toBe("base");
   });
 
   it("requires confirmation when the active scenario has recorded decisions", async () => {

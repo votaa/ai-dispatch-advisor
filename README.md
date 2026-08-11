@@ -71,7 +71,7 @@ npm test
 npm run build
 ```
 
-The backend suite validates scenario manifests and CSV relationships, runtime switching, scenario-isolated decisions, and deterministic recommendation fixtures. The frontend suite covers the recorded-decision confirmation workflow when switching scenarios.
+The backend suite validates scenario manifests and CSV relationships, dynamic discovery, runtime switching, scenario-isolated decisions, generator behavior, and deterministic recommendation fixtures. The frontend suite covers loading, empty, and failure states plus the recorded-decision confirmation workflow when switching scenarios.
 
 ### Database Initialization
 
@@ -105,6 +105,7 @@ data/scenarios/
   storm/
   crew-shortage/
   critical-facility/
+  august-storm-preview/
 ```
 
 Each scenario contains:
@@ -118,7 +119,7 @@ Each scenario contains:
 - `CriticalFacilities.csv`
 - `Topology.csv`
 
-The scenarios represent routine blue-sky operations, a major storm, constrained crew capacity, and simultaneous critical-facility outages. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed from the frontend selector or through the validated activation API. If the active scenario has recorded dispatch decisions, the frontend asks for confirmation before switching and explains that its decisions remain saved under that scenario.
+The base, storm, crew-shortage, and critical-facility scenarios are the four canonical deterministic regression fixtures. Additional complete scenario folders, including the generated `august-storm-preview`, are discovered dynamically and are not subject to a four-scenario limit. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed from the frontend selector or through the validated activation API. If the active scenario has recorded dispatch decisions, the frontend asks for confirmation before switching and explains that its decisions remain saved under that scenario.
 
 When running with Docker Compose, `data/scenarios/` is mounted read-only into the backend container. Complete scenario folders added under that directory become discoverable without rebuilding the backend image. Refresh the frontend to reload the scenario selector. The backend can read scenario data but cannot modify or delete the host scenario files through this mount.
 

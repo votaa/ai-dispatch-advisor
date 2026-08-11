@@ -243,7 +243,7 @@ Before release:
 
 | Stage | Automation Focus |
 | --- | --- |
-| POC | Build checks, backend scenario/API tests, deterministic recommendation fixtures, initial frontend workflow test |
+| POC | Build checks, backend scenario/API tests, canonical deterministic recommendation fixtures, dynamic-discovery checks, and focused frontend workflow/state tests |
 | MVP | Expanded unit tests, API contract tests, and frontend workflow coverage |
 | Pilot | Integration tests, E2E tests, accessibility checks, security scanning |
 | Enterprise release | Performance tests, disaster recovery drills, audit evidence capture |
@@ -253,7 +253,7 @@ Before release:
 Current gaps to close as the POC matures:
 
 - Copilot behavior is currently demo-oriented and rule-based.
-- Recommendation validation needs broader scoring, constraint, and edge-case fixtures beyond the four current scenarios.
+- Recommendation validation needs broader scoring, constraint, and edge-case fixtures beyond the four canonical regression scenarios; generated scenarios expand data coverage but do not replace deterministic expected-result fixtures.
 - Integration adapters are not yet connected to live systems.
 - Security, IAM, and audit controls are documented but not fully implemented.
 - CI should expand from basic checks to release-grade gates.

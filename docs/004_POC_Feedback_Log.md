@@ -57,6 +57,8 @@ Recommended usage:
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | POC-001 | 2026-08-02 | UX | P1 | Recommendation actions | Accept, Modify, Defer, and Override controls are visible but not yet demo-functional. | Implemented local decision persistence, required reasons for Defer and Override, visible decision status, recent history, and accepted assignment state. | Closed |
 | POC-002 | 2026-08-02 | AI | P2 | AI Copilot | Copilot responses are currently keyword-based demo responses, not real AI model output. | Keep advisory boundary clear; later define LLM-backed Copilot architecture and retrieval model. | New |
+| POC-003 | 2026-08-10 | UX | P1 | Primary page states | Several primary views could render blank content or show an indefinite recommendation-loading message when data was empty or unavailable. | Added explicit loading, empty, error, and retry states with frontend coverage across the POC workflow. | Closed |
+| POC-004 | 2026-08-10 | Documentation | P1 | Scenario smoke testing | The four-scenario smoke-test wording could be interpreted as a product limit after dynamic scenario generation and discovery were added. | Retained the four scenarios as deterministic regression fixtures and added a separate test for every dynamically discovered scenario. | Closed |
 
 ## Review Cadence
 
