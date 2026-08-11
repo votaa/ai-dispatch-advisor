@@ -286,6 +286,7 @@ Exit criteria:
 - [x] Add deterministic recommendation fixtures for all four canonical scenarios.
 - [x] Add initial frontend scenario-switch workflow coverage.
 - [x] Align product, UX, API, frontend, data, audit, test, implementation, and runbook documentation with Phases 2 and 3.
+- [x] Complete the contract-neutral pre-Phase 4 POC usability patch for responsive recommendation layouts, contained tables, and full-width Storm Exceptions.
 
 ### Phase 1 Closure
 

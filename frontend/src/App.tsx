@@ -13,7 +13,7 @@ import {
   Users
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { ElementType } from "react";
+import type { ElementType, ReactNode } from "react";
 import { api } from "./api";
 import type {
   Assignment,
@@ -304,33 +304,38 @@ function App() {
             title="Dashboard unavailable"
           />
         ) : (
-          <section className="view-grid">
-            <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
-            <Metric label="Active Incidents" value={dashboard.active_incidents} />
-            <Metric label="Available Crews" value={dashboard.available_crews} />
-            <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
-            <Metric label="Critical Facility Events" value={dashboard.critical_facility_incidents} />
+          <section className="dashboard-view">
+            <div className="metric-grid">
+              <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
+              <Metric label="Active Incidents" value={dashboard.active_incidents} />
+              <Metric label="Available Crews" value={dashboard.available_crews} />
+              <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
+              <Metric label="Critical Facility Events" value={dashboard.critical_facility_incidents} />
+            </div>
 
-            <section className="panel wide">
-              <PanelTitle icon={AlertTriangle} title="Priority Dispatch Queue" />
-              <IncidentTable
-                emptyMessage="No priority incidents are active in this scenario."
-                incidents={dashboard.top_incidents}
-                selectedIncidentId={selectedIncidentId}
-                onSelect={setSelectedIncidentId}
+            <div className="dashboard-workspace">
+              <section className="panel">
+                <PanelTitle icon={AlertTriangle} title="Priority Dispatch Queue" />
+                <IncidentTable
+                  emptyMessage="No priority incidents are active in this scenario."
+                  incidents={dashboard.top_incidents}
+                  selectedIncidentId={selectedIncidentId}
+                  tableLabel="Priority dispatch queue"
+                  onSelect={setSelectedIncidentId}
+                />
+              </section>
+
+              <RecommendationPanel
+                actionLoading={actionLoading}
+                actionMessage={actionMessage}
+                onRecordAction={recordRecommendationAction}
+                recentActions={recommendationActions}
+                recommendation={recommendation}
+                recommendationError={recommendationError}
+                recommendationLoading={recommendationLoading}
+                onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               />
-            </section>
-
-            <RecommendationPanel
-              actionLoading={actionLoading}
-              actionMessage={actionMessage}
-              onRecordAction={recordRecommendationAction}
-              recentActions={recommendationActions}
-              recommendation={recommendation}
-              recommendationError={recommendationError}
-              recommendationLoading={recommendationLoading}
-              onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
-            />
+            </div>
           </section>
         ))}
 
@@ -351,6 +356,7 @@ function App() {
                 emptyMessage="No active incidents are available for dispatch."
                 incidents={incidents}
                 selectedIncidentId={selectedIncidentId}
+                tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
               />
             </section>
@@ -384,6 +390,7 @@ function App() {
               emptyMessage="No active incidents are available in this scenario."
               incidents={incidents}
               selectedIncidentId={selectedIncidentId}
+              tableLabel="Active incidents"
               onSelect={setSelectedIncidentId}
             />
           </section>
@@ -446,12 +453,13 @@ function App() {
             <Metric label="Critical Facilities" value={criticalIncidents.length} />
             <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
             <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
-            <section className="panel wide">
+            <section className="panel full-width">
               <PanelTitle icon={CloudLightning} title="Storm Exceptions" />
               <IncidentTable
                 emptyMessage="No storm exceptions are active in this scenario."
                 incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)}
                 selectedIncidentId={selectedIncidentId}
+                tableLabel="Storm exceptions"
                 onSelect={setSelectedIncidentId}
               />
             </section>
@@ -604,11 +612,13 @@ function IncidentTable({
   emptyMessage,
   incidents,
   selectedIncidentId,
+  tableLabel,
   onSelect
 }: {
   emptyMessage: string;
   incidents: Incident[];
   selectedIncidentId?: string;
+  tableLabel: string;
   onSelect: (incidentId: string) => void;
 }) {
   if (incidents.length === 0) {
@@ -616,7 +626,7 @@ function IncidentTable({
   }
 
   return (
-    <div className="table-shell">
+    <ResponsiveTable label={tableLabel}>
       <table>
         <thead>
           <tr>
@@ -668,6 +678,14 @@ function IncidentTable({
           ))}
         </tbody>
       </table>
+    </ResponsiveTable>
+  );
+}
+
+function ResponsiveTable({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <div aria-label={label} className="table-shell" role="region" tabIndex={0}>
+      {children}
     </div>
   );
 }

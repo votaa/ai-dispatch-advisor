@@ -22,6 +22,8 @@ textarea {
   display: grid;
   grid-template-columns: 280px 1fr;
   min-height: 100vh;
+  min-width: 0;
+  width: 100%;
 }
 
 .sidebar {
@@ -85,6 +87,7 @@ textarea {
 }
 
 .main {
+  min-width: 0;
   padding: 28px;
 }
 
@@ -94,6 +97,7 @@ textarea {
   align-items: flex-start;
   gap: 20px;
   margin-bottom: 22px;
+  min-width: 0;
 }
 
 .eyebrow {
@@ -125,6 +129,7 @@ h1 {
   border: 1px solid #d8e0e8;
   border-radius: 8px;
   color: #526170;
+  min-width: 0;
   padding: 7px 8px 7px 12px;
 }
 
@@ -144,7 +149,9 @@ h1 {
   color: #17202a;
   cursor: pointer;
   font-weight: 700;
+  max-width: 100%;
   min-height: 34px;
+  min-width: 0;
   padding: 5px 30px 5px 9px;
 }
 
@@ -219,9 +226,26 @@ h1 {
   gap: 16px;
 }
 
+.dashboard-view {
+  display: grid;
+  gap: 16px;
+}
+
+.metric-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+}
+
+.dashboard-workspace {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(440px, 1fr);
+}
+
 .split-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.8fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(440px, 1fr);
   gap: 16px;
 }
 
@@ -249,6 +273,7 @@ h1 {
 }
 
 .panel {
+  min-width: 0;
   padding: 18px;
 }
 
@@ -294,8 +319,8 @@ h1 {
   text-align: center;
 }
 
-.panel.wide {
-  grid-column: span 3;
+.panel.full-width {
+  grid-column: 1 / -1;
 }
 
 .panel-title {
@@ -311,12 +336,22 @@ h1 {
 }
 
 .table-shell {
-  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
 }
 
-table {
+.table-shell:focus-visible {
+  outline: 3px solid rgba(47, 111, 159, 0.35);
+  outline-offset: 3px;
+}
+
+.table-shell table {
   border-collapse: collapse;
-  min-width: 980px;
+  min-width: 900px;
   width: 100%;
 }
 
@@ -376,7 +411,16 @@ tbody tr:hover,
 }
 
 .recommendation-panel {
+  max-width: 100%;
   min-height: 430px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.recommendation-panel > *,
+.explain-grid > *,
+.action-event > * {
+  min-width: 0;
 }
 
 .selected-context {
@@ -405,6 +449,16 @@ tbody tr:hover,
   display: block;
   font-size: 24px;
   margin: 4px 0;
+}
+
+.recommendation-hero strong,
+.selected-context strong,
+.decision-status strong,
+.recommendation-panel p,
+.recommendation-panel li,
+.action-event span,
+.action-event p {
+  overflow-wrap: anywhere;
 }
 
 .decision-status {
@@ -484,7 +538,7 @@ tbody tr:hover,
 
 .action-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-top: 18px;
 }
@@ -505,6 +559,8 @@ tbody tr:hover,
   display: flex;
   gap: 6px;
   justify-content: center;
+  min-width: 0;
+  width: 100%;
 }
 
 .action-row button:disabled {
@@ -806,6 +862,17 @@ textarea {
   margin-top: 12px;
 }
 
+@media (max-width: 1200px) {
+  .dashboard-workspace,
+  .split-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+
 @media (max-width: 1000px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -824,7 +891,32 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .panel.wide {
-    grid-column: span 1;
+}
+
+@media (max-width: 620px) {
+  .main {
+    padding: 18px;
+    width: 100%;
+  }
+
+  .action-row,
+  .explain-grid,
+  .action-event {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .action-event p {
+    grid-column: auto;
+  }
+
+  .note-action-row,
+  .system-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .note-action-row button,
+  .system-banner button {
+    width: 100%;
   }
 }

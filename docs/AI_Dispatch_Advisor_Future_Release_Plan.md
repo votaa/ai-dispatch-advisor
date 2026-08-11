@@ -7,6 +7,21 @@ Deliver two releases:
 1. **Release 1 — Operational UI and usability:** consistent search, filtering, sorting, reset controls, responsive tables, corrected recommendation layouts, Crew Board filtering, and normalized crew IDs.
 2. **Release 2 — LLM-backed AI Copilot:** replace canned responses with advisory analysis grounded in current dispatch and scenario data.
 
+## Delivery Sequencing
+
+A contract-neutral POC usability patch was completed on 2026-08-10 before Phase 4. It intentionally changed presentation only and did not add or alter backend data contracts.
+
+Completed in the POC usability patch:
+
+- Wider Dashboard, Dispatch, and Scenario recommendation workspaces on desktop.
+- Responsive 2×2 recommendation actions that stack on narrow screens.
+- Overflow protection for recommendation text, factors, constraints, forms, and recent actions.
+- Full-width Storm Exceptions content.
+- One reusable, keyboard-focusable responsive table shell for Dashboard, Dispatch, Incidents, and Storm Exceptions.
+- Contained horizontal table scrolling without page-level overflow at desktop, tablet, or mobile widths.
+
+The remaining Release 1 search, filtering, sorting, highlighting, Reset, Crew Board, and crew-identity work should follow the Phase 4 domain and API foundation.
+
 ## Release 1 — UI and Data Presentation
 
 - Build a reusable table experience for Dashboard, Dispatch, Incidents, and Storm Exceptions:
@@ -30,7 +45,7 @@ Deliver two releases:
   - Use available screen width; enable horizontal scrolling only when the viewport cannot accommodate minimum readable column widths.
   - Show an explicit “No matching records” state with a Reset action when search or filters return no rows.
 
-- Fix the Dispatch and Scenario recommendation panels:
+- **POC usability patch complete:** Fix the Dashboard, Dispatch, and Scenario recommendation panels:
   - Allocate more desktop width to the recommendation column.
   - Arrange Accept, Modify, Defer, and Override in a responsive 2×2 grid.
   - Stack controls on narrow screens.
@@ -47,7 +62,7 @@ Deliver two releases:
   - Derive IDs from the source designation and number, including `Tree-4735`, `WW-4739`, `CNTR-3896`, and `MUA-4497`.
   - Do not invent prefixes for crews whose source identifiers are numeric-only; retain their existing presentation.
 
-- Expand Storm Exceptions to the full available content width and apply the shared search, filter, sort, and Reset behavior.
+- Storm Exceptions now uses the full available content width and shared responsive table shell. Shared search, filter, sort, and Reset behavior remains future Release 1 work.
 
 ## Release 2 — Real AI Copilot
 

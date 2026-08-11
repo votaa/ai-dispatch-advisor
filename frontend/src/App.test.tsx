@@ -182,6 +182,28 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("No storm exceptions are active in this scenario.")).toBeTruthy();
   });
 
+  it("uses shared responsive table regions and complete recommendation action groups", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    const { container } = render(<App />);
+
+    expect(await screen.findByRole("region", { name: "Priority dispatch queue" })).toBeTruthy();
+    expect(container.querySelector(".dashboard-workspace .recommendation-panel")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    expect(screen.getByRole("region", { name: "Dispatch incident queue" })).toBeTruthy();
+    expect(container.querySelector(".split-layout .recommendation-panel")).toBeTruthy();
+    for (const action of ["Accept", "Modify", "Defer", "Override"]) {
+      expect(screen.getByRole("button", { name: action })).toBeTruthy();
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    expect(screen.getByRole("region", { name: "Active incidents" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
+    const stormTable = screen.getByRole("region", { name: "Storm exceptions" });
+    expect(stormTable.closest(".panel")?.classList.contains("full-width")).toBe(true);
+  });
+
   it("shows a backend error with a working connection retry", async () => {
     apiMocks.dashboard.mockRejectedValueOnce(new Error("Network request failed"));
     render(<App />);

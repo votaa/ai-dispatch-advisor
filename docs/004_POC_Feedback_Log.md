@@ -59,6 +59,7 @@ Recommended usage:
 | POC-002 | 2026-08-02 | AI | P2 | AI Copilot | Copilot responses are currently keyword-based demo responses, not real AI model output. | Keep advisory boundary clear; later define LLM-backed Copilot architecture and retrieval model. | New |
 | POC-003 | 2026-08-10 | UX | P1 | Primary page states | Several primary views could render blank content or show an indefinite recommendation-loading message when data was empty or unavailable. | Added explicit loading, empty, error, and retry states with frontend coverage across the POC workflow. | Closed |
 | POC-004 | 2026-08-10 | Documentation | P1 | Scenario smoke testing | The four-scenario smoke-test wording could be interpreted as a product limit after dynamic scenario generation and discovery were added. | Retained the four scenarios as deterministic regression fixtures and added a separate test for every dynamically discovered scenario. | Closed |
+| POC-005 | 2026-08-10 | UX | P1 | Responsive demo layout | Recommendation panels were too narrow, action buttons crowded into one row, Storm Exceptions did not use the full grid, and tables could force awkward page layouts. | Added wider recommendation workspaces, responsive 2×2/stacked actions, overflow containment, full-width Storm Exceptions, and a shared responsive table shell. | Closed |
 
 ## Review Cadence
 
