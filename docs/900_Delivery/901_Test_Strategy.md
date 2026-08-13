@@ -76,7 +76,10 @@ Required API test areas:
 - Recommendation generation.
 - Recommendation decision capture.
 - Copilot request and response handling.
-- Error responses for malformed or incomplete input.
+- Named OpenAPI request, success-response, and error-response schemas.
+- Structured error responses for malformed input, missing entities, invalid decision state, scenario validation, framework 404s, and unexpected failures.
+- Correlation-ID generation and propagation on successful and failed requests.
+- Assurance that unexpected failures do not expose internal exception details.
 
 API tests should assert both response structure and business meaning. For example, a dispatch recommendation should include an incident, assigned crew, recommendation reason, confidence, expected impact, and explanation factors.
 

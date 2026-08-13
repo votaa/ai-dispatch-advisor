@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ..domain.models import Recommendation, RecommendationAction, RecommendationDecision
-from .errors import DecisionReasonRequiredError
+from .errors import DecisionConflictError, DecisionReasonRequiredError
 from .incident_service import IncidentService
 
 
@@ -32,6 +32,9 @@ class DecisionService:
         note: str | None = None,
     ) -> RecommendationDecision:
         self._incidents.get(incident_id)
+        if recommendation.incident_id != incident_id:
+            raise DecisionConflictError(incident_id, recommendation.incident_id)
+
         reason_source = reason if reason is not None else note
         normalized_reason = reason_source.strip() if reason_source else None
         if action in {"deferred", "overridden"} and not normalized_reason:

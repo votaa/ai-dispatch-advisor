@@ -75,6 +75,15 @@ Basic local validation:
 
 On backend startup, pending decision-store migrations are applied before the API begins serving requests. A startup failure mentioning a migration indicates that the local SQLite schema or recorded migration history could not be upgraded safely.
 
+To smoke-test the Phase 4 error contract, request an unknown incident with a known correlation identifier:
+
+```bash
+curl -i -H 'X-Correlation-ID: phase-4.4-smoke' \
+  http://127.0.0.1:8000/api/incidents/INC-DOES-NOT-EXIST
+```
+
+Expected result: `404 Not Found`, an `X-Correlation-ID: phase-4.4-smoke` response header, and an error body with code `entity_not_found` and the same correlation identifier. The Swagger page should also show `ErrorResponse` for documented 400, 404, 409, 422, and 500 responses.
+
 If any check fails, use the troubleshooting section below.
 
 ## POC Demo Checklist

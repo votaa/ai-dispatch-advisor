@@ -297,3 +297,36 @@ The current persistence layer does not use SQLAlchemy, and adding an ORM plus Al
 - Add a new migration file for every application-owned schema change.
 - Preserve upgrade-path, checksum, transaction, and idempotency tests.
 - Add backup and rollback procedures before pilot or production deployment.
+
+## D-009: Standardize API Errors and Request Correlation
+
+- Status: Accepted
+- Date: 2026-08-13
+- Owners: Backend engineering, solution architecture
+- Related Documents: `docs/400_Backend_API/401_Backend_Service_Design.md`, `docs/400_Backend_API/402_API_Overview.md`, `docs/800_Security_Operations/804_Observability.md`
+
+### Context
+
+The API previously mixed FastAPI `detail` responses, route-local exception translation, and a scenario-specific error envelope. Clients could not depend on one error shape, and failed requests had no identifier that could be used to connect a user report to backend diagnostics.
+
+### Decision
+
+Use one named `ErrorResponse` envelope for domain, request-validation, scenario, framework HTTP, and unexpected errors. Stable lowercase snake-case codes carry machine meaning; messages remain displayable text; details provide safe field or domain context. Route handlers allow typed service exceptions to reach a centralized mapper. Every response carries `X-Correlation-ID`; a syntactically valid caller identifier is propagated and otherwise a UUID is generated. Unexpected failures expose only a generic message and log their correlation identifier.
+
+### Rationale
+
+A consistent contract simplifies frontend behavior, makes failure paths visible in OpenAPI, avoids repeated framework coupling in route handlers, and provides an initial support-diagnostics bridge without prematurely introducing a full observability platform.
+
+### Consequences
+
+- Existing clients must read `error.message` rather than FastAPI's former top-level `detail` field.
+- Error codes are API contract values and should change only intentionally.
+- Validation details identify locations and types but do not echo submitted values.
+- Correlation identifiers support request-level diagnosis but do not replace structured logs or distributed traces.
+- Decision submissions that pair different request and recommendation incident IDs fail with `409 Conflict`.
+
+### Follow-Up Actions
+
+- Add stable codes and handler mappings when new domain exceptions are introduced.
+- Connect correlation identifiers to routine structured request logs and traces in Phase 9.
+- Add authenticated actor context to error and audit diagnostics in Phase 8.

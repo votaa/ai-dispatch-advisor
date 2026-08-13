@@ -207,10 +207,12 @@ def test_active_endpoint_returns_structured_not_found_error(monkeypatch) -> None
     response = client.get("/api/scenarios/active")
 
     assert response.status_code == 404
+    correlation_id = response.headers["X-Correlation-ID"]
     assert response.json() == {
         "error": {
             "code": "scenario_not_found",
             "message": "Scenario 'does-not-exist' was not found.",
+            "correlation_id": correlation_id,
             "scenario_id": "does-not-exist",
             "details": [
                 {
@@ -232,10 +234,12 @@ def test_active_endpoint_returns_structured_validation_error(tmp_path: Path, mon
     response = client.get("/api/scenarios/active")
 
     assert response.status_code == 422
+    correlation_id = response.headers["X-Correlation-ID"]
     assert response.json() == {
         "error": {
             "code": "scenario_validation_failed",
             "message": "Scenario 'base' failed validation.",
+            "correlation_id": correlation_id,
             "scenario_id": "base",
             "details": [{"location": "Crews.csv", "message": "Required CSV file is missing"}],
         }

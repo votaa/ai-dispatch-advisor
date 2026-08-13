@@ -10,6 +10,8 @@ The current POC includes:
 
 - FastAPI health endpoint at `GET /health`.
 - Local server logs from Uvicorn.
+- Request correlation through `X-Correlation-ID` on every response and the shared API error envelope.
+- Correlation-aware logging for unexpected backend exceptions.
 - GitHub Actions CI checks.
 - No centralized logging.
 - No metrics.
@@ -114,7 +116,7 @@ Distributed tracing should eventually connect:
 - Integration adapter call.
 - Audit event creation.
 
-Correlation identifiers should be included in logs and error responses.
+Phase 4.4 provides the initial request-correlation foundation: the backend propagates a valid caller-supplied `X-Correlation-ID` or generates a UUID, returns it on every response, repeats it in structured error bodies, and includes it when logging unexpected exceptions. This is request correlation only; it is not distributed tracing, and routine request logs are not yet structured around the identifier.
 
 ## Integration Observability
 
@@ -152,7 +154,7 @@ Alert thresholds should be tuned for routine and storm operations.
 | Uvicorn console logs | Structured centralized logs |
 | Basic `/health` | Component health checks |
 | No metrics | API, recommendation, integration, audit metrics |
-| No tracing | Request correlation and distributed tracing |
+| Request correlation only | Structured correlated logging and distributed tracing |
 | No integration health | Integration health dashboard and alerts |
 
 ## Related Documents
@@ -161,4 +163,3 @@ Alert thresholds should be tuned for routine and storm operations.
 - [Audit Logging](803_Audit_Logging.md)
 - [Deployment and Operations](805_Deployment_and_Operations.md)
 - [Integration API](../400_Backend_API/406_Integration_API.md)
-

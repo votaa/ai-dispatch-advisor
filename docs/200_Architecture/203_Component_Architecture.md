@@ -134,12 +134,12 @@ Current limitations:
 - API routers are not yet split by domain.
 - Supporting context response models are not fully declared.
 - Authentication and authorization are not implemented.
-- Structured errors are not consistent across all endpoints.
+- Request correlation is not yet connected to centralized structured logs or traces.
 
 Target evolution:
 
 - Split routers into incidents, crews, recommendations, scenarios, audit, and integrations.
-- Complete context response contracts and structured errors.
+- Complete supporting-context response contracts.
 - Keep HTTP routing separate from application-service behavior.
 - Add authentication and role checks.
 

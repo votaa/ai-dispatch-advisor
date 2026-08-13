@@ -112,26 +112,43 @@ Responses should:
 - Include structured explanation fields for recommendations.
 - Avoid requiring frontend parsing of free-text values for behavior.
 
-Phase 4.1 establishes explicit Pydantic request and response contracts for health, dashboard, incident, crew, assignment, recommendation, recommendation-action, audit-history, scenario, and Copilot operations. Existing JSON field names and shapes are preserved for the frontend. Weather, critical-facility, and topology response contracts remain a later Phase 4 task.
+Phase 4.1 establishes explicit Pydantic request and response contracts for health, dashboard, incident, crew, assignment, recommendation, recommendation-action, audit-history, scenario, and Copilot operations. Existing JSON field names and shapes are preserved for the frontend. Weather, critical-facility, and topology response contracts remain a later API-hardening task.
 
 Phase 4.2 moves operational composition and workflow logic behind application services. API handlers now delegate to incident, crew, assignment, recommendation, decision, scenario, context, and Copilot services while preserving the established HTTP paths, status codes, and JSON contracts.
 
-## Error Response Direction
+## Structured Error Contract
 
-The target API should standardize error responses:
+Phase 4.4 standardizes domain, request-validation, scenario, framework HTTP, and unexpected failures under the named `ErrorResponse`, `ApiError`, and `ErrorDetail` OpenAPI schemas:
 
 ```json
 {
   "error": {
-    "code": "RESOURCE_NOT_FOUND",
+    "code": "entity_not_found",
     "message": "Incident not found",
     "correlation_id": "example-correlation-id",
-    "details": {}
+    "details": [],
+    "entity": "Incident",
+    "entity_id": "INC-404"
   }
 }
 ```
 
-Most current MVP endpoints use FastAPI default error responses. The read-only scenario service establishes the initial structured error contract for missing scenario configuration and invalid manifest or CSV data.
+Every response includes `X-Correlation-ID`. A client-provided identifier is preserved when it contains 1–128 letters, digits, periods, underscores, colons, or hyphens and begins with a letter or digit; otherwise the API generates a UUID. Error bodies repeat the same identifier for support correlation. Validation errors identify the failing request location but do not echo submitted values, and unexpected failures return a safe generic message while logging the correlation identifier server-side.
+
+Current stable error codes include:
+
+| Code | Status | Meaning |
+| --- | ---: | --- |
+| `decision_reason_required` | 400 | A defer or override decision omitted its required reason |
+| `entity_not_found` | 404 | A requested domain entity does not exist |
+| `resource_not_found` | 404 | No API route or framework resource matched |
+| `decision_incident_mismatch` | 409 | A submitted recommendation belongs to a different incident |
+| `request_validation_failed` | 422 | Request path, query, or body validation failed |
+| `scenario_not_found` | 404 | The requested scenario directory does not exist |
+| `scenario_validation_failed` | 422 | Scenario manifest or CSV validation failed |
+| `internal_server_error` | 500 | An unexpected failure was safely concealed from the client |
+
+Clients should branch on `error.code`, display `error.message`, optionally display safe `details`, and retain `correlation_id` for troubleshooting. They should not parse message text to determine behavior.
 
 ## Versioning Direction
 

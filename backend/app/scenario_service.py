@@ -72,17 +72,6 @@ class ScenarioServiceError(Exception):
         self.scenario_id = scenario_id
         self.details = details or []
 
-    def response_content(self) -> dict[str, Any]:
-        return {
-            "error": {
-                "code": self.code,
-                "message": self.message,
-                "scenario_id": self.scenario_id,
-                "details": self.details,
-            }
-        }
-
-
 CSV_SCHEMAS: dict[str, tuple[list[str], str]] = {
     "PendingIncidents.csv": (
         [

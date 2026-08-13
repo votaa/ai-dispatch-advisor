@@ -1,7 +1,12 @@
 import pytest
 
 from app.domain.models import Assignment, Crew, Incident, Recommendation
-from app.services import DecisionReasonRequiredError, EntityNotFoundError, build_services
+from app.services import (
+    DecisionConflictError,
+    DecisionReasonRequiredError,
+    EntityNotFoundError,
+    build_services,
+)
 
 
 def test_services_return_typed_domain_models() -> None:
@@ -50,6 +55,21 @@ def test_decision_service_enforces_required_reason() -> None:
             action="deferred",
             recommendation=recommendation,
             reason="   ",
+        )
+
+
+def test_decision_service_rejects_mismatched_recommendation_incident() -> None:
+    services = build_services()
+    recommendation = services.recommendations.recommend("INC-1001")
+
+    with pytest.raises(
+        DecisionConflictError,
+        match="Recommendation incident does not match the decision incident",
+    ):
+        services.decisions.record(
+            incident_id="INC-1002",
+            action="accepted",
+            recommendation=recommendation,
         )
 
 

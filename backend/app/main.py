@@ -3,9 +3,8 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from .api_models import (
     ChatRequest,
@@ -17,10 +16,9 @@ from .api_models import (
     ScenarioActivationRequest,
 )
 from .domain.models import Assignment, Crew, Incident, Recommendation, RecommendationDecision
-from .scenario_service import ScenarioDescriptor, ScenarioServiceError
+from .error_contracts import ERROR_RESPONSES, install_error_contract
+from .scenario_service import ScenarioDescriptor
 from .services import (
-    DecisionReasonRequiredError,
-    EntityNotFoundError,
     build_services,
     initialize_application,
 )
@@ -37,6 +35,7 @@ app = FastAPI(
     description="Developer Bootstrap MVP API for synthetic utility outage dispatch data.",
     version="0.1.0",
     lifespan=lifespan,
+    responses=ERROR_RESPONSES,
 )
 
 app.add_middleware(
@@ -46,16 +45,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+install_error_contract(app)
 
 services = build_services()
-
-
-@app.exception_handler(ScenarioServiceError)
-async def scenario_service_error_handler(
-    _request: Request,
-    exc: ScenarioServiceError,
-) -> JSONResponse:
-    return JSONResponse(status_code=exc.status_code, content=exc.response_content())
 
 
 @app.get("/health")
@@ -90,10 +82,7 @@ def incidents() -> list[Incident]:
 
 @app.get("/api/incidents/{incident_id}")
 def incident_detail(incident_id: str) -> Incident:
-    try:
-        return services.incidents.get(incident_id)
-    except EntityNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return services.incidents.get(incident_id)
 
 
 @app.get("/api/crews")
@@ -123,26 +112,18 @@ def topology() -> list[dict]:
 
 @app.post("/api/optimize")
 def optimize(request: OptimizeRequest) -> Recommendation:
-    try:
-        return services.recommendations.recommend(request.incident_id)
-    except EntityNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return services.recommendations.recommend(request.incident_id)
 
 
 @app.post("/api/recommendation-actions")
 def recommendation_action(request: RecommendationActionRequest) -> RecommendationDecision:
-    try:
-        return services.decisions.record(
-            incident_id=request.incident_id,
-            action=request.action,
-            recommendation=request.recommendation,
-            reason=request.reason,
-            note=request.note,
-        )
-    except EntityNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except DecisionReasonRequiredError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return services.decisions.record(
+        incident_id=request.incident_id,
+        action=request.action,
+        recommendation=request.recommendation,
+        reason=request.reason,
+        note=request.note,
+    )
 
 
 @app.get("/api/audit/events")
@@ -152,7 +133,4 @@ def audit_events(limit: int = 25) -> list[RecommendationDecision]:
 
 @app.post("/api/chat")
 def chat(request: ChatRequest) -> ChatResponse:
-    try:
-        return services.copilot.respond(request.message, request.incident_id)
-    except EntityNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return services.copilot.respond(request.message, request.incident_id)

@@ -29,12 +29,12 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 1: POC Stabilization | Complete | Startup, sample-data consistency, backend and frontend checks, primary-page loading/empty/error states, canonical regression testing, dynamic-discovery smoke testing, and known-limitations documentation are in place. |
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
-| Phase 4: Backend Domain Model | In progress | Phases 4.1–4.3 established the persistence boundary, typed contracts, service boundaries, and versioned SQLite migrations. Structured errors and broader failure-contract tests remain pending. |
+| Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
 | Phase 5: Recommendation and Optimization Engine | Pending | Deterministic POC scoring exists; configurable factors, explicit hard constraints, richer explanations, and evaluation remain pending. |
 | Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
-| Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
+| Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, request correlation, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
 | Phase 10: Pilot Readiness | Pending | SME validation, pilot criteria, readiness reviews, release controls, and support procedures remain pending. |
 
 ## Delivery Principles
@@ -122,7 +122,7 @@ Exit criteria:
 
 Objective: move from demo-oriented endpoints toward a durable backend model.
 
-Status: In progress. Phase 4.1 persistence-boundary and domain-contract design, Phase 4.2 service-layer boundaries, and Phase 4.3 database migration foundation completed on 2026-08-13.
+Status: Complete. Phases 4.1–4.4 completed on 2026-08-13, including persistence and domain contracts, service-layer boundaries, versioned migrations, centralized structured errors, request correlation, and expanded contract and failure-path tests.
 
 Scope:
 
@@ -299,16 +299,16 @@ Exit criteria:
 - [x] Verify useful empty, loading, and error states across every primary page.
 - [x] Record new smoke-test findings in `docs/004_POC_Feedback_Log.md` and resolve or defer them explicitly.
 
-### Phase 4: Current Implementation Phase
+### Phase 4: Completed Implementation Phase
 
 - [x] Confirm the persistence boundary between version-controlled scenario data and mutable operational entities.
 - [x] Define explicit backend entities for incidents, crews, assignments, recommendations, decisions, audit events, and scenario metadata.
 - [x] Introduce service-layer boundaries instead of composing domain state directly in API handlers.
 - [x] Add Pydantic request and response models for the core API surface.
 - [x] Select and document a database migration approach.
-- [ ] Add structured domain and validation errors consistently across core endpoints.
-- [ ] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
-- [ ] Update architecture, API, and data documentation for the implemented Phase 4 design.
+- [x] Add structured domain and validation errors consistently across core endpoints.
+- [x] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
+- [x] Update architecture, API, and data documentation for the implemented Phase 4 design.
 
 ### Later Pending Phases
 
@@ -319,7 +319,7 @@ Exit criteria:
 - [ ] Phase 9: add structured logs, readiness, metrics, hardened deployment, environment configuration, and operational support tooling.
 - [ ] Phase 10: complete SME validation, pilot success criteria, readiness reviews, release controls, rollback, and support procedures.
 
-The sequence now continues with Phase 4 backend foundations, Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
+The sequence now continues with Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
 
 ## Definition of Done
 

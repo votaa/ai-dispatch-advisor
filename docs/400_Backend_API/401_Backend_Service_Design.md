@@ -198,18 +198,19 @@ Integration adapters should:
 
 ## Error Handling Strategy
 
-The backend should provide consistent error behavior:
+Phase 4.4 establishes one centralized HTTP error boundary. Application services raise framework-neutral typed exceptions, route handlers do not translate them individually, and the boundary maps domain, request-validation, scenario, framework HTTP, and unexpected exceptions to the shared `ErrorResponse` contract.
 
 | Situation | Expected API Behavior |
 | --- | --- |
-| Resource not found | `404 Not Found` with clear detail |
-| Invalid request | `422 Unprocessable Entity` from validation or explicit structured error |
+| Resource not found | `404 Not Found` with `entity_not_found` or a resource-specific stable code |
+| Invalid request | `422 Unprocessable Entity` with `request_validation_failed` and field details |
+| Decision/recommendation incident mismatch | `409 Conflict` with `decision_incident_mismatch` |
 | Unauthorized user | `401 Unauthorized` when authentication exists |
 | Forbidden action | `403 Forbidden` when authorization exists |
 | Integration unavailable | Controlled degraded response or `503 Service Unavailable` |
-| Unexpected server failure | `500 Internal Server Error` with logged correlation identifier |
+| Unexpected server failure | Safe `500 Internal Server Error`; internal detail is logged with the correlation identifier |
 
-The current MVP uses FastAPI defaults and limited explicit errors.
+All responses carry `X-Correlation-ID`, and error bodies repeat it. Valid caller identifiers are propagated; missing or malformed identifiers are replaced with generated UUIDs. Full structured logging, identity context, metrics, and distributed tracing remain Phase 8–9 work.
 
 ## Testing Strategy
 
@@ -265,9 +266,8 @@ Known gaps:
 - No authorization.
 - API routes remain in one module rather than domain routers.
 - Production database selection, backup, rollback, and migration operations are not yet defined.
-- Structured errors are not yet consistent across all domain endpoints.
 - No integration adapters.
-- No production logging or correlation IDs.
+- Correlation IDs are not yet connected to structured centralized logs or distributed traces.
 - Supporting context endpoints do not yet have formal response models.
 
 ## Related Documents
