@@ -73,6 +73,8 @@ Basic local validation:
 - Dashboard endpoint returns summary data.
 - Recommendation endpoint returns a demo recommendation.
 
+On backend startup, pending decision-store migrations are applied before the API begins serving requests. A startup failure mentioning a migration indicates that the local SQLite schema or recorded migration history could not be upgraded safely.
+
 If any check fails, use the troubleshooting section below.
 
 ## POC Demo Checklist
@@ -218,6 +220,21 @@ Actions:
 - Confirm demo data files exist.
 - Confirm the API endpoints return data directly.
 - Check whether a recent data file edit introduced missing columns or invalid values.
+
+### Backend Fails During Database Migration
+
+Symptoms:
+
+- The backend exits during startup.
+- Backend logs report a migration version, checksum mismatch, unsupported schema, or inconsistent migration history.
+
+Actions:
+
+- Review the backend log for the exact migration version and error.
+- Do not edit an already-applied file under `backend/app/migrations/`; add a new numbered migration for schema corrections.
+- For disposable demo state, stop the backend, move `database/aida_decisions.db` to a backup location, and restart to create a fresh migrated database.
+- For state that must be retained, preserve a copy of the database and resolve the unsupported schema or migration-history discrepancy before restarting.
+- Do not delete or overwrite a decision database whose contents must be retained without an approved backup and recovery plan.
 
 ### Demo Data Looks Wrong
 

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+from collections.abc import AsyncIterator
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,13 +18,25 @@ from .api_models import (
 )
 from .domain.models import Assignment, Crew, Incident, Recommendation, RecommendationDecision
 from .scenario_service import ScenarioDescriptor, ScenarioServiceError
-from .services import DecisionReasonRequiredError, EntityNotFoundError, build_services
+from .services import (
+    DecisionReasonRequiredError,
+    EntityNotFoundError,
+    build_services,
+    initialize_application,
+)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    initialize_application()
+    yield
 
 
 app = FastAPI(
     title="AI Dispatch Advisor API",
     description="Developer Bootstrap MVP API for synthetic utility outage dispatch data.",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

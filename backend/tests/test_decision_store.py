@@ -2,6 +2,7 @@ import json
 import sqlite3
 
 from app import decision_store
+from app.database_migrations import applied_migrations
 
 
 def test_init_store_migrates_existing_rows_to_base_scenario() -> None:
@@ -82,10 +83,20 @@ def test_init_store_migrates_existing_rows_to_base_scenario() -> None:
             "SELECT scenario_id FROM demo_assignments WHERE assignment_id = ?",
             ("assignment-before-migration",),
         ).fetchone()[0]
+        migration_versions = [row["version"] for row in applied_migrations(connection)]
+        indexes = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_%'"
+            )
+        }
 
     assert "scenario_id" in audit_columns
     assert "scenario_id" in assignment_columns
     assert audit_scenario == "base"
     assert assignment_scenario == "base"
+    assert migration_versions == [1, 2, 3]
+    assert "idx_recommendation_audit_events_scenario_incident" in indexes
+    assert "idx_demo_assignments_scenario_active" in indexes
     assert decision_store.recent_decisions("storm") == []
     assert decision_store.recent_decisions("base")[0]["event_id"] == "event-before-migration"

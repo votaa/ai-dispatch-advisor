@@ -1,4 +1,4 @@
-from .container import ApplicationServices, build_services
+from .container import ApplicationServices, build_services, initialize_application
 from .errors import DecisionReasonRequiredError, EntityNotFoundError
 
 __all__ = [
@@ -6,4 +6,5 @@ __all__ = [
     "DecisionReasonRequiredError",
     "EntityNotFoundError",
     "build_services",
+    "initialize_application",
 ]

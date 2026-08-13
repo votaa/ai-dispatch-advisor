@@ -29,7 +29,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 1: POC Stabilization | Complete | Startup, sample-data consistency, backend and frontend checks, primary-page loading/empty/error states, canonical regression testing, dynamic-discovery smoke testing, and known-limitations documentation are in place. |
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
-| Phase 4: Backend Domain Model | In progress | Phases 4.1 and 4.2 established the persistence boundary, typed contracts, and application-service boundaries. Migrations, structured errors, and broader failure-contract tests remain pending. |
+| Phase 4: Backend Domain Model | In progress | Phases 4.1–4.3 established the persistence boundary, typed contracts, service boundaries, and versioned SQLite migrations. Structured errors and broader failure-contract tests remain pending. |
 | Phase 5: Recommendation and Optimization Engine | Pending | Deterministic POC scoring exists; configurable factors, explicit hard constraints, richer explanations, and evaluation remain pending. |
 | Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
@@ -122,7 +122,7 @@ Exit criteria:
 
 Objective: move from demo-oriented endpoints toward a durable backend model.
 
-Status: In progress. Phase 4.1 persistence-boundary and domain-contract design and Phase 4.2 service-layer boundaries completed on 2026-08-13.
+Status: In progress. Phase 4.1 persistence-boundary and domain-contract design, Phase 4.2 service-layer boundaries, and Phase 4.3 database migration foundation completed on 2026-08-13.
 
 Scope:
 
@@ -305,7 +305,7 @@ Exit criteria:
 - [x] Define explicit backend entities for incidents, crews, assignments, recommendations, decisions, audit events, and scenario metadata.
 - [x] Introduce service-layer boundaries instead of composing domain state directly in API handlers.
 - [x] Add Pydantic request and response models for the core API surface.
-- [ ] Select and document a database migration approach.
+- [x] Select and document a database migration approach.
 - [ ] Add structured domain and validation errors consistently across core endpoints.
 - [ ] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
 - [ ] Update architecture, API, and data documentation for the implemented Phase 4 design.

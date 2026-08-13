@@ -246,13 +246,54 @@ This boundary preserves deterministic demos, prevents runtime activity from modi
 
 - Scenario activation remains process-local and scenario files remain read-only when mounted through Docker.
 - Accepted assignments overlay baseline scenario assignments rather than rewriting them.
-- Mutable tables require versioned database migrations in a later Phase 4 work package.
+- Mutable tables are managed through the versioned migration mechanism defined by `D-008`.
 - Service-layer composition must preserve `scenario_id` isolation.
 - Incident and crew persistence is deferred until a normalized operational-store or integration requirement justifies it.
 
 ### Follow-Up Actions
 
-- Extract incident, crew, assignment, recommendation, and decision services from API handlers.
-- Select and implement a migration mechanism for application-owned SQLite tables.
+- Maintain the Phase 4.2 incident, crew, assignment, recommendation, and decision service boundaries.
+- Maintain migration history and upgrade tests for application-owned SQLite tables.
 - Add repository interfaces so scenario inputs and mutable persistence can evolve independently.
 - Revisit the boundary before production source-system integration or multi-user deployment.
+
+## D-008: Use Numbered SQL Migrations for the POC Decision Store
+
+- Status: Accepted
+- Date: 2026-08-13
+- Owners: Backend engineering, solution architecture
+- Related Documents: `docs/400_Backend_API/401_Backend_Service_Design.md`, `docs/600_Data_AI/601_Data_Model.md`, `docs/900_Delivery/902_Implementation_Plan.md`
+
+### Context
+
+The application-owned SQLite store uses Python's direct `sqlite3` interface and currently contains two mutable tables. Runtime `CREATE TABLE` and conditional `ALTER TABLE` statements made schema history implicit, did not record applied versions, and could not detect whether an already-applied migration had changed. Phase 4 requires repeatable fresh-database creation and safe upgrades from existing POC databases.
+
+### Decision
+
+Use immutable, consecutively numbered SQL files under `backend/app/migrations/` with a lightweight Python migration runner. The runner:
+
+- Applies migrations in numeric order within explicit transactions.
+- Records version, name, SHA-256 checksum, and application timestamp in `schema_migrations`.
+- Validates consecutive history and rejects changed or unknown applied migrations.
+- Safely baselines the two supported unversioned POC schemas before applying later migrations.
+- Runs during FastAPI startup before the backend begins serving requests.
+
+The initial migrations recreate the actual schema history: decision-store creation, addition of scenario scoping, and addition of query indexes.
+
+### Rationale
+
+The current persistence layer does not use SQLAlchemy, and adding an ORM plus Alembic only to migrate two direct-SQL SQLite tables would add disproportionate complexity. Numbered SQL retains transparent database changes, requires no new runtime dependency, and still provides ordering, integrity checks, transactional application, upgrade tests, and auditable history.
+
+### Consequences
+
+- Applied migration files must never be edited; corrections require a new numbered migration.
+- Migration versions must remain consecutive from `001`.
+- Startup fails rather than guessing when the existing schema or migration history is unsupported.
+- Existing unversioned Phase 2 and Phase 3 databases are adopted without deleting decisions or accepted assignments.
+- A future move to SQLAlchemy or a production database may justify Alembic or a platform-managed migration tool.
+
+### Follow-Up Actions
+
+- Add a new migration file for every application-owned schema change.
+- Preserve upgrade-path, checksum, transaction, and idempotency tests.
+- Add backup and rollback procedures before pilot or production deployment.

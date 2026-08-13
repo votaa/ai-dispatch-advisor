@@ -186,7 +186,7 @@ curl -X PUT http://localhost:8000/api/scenarios/active \
 
 The active scenario resets to `AIDA_DEMO_SCENARIO` when the backend restarts. Runtime activation is currently global to the single POC backend process rather than scoped to an authenticated user session.
 
-Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override decisions are persisted locally in `database/aida_decisions.db`, including a basic audit history. Decisions and accepted demo assignments are scoped to their scenario so runtime switching does not mix operational state. Existing local rows are migrated to the `base` scenario. Defer and Override require a reason, while Modify can include a short note. The local SQLite database is ignored by Git and is not intended as production persistence.
+Recommendation actions are POC-grade only. Accept, Modify, Defer, and Override decisions are persisted locally in `database/aida_decisions.db`, including a basic audit history. Decisions and accepted demo assignments are scoped to their scenario so runtime switching does not mix operational state. The backend applies versioned SQL migrations at startup; supported unversioned local databases are baselined and existing legacy rows are preserved under the `base` scenario. Defer and Override require a reason, while Modify can include a short note. The local SQLite database is ignored by Git and is not intended as production persistence.
 
 ## Repository Structure
 

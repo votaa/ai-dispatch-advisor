@@ -9,6 +9,8 @@ from threading import Lock
 from typing import Any, Literal
 from uuid import uuid4
 
+from .database_migrations import run_migrations
+
 
 ActionStatus = Literal["accepted", "modified", "deferred", "overridden"]
 
@@ -28,69 +30,7 @@ def _connect() -> sqlite3.Connection:
 
 def init_store() -> None:
     with _lock, _connect() as connection:
-        connection.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS recommendation_audit_events (
-              event_id TEXT PRIMARY KEY,
-              scenario_id TEXT NOT NULL,
-              recommendation_id TEXT NOT NULL,
-              incident_id TEXT NOT NULL,
-              crew_id TEXT,
-              action TEXT NOT NULL,
-              reason TEXT,
-              actor TEXT NOT NULL,
-              confidence TEXT,
-              explanation_json TEXT NOT NULL,
-              created_at TEXT NOT NULL,
-              UNIQUE(event_id)
-            );
-
-            CREATE TABLE IF NOT EXISTS demo_assignments (
-              assignment_id TEXT PRIMARY KEY,
-              scenario_id TEXT NOT NULL,
-              incident_id TEXT NOT NULL,
-              crew_id TEXT NOT NULL,
-              status TEXT NOT NULL,
-              assigned_at TEXT NOT NULL,
-              notes TEXT NOT NULL,
-              decision_event_id TEXT NOT NULL
-            );
-
-            """
-        )
-        _add_column_if_missing(
-            connection,
-            table="recommendation_audit_events",
-            column="scenario_id",
-            definition="TEXT NOT NULL DEFAULT 'base'",
-        )
-        _add_column_if_missing(
-            connection,
-            table="demo_assignments",
-            column="scenario_id",
-            definition="TEXT NOT NULL DEFAULT 'base'",
-        )
-        connection.executescript(
-            """
-            CREATE INDEX IF NOT EXISTS idx_recommendation_audit_events_scenario_incident
-              ON recommendation_audit_events (scenario_id, incident_id, created_at DESC);
-
-            CREATE INDEX IF NOT EXISTS idx_demo_assignments_scenario_active
-              ON demo_assignments (scenario_id, crew_id, status);
-            """
-        )
-
-
-def _add_column_if_missing(
-    connection: sqlite3.Connection,
-    *,
-    table: str,
-    column: str,
-    definition: str,
-) -> None:
-    columns = {row["name"] for row in connection.execute(f"PRAGMA table_info({table})")}
-    if column not in columns:
-        connection.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
+        run_migrations(connection)
 
 
 def _row_to_event(row: sqlite3.Row) -> dict[str, Any]:

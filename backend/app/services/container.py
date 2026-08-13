@@ -76,3 +76,7 @@ def build_services() -> ApplicationServices:
         copilot=copilot,
         context=context,
     )
+
+
+def initialize_application() -> None:
+    decision_store.init_store()

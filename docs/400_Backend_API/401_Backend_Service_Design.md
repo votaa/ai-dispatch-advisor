@@ -14,12 +14,17 @@ backend/
     __init__.py
     api_models.py
     data_loader.py
+    database_migrations.py
     decision_store.py
     domain/
       models.py
     main.py
     recommendations.py
     scenario_service.py
+    migrations/
+      001_create_decision_store.sql
+      002_add_scenario_scope.sql
+      003_add_decision_indexes.sql
     services/
       assignment_service.py
       context_service.py
@@ -43,6 +48,7 @@ The current backend:
 - Provides keyword-based Copilot demo responses.
 - Validates core request and response contracts with Pydantic domain models.
 - Persists scenario-scoped recommendation decisions and accepted assignments in SQLite.
+- Applies versioned SQLite migrations before serving API requests.
 - Delegates state composition and workflow behavior from API handlers to directly testable services.
 - Supports local CORS for the React frontend.
 - Includes API, persistence, scenario, and recommendation tests.
@@ -70,6 +76,8 @@ The backend should:
 | API contracts | `backend/app/api_models.py` | Core request and composite response models |
 | Domain contracts | `backend/app/domain/models.py` | Explicit incident, crew, assignment, recommendation, decision, audit, and scenario entities |
 | Data loader | `backend/app/data_loader.py` | Reads and coerces synthetic CSV scenario data |
+| Migration runner | `backend/app/database_migrations.py` | Discovers, validates, baselines, and transactionally applies numbered SQL migrations |
+| SQL migrations | `backend/app/migrations/` | Immutable application-owned decision-store schema history |
 | Decision store | `backend/app/decision_store.py` | Persists scenario-scoped decisions and accepted assignments in SQLite |
 | Recommendation logic | `backend/app/recommendations.py` | Ranks incidents, recommends crews, builds dashboard summary |
 | Scenario service | `backend/app/scenario_service.py` | Discovers and validates manifested scenario inputs |
@@ -174,7 +182,9 @@ Decision `D-007` establishes two distinct persistence responsibilities:
 - Mutable records are isolated by `scenario_id` and overlay scenario inputs when domain state is assembled.
 - The backend does not write to scenario files.
 
-The next Phase 4 persistence step is to replace ad hoc SQLite schema initialization with versioned migrations. A future normalized operational store may persist incident and crew projections when integration requirements justify it; that is not part of the current POC boundary.
+Decision `D-008` replaces ad hoc schema initialization with ordered SQL migrations. FastAPI startup applies pending migrations before accepting requests. The `schema_migrations` table records each version, name, checksum, and application timestamp. Existing unversioned POC schemas are recognized and baselined only when both decision tables match a supported shape; unknown or inconsistent schemas fail startup rather than being modified speculatively.
+
+Applied migration files are immutable. Every later schema change must be introduced as the next consecutive migration and include fresh-database, upgrade-path, preservation, and repeat-execution coverage. A future normalized operational store may persist incident and crew projections when integration requirements justify it; that is not part of the current POC boundary.
 
 ## Integration Responsibilities
 
@@ -254,7 +264,7 @@ Known gaps:
 - No authentication.
 - No authorization.
 - API routes remain in one module rather than domain routers.
-- SQLite schema changes are not yet managed by versioned migrations.
+- Production database selection, backup, rollback, and migration operations are not yet defined.
 - Structured errors are not yet consistent across all domain endpoints.
 - No integration adapters.
 - No production logging or correlation IDs.

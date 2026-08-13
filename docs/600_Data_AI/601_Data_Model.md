@@ -44,6 +44,20 @@ Decision `D-007` defines the current ownership boundary:
 
 The backend must not write runtime changes into scenario folders. CSV identifiers are normalized as strings even when their values contain only digits, preserving stable identifiers across generated and hand-authored scenarios. Future enterprise adapters or normalized persistence may replace scenario-backed incident and crew inputs, but they should map into the same domain contracts. The initial explicit contracts are implemented in `backend/app/domain/models.py`.
 
+## Decision-Store Schema Evolution
+
+Application-owned SQLite tables are managed by consecutively numbered SQL migrations under `backend/app/migrations/`. The backend applies pending migrations at startup and records their version, name, SHA-256 checksum, and application time in `schema_migrations`.
+
+The initial migration history is:
+
+| Version | Purpose |
+| --- | --- |
+| `001` | Create recommendation audit-event and accepted-assignment tables |
+| `002` | Add `scenario_id` scoping with `base` as the legacy-row default |
+| `003` | Add scenario-aware audit and active-assignment indexes |
+
+Existing unversioned POC databases matching either the original unscoped schema or the current scenario-scoped schema are baselined and upgraded without removing rows. Unsupported partial or inconsistent schemas cause startup failure so recovery can be handled explicitly.
+
 ## Data Model Goals
 
 The data model should:

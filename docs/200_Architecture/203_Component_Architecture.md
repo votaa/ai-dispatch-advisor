@@ -230,16 +230,17 @@ Responsibilities:
 
 - Persist scenario-scoped recommendation decisions and audit history.
 - Persist accepted assignments that overlay immutable scenario assignments.
-- Initialize the local SQLite tables and indexes.
+- Run ordered, checksummed SQL migrations at application startup.
+- Record applied versions in `schema_migrations`.
 
 Current limitations:
 
-- Schema evolution still uses runtime table and column checks rather than versioned migrations.
 - SQLite is intended for local POC operation, not multi-user production deployment.
+- Automated downgrade migrations and production backup procedures are not implemented.
 
 Target evolution:
 
-- Introduce repository interfaces and versioned migrations.
+- Introduce repository interfaces and production migration operations.
 - Replace SQLite with an enterprise-approved relational database for production deployment.
 
 ## Planned Components

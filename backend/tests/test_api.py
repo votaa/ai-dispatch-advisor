@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 
+from app import decision_store
+from app.database_migrations import applied_migrations
 from app.decision_store import clear_decisions
 from app.main import app
 
@@ -11,6 +13,14 @@ def test_health() -> None:
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_application_startup_applies_database_migrations() -> None:
+    with TestClient(app) as startup_client:
+        assert startup_client.get("/health").status_code == 200
+
+    with decision_store._connect() as connection:
+        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3]
 
 
 def test_openapi_exposes_explicit_core_response_contracts() -> None:
