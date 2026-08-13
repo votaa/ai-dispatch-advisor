@@ -16,6 +16,8 @@ The current POC recommendation response includes:
 
 The frontend displays these values in the recommendation panel. This is an appropriate first baseline, but future implementation should make explanation data more structured and auditable.
 
+Phase 5.2 now produces typed incident-score contributions internally, including factor identifiers, raw values, configured values, calculation types, and point contributions. These internal objects establish the source evidence for Phase 5.4; they are intentionally not yet added to public recommendation responses or rendered by the frontend.
+
 ## Explainability Goals
 
 The explainability model should:
@@ -201,4 +203,3 @@ This allows post-event review and decision traceability.
 - [Optimization Engine](602_Optimization_Engine.md)
 - [AI Recommendation Engine](603_AI_Recommendation_Engine.md)
 - [Model Governance](605_Model_Governance.md)
-

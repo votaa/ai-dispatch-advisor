@@ -116,8 +116,23 @@ class RecommendationPolicy(PolicyModel):
             raise ValueError("policy rule identifiers must be unique within their category")
         return rules
 
+    @field_validator("incident_tie_breakers")
+    @classmethod
+    def validate_incident_tie_breakers(cls, rules: list[TieBreakRule]) -> list[TieBreakRule]:
+        allowed = {"severity", "age_minutes", "customers_out", "incident_id", "source_order"}
+        fields = [rule.field for rule in rules]
+        unsupported = sorted(set(fields) - allowed)
+        if unsupported:
+            raise ValueError(f"unsupported incident tie-break fields: {', '.join(unsupported)}")
+        if len(fields) != len(set(fields)):
+            raise ValueError("incident tie-break fields must be unique")
+        for rule in rules:
+            if (rule.field == "source_order") != (rule.direction == "source_order"):
+                raise ValueError("source_order field and direction must be used together")
+        return rules
 
-DEFAULT_RECOMMENDATION_POLICY = RecommendationPolicy(
+
+POC_BASELINE_RECOMMENDATION_POLICY = RecommendationPolicy(
     algorithm_version="deterministic-scoring-v1",
     policy_version="poc-baseline-v1",
     incident_scoring=IncidentScoringPolicy(),
@@ -246,4 +261,35 @@ DEFAULT_RECOMMENDATION_POLICY = RecommendationPolicy(
             description="Preserve current stable-sort behavior for the POC baseline.",
         )
     ],
+)
+
+
+DEFAULT_RECOMMENDATION_POLICY = RecommendationPolicy.model_validate(
+    {
+        **POC_BASELINE_RECOMMENDATION_POLICY.model_dump(),
+        "algorithm_version": "deterministic-scoring-v2",
+        "policy_version": "incident-priority-v1",
+        "incident_tie_breakers": [
+            {
+                "field": "severity",
+                "direction": "descending",
+                "description": "Prefer higher configured severity when total scores tie.",
+            },
+            {
+                "field": "age_minutes",
+                "direction": "descending",
+                "description": "Prefer the older incident when score and severity tie.",
+            },
+            {
+                "field": "customers_out",
+                "direction": "descending",
+                "description": "Prefer greater customer impact when earlier criteria tie.",
+            },
+            {
+                "field": "incident_id",
+                "direction": "ascending",
+                "description": "Use the stable incident identifier as the final tie-breaker.",
+            },
+        ],
+    }
 )

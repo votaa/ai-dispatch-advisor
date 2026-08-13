@@ -104,6 +104,8 @@ Services receive data, persistence, or peer-service dependencies through their c
 
 Phase 5.1 injects one shared `OptimizationEngine` into incident ranking and recommendation generation. Its typed request carries the scenario, incident, crews, and assignments, while its versioned policy declares scoring factors, blocking constraints, assumptions, data-quality conditions, and tie handling. The initial deterministic adapter preserves the public API and established POC results while allowing later constraint-aware or OR-Tools implementations without changing route handlers.
 
+Phase 5.2 moves incident-priority calculation fully behind that engine. `IncidentScore` and `IncidentScoreContribution` provide internal, typed evaluation evidence, and the active policy supplies validated weights and explicit severity, age, customer-impact, and incident-ID tie-breakers. `IncidentService` intentionally projects ranked results back to the existing `Incident` API model until structured public explanations are introduced in Phase 5.4.
+
 ## Target Backend Structure
 
 As implementation matures, routers, configuration, persistence repositories, and integration adapters should be separated further:

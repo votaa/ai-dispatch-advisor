@@ -5,28 +5,6 @@ from typing import Any
 from .optimization.policy import DEFAULT_RECOMMENDATION_POLICY, RecommendationPolicy
 
 
-def _score_incident(
-    incident: dict[str, Any],
-    policy: RecommendationPolicy = DEFAULT_RECOMMENDATION_POLICY,
-) -> int:
-    scoring = policy.incident_scoring
-    customers = int(incident.get("customers_out") or 0)
-    critical = scoring.critical_facility_bonus if incident.get("critical_facility") else 0
-    hazard = scoring.hazard_bonus if str(incident.get("hazard", "")).lower() != "none" else 0
-    age = int(incident.get("age_minutes") or 0) // scoring.age_minutes_divisor
-    severity = scoring.severity_weights.for_severity(
-        str(incident.get("severity", "")).lower()
-    )
-    return customers // scoring.customers_out_divisor + critical + hazard + age + severity
-
-
-def ranked_incidents(
-    incidents: list[dict[str, Any]],
-    policy: RecommendationPolicy = DEFAULT_RECOMMENDATION_POLICY,
-) -> list[dict[str, Any]]:
-    return sorted(incidents, key=lambda incident: _score_incident(incident, policy), reverse=True)
-
-
 def recommend_assignment(
     incident: dict[str, Any],
     crews: list[dict[str, Any]],
@@ -106,26 +84,28 @@ def recommend_assignment(
 
 
 def dashboard_summary(
-    incidents: list[dict[str, Any]],
+    ranked_incidents: list[dict[str, Any]],
     crews: list[dict[str, Any]],
     assignments: list[dict[str, Any]],
     scenario_id: str = "base",
-    policy: RecommendationPolicy = DEFAULT_RECOMMENDATION_POLICY,
 ) -> dict[str, Any]:
-    ranked = ranked_incidents(incidents, policy=policy)
     active_assigned_crews = {row.get("crew_id") for row in assignments if row.get("status") == "active"}
     return {
-        "active_incidents": len(incidents),
-        "customers_out": sum(int(row.get("customers_out") or 0) for row in incidents),
+        "active_incidents": len(ranked_incidents),
+        "customers_out": sum(int(row.get("customers_out") or 0) for row in ranked_incidents),
         "available_crews": sum(
             1 for row in crews if row.get("status") == "available" and row.get("crew_id") not in active_assigned_crews
         ),
         "assigned_crews": len(active_assigned_crews),
-        "critical_facility_incidents": sum(1 for row in incidents if row.get("critical_facility")),
-        "high_priority_incidents": sum(
-            1 for row in incidents if str(row.get("severity")).lower() in {"critical", "high"}
+        "critical_facility_incidents": sum(
+            1 for row in ranked_incidents if row.get("critical_facility")
         ),
-        "top_incidents": ranked[:5],
+        "high_priority_incidents": sum(
+            1
+            for row in ranked_incidents
+            if str(row.get("severity")).lower() in {"critical", "high"}
+        ),
+        "top_incidents": ranked_incidents[:5],
         "scenario": scenario_id,
         "data_freshness": "Synthetic demo data loaded at backend startup",
     }

@@ -365,3 +365,37 @@ This separates policy from mechanics, prevents implicit rule promotion, gives re
 - Enforce capability and shift feasibility with exclusion reasons in Phase 5.3.
 - Expose explanation, uncertainty, data-quality, and version metadata in Phase 5.4.
 - Obtain dispatcher and policy-owner review before treating weights or constraints as operationally validated.
+
+## D-011: Version Incident Prioritization and Replace Source-Order Ties
+
+- Status: Accepted
+- Date: 2026-08-13
+- Owners: Backend engineering, solution architecture, product and dispatch SMEs
+- Related Documents: `docs/600_Data_AI/602_Optimization_Engine.md`, `docs/400_Backend_API/405_Recommendation_API.md`, `docs/900_Delivery/902_Implementation_Plan.md`
+
+### Context
+
+Phase 5.1 preserved the original incident score and stable CSV-order tie behavior as `poc-baseline-v1`. That baseline made existing results reviewable, but source-file position is not an appropriate operational reason to prioritize one equally scored incident over another. Score totals also lacked a typed breakdown showing how each configured factor contributed.
+
+### Decision
+
+Adopt algorithm `deterministic-scoring-v2` with active policy `incident-priority-v1`. The engine produces a typed internal `IncidentScore` with contributions for customers affected, critical-facility impact, hazard, incident age, and severity. Each contribution records its raw value, configured value, calculation, and points.
+
+Rank primarily by total score. Resolve equal totals using higher configured severity, older incident age, greater customer impact, and finally ascending stable incident ID. Validate tie-break fields, direction, and uniqueness when the policy is constructed. Retain `poc-baseline-v1` only for characterization and regression comparison.
+
+### Rationale
+
+Structured contributions make weight changes measurable and testable. Explicit domain tie-breakers remove hidden dependence on fixture order and ensure repeated runs produce the same defensible result even when input ordering changes.
+
+### Consequences
+
+- The algorithm and policy versions advance even though canonical scenario winners remain unchanged.
+- A previously tied non-canonical incident set may now change order when CSV rows are reordered or the new domain rules differ from source order.
+- Public incident and recommendation payloads remain unchanged; structured score evidence is internal until Phase 5.4.
+- These weights and tie-breakers remain POC policy pending dispatch-SME validation.
+
+### Follow-Up Actions
+
+- Enforce crew feasibility and expose candidate exclusion reasons in Phase 5.3.
+- Map internal score contributions into the structured public explanation contract in Phase 5.4.
+- Include tie cases and weight-sensitivity cases in Phase 5.6 evaluation evidence.

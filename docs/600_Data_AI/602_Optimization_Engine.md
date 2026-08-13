@@ -29,6 +29,8 @@ Phase 5.1 adds a behavior-preserving design foundation under `backend/app/optimi
 
 This package does not intentionally alter recommendation API fields or canonical results.
 
+Phase 5.2 advances the active policy to `incident-priority-v1` and algorithm `deterministic-scoring-v2`. Incident evaluation now returns an internal typed score containing the total and five contributions: customer impact, critical-facility impact, hazard, incident age, and severity. Each contribution records the raw value, configured divisor or weight, calculation type, and resulting points. Application services continue returning the established public `Incident` shape; richer public explanation fields remain Phase 5.4 work.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals
@@ -159,7 +161,14 @@ minimum score 0
 
 A score of at least `115` currently produces `high` confidence; otherwise a selected crew produces `medium` confidence. Phase 5.4 will replace this single-threshold approach with confidence and uncertainty evidence.
 
-Python sorting is stable, so equal scores currently preserve source-file order. Phase 5.2 and 5.3 should replace that compatibility rule with explicit domain tie-breakers before source ordering can change.
+`poc-baseline-v1` retains source-file ordering solely for historical characterization. The active `incident-priority-v1` policy resolves equal total scores explicitly in this order:
+
+1. Higher configured severity.
+2. Older incident age.
+3. More customers affected.
+4. Lexically smaller stable incident ID.
+
+Tie-break fields and directions are validated configuration. Unsupported, duplicate, or inconsistent source-order rules fail policy validation rather than falling back silently.
 
 ## Candidate Algorithm Progression
 
@@ -247,6 +256,7 @@ Known gaps:
 - No persistence of recommendation inputs or outputs.
 - Four canonical scenarios have exact baseline winner, score, and alternative-order characterization; broader edge-case fixtures remain pending.
 - No quantitative evaluation metrics.
+- Structured incident contributions remain internal until the Phase 5.4 public explanation contract is introduced.
 
 ## Related Documents
 

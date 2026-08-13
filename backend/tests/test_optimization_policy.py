@@ -7,12 +7,16 @@ from app import data_loader
 from app.domain.models import Assignment
 from app.optimization import OptimizationRequest
 from app.optimization.deterministic_engine import DeterministicOptimizationEngine
-from app.optimization.policy import DEFAULT_RECOMMENDATION_POLICY, RecommendationPolicy
+from app.optimization.policy import (
+    DEFAULT_RECOMMENDATION_POLICY,
+    POC_BASELINE_RECOMMENDATION_POLICY,
+    RecommendationPolicy,
+)
 from app.services import build_services
 
 
-def test_default_policy_versions_and_rule_classification_are_stable() -> None:
-    policy = DEFAULT_RECOMMENDATION_POLICY
+def test_poc_baseline_policy_versions_and_rule_classification_are_stable() -> None:
+    policy = POC_BASELINE_RECOMMENDATION_POLICY
 
     assert policy.algorithm_version == "deterministic-scoring-v1"
     assert policy.policy_version == "poc-baseline-v1"
@@ -141,7 +145,7 @@ def test_optimization_request_rejects_cross_scenario_assignments() -> None:
         ("critical-facility", "CFI-4001", "Assign crew", "FC-01", 138, [("FC-02", 130), ("FC-07", 121), ("FC-03", 92)]),
     ],
 )
-def test_poc_baseline_recommendations_are_characterized(
+def test_canonical_recommendations_remain_stable_under_active_policy(
     scenario_id,
     incident_id,
     action,

@@ -35,7 +35,6 @@ class RecommendationService:
             [crew.model_dump() for crew in self._crews.list()],
             [assignment.model_dump() for assignment in self._assignments.list_active()],
             scenario_id=self._active_scenario_id(),
-            policy=self._optimization_engine.policy,
         )
         return DashboardResponse.model_validate(summary)
 

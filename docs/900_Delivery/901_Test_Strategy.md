@@ -57,6 +57,8 @@ Backend unit tests should cover:
 - Service composition of immutable scenario inputs with scenario-scoped mutable state.
 - Optimization policy validation, classification, immutability, and engine consumption.
 - Characterized recommendation winners, suitability scores, and alternative ordering for canonical scenarios.
+- Exact incident score contributions, configurable-weight effects, and deterministic severity, age, customer-impact, and identifier tie-breakers.
+- Rejection of unsupported, duplicate, or inconsistent incident tie-break configuration.
 
 Optimization unit tests should cover:
 

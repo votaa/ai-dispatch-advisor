@@ -12,6 +12,7 @@ The current POC includes:
 - Keyword-based Copilot demo responses in `backend/app/main.py`.
 - Synthetic CSV input data.
 - Recommendation responses with factors, constraints, confidence, expected impact, and alternatives.
+- Internal structured incident-priority contributions under algorithm `deterministic-scoring-v2` and policy `incident-priority-v1`.
 
 The current POC does not include:
 
@@ -201,4 +202,3 @@ Known gaps:
 - [Optimization Engine](602_Optimization_Engine.md)
 - [Explainability Model](604_Explainability_Model.md)
 - [Model Governance](605_Model_Governance.md)
-
