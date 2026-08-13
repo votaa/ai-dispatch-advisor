@@ -10,12 +10,13 @@ This document describes the major components of the AI Dispatch Advisor, their r
 flowchart TB
   Frontend["Frontend Application"] --> ApiClient["Frontend API Client"]
   ApiClient --> Backend["Backend API Application"]
-  Backend --> DataLoader["Demo Data Loader"]
-  Backend --> Recommendation["Recommendation Engine"]
-  Backend --> Chat["Copilot Response Handler"]
+  Backend --> Services["Application Services"]
+  Services --> DataLoader["Scenario Data Loader"]
+  Services --> DecisionStore["Decision Store"]
+  Services --> Recommendation["Recommendation Engine"]
+  Services --> Chat["Copilot Service"]
   DataLoader --> Csv["Scenario CSV Files"]
-  InitDb["Database Initialization Script"] --> Schema["SQLite Schema"]
-  InitDb --> Csv
+  DecisionStore --> DecisionDb["SQLite Decision Database"]
 ```
 
 ## Current Components
@@ -33,7 +34,7 @@ Responsibilities:
 - Provide navigation between dashboard, dispatch, incidents, crew board, storm mode, scenario, and copilot views.
 - Display dashboard metrics and incident queues.
 - Display selected recommendation details.
-- Provide placeholder recommendation action controls.
+- Capture Accept, Modify, Defer, and Override actions with required reasons.
 - Display Copilot prompt buttons and advisory responses.
 
 Current limitations:
@@ -107,7 +108,9 @@ Responsibilities:
 - Create the FastAPI application.
 - Configure CORS for local development.
 - Expose health and demo API endpoints.
-- Orchestrate data loading and recommendation responses.
+- Validate requests and responses through explicit Pydantic contracts.
+- Delegate operational behavior to application services.
+- Map service errors to the current HTTP response behavior.
 
 Current endpoints:
 
@@ -121,20 +124,23 @@ Current endpoints:
 - `GET /api/critical-facilities`
 - `GET /api/topology`
 - `POST /api/optimize`
+- `POST /api/recommendation-actions`
+- `GET /api/audit/events`
+- `GET`, `PUT /api/scenarios/*`
 - `POST /api/chat`
 
 Current limitations:
 
 - API routers are not yet split by domain.
-- Response models are not fully declared.
+- Supporting context response models are not fully declared.
 - Authentication and authorization are not implemented.
-- API state is not persistent.
+- Structured errors are not consistent across all endpoints.
 
 Target evolution:
 
 - Split routers into incidents, crews, recommendations, scenarios, audit, and integrations.
-- Add explicit Pydantic response models.
-- Add service classes or modules for domain behavior.
+- Complete context response contracts and structured errors.
+- Keep HTTP routing separate from application-service behavior.
 - Add authentication and role checks.
 
 ### Demo Data Loader
@@ -146,22 +152,19 @@ Location:
 Responsibilities:
 
 - Locate the active demo scenario.
-- Read CSV files from `data/scenarios/base/`.
+- Read CSV files from the active manifested scenario directory.
 - Coerce basic CSV values into booleans, integers, floats, or strings.
 - Cache loaded CSV data.
 
 Current limitations:
 
-- Scenario selection is backend environment-based only.
-- There is no runtime scenario switcher.
-- CSV validation is minimal.
+- Scenario activation remains process-global for the local backend.
+- Scenario data remains a POC adapter rather than an enterprise integration.
 
 Target evolution:
 
-- Add scenario manifest files.
-- Validate required columns and data types.
-- Support multiple named scenarios.
-- Add endpoint for available scenarios.
+- Replace or complement scenario inputs with normalized enterprise adapters.
+- Preserve the current domain contracts when source systems change.
 
 ### Recommendation Engine
 
@@ -181,7 +184,7 @@ Current limitations:
 - Logic is deterministic and simplified.
 - Scoring is illustrative, not operationally validated.
 - No OR-Tools, NetworkX, or advanced optimization is implemented yet.
-- No persisted recommendation event is created.
+- Recommendation generation is not persisted separately until a user action is recorded.
 
 Target evolution:
 
@@ -190,54 +193,54 @@ Target evolution:
 - Add test cases for known dispatch scenarios.
 - Persist recommendation requests and outcomes.
 
-### Copilot Response Handler
+### Application Services
 
 Location:
 
-- `backend/app/main.py`
+- `backend/app/services/`
 
 Responsibilities:
 
-- Return simple advisory responses based on keyword intent.
-- Summarize synthetic dispatch data.
-- Maintain a clear safety boundary that Copilot responses do not execute dispatch actions.
+- Compose incident, crew, assignment, recommendation, decision, scenario, and operational-context state.
+- Merge immutable scenario inputs with mutable decision and accepted-assignment overlays.
+- Return typed domain and API models.
+- Keep API handlers free of domain-state composition.
+- Provide Copilot advisory responses through the same current-state services.
 
 Current limitations:
 
-- Not connected to an LLM.
-- No retrieval layer.
-- No conversation memory beyond frontend display.
-- No policy or prompt framework.
+- Current adapters are wired through a local composition root rather than repository interfaces.
+- Service execution is synchronous and local.
+- Copilot remains keyword-based and is not connected to an LLM or retrieval layer.
 
 Target evolution:
 
-- Add a controlled AI service boundary.
-- Use structured domain context retrieval.
-- Keep dispatch action execution separate from advisory language generation.
-- Add audit and safety controls for AI-generated content.
+- Add repository interfaces for mutable persistence.
+- Add enterprise integration adapters behind the service contracts.
+- Split HTTP routes into domain routers without moving business behavior back into the API layer.
+- Add a controlled AI boundary while keeping dispatch execution separate from advisory output.
 
-### Database Initialization Script
+### Decision Store
 
 Location:
 
-- `scripts/init_db.py`
+- `backend/app/decision_store.py`
 
 Responsibilities:
 
-- Create `database/aida.db` locally.
-- Apply `database/schema.sql`.
-- Load selected CSV files into initial SQLite tables.
+- Persist scenario-scoped recommendation decisions and audit history.
+- Persist accepted assignments that overlay immutable scenario assignments.
+- Initialize the local SQLite tables and indexes.
 
 Current limitations:
 
-- The backend does not yet read from SQLite.
-- Database generation is local development support only.
+- Schema evolution still uses runtime table and column checks rather than versioned migrations.
+- SQLite is intended for local POC operation, not multi-user production deployment.
 
 Target evolution:
 
-- Move backend data access to database-backed repositories.
-- Support migrations.
-- Track audit events and recommendation history.
+- Introduce repository interfaces and versioned migrations.
+- Replace SQLite with an enterprise-approved relational database for production deployment.
 
 ## Planned Components
 
@@ -245,8 +248,8 @@ The following components are planned but not yet implemented:
 
 | Component | Responsibility |
 | --- | --- |
-| Audit Service | Persist recommendation, user action, override, and integration events |
-| Scenario Service | Manage demo and operational scenario comparisons |
+| Production Audit Service | Extend current recommendation-action history to system, security, and integration events |
+| Scenario Comparison Service | Compare modeled operational alternatives beyond current scenario activation |
 | Integration Adapters | Normalize OMS, GIS, SCADA, crew, weather, and AMI source data |
 | Identity Adapter | Integrate with enterprise authentication and role claims |
 | Optimization Service | Run dispatch, crew, and restoration optimization logic |
@@ -270,4 +273,3 @@ The following boundaries should be preserved as implementation grows:
 - [Solution Architecture](202_Solution_Architecture.md)
 - [Integration Architecture](204_Integration_Architecture.md)
 - [Data Flow Architecture](205_Data_Flow_Architecture.md)
-

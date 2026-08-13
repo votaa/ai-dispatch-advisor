@@ -114,6 +114,8 @@ Responses should:
 
 Phase 4.1 establishes explicit Pydantic request and response contracts for health, dashboard, incident, crew, assignment, recommendation, recommendation-action, audit-history, scenario, and Copilot operations. Existing JSON field names and shapes are preserved for the frontend. Weather, critical-facility, and topology response contracts remain a later Phase 4 task.
 
+Phase 4.2 moves operational composition and workflow logic behind application services. API handlers now delegate to incident, crew, assignment, recommendation, decision, scenario, context, and Copilot services while preserving the established HTTP paths, status codes, and JSON contracts.
+
 ## Error Response Direction
 
 The target API should standardize error responses:

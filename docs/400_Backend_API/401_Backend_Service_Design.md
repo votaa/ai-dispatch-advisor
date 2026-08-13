@@ -20,6 +20,15 @@ backend/
     main.py
     recommendations.py
     scenario_service.py
+    services/
+      assignment_service.py
+      context_service.py
+      copilot_service.py
+      crew_service.py
+      decision_service.py
+      incident_service.py
+      recommendation_service.py
+      scenario_management_service.py
   tests/
     test_api.py
   requirements.txt
@@ -34,6 +43,7 @@ The current backend:
 - Provides keyword-based Copilot demo responses.
 - Validates core request and response contracts with Pydantic domain models.
 - Persists scenario-scoped recommendation decisions and accepted assignments in SQLite.
+- Delegates state composition and workflow behavior from API handlers to directly testable services.
 - Supports local CORS for the React frontend.
 - Includes API, persistence, scenario, and recommendation tests.
 
@@ -63,11 +73,30 @@ The backend should:
 | Decision store | `backend/app/decision_store.py` | Persists scenario-scoped decisions and accepted assignments in SQLite |
 | Recommendation logic | `backend/app/recommendations.py` | Ranks incidents, recommends crews, builds dashboard summary |
 | Scenario service | `backend/app/scenario_service.py` | Discovers and validates manifested scenario inputs |
-| Tests | `backend/tests/` | Validates API contracts, scenarios, persistence, and recommendation behavior |
+| Application services | `backend/app/services/` | Compose scenario inputs and mutable state into typed incident, crew, assignment, recommendation, decision, scenario, context, and Copilot workflows |
+| Service container | `backend/app/services/container.py` | Wires current CSV and SQLite adapters into application services |
+| Tests | `backend/tests/` | Validates API contracts, services, scenarios, persistence, and recommendation behavior |
 
-## Target Service Boundaries
+## Current Service Boundaries
 
-As implementation matures, the backend should evolve into explicit service areas:
+Phase 4.2 introduces the following application-service ownership:
+
+| Service | Responsibility |
+| --- | --- |
+| Assignment service | Merge active baseline and accepted assignments, deduplicate them, and apply scenario identity |
+| Incident service | Compose ranked incidents with assigned crews and latest decisions |
+| Crew service | Compose crews with active assigned-incident context |
+| Recommendation service | Produce dashboard summaries and typed recommendations from current operational state |
+| Decision service | Validate recommendation actions, record decisions, and retrieve bounded recent history |
+| Scenario management service | Discover, read, and activate validated scenarios |
+| Operational context service | Expose weather, critical-facility, and topology inputs without leaking loaders into API handlers |
+| Copilot service | Produce advisory responses using incident and recommendation services |
+
+Services receive data, persistence, or peer-service dependencies through their constructors. `container.py` is the composition root for the current local adapters. FastAPI handlers validate HTTP input, delegate to a service, map service errors to the existing HTTP behavior, and return declared response models.
+
+## Target Backend Structure
+
+As implementation matures, routers, configuration, persistence repositories, and integration adapters should be separated further:
 
 ```text
 backend/app/
@@ -86,11 +115,11 @@ backend/app/
     logging.py
   domain/
     models.py
-    services/
-      incident_service.py
-      crew_service.py
-      recommendation_service.py
-      audit_service.py
+  services/
+    incident_service.py
+    crew_service.py
+    recommendation_service.py
+    decision_service.py
   integrations/
     oms_adapter.py
     gis_adapter.py
@@ -102,7 +131,7 @@ backend/app/
     database.py
 ```
 
-This structure is a target direction, not a requirement for the current POC.
+The service package now exists; router, repository, integration, and core-configuration extraction remain target work.
 
 ## API Layer Responsibilities
 
@@ -185,7 +214,7 @@ Backend tests should cover:
 - Recommendation service edge cases.
 - Integration adapter contract tests when adapters exist.
 
-Current tests are a minimal smoke test baseline.
+Current tests include API regressions plus direct service tests for typed outputs, state overlays, decision validation, missing entities, scenario activation, and Copilot access to current runtime state.
 
 ## Configuration
 
@@ -224,7 +253,7 @@ Known gaps:
 
 - No authentication.
 - No authorization.
-- Domain-state composition still occurs in API handlers rather than dedicated services.
+- API routes remain in one module rather than domain routers.
 - SQLite schema changes are not yet managed by versioned migrations.
 - Structured errors are not yet consistent across all domain endpoints.
 - No integration adapters.
