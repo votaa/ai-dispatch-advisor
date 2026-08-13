@@ -45,6 +45,12 @@ def _coerce(value: str) -> Any:
         return value
 
 
+def _coerce_field(name: str, value: str) -> Any:
+    if name.endswith("_id") or name == "feeder":
+        return value or None
+    return _coerce(value)
+
+
 @lru_cache(maxsize=32)
 def _load_csv(scenario_id: str, name: str) -> list[dict[str, Any]]:
     path = _scenario_dir(scenario_id) / name
@@ -53,7 +59,7 @@ def _load_csv(scenario_id: str, name: str) -> list[dict[str, Any]]:
 
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
-        return [{key: _coerce(value) for key, value in row.items()} for row in reader]
+        return [{key: _coerce_field(key, value) for key, value in row.items()} for row in reader]
 
 
 def load_csv(name: str) -> list[dict[str, Any]]:

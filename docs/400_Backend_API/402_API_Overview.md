@@ -19,6 +19,8 @@ GET  /api/weather
 GET  /api/critical-facilities
 GET  /api/topology
 POST /api/optimize
+POST /api/recommendation-actions
+GET  /api/audit/events
 POST /api/chat
 ```
 
@@ -110,6 +112,8 @@ Responses should:
 - Include structured explanation fields for recommendations.
 - Avoid requiring frontend parsing of free-text values for behavior.
 
+Phase 4.1 establishes explicit Pydantic request and response contracts for health, dashboard, incident, crew, assignment, recommendation, recommendation-action, audit-history, scenario, and Copilot operations. Existing JSON field names and shapes are preserved for the frontend. Weather, critical-facility, and topology response contracts remain a later Phase 4 task.
+
 ## Error Response Direction
 
 The target API should standardize error responses:
@@ -191,6 +195,10 @@ Current backend tests validate:
 - `GET /health`.
 - `GET /api/incidents`.
 - `POST /api/optimize`.
+- Recommendation decisions, accepted assignment overlays, and audit history.
+- Scenario discovery, validation, activation, and isolation.
+- OpenAPI exposure of explicit core response models.
+- Rejection of undeclared fields on typed core request models.
 
 Additional tests should be added as endpoint behavior matures.
 

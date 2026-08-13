@@ -10,8 +10,10 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
+from .domain.models import ScenarioEventType, ScenarioMetadata
 
-SUPPORTED_EVENT_TYPES = Literal["blue_sky", "storm", "crew_shortage", "critical_facility"]
+
+SUPPORTED_EVENT_TYPES = ScenarioEventType
 
 
 class ScenarioFiles(BaseModel):
@@ -26,14 +28,8 @@ class ScenarioFiles(BaseModel):
     topology: Literal["Topology.csv"]
 
 
-class ScenarioManifest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    schema_version: Literal["1.0"]
+class ScenarioManifest(ScenarioMetadata):
     scenario_id: str = Field(pattern=r"^[a-z0-9][a-z0-9_-]*$")
-    name: str
-    description: str
-    event_type: SUPPORTED_EVENT_TYPES
     expected_conditions: list[str] = Field(min_length=1)
     files: ScenarioFiles
 

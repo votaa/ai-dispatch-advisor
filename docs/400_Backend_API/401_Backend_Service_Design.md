@@ -12,9 +12,14 @@ The Developer Bootstrap MVP includes a FastAPI backend under:
 backend/
   app/
     __init__.py
+    api_models.py
     data_loader.py
+    decision_store.py
+    domain/
+      models.py
     main.py
     recommendations.py
+    scenario_service.py
   tests/
     test_api.py
   requirements.txt
@@ -27,8 +32,10 @@ The current backend:
 - Loads synthetic CSV scenario data.
 - Produces deterministic recommendation responses.
 - Provides keyword-based Copilot demo responses.
+- Validates core request and response contracts with Pydantic domain models.
+- Persists scenario-scoped recommendation decisions and accepted assignments in SQLite.
 - Supports local CORS for the React frontend.
-- Includes basic backend tests.
+- Includes API, persistence, scenario, and recommendation tests.
 
 The current backend is intentionally POC-grade. It is not yet production-persistent, authenticated, authorized, integrated with source systems, or connected to a real AI service.
 
@@ -49,10 +56,14 @@ The backend should:
 
 | Component | File | Responsibility |
 | --- | --- | --- |
-| FastAPI app | `backend/app/main.py` | API routes, request models, CORS, orchestration |
+| FastAPI app | `backend/app/main.py` | API routes, CORS, and request orchestration |
+| API contracts | `backend/app/api_models.py` | Core request and composite response models |
+| Domain contracts | `backend/app/domain/models.py` | Explicit incident, crew, assignment, recommendation, decision, audit, and scenario entities |
 | Data loader | `backend/app/data_loader.py` | Reads and coerces synthetic CSV scenario data |
+| Decision store | `backend/app/decision_store.py` | Persists scenario-scoped decisions and accepted assignments in SQLite |
 | Recommendation logic | `backend/app/recommendations.py` | Ranks incidents, recommends crews, builds dashboard summary |
-| Tests | `backend/tests/test_api.py` | Validates health, incident, and optimization endpoints |
+| Scenario service | `backend/app/scenario_service.py` | Discovers and validates manifested scenario inputs |
+| Tests | `backend/tests/` | Validates API contracts, scenarios, persistence, and recommendation behavior |
 
 ## Target Service Boundaries
 
@@ -125,19 +136,16 @@ Domain services should encapsulate:
 
 Domain services should be testable without running the web server.
 
-## Persistence Responsibilities
+## Phase 4 Persistence Boundary
 
-The current backend reads CSV files. The target backend should use persistence for:
+Decision `D-007` establishes two distinct persistence responsibilities:
 
-- Incidents cached or normalized from source systems.
-- Crews and assignments.
-- Recommendation history.
-- User action history.
-- Audit events.
-- Scenario definitions.
-- Integration health and source metadata.
+- Version-controlled scenario manifests and CSV files are immutable inputs for incidents, crews, baseline assignments, weather, facilities, topology, and repair history.
+- SQLite owns mutable recommendation decisions, recommendation audit history, and accepted operational assignments.
+- Mutable records are isolated by `scenario_id` and overlay scenario inputs when domain state is assembled.
+- The backend does not write to scenario files.
 
-SQLite is appropriate for local development. A production deployment should use an enterprise-approved relational database.
+The next Phase 4 persistence step is to replace ad hoc SQLite schema initialization with versioned migrations. A future normalized operational store may persist incident and crew projections when integration requirements justify it; that is not part of the current POC boundary.
 
 ## Integration Responsibilities
 
@@ -216,12 +224,12 @@ Known gaps:
 
 - No authentication.
 - No authorization.
-- No persistent API state.
-- No recommendation action persistence.
-- No audit event endpoint.
+- Domain-state composition still occurs in API handlers rather than dedicated services.
+- SQLite schema changes are not yet managed by versioned migrations.
+- Structured errors are not yet consistent across all domain endpoints.
 - No integration adapters.
 - No production logging or correlation IDs.
-- No formal response models for every endpoint.
+- Supporting context endpoints do not yet have formal response models.
 
 ## Related Documents
 
@@ -230,4 +238,3 @@ Known gaps:
 - [Crew API](404_Crew_API.md)
 - [Recommendation API](405_Recommendation_API.md)
 - [Integration API](406_Integration_API.md)
-

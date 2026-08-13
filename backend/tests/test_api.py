@@ -13,6 +13,52 @@ def test_health() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_openapi_exposes_explicit_core_response_contracts() -> None:
+    schema = client.get("/openapi.json").json()
+    paths = schema["paths"]
+
+    assert paths["/api/incidents"]["get"]["responses"]["200"]["content"]["application/json"]["schema"][
+        "items"
+    ]["$ref"].endswith("/Incident")
+    assert paths["/api/crews"]["get"]["responses"]["200"]["content"]["application/json"]["schema"][
+        "items"
+    ]["$ref"].endswith("/Crew")
+    assert paths["/api/assignments"]["get"]["responses"]["200"]["content"]["application/json"][
+        "schema"
+    ]["items"]["$ref"].endswith("/Assignment")
+    assert paths["/api/dashboard"]["get"]["responses"]["200"]["content"]["application/json"]["schema"][
+        "$ref"
+    ].endswith("/DashboardResponse")
+    assert paths["/api/optimize"]["post"]["responses"]["200"]["content"]["application/json"]["schema"][
+        "$ref"
+    ].endswith("/Recommendation-Output")
+    assert paths["/api/recommendation-actions"]["post"]["responses"]["200"]["content"]["application/json"][
+        "schema"
+    ]["$ref"].endswith("/RecommendationDecision")
+
+
+def test_core_requests_reject_undeclared_fields() -> None:
+    response = client.post("/api/optimize", json={"unexpected": "value"})
+
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["type"] == "extra_forbidden"
+
+
+def test_core_response_contracts_validate_for_every_discovered_scenario() -> None:
+    scenario_ids = [scenario["scenario_id"] for scenario in client.get("/api/scenarios").json()]
+
+    for scenario_id in scenario_ids:
+        activation = client.put("/api/scenarios/active", json={"scenario_id": scenario_id})
+        assert activation.status_code == 200
+
+        for path in ["/api/dashboard", "/api/incidents", "/api/crews", "/api/assignments"]:
+            response = client.get(path)
+            assert response.status_code == 200, f"{scenario_id}: {path}: {response.text}"
+
+        recommendation = client.post("/api/optimize", json={})
+        assert recommendation.status_code == 200, f"{scenario_id}: /api/optimize: {recommendation.text}"
+
+
 def test_incidents() -> None:
     response = client.get("/api/incidents")
     assert response.status_code == 200

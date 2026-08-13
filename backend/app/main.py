@@ -1,19 +1,26 @@
 from __future__ import annotations
 
-from typing import Any, Literal, Optional
-
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 from . import data_loader
+from .api_models import (
+    ChatRequest,
+    ChatResponse,
+    DashboardResponse,
+    HealthResponse,
+    OptimizeRequest,
+    RecommendationActionRequest,
+    ScenarioActivationRequest,
+)
 from .decision_store import (
     accepted_assignments,
     latest_decisions_by_incident,
     recent_decisions,
     record_decision,
 )
+from .domain.models import Assignment, Crew, Incident, Recommendation, RecommendationDecision
 from .recommendations import dashboard_summary, ranked_incidents, recommend_assignment
 from .scenario_service import ScenarioDescriptor, ScenarioService, ScenarioServiceError
 
@@ -39,27 +46,6 @@ async def scenario_service_error_handler(
     exc: ScenarioServiceError,
 ) -> JSONResponse:
     return JSONResponse(status_code=exc.status_code, content=exc.response_content())
-
-
-class OptimizeRequest(BaseModel):
-    incident_id: Optional[str] = None
-
-
-class ChatRequest(BaseModel):
-    message: str
-    incident_id: Optional[str] = None
-
-
-class RecommendationActionRequest(BaseModel):
-    incident_id: str
-    action: Literal["accepted", "modified", "deferred", "overridden"]
-    recommendation: dict[str, Any]
-    reason: Optional[str] = None
-    note: Optional[str] = None
-
-
-class ScenarioActivationRequest(BaseModel):
-    scenario_id: str
 
 
 def _scenario_service() -> ScenarioService:
@@ -153,7 +139,7 @@ def _crews_with_state() -> list[dict]:
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
+def health() -> HealthResponse:
     return {"status": "ok", "service": "ai-dispatch-advisor-api"}
 
 
@@ -175,7 +161,7 @@ def activate_scenario(request: ScenarioActivationRequest) -> ScenarioDescriptor:
 
 
 @app.get("/api/dashboard")
-def dashboard() -> dict:
+def dashboard() -> DashboardResponse:
     return dashboard_summary(
         _incidents_with_state(),
         _crews_with_state(),
@@ -185,12 +171,12 @@ def dashboard() -> dict:
 
 
 @app.get("/api/incidents")
-def incidents() -> list[dict]:
+def incidents() -> list[Incident]:
     return ranked_incidents(_incidents_with_state())
 
 
 @app.get("/api/incidents/{incident_id}")
-def incident_detail(incident_id: str) -> dict:
+def incident_detail(incident_id: str) -> Incident:
     for incident in _incidents_with_state():
         if incident.get("incident_id") == incident_id:
             return incident
@@ -198,12 +184,12 @@ def incident_detail(incident_id: str) -> dict:
 
 
 @app.get("/api/crews")
-def crews() -> list[dict]:
+def crews() -> list[Crew]:
     return _crews_with_state()
 
 
 @app.get("/api/assignments")
-def assignments() -> list[dict]:
+def assignments() -> list[Assignment]:
     return _active_assignments()
 
 
@@ -223,7 +209,7 @@ def topology() -> list[dict]:
 
 
 @app.post("/api/optimize")
-def optimize(request: OptimizeRequest) -> dict:
+def optimize(request: OptimizeRequest) -> Recommendation:
     incident_rows = ranked_incidents(_incidents_with_state())
     if request.incident_id:
         incident_rows = [row for row in incident_rows if row.get("incident_id") == request.incident_id]
@@ -235,7 +221,7 @@ def optimize(request: OptimizeRequest) -> dict:
 
 
 @app.post("/api/recommendation-actions")
-def recommendation_action(request: RecommendationActionRequest) -> dict:
+def recommendation_action(request: RecommendationActionRequest) -> RecommendationDecision:
     incident = next(
         (row for row in data_loader.incidents() if row.get("incident_id") == request.incident_id),
         None,
@@ -253,12 +239,12 @@ def recommendation_action(request: RecommendationActionRequest) -> dict:
         incident_id=request.incident_id,
         action=request.action,
         reason=reason,
-        recommendation=request.recommendation,
+        recommendation=request.recommendation.model_dump(),
     )
 
 
 @app.get("/api/audit/events")
-def audit_events(limit: int = 25) -> list[dict]:
+def audit_events(limit: int = 25) -> list[RecommendationDecision]:
     return recent_decisions(
         data_loader.get_active_scenario(),
         limit=max(1, min(limit, 100)),
@@ -266,7 +252,7 @@ def audit_events(limit: int = 25) -> list[dict]:
 
 
 @app.post("/api/chat")
-def chat(request: ChatRequest) -> dict:
+def chat(request: ChatRequest) -> ChatResponse:
     message = request.message.lower()
     summary = dashboard()
     incident = None

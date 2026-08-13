@@ -6,7 +6,7 @@ This document defines the data model direction for the AI Dispatch Advisor. It d
 
 ## Current Implementation State
 
-The Developer Bootstrap MVP uses four synthetic scenarios as source data:
+The Developer Bootstrap MVP dynamically discovers manifested synthetic scenarios. Four scenarios are maintained as canonical deterministic regression fixtures:
 
 ```text
 data/scenarios/
@@ -29,6 +29,20 @@ scripts/init_db.py
 The backend reads incident, crew, assignment, weather, facility, topology, and repair reference data from the active scenario CSV files. SQLite is active only for local recommendation decisions and accepted demo assignments; it is not yet the primary store for the broader domain model.
 
 Each scenario directory includes a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The backend scenario service validates metadata, required files, CSV headers, identifiers, and assignment references before process-local activation. Recommendation decisions and accepted demo assignments are filtered by `scenario_id` so state remains isolated while switching.
+
+## Phase 4 Persistence Boundary
+
+Decision `D-007` defines the current ownership boundary:
+
+| Data class | Current authority | Mutability |
+| --- | --- | --- |
+| Scenario manifests and CSV records | Version-controlled scenario folders | Immutable at runtime |
+| Incident and crew operational views | Scenario inputs plus computed assignment/decision overlays | Derived, not directly persisted |
+| Baseline assignments | Scenario CSV input | Immutable at runtime |
+| Accepted assignments | AI Dispatch Advisor SQLite store | Mutable and scenario-scoped |
+| Recommendation decisions and audit history | AI Dispatch Advisor SQLite store | Append-only in normal application workflows and scenario-scoped |
+
+The backend must not write runtime changes into scenario folders. CSV identifiers are normalized as strings even when their values contain only digits, preserving stable identifiers across generated and hand-authored scenarios. Future enterprise adapters or normalized persistence may replace scenario-backed incident and crew inputs, but they should map into the same domain contracts. The initial explicit contracts are implemented in `backend/app/domain/models.py`.
 
 ## Data Model Goals
 

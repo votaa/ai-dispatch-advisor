@@ -217,3 +217,42 @@ Enterprise adoption depends on trust and low-friction integration into existing 
 - Define user workflows in `docs/100_Product/104_User_Workflows.md`.
 - Map completed UI mockups to functional requirements in future UX documentation.
 
+## D-007: Separate Immutable Scenario Inputs from Mutable Operational State
+
+- Status: Accepted
+- Date: 2026-08-13
+- Owners: Backend engineering, solution architecture, data engineering
+- Related Documents: `docs/400_Backend_API/401_Backend_Service_Design.md`, `docs/600_Data_AI/601_Data_Model.md`, `docs/900_Delivery/902_Implementation_Plan.md`
+
+### Context
+
+The POC loads incidents, crews, baseline assignments, weather, facilities, topology, and repair history from version-controlled scenario files. It also records dispatcher decisions and accepted assignments in SQLite. Phase 4 requires an explicit ownership boundary before service and migration work can proceed without accidentally treating demo fixtures as mutable operational records.
+
+### Decision
+
+For the Phase 4 backend foundation:
+
+- Scenario manifests and CSV files remain immutable, version-controlled inputs.
+- Incident, crew, and baseline assignment records remain scenario-loaded projections during the POC; the application does not write changes back to scenario files.
+- Recommendation decisions, recommendation audit history, and accepted operational assignments are mutable application-owned records persisted in SQLite and scoped by `scenario_id`.
+- API responses may combine immutable scenario inputs with mutable application state through domain services.
+- A future integration or database import can replace the scenario input adapter without changing the core domain or API contracts.
+
+### Rationale
+
+This boundary preserves deterministic demos, prevents runtime activity from modifying source fixtures, and establishes clear ownership for audit and decision history. Keeping scenario inputs behind an adapter-style boundary also avoids prematurely migrating synthetic source data into a database before enterprise source-system contracts are defined.
+
+### Consequences
+
+- Scenario activation remains process-local and scenario files remain read-only when mounted through Docker.
+- Accepted assignments overlay baseline scenario assignments rather than rewriting them.
+- Mutable tables require versioned database migrations in a later Phase 4 work package.
+- Service-layer composition must preserve `scenario_id` isolation.
+- Incident and crew persistence is deferred until a normalized operational-store or integration requirement justifies it.
+
+### Follow-Up Actions
+
+- Extract incident, crew, assignment, recommendation, and decision services from API handlers.
+- Select and implement a migration mechanism for application-owned SQLite tables.
+- Add repository interfaces so scenario inputs and mutable persistence can evolve independently.
+- Revisit the boundary before production source-system integration or multi-user deployment.
