@@ -100,7 +100,9 @@ Phase 4.2 introduces the following application-service ownership:
 | Operational context service | Expose weather, critical-facility, and topology inputs without leaking loaders into API handlers |
 | Copilot service | Produce advisory responses using incident and recommendation services |
 
-Services receive data, persistence, or peer-service dependencies through their constructors. `container.py` is the composition root for the current local adapters. FastAPI handlers validate HTTP input, delegate to a service, map service errors to the existing HTTP behavior, and return declared response models.
+Services receive data, persistence, or peer-service dependencies through their constructors. `container.py` is the composition root for the current local adapters. FastAPI handlers validate HTTP input, delegate to a service, and return declared response models; the centralized API error boundary maps typed service failures to HTTP responses.
+
+Phase 5.1 injects one shared `OptimizationEngine` into incident ranking and recommendation generation. Its typed request carries the scenario, incident, crews, and assignments, while its versioned policy declares scoring factors, blocking constraints, assumptions, data-quality conditions, and tie handling. The initial deterministic adapter preserves the public API and established POC results while allowing later constraint-aware or OR-Tools implementations without changing route handlers.
 
 ## Target Backend Structure
 

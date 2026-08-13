@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .. import data_loader, decision_store
+from ..optimization.deterministic_engine import DeterministicOptimizationEngine
 from .assignment_service import AssignmentService
 from .copilot_service import CopilotService
 from .context_service import OperationalContextService
@@ -26,6 +27,7 @@ class ApplicationServices:
 
 
 def build_services() -> ApplicationServices:
+    optimization_engine = DeterministicOptimizationEngine()
     assignments = AssignmentService(
         active_scenario_id=data_loader.get_active_scenario,
         baseline_assignments=data_loader.assignments,
@@ -37,6 +39,7 @@ def build_services() -> ApplicationServices:
         crew_rows=data_loader.crews,
         latest_decisions=decision_store.latest_decisions_by_incident,
         assignments=assignments,
+        optimization_engine=optimization_engine,
     )
     crews = CrewService(
         crew_rows=data_loader.crews,
@@ -48,6 +51,7 @@ def build_services() -> ApplicationServices:
         incidents=incidents,
         crews=crews,
         assignments=assignments,
+        optimization_engine=optimization_engine,
     )
     decisions = DecisionService(
         active_scenario_id=data_loader.get_active_scenario,

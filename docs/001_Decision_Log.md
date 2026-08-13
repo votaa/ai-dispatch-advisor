@@ -330,3 +330,38 @@ A consistent contract simplifies frontend behavior, makes failure paths visible 
 - Add stable codes and handler mappings when new domain exceptions are introduced.
 - Connect correlation identifiers to routine structured request logs and traces in Phase 9.
 - Add authenticated actor context to error and audit diagnostics in Phase 8.
+
+## D-010: Establish a Versioned Deterministic Optimization Policy Boundary
+
+- Status: Accepted
+- Date: 2026-08-13
+- Owners: Backend engineering, solution architecture, product and dispatch SMEs
+- Related Documents: `docs/600_Data_AI/602_Optimization_Engine.md`, `docs/400_Backend_API/405_Recommendation_API.md`, `docs/900_Delivery/902_Implementation_Plan.md`
+
+### Context
+
+The POC recommendation module contained useful deterministic logic but encoded weights, thresholds, constraints, and tie behavior directly in functions. Availability and active assignment were enforced, capability was only a bonus, and equal scores depended implicitly on CSV order. Later scoring changes would be difficult to review or attribute without first naming those policies and preserving a baseline.
+
+### Decision
+
+Define an immutable, validated `RecommendationPolicy` with separate factor, blocking-constraint, assumption, data-quality, and tie-break declarations plus algorithm and policy versions. Application services consume an `OptimizationEngine` protocol through a typed, scenario-validated request. The initial `DeterministicOptimizationEngine` wraps the existing algorithm with policy `poc-baseline-v1` and intentionally preserves public responses and canonical results.
+
+Only currently enforced rules are marked implemented blocking constraints. Capability and shift sufficiency are documented as planned constraints; capability remains a soft factor until Phase 5.3 changes behavior through a new reviewed policy version. Current equal-score behavior is explicitly labeled source-order compatibility rather than presented as operational policy.
+
+### Rationale
+
+This separates policy from mechanics, prevents implicit rule promotion, gives regression tests a stable reference, and prepares the service boundary for constraint-aware or mathematical optimization without prematurely adding an optimization dependency.
+
+### Consequences
+
+- Material weight, threshold, constraint, or tie-break changes require a new policy version and expected-result review.
+- Engine replacements must accept typed scenario context and return the existing typed recommendation contract until an intentional API version change.
+- `poc-baseline-v1` is a characterization baseline, not validated utility operating policy.
+- OR-Tools is deferred until multi-incident optimization requirements and sufficient operational inputs exist.
+
+### Follow-Up Actions
+
+- Implement structured incident factor contributions and explicit domain tie-breakers in Phase 5.2.
+- Enforce capability and shift feasibility with exclusion reasons in Phase 5.3.
+- Expose explanation, uncertainty, data-quality, and version metadata in Phase 5.4.
+- Obtain dispatcher and policy-owner review before treating weights or constraints as operationally validated.

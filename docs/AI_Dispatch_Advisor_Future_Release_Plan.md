@@ -62,6 +62,12 @@ The remaining Release 1 search, filtering, sorting, highlighting, Reset, Crew Bo
   - Derive IDs from the source designation and number, including `Tree-4735`, `WW-4739`, `CNTR-3896`, and `MUA-4497`.
   - Do not invent prefixes for crews whose source identifiers are numeric-only; retain their existing presentation.
 
+- Improve visible crew identity without changing recommendation behavior:
+  - Display the existing crew ID beside the descriptive crew name on Crew Board cards.
+  - Display the existing crew ID beside recommended and assigned crew names in recommendation panels.
+  - Keep supervisor-review or no-feasible-crew states free of misleading placeholder IDs.
+  - Treat this as a separate UI usability item after the behavior-preserving Phase 5.1 package.
+
 - Storm Exceptions now uses the full available content width and shared responsive table shell. Shared search, filter, sort, and Reset behavior remains future Release 1 work.
 
 ## Release 2 — Real AI Copilot
@@ -104,6 +110,7 @@ The remaining Release 1 search, filtering, sorting, highlighting, Reset, Crew Bo
 - Test Dispatch and Scenario at desktop, tablet, and mobile widths; all four action buttons must remain visible and usable.
 - Verify Crew Board status, crew, and company filters individually and together.
 - Confirm alphanumeric crew IDs use their source prefixes and numeric-only crews remain unchanged.
+- Confirm Crew Board and recommendation panels show each available crew ID beside the correct descriptive name, while no-crew recommendations show no placeholder ID.
 - Confirm generated Copilot answers change when the selected scenario or underlying data changes.
 - Verify Copilot handles unsupported questions, stale or missing data, timeouts, and provider failures safely.
 - Confirm Copilot cannot accept, modify, defer, override, or otherwise execute dispatch decisions.

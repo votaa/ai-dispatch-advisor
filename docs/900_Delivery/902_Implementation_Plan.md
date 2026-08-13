@@ -30,7 +30,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
-| Phase 5: Recommendation and Optimization Engine | Pending | Deterministic POC scoring exists; configurable factors, explicit hard constraints, richer explanations, and evaluation remain pending. |
+| Phase 5: Recommendation and Optimization Engine | In progress | Phase 5.1 establishes versioned scoring and constraint policy contracts, a typed optimization-engine boundary, and behavior-preserving canonical characterization. Configurable scoring behavior, enforced operational constraints, richer explanations, confidence, and evaluation remain. |
 | Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
@@ -143,7 +143,7 @@ Exit criteria:
 
 Objective: make recommendation generation explainable, testable, and configurable.
 
-Status: Pending after the Phase 4 domain and API foundation.
+Status: In progress. Phase 5.1 scoring and constraint design completed on 2026-08-13 without intentionally changing public recommendation behavior.
 
 Scope:
 
@@ -310,9 +310,19 @@ Exit criteria:
 - [x] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
 - [x] Update architecture, API, and data documentation for the implemented Phase 4 design.
 
+### Phase 5: Current Implementation Phase
+
+- [x] Phase 5.1: define immutable versioned scoring-policy contracts and classify implemented versus planned factors, blocking constraints, assumptions, and data-quality conditions.
+- [x] Phase 5.1: introduce a typed optimization request and replaceable engine protocol consumed by incident and recommendation services.
+- [x] Phase 5.1: characterize canonical winners, suitability scores, alternatives, and current stable source-order tie behavior without changing the API contract.
+- [ ] Phase 5.2: implement configurable incident prioritization with structured factor contributions and explicit domain tie-breakers.
+- [ ] Phase 5.3: enforce crew feasibility constraints and add transparent candidate exclusion and suitability results.
+- [ ] Phase 5.4: add structured explainability, confidence rationale, assumptions, uncertainty, data-quality warnings, and version metadata.
+- [ ] Phase 5.5: complete replaceable engine contract tests and document the future advanced-optimization adapter path.
+- [ ] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
+
 ### Later Pending Phases
 
-- [ ] Phase 5: strengthen configurable recommendation scoring, constraints, explanations, uncertainty, and evaluation.
 - [ ] Phase 6: mature dispatcher navigation, filtering, comparison, detail, accessibility, and frontend test coverage.
 - [ ] Phase 7: implement enterprise integration adapter contracts, mocks, quality metadata, and failure handling.
 - [ ] Phase 8: implement authentication, role authorization, enterprise audit controls, configuration protection, and security tests.

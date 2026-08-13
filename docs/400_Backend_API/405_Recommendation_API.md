@@ -19,6 +19,9 @@ The current recommendation implementation:
 - Ranks available crews using deterministic sample logic.
 - Returns a recommended crew.
 - Includes confidence, expected impact, explanation factors, constraints, and alternatives.
+- Runs through the Phase 5.1 `OptimizationEngine` boundary using the immutable `poc-baseline-v1` policy.
+
+Phase 5.1 is behavior-preserving: response fields and canonical scenario recommendations are unchanged. Algorithm and policy versions currently live in the internal policy contract; Phase 5.4 will expose traceability and richer structured explanation fields through the API.
 
 The current Copilot implementation:
 

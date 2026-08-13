@@ -4,7 +4,8 @@ from collections.abc import Callable
 from typing import Any
 
 from ..domain.models import Assignment, Incident
-from ..recommendations import ranked_incidents
+from ..optimization.contracts import OptimizationEngine
+from ..optimization.deterministic_engine import DeterministicOptimizationEngine
 from .assignment_service import AssignmentService
 from .errors import EntityNotFoundError
 
@@ -18,12 +19,14 @@ class IncidentService:
         crew_rows: Callable[[], list[dict[str, Any]]],
         latest_decisions: Callable[[str], dict[str, dict[str, Any]]],
         assignments: AssignmentService,
+        optimization_engine: OptimizationEngine | None = None,
     ) -> None:
         self._active_scenario_id = active_scenario_id
         self._incident_rows = incident_rows
         self._crew_rows = crew_rows
         self._latest_decisions = latest_decisions
         self._assignments = assignments
+        self._optimization_engine = optimization_engine or DeterministicOptimizationEngine()
 
     def list_ranked(self) -> list[Incident]:
         assignments = self._assignments.list_active()
@@ -60,8 +63,7 @@ class IncidentService:
                 )
             )
 
-        ranked = ranked_incidents([incident.model_dump() for incident in incidents])
-        return [Incident.model_validate(row) for row in ranked]
+        return self._optimization_engine.rank_incidents(incidents)
 
     def find(self, incident_id: str) -> Incident | None:
         return next(

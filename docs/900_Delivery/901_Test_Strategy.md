@@ -55,6 +55,8 @@ Backend unit tests should cover:
 - Error handling for invalid request payloads.
 - Direct application-service behavior without requiring an HTTP test client.
 - Service composition of immutable scenario inputs with scenario-scoped mutable state.
+- Optimization policy validation, classification, immutability, and engine consumption.
+- Characterized recommendation winners, suitability scores, and alternative ordering for canonical scenarios.
 
 Optimization unit tests should cover:
 

@@ -19,6 +19,16 @@ Current behavior:
 - Scores crew suitability using capability match, demo travel time, and storm readiness.
 - Returns a recommended crew and alternatives.
 
+Phase 5.1 adds a behavior-preserving design foundation under `backend/app/optimization/`:
+
+- `RecommendationPolicy` provides validated, immutable scoring, constraint, assumption, data-quality, tie-break, algorithm-version, and policy-version contracts.
+- `OptimizationRequest` provides a typed, scenario-validated input snapshot.
+- `OptimizationEngine` defines the engine protocol consumed by application services.
+- `DeterministicOptimizationEngine` adapts the existing POC algorithm to that protocol.
+- `poc-baseline-v1` characterizes the existing weights, thresholds, stable source-order tie handling, canonical winners, scores, and alternatives.
+
+This package does not intentionally alter recommendation API fields or canonical results.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals
@@ -114,6 +124,43 @@ Target constraints include:
 - Existing assignments.
 - Mutual assistance rules.
 
+### Phase 5.1 Rule Classification
+
+| Classification | Implemented Baseline | Planned Follow-Up |
+| --- | --- | --- |
+| Blocking constraints | Crew has `available` status; crew has no active assignment; assignments match the request scenario; human approval remains required | Required capability/certification; shift sufficiency; equipment, safety, access, weather, and topology feasibility |
+| Soft factors | Customer impact, critical facility, hazard, incident age, severity, travel time, capability match, storm readiness | Restoration impact, data freshness penalties, objective tradeoffs |
+| Assumptions | Crew state is current; travel estimate is valid; incident impact and condition data are current | Replace assumptions with source freshness and integration-health evidence |
+| Data-quality conditions | None currently influence scores or confidence | Missing or stale crew, travel, and incident context should reduce confidence |
+
+Capability match remains a soft factor in `poc-baseline-v1` to preserve current demo behavior. It must become a blocking rule only through an intentional policy version and Phase 5.3 regression review.
+
+### Baseline Scoring Policy
+
+Incident score:
+
+```text
+customers_out // 20
++ 80 when a critical facility is affected
++ 60 when hazard is not "none"
++ age_minutes // 10
++ severity weight (critical 120, high 80, medium 40, low 10)
+```
+
+Crew score:
+
+```text
+100
+- estimated travel minutes
++ 40 for capability match
++ 10 for storm readiness
+minimum score 0
+```
+
+A score of at least `115` currently produces `high` confidence; otherwise a selected crew produces `medium` confidence. Phase 5.4 will replace this single-threshold approach with confidence and uncertainty evidence.
+
+Python sorting is stable, so equal scores currently preserve source-file order. Phase 5.2 and 5.3 should replace that compatibility rule with explicit domain tie-breakers before source ordering can change.
+
 ## Candidate Algorithm Progression
 
 ### Phase 1: Deterministic Scoring
@@ -194,11 +241,11 @@ Optimization behavior should be validated using:
 
 Known gaps:
 
-- No formal optimization service boundary.
+- The optimization boundary is defined, but only the deterministic POC engine implements it.
 - No optimization library usage.
 - No calibration against real operating policy.
 - No persistence of recommendation inputs or outputs.
-- Only four fixed synthetic validation scenarios.
+- Four canonical scenarios have exact baseline winner, score, and alternative-order characterization; broader edge-case fixtures remain pending.
 - No quantitative evaluation metrics.
 
 ## Related Documents
