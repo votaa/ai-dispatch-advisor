@@ -817,6 +817,78 @@ tbody tr:hover,
   gap: 12px;
 }
 
+.crew-board {
+  min-width: 0;
+}
+
+.crew-board-controls {
+  align-items: end;
+  background: #f7f9fb;
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(130px, 1fr)) minmax(180px, 1.4fr);
+  margin-bottom: 12px;
+  min-width: 0;
+  padding: 10px;
+  width: 100%;
+}
+
+.crew-board-controls label {
+  color: #526170;
+  display: grid;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+  min-width: 0;
+}
+
+.crew-board-controls input,
+.crew-board-controls select {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  color: #17202a;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 8px;
+}
+
+.crew-sort-control {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 34px;
+}
+
+.crew-sort-control button {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  color: #2f6f9f;
+  cursor: pointer;
+  font-size: 18px;
+  min-height: 34px;
+}
+
+.crew-board-summary {
+  align-items: center;
+  color: #607080;
+  display: flex;
+  font-size: 13px;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.crew-id {
+  color: #607080;
+  font-size: 0.75em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .crew-card {
   border: 1px solid #d8e0e8;
   border-radius: 8px;
@@ -1004,6 +1076,10 @@ textarea {
   .metric-grid {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
+
+  .crew-board-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 1000px) {
@@ -1025,6 +1101,10 @@ textarea {
   }
 
   .incident-table-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .crew-board-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1061,7 +1141,16 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .crew-board-controls {
+    grid-template-columns: 1fr;
+  }
+
   .incident-table-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .crew-board-summary {
     align-items: flex-start;
     flex-direction: column;
   }

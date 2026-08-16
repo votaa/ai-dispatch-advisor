@@ -39,6 +39,9 @@ Distribution Dispatcher, Field Crew Coordinator, Dispatch Supervisor
 - Compare crew capability
 - Identify assigned or staged resources
 - Use crew context during recommendation review
+- Search crews by identity, capability, location, region, or assigned incident.
+- Filter by status, capability, home region, and storm readiness.
+- Sort cards by crew name, status, capability, shift hours, assignment count, or travel time with an explicit direction toggle.
 
 ## Data Requirements
 
@@ -75,6 +78,7 @@ Viewing crew board does not require audit. Assignment changes and recommendation
 - Availability state is readable
 - Capability is visible
 - Assigned and available crews are distinguishable
+- Crew controls report matching and total counts, provide pagination for large lists, and show crew IDs beside crew names.
 
 ## Related Documents
 

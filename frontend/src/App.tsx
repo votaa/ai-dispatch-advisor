@@ -30,6 +30,7 @@ type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "sce
 type ChatTurn = { question: string; answer: string };
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
+type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
 
 const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -420,29 +421,7 @@ function App() {
             {crews.length === 0 ? (
               <EmptyState message="No crews are available in this scenario." />
             ) : (
-              <div className="crew-grid">
-              {crews.map((crew) => (
-                <article className="crew-card" key={crew.crew_id}>
-                  <div>
-                    <strong>{crew.crew_name}</strong>
-                    <span>{crew.capability}</span>
-                  </div>
-                  <span className={`crew-status ${crew.status}`}>{crew.status}</span>
-                  <p>{crew.current_location}</p>
-                  {crew.assigned_incidents.length ? (
-                    <div className="assignment-list">
-                      {crew.assigned_incidents.map((assignment) => (
-                        <span key={assignment.assignment_id}>
-                          Assigned to {assignment.incident_id}
-                          {assignment.municipality ? ` in ${assignment.municipality}` : ""}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-                  <small>{crew.shift_remaining_hours} shift hours remaining</small>
-                </article>
-              ))}
-              </div>
+              <CrewBoard crews={crews} />
             )}
           </section>
         ))}
@@ -619,6 +598,155 @@ function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
 
 function formatConfidence(confidence: string) {
   return confidence ? `${confidence.charAt(0).toUpperCase()}${confidence.slice(1).toLowerCase()}` : confidence;
+}
+
+function formatCrewStatus(status: string) {
+  return status ? `${status.charAt(0).toUpperCase()}${status.slice(1).toLowerCase()}` : status;
+}
+
+function CrewBoard({ crews }: { crews: Crew[] }) {
+  const pageSize = 24;
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("all");
+  const [capability, setCapability] = useState("all");
+  const [region, setRegion] = useState("all");
+  const [stormReady, setStormReady] = useState("all");
+  const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>({ key: "name", direction: "asc" });
+  const [page, setPage] = useState(0);
+
+  const statuses = useMemo(() => Array.from(new Set(crews.map((crew) => crew.status))).sort(), [crews]);
+  const capabilities = useMemo(() => Array.from(new Set(crews.map((crew) => crew.capability))).sort(), [crews]);
+  const regions = useMemo(() => Array.from(new Set(crews.map((crew) => crew.home_region))).sort(), [crews]);
+  const filteredCrews = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const matching = crews.filter((crew) => {
+      const searchable = [
+        crew.crew_id,
+        crew.crew_name,
+        crew.capability,
+        crew.home_region,
+        crew.current_location,
+        ...crew.assigned_incidents.map((assignment) => assignment.incident_id)
+      ].join(" ").toLowerCase();
+      return (
+        (!normalizedQuery || searchable.includes(normalizedQuery)) &&
+        (status === "all" || crew.status === status) &&
+        (capability === "all" || crew.capability === capability) &&
+        (region === "all" || crew.home_region === region) &&
+        (stormReady === "all" || (stormReady === "ready" ? crew.storm_ready : !crew.storm_ready))
+      );
+    });
+    return matching.sort((left, right) => {
+      const direction = sort.direction === "asc" ? 1 : -1;
+      let comparison = 0;
+      if (sort.key === "name") comparison = left.crew_name.localeCompare(right.crew_name);
+      if (sort.key === "status") comparison = left.status.localeCompare(right.status) || left.crew_name.localeCompare(right.crew_name);
+      if (sort.key === "capability") comparison = left.capability.localeCompare(right.capability) || left.crew_name.localeCompare(right.crew_name);
+      if (sort.key === "shift") comparison = left.shift_remaining_hours - right.shift_remaining_hours;
+      if (sort.key === "assigned") comparison = left.assigned_incidents.length - right.assigned_incidents.length;
+      if (sort.key === "travel") comparison = left.travel_minutes_to_selected_incident - right.travel_minutes_to_selected_incident;
+      return comparison * direction || left.crew_id.localeCompare(right.crew_id);
+    });
+  }, [capability, crews, query, region, sort, status, stormReady]);
+  const pageCount = Math.max(1, Math.ceil(filteredCrews.length / pageSize));
+  const visibleCrews = filteredCrews.slice(page * pageSize, (page + 1) * pageSize);
+
+  useEffect(() => {
+    setPage(0);
+  }, [capability, query, region, sort, status, stormReady, crews.length]);
+
+  const toggleSortDirection = () => {
+    setSort((current) => ({ ...current, direction: current.direction === "asc" ? "desc" : "asc" }));
+  };
+
+  return (
+    <div className="crew-board">
+      <div className="crew-board-controls" aria-label="Crew Board filters">
+        <label>
+          Search
+          <input aria-label="Crew Board search" onChange={(event) => setQuery(event.target.value)} placeholder="Crew, capability, region, or incident" type="search" value={query} />
+        </label>
+        <label>
+          Status
+          <select aria-label="Crew Board status" onChange={(event) => setStatus(event.target.value)} value={status}>
+            <option value="all">All statuses</option>
+            {statuses.map((item) => <option key={item} value={item}>{formatCrewStatus(item)}</option>)}
+          </select>
+        </label>
+        <label>
+          Capability
+          <select aria-label="Crew Board capability" onChange={(event) => setCapability(event.target.value)} value={capability}>
+            <option value="all">All capabilities</option>
+            {capabilities.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label>
+          Region
+          <select aria-label="Crew Board region" onChange={(event) => setRegion(event.target.value)} value={region}>
+            <option value="all">All regions</option>
+            {regions.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label>
+          Storm-ready
+          <select aria-label="Crew Board storm readiness" onChange={(event) => setStormReady(event.target.value)} value={stormReady}>
+            <option value="all">All crews</option>
+            <option value="ready">Storm-ready</option>
+            <option value="not-ready">Not storm-ready</option>
+          </select>
+        </label>
+        <label>
+          Sort by
+          <span className="crew-sort-control">
+            <select aria-label="Crew Board sort" onChange={(event) => setSort({ key: event.target.value as CrewSortKey, direction: "asc" })} value={sort.key}>
+              <option value="name">Crew name</option>
+              <option value="status">Status</option>
+              <option value="capability">Capability</option>
+              <option value="shift">Shift hours remaining</option>
+              <option value="assigned">Assigned incident count</option>
+              <option value="travel">Travel time</option>
+            </select>
+            <button aria-label={`Crew Board sort ${sort.direction === "asc" ? "ascending" : "descending"}; click to reverse`} onClick={toggleSortDirection} type="button">{sort.direction === "asc" ? "↑" : "↓"}</button>
+          </span>
+        </label>
+      </div>
+      <div className="crew-board-summary" aria-live="polite">
+        <span>Showing {visibleCrews.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredCrews.length)} of {filteredCrews.length} matching crews ({crews.length} total)</span>
+        {pageCount > 1 ? (
+          <div className="incident-pagination">
+            <button disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+            <span>Page {page + 1} of {pageCount}</span>
+            <button disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+          </div>
+        ) : null}
+      </div>
+      {visibleCrews.length === 0 ? <EmptyState message="No crews match the current filters." /> : (
+        <div className="crew-grid">
+          {visibleCrews.map((crew) => (
+            <article className="crew-card" key={crew.crew_id}>
+              <div>
+                <strong>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></strong>
+                <span>{crew.capability}</span>
+              </div>
+              <span className={`crew-status ${crew.status}`}>{formatCrewStatus(crew.status)}</span>
+              <p>{crew.current_location}</p>
+              {crew.assigned_incidents.length ? (
+                <div className="assignment-list">
+                  {crew.assigned_incidents.map((assignment) => (
+                    <span key={assignment.assignment_id}>
+                      Assigned to {assignment.incident_id}
+                      {assignment.municipality ? ` in ${assignment.municipality}` : ""}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              <small>{crew.shift_remaining_hours} shift hours remaining</small>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function IncidentTable({
@@ -893,7 +1021,7 @@ function RecommendationPanel({
         <>
           <div className="recommendation-hero">
             <span>{recommendation.recommended_action}</span>
-            <strong>{recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</strong>
+            <strong>{recommendation.recommended_crew ? <>{recommendation.recommended_crew.crew_name} <span className="crew-id">({recommendation.recommended_crew.crew_id})</span></> : "Supervisor review"}</strong>
             <small className="confidence-line">
               <span>Confidence: {formatConfidence(recommendation.confidence)}</span>
               {recommendation.explanation ? <span>{recommendation.explanation.confidence_rationale.reason}</span> : null}
@@ -907,7 +1035,7 @@ function RecommendationPanel({
           {selectedIncident?.assigned_crews.length ? (
             <div className="decision-status assigned-state">
               <span>Assigned crew{selectedIncident.assigned_crews.length > 1 ? "s" : ""}</span>
-              <strong>{selectedIncident.assigned_crews.map((crew) => crew.crew_name).join(", ")}</strong>
+              <strong>{selectedIncident.assigned_crews.map((crew) => `${crew.crew_name} (${crew.crew_id})`).join(", ")}</strong>
             </div>
           ) : null}
           <p>{recommendation.expected_impact}</p>

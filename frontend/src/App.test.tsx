@@ -204,6 +204,45 @@ describe("application states and scenario switching", () => {
     expect(stormTable.closest(".panel")?.classList.contains("full-width")).toBe(true);
   });
 
+  it("filters and sorts Crew Board cards while showing crew IDs", async () => {
+    apiMocks.crews.mockResolvedValue([
+      {
+        crew_id: "CR-01",
+        crew_name: "North Line Alpha",
+        home_region: "North",
+        status: "available",
+        capability: "line",
+        current_location: "Millbrook",
+        shift_remaining_hours: 8,
+        storm_ready: true,
+        travel_minutes_to_selected_incident: 12,
+        assigned_incidents: []
+      },
+      {
+        crew_id: "SC-06",
+        crew_name: "South Vegetation",
+        home_region: "South",
+        status: "assigned",
+        capability: "vegetation",
+        current_location: "Fairview",
+        shift_remaining_hours: 4,
+        storm_ready: false,
+        travel_minutes_to_selected_incident: 22,
+        assigned_incidents: [{ assignment_id: "a-1", incident_id: "INC-1001", assigned_at: "2026-08-10T00:00:00Z", municipality: "Millbrook", severity: "critical" }]
+      }
+    ]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    expect(await screen.findByText("(CR-01)")).toBeTruthy();
+    expect(screen.getByText("Showing 1–2 of 2 matching crews (2 total)")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Crew Board status"), { target: { value: "available" } });
+    expect(await screen.findByText("Showing 1–1 of 1 matching crews (2 total)")).toBeTruthy();
+    expect(screen.getByText("North Line Alpha")).toBeTruthy();
+    expect(screen.queryByText("South Vegetation")).toBeNull();
+    expect(screen.getByRole("button", { name: /Crew Board sort ascending/ })).toBeTruthy();
+  });
+
   it("filters, sorts, and paginates large incident queues", async () => {
     const manyIncidents = Array.from({ length: 55 }, (_, index) => ({
       ...baseIncident,
