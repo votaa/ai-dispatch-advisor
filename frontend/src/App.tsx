@@ -604,6 +604,61 @@ function formatCrewStatus(status: string) {
   return status ? `${status.charAt(0).toUpperCase()}${status.slice(1).toLowerCase()}` : status;
 }
 
+function recommendationTradeoff(recommended: Crew, option: Crew) {
+  const tradeoffs: string[] = [];
+  const recommendedTravel = recommended.estimated_travel_minutes ?? recommended.travel_minutes_to_selected_incident;
+  const optionTravel = option.estimated_travel_minutes ?? option.travel_minutes_to_selected_incident;
+  const travelDifference = optionTravel - recommendedTravel;
+  if (travelDifference > 0) tradeoffs.push(`${travelDifference} minutes slower travel`);
+  if (travelDifference < 0) tradeoffs.push(`${Math.abs(travelDifference)} minutes faster travel`);
+  if (recommended.suitability_score !== undefined && option.suitability_score !== undefined) {
+    const scoreDifference = recommended.suitability_score - option.suitability_score;
+    if (scoreDifference > 0) tradeoffs.push(`${scoreDifference} points lower suitability`);
+    if (scoreDifference < 0) tradeoffs.push(`${Math.abs(scoreDifference)} points higher suitability`);
+  }
+  if (option.shift_remaining_hours < recommended.shift_remaining_hours) {
+    tradeoffs.push(`${recommended.shift_remaining_hours - option.shift_remaining_hours} fewer shift hours remaining`);
+  }
+  if (option.capability_match === false) tradeoffs.push("capability does not match the requested work");
+  if (!option.storm_ready && recommended.storm_ready) tradeoffs.push("not storm-ready");
+  return tradeoffs.length ? tradeoffs.join("; ") : "Operationally comparable; ranking uses the configured scoring policy.";
+}
+
+function RecommendationComparison({ recommendation }: { recommendation: Recommendation }) {
+  if (!recommendation.recommended_crew || recommendation.alternatives.length === 0) return null;
+  const recommended = recommendation.recommended_crew;
+  const options = [recommended, ...recommendation.alternatives];
+  return (
+    <section aria-label="Recommendation comparison" className="recommendation-comparison">
+      <div className="comparison-heading">
+        <h3>Compare crew options</h3>
+        <span>Advisory ranking</span>
+      </div>
+      <div className="comparison-options">
+        {options.map((option, index) => {
+          const travelMinutes = option.estimated_travel_minutes ?? option.travel_minutes_to_selected_incident;
+          return (
+            <article className={`comparison-card ${index === 0 ? "recommended" : ""}`} key={option.crew_id}>
+              <div className="comparison-card-heading">
+                <span>{index === 0 ? "Recommended" : `Alternative ${index}`}</span>
+                {option.suitability_score !== undefined ? <strong>{option.suitability_score} score</strong> : null}
+              </div>
+              <h4>{option.crew_name} <span className="crew-id">({option.crew_id})</span></h4>
+              <dl>
+                <div><dt>Travel</dt><dd>{travelMinutes} min</dd></div>
+                <div><dt>Capability</dt><dd>{option.capability_match === false ? "No match" : "Match"}</dd></div>
+                <div><dt>Shift</dt><dd>{option.shift_remaining_hours} hr</dd></div>
+                <div><dt>Storm-ready</dt><dd>{option.storm_ready ? "Yes" : "No"}</dd></div>
+              </dl>
+              <p><strong>Tradeoff:</strong> {index === 0 ? "Highest-ranked feasible option under the active policy." : recommendationTradeoff(recommended, option)}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function CrewBoard({ crews }: { crews: Crew[] }) {
   const pageSize = 24;
   const [query, setQuery] = useState("");
@@ -1065,6 +1120,7 @@ function RecommendationPanel({
               <small>{recommendation.explanation.excluded_candidates.length} crew candidate(s) failed blocking constraints.</small>
             </div>
           ) : null}
+          <RecommendationComparison recommendation={recommendation} />
           <div className="action-row">
             <button disabled={actionLoading !== null} onClick={() => onRecordAction("accepted")} type="button">
               <Check size={16} />

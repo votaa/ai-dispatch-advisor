@@ -584,6 +584,91 @@ tbody tr:hover,
   margin-top: 4px;
 }
 
+.recommendation-comparison {
+  border-top: 1px solid #e4e9ef;
+  margin: 16px 0;
+  padding-top: 14px;
+}
+
+.comparison-heading,
+.comparison-card-heading {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.comparison-heading h3,
+.comparison-card h4 {
+  margin: 0;
+}
+
+.comparison-heading > span,
+.comparison-card-heading > span {
+  color: #607080;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.comparison-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.comparison-card {
+  background: #f7f9fb;
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.comparison-card.recommended {
+  background: #fff8e8;
+  border-color: #e7b84f;
+}
+
+.comparison-card-heading strong {
+  color: #2f6f9f;
+  font-size: 12px;
+}
+
+.comparison-card h4 {
+  font-size: 15px;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.comparison-card dl {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 10px 0;
+}
+
+.comparison-card dl div {
+  min-width: 0;
+}
+
+.comparison-card dt {
+  color: #607080;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.comparison-card dd {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 2px 0 0;
+}
+
+.comparison-card p {
+  font-size: 12px;
+  margin: 0;
+}
+
 .recommendation-hero strong,
 .selected-context strong,
 .decision-status strong,

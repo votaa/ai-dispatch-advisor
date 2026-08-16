@@ -34,6 +34,7 @@ Electric Distribution Dispatcher / Control Room Operator
 - Recommended crew or switching action
 - Confidence indicator
 - Confidence uses title-case levels (for example, `High` or `Low`) with the supporting rationale on a separate line.
+- Ranked feasible alternatives are compared with the recommended crew using suitability score, travel time, capability match, remaining shift time, storm readiness, and concise tradeoff language.
 - Expected restoration or customer impact
 - Factors list
 - Constraints list
@@ -82,6 +83,7 @@ Every accept, modify, defer, or override action must create an audit event with 
 - Recommendation is clearly advisory
 - Expected impact is visible
 - Confidence and reasoning are visible
+- The recommended crew remains visually distinct while ranked alternatives and their operational tradeoffs are visible when provided by the optimization response.
 - Dispatcher action controls are explicit
 - Override requires rationale once actions are implemented
 

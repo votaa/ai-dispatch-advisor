@@ -28,6 +28,9 @@ export type Crew = {
   storm_ready: boolean;
   travel_minutes_to_selected_incident: number;
   assigned_incidents: AssignedIncident[];
+  suitability_score?: number;
+  capability_match?: boolean;
+  estimated_travel_minutes?: number;
 };
 
 export type AssignedCrew = {

@@ -243,6 +243,45 @@ describe("application states and scenario switching", () => {
     expect(screen.getByRole("button", { name: /Crew Board sort ascending/ })).toBeTruthy();
   });
 
+  it("compares the recommended crew with ranked alternatives and tradeoffs", async () => {
+    const recommendedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "available",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      estimated_travel_minutes: 10,
+      suitability_score: 92,
+      capability_match: true,
+      assigned_incidents: []
+    };
+    apiMocks.optimize.mockResolvedValue({
+      ...recommendation,
+      recommended_crew: recommendedCrew,
+      alternatives: [{
+        ...recommendedCrew,
+        crew_id: "CR-02",
+        crew_name: "East Line Beta",
+        shift_remaining_hours: 6,
+        storm_ready: false,
+        travel_minutes_to_selected_incident: 20,
+        estimated_travel_minutes: 20,
+        suitability_score: 77
+      }]
+    });
+    render(<App />);
+
+    const comparison = await screen.findByRole("region", { name: "Recommendation comparison" });
+    expect(comparison.textContent).toContain("Recommended");
+    expect(comparison.textContent).toContain("Alternative 1");
+    expect(comparison.textContent).toContain("10 minutes slower travel");
+    expect(comparison.textContent).toContain("15 points lower suitability");
+  });
+
   it("filters, sorts, and paginates large incident queues", async () => {
     const manyIncidents = Array.from({ length: 55 }, (_, index) => ({
       ...baseIncident,
