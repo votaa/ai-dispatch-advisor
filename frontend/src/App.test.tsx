@@ -204,6 +204,44 @@ describe("application states and scenario switching", () => {
     expect(stormTable.closest(".panel")?.classList.contains("full-width")).toBe(true);
   });
 
+  it("filters, sorts, and paginates large incident queues", async () => {
+    const manyIncidents = Array.from({ length: 55 }, (_, index) => ({
+      ...baseIncident,
+      incident_id: `INC-${String(1001 + index)}`,
+      municipality: `Municipality ${index + 1}`,
+      customers_out: 55 - index,
+      severity: index % 2 === 0 ? "critical" : "medium"
+    }));
+    apiMocks.incidents.mockResolvedValue(manyIncidents);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), top_incidents: manyIncidents.slice(0, 5) });
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+
+    expect(await screen.findByText("Showing 1–50 of 55 matching incidents (55 total)")).toBeTruthy();
+    expect(screen.getAllByRole("columnheader")).toHaveLength(8);
+    expect((screen.getByRole("button", { name: "Next" }) as HTMLButtonElement).disabled).toBe(false);
+    const customersHeader = screen.getByRole("button", { name: /Active incidents Sort by Customers ascending/ });
+    fireEvent.click(customersHeader);
+    expect(customersHeader.closest("th")?.getAttribute("aria-sort")).toBe("ascending");
+    fireEvent.click(customersHeader);
+    expect(customersHeader.closest("th")?.getAttribute("aria-sort")).toBe("descending");
+    const etrHeader = screen.getByRole("button", { name: /Active incidents Sort by ETR ascending/ });
+    fireEvent.click(etrHeader);
+    expect(etrHeader.closest("th")?.getAttribute("aria-sort")).toBe("ascending");
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("Page 2 of 2")).toBeTruthy();
+
+    const search = screen.getByLabelText("Active incidents search");
+    fireEvent.change(search, { target: { value: "Municipality 55" } });
+    expect(await screen.findByText("Showing 1–1 of 1 matching incidents (55 total)")).toBeTruthy();
+    expect(screen.getByText("INC-1055")).toBeTruthy();
+    fireEvent.change(search, { target: { value: "does-not-exist" } });
+    expect(await screen.findByText("No incidents match the current filters.")).toBeTruthy();
+  });
+
   it("shows a backend error with a working connection retry", async () => {
     apiMocks.dashboard.mockRejectedValueOnce(new Error("Network request failed"));
     render(<App />);

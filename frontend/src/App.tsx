@@ -28,6 +28,8 @@ import type {
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
 type ChatTurn = { question: string; answer: string };
+type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
+type SortDirection = "asc" | "desc";
 
 const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -615,6 +617,10 @@ function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
   return eventType.replace(/_/g, " ");
 }
 
+function formatConfidence(confidence: string) {
+  return confidence ? `${confidence.charAt(0).toUpperCase()}${confidence.slice(1).toLowerCase()}` : confidence;
+}
+
 function IncidentTable({
   emptyMessage,
   incidents,
@@ -628,27 +634,145 @@ function IncidentTable({
   tableLabel: string;
   onSelect: (incidentId: string) => void;
 }) {
+  const pageSize = 50;
+  const [query, setQuery] = useState("");
+  const [severity, setSeverity] = useState("all");
+  const [region, setRegion] = useState("all");
+  const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
+  const [page, setPage] = useState(0);
+
+  const regions = useMemo(
+    () => Array.from(new Set(incidents.map((incident) => incident.region))).sort(),
+    [incidents]
+  );
+  const severities = useMemo(
+    () => Array.from(new Set(incidents.map((incident) => incident.severity.toLowerCase()))),
+    [incidents]
+  );
+  const filteredIncidents = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    const matching = incidents.filter((incident) => {
+      const searchable = [incident.incident_id, incident.municipality, incident.feeder, incident.hazard]
+        .join(" ")
+        .toLowerCase();
+      return (
+        (!normalizedQuery || searchable.includes(normalizedQuery)) &&
+        (severity === "all" || incident.severity.toLowerCase() === severity) &&
+        (region === "all" || incident.region === region)
+      );
+    });
+    const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+    return matching.sort((left, right) => {
+      if (sort) {
+        const direction = sort.direction === "asc" ? 1 : -1;
+        let comparison = 0;
+        if (sort.key === "customers") comparison = left.customers_out - right.customers_out;
+        if (sort.key === "severity") comparison = (severityRank[left.severity.toLowerCase()] ?? 0) - (severityRank[right.severity.toLowerCase()] ?? 0);
+        if (sort.key === "region") comparison = left.region.localeCompare(right.region);
+        if (sort.key === "id") comparison = left.incident_id.localeCompare(right.incident_id);
+        if (sort.key === "hazard") comparison = left.hazard.localeCompare(right.hazard);
+        if (sort.key === "assigned") {
+          comparison = left.assigned_crews.length - right.assigned_crews.length ||
+            (left.assigned_crews[0]?.crew_name ?? "").localeCompare(right.assigned_crews[0]?.crew_name ?? "");
+        }
+        if (sort.key === "decision") comparison = (left.current_decision?.action ?? "").localeCompare(right.current_decision?.action ?? "");
+        if (sort.key === "etr") comparison = left.etr.localeCompare(right.etr, undefined, { numeric: true });
+        return comparison * direction || left.incident_id.localeCompare(right.incident_id);
+      }
+      return (
+        (severityRank[right.severity.toLowerCase()] ?? 0) - (severityRank[left.severity.toLowerCase()] ?? 0) ||
+        right.customers_out - left.customers_out ||
+        left.incident_id.localeCompare(right.incident_id)
+      );
+    });
+  }, [incidents, query, region, severity, sort]);
+  const pageCount = Math.max(1, Math.ceil(filteredIncidents.length / pageSize));
+  const visibleIncidents = filteredIncidents.slice(page * pageSize, (page + 1) * pageSize);
+
+  useEffect(() => {
+    setPage(0);
+  }, [query, region, severity, sort, incidents.length]);
+
+  const toggleSort = (key: IncidentSortKey) => {
+    setSort((current) => current?.key === key
+      ? { key, direction: current.direction === "asc" ? "desc" : "asc" }
+      : { key, direction: "asc" });
+  };
+
+  const sortIndicator = (key: IncidentSortKey) => sort?.key === key ? (sort.direction === "asc" ? "↑" : "↓") : "↕";
+  const sortLabel = (key: IncidentSortKey, label: string) => sort?.key === key
+    ? `Sort by ${label} ${sort.direction === "asc" ? "descending next" : "ascending next"}`
+    : `Sort by ${label} ascending`;
+
   if (incidents.length === 0) {
     return <EmptyState message={emptyMessage} />;
   }
 
   return (
-    <ResponsiveTable label={tableLabel}>
-      <table>
+    <div className="incident-table">
+      <div className="incident-table-controls" aria-label={`${tableLabel} filters`}>
+        <label>
+          Search
+          <input
+            aria-label={`${tableLabel} search`}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="ID, municipality, feeder, or hazard"
+            type="search"
+            value={query}
+          />
+        </label>
+        <label>
+          Severity
+          <select aria-label={`${tableLabel} severity`} onChange={(event) => setSeverity(event.target.value)} value={severity}>
+            <option value="all">All severities</option>
+            {severities.map((item) => <option key={`severity-${item}`} value={item}>{item}</option>)}
+          </select>
+        </label>
+        <label>
+          Region
+          <select aria-label={`${tableLabel} region`} onChange={(event) => setRegion(event.target.value)} value={region}>
+            <option value="all">All regions</option>
+            {regions.map((item) => <option key={`region-${item}`} value={item}>{item}</option>)}
+          </select>
+        </label>
+      </div>
+      <div className="incident-table-summary" aria-live="polite">
+        <span>Showing {visibleIncidents.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredIncidents.length)} of {filteredIncidents.length} matching incidents ({incidents.length} total)</span>
+        {pageCount > 1 ? (
+          <div className="incident-pagination">
+            <button disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+            <span>Page {page + 1} of {pageCount}</span>
+            <button disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+          </div>
+        ) : null}
+      </div>
+      {visibleIncidents.length === 0 ? (
+        <EmptyState message="No incidents match the current filters." />
+      ) : (
+        <ResponsiveTable label={tableLabel}>
+          <table>
         <thead>
           <tr>
-            <th>Incident</th>
-            <th>Region</th>
-            <th>Customers</th>
-            <th>Severity</th>
-            <th>Hazard</th>
-            <th>Assigned Crews</th>
-            <th>Decision</th>
-            <th>ETR</th>
+            {([
+              ["id", "Incident"],
+              ["region", "Region"],
+              ["customers", "Customers"],
+              ["severity", "Severity"],
+              ["hazard", "Hazard"],
+              ["assigned", "Assigned Crews"],
+              ["decision", "Decision"],
+              ["etr", "ETR"]
+            ] as Array<[IncidentSortKey, string]>).map(([key, label]) => (
+              <th aria-sort={sort?.key === key ? (sort.direction === "asc" ? "ascending" : "descending") : "none"} key={key}>
+                <button aria-label={`${tableLabel} ${sortLabel(key, label)}`} className="table-sort-button" onClick={() => toggleSort(key)} type="button">
+                  {label}<span aria-hidden="true">{sortIndicator(key)}</span>
+                </button>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {incidents.map((incident) => (
+          {visibleIncidents.map((incident) => (
             <tr
               className={selectedIncidentId === incident.incident_id ? "selected-row" : ""}
               key={incident.incident_id}
@@ -684,8 +808,10 @@ function IncidentTable({
             </tr>
           ))}
         </tbody>
-      </table>
-    </ResponsiveTable>
+          </table>
+        </ResponsiveTable>
+      )}
+    </div>
   );
 }
 
@@ -768,8 +894,10 @@ function RecommendationPanel({
           <div className="recommendation-hero">
             <span>{recommendation.recommended_action}</span>
             <strong>{recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</strong>
-            <small>Confidence: {recommendation.confidence}</small>
-            {recommendation.explanation ? <small>{recommendation.explanation.confidence_rationale.reason}</small> : null}
+            <small className="confidence-line">
+              <span>Confidence: {formatConfidence(recommendation.confidence)}</span>
+              {recommendation.explanation ? <span>{recommendation.explanation.confidence_rationale.reason}</span> : null}
+            </small>
           </div>
           <div className="decision-status">
             <span>Current decision</span>

@@ -33,6 +33,7 @@ Electric Distribution Dispatcher / Control Room Operator
 - Selected incident identifier
 - Recommended crew or switching action
 - Confidence indicator
+- Confidence uses title-case levels (for example, `High` or `Low`) with the supporting rationale on a separate line.
 - Expected restoration or customer impact
 - Factors list
 - Constraints list

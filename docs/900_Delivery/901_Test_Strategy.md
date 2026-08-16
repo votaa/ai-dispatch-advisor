@@ -193,6 +193,7 @@ Validation should include:
 - Phase 5.5 contract tests run the same engine expectations against the deterministic and fake adapters and verify services can be wired without implementation-specific changes.
 - Phase 5.6 evaluation tests run recommendation invariants across every manifested scenario and explicit edge-case fixtures; SME review evidence is maintained in `docs/900_Delivery/905_Phase_5_SME_Review_Checklist.md`.
 - Phase 6.1 frontend tests hold the recommendation panel in a loading state during delayed scenario refreshes, prevent transient empty-state text, and verify the scenario selector is disabled until refresh completion.
+- Phase 6.2 frontend tests verify shared incident search, severity and region filtering, sortable table-header direction toggles across incident columns, deterministic default ordering, pagination, responsive controls, and no-match messaging with large-list fixtures.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.

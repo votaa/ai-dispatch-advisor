@@ -37,7 +37,10 @@ Distribution Dispatcher, Dispatch Supervisor
 ## User Actions
 
 - Select incident
-- Sort/filter incidents in future iteration
+- Search incidents by ID, municipality, feeder, or hazard.
+- Filter by severity and region.
+- Sort directly from sortable table headers (Incident, Region, Customers, Severity, Hazard, Assigned Crews, Decision, and ETR); clicking the active header toggles ascending/descending order. Priority remains the default ordering.
+- Paginate large incident lists while preserving selected-incident context.
 - Open incident detail in future iteration
 - Send selected incident to recommendation workflow
 
@@ -53,7 +56,8 @@ Distribution Dispatcher, Dispatch Supervisor
 
 - `GET /api/incidents`
 - `GET /api/incidents/{incident_id}`
-- Future: incident filters and pagination
+- Client-side incident filters and pagination are implemented in the shared incident-table shell; server-side filtering remains a future optimization if data volumes exceed the POC boundary.
+- The result summary distinguishes the currently matched set from the full incident set (for example, `Showing 1–1 of 1 matching incidents (5 total)` means one incident matches the active search/filter criteria; clear those criteria to see the other four).
 
 ## AI and Recommendation Behavior
 
