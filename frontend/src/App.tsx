@@ -55,6 +55,7 @@ function App() {
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [recommendationActions, setRecommendationActions] = useState<RecommendationAction[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | undefined>();
+  const [selectedCrewId, setSelectedCrewId] = useState<string | undefined>();
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -103,6 +104,10 @@ function App() {
   const selectedIncident = useMemo(
     () => incidents.find((incident) => incident.incident_id === selectedIncidentId) ?? incidents[0],
     [incidents, selectedIncidentId]
+  );
+  const selectedCrew = useMemo(
+    () => crews.find((crew) => crew.crew_id === selectedCrewId),
+    [crews, selectedCrewId]
   );
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
@@ -181,6 +186,7 @@ function App() {
         items.map((item) => ({ ...item, is_active: item.scenario_id === activatedScenario.scenario_id }))
       );
       setSelectedIncidentId(undefined);
+      setSelectedCrewId(undefined);
       setRecommendation(null);
       setRecommendationError("");
       setActionMessage("");
@@ -199,6 +205,16 @@ function App() {
 
   function usePrompt(prompt: string) {
     setChatMessage(prompt);
+  }
+
+  function openCrewDetails(crewId: string) {
+    setSelectedCrewId(crewId);
+    setView("crews");
+  }
+
+  function openIncidentDetails(incidentId: string) {
+    setSelectedIncidentId(incidentId);
+    setView("incidents");
   }
 
   async function recordRecommendationAction(action: RecommendationActionType, note?: string) {
@@ -338,6 +354,7 @@ function App() {
               <RecommendationPanel
                 actionLoading={actionLoading}
                 actionMessage={actionMessage}
+                onOpenCrew={openCrewDetails}
                 onRecordAction={recordRecommendationAction}
                 recentActions={recommendationActions}
                 recommendation={recommendation}
@@ -373,6 +390,7 @@ function App() {
             <RecommendationPanel
               actionLoading={actionLoading}
               actionMessage={actionMessage}
+              onOpenCrew={openCrewDetails}
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
@@ -403,6 +421,7 @@ function App() {
               tableLabel="Active incidents"
               onSelect={setSelectedIncidentId}
             />
+            {selectedIncident ? <IncidentDetail incident={selectedIncident} onOpenCrew={openCrewDetails} /> : null}
           </section>
         ))}
 
@@ -421,7 +440,14 @@ function App() {
             {crews.length === 0 ? (
               <EmptyState message="No crews are available in this scenario." />
             ) : (
-              <CrewBoard crews={crews} />
+              <CrewBoard
+                crews={crews}
+                onCloseDetails={() => setSelectedCrewId(undefined)}
+                onOpenIncident={openIncidentDetails}
+                onSelectCrew={setSelectedCrewId}
+                selectedCrew={selectedCrew}
+                selectedCrewId={selectedCrewId}
+              />
             )}
           </section>
         ))}
@@ -487,6 +513,7 @@ function App() {
             <RecommendationPanel
               actionLoading={actionLoading}
               actionMessage={actionMessage}
+              onOpenCrew={openCrewDetails}
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
@@ -659,7 +686,98 @@ function RecommendationComparison({ recommendation }: { recommendation: Recommen
   );
 }
 
-function CrewBoard({ crews }: { crews: Crew[] }) {
+function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCrew: (crewId: string) => void }) {
+  return (
+    <aside aria-label={`Incident details ${incident.incident_id}`} className="detail-panel incident-detail">
+      <div className="detail-heading">
+        <div>
+          <span>Selected incident</span>
+          <h3>{incident.incident_id} · {incident.municipality}</h3>
+        </div>
+        <span className={severityClass(incident.severity)}>{incident.severity}</span>
+      </div>
+      <dl className="detail-grid">
+        <div><dt>Region</dt><dd>{incident.region}</dd></div>
+        <div><dt>Feeder</dt><dd>{incident.feeder}</dd></div>
+        <div><dt>Customers out</dt><dd>{incident.customers_out.toLocaleString()}</dd></div>
+        <div><dt>Status</dt><dd>{formatCrewStatus(incident.status)}</dd></div>
+        <div><dt>Hazard</dt><dd>{incident.hazard}</dd></div>
+        <div><dt>Critical facility</dt><dd>{incident.critical_facility ? "Yes" : "No"}</dd></div>
+        <div><dt>Incident age</dt><dd>{incident.age_minutes} min</dd></div>
+        <div><dt>ETR</dt><dd>{incident.etr}</dd></div>
+      </dl>
+      <div className="detail-section">
+        <h4>Assigned crews</h4>
+        {incident.assigned_crews.length ? (
+          <div className="detail-link-list">
+            {incident.assigned_crews.map((crew) => (
+              <button key={crew.assignment_id} onClick={() => onOpenCrew(crew.crew_id)} type="button">
+                {crew.crew_name} <span>({crew.crew_id})</span>
+              </button>
+            ))}
+          </div>
+        ) : <p>No crews assigned.</p>}
+      </div>
+      <div className="detail-section">
+        <h4>Current decision</h4>
+        <p>{incident.current_decision ? formatAction(incident.current_decision.action) : "No decision recorded."}</p>
+        {incident.current_decision?.reason ? <small>{incident.current_decision.reason}</small> : null}
+      </div>
+    </aside>
+  );
+}
+
+function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: () => void; onOpenIncident: (incidentId: string) => void }) {
+  return (
+    <aside aria-label={`Crew details ${crew.crew_id}`} className="detail-panel crew-detail">
+      <div className="detail-heading">
+        <div>
+          <span>Selected crew</span>
+          <h3>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></h3>
+        </div>
+        <button className="detail-close" onClick={onClose} type="button">Close details</button>
+      </div>
+      <dl className="detail-grid">
+        <div><dt>Status</dt><dd>{formatCrewStatus(crew.status)}</dd></div>
+        <div><dt>Capability</dt><dd>{crew.capability}</dd></div>
+        <div><dt>Home region</dt><dd>{crew.home_region}</dd></div>
+        <div><dt>Current location</dt><dd>{crew.current_location}</dd></div>
+        <div><dt>Shift remaining</dt><dd>{crew.shift_remaining_hours} hr</dd></div>
+        <div><dt>Storm-ready</dt><dd>{crew.storm_ready ? "Yes" : "No"}</dd></div>
+        <div><dt>Travel to selected incident</dt><dd>{crew.travel_minutes_to_selected_incident} min</dd></div>
+        <div><dt>Assigned incidents</dt><dd>{crew.assigned_incidents.length}</dd></div>
+      </dl>
+      <div className="detail-section">
+        <h4>Incident assignments</h4>
+        {crew.assigned_incidents.length ? (
+          <div className="detail-link-list">
+            {crew.assigned_incidents.map((assignment) => (
+              <button key={assignment.assignment_id} onClick={() => onOpenIncident(assignment.incident_id)} type="button">
+                {assignment.incident_id}{assignment.municipality ? ` · ${assignment.municipality}` : ""}
+              </button>
+            ))}
+          </div>
+        ) : <p>No active incident assignments.</p>}
+      </div>
+    </aside>
+  );
+}
+
+function CrewBoard({
+  crews,
+  onCloseDetails,
+  onOpenIncident,
+  onSelectCrew,
+  selectedCrew,
+  selectedCrewId
+}: {
+  crews: Crew[];
+  onCloseDetails: () => void;
+  onOpenIncident: (incidentId: string) => void;
+  onSelectCrew: (crewId: string) => void;
+  selectedCrew?: Crew;
+  selectedCrewId?: string;
+}) {
   const pageSize = 24;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
@@ -778,13 +896,21 @@ function CrewBoard({ crews }: { crews: Crew[] }) {
       {visibleCrews.length === 0 ? <EmptyState message="No crews match the current filters." /> : (
         <div className="crew-grid">
           {visibleCrews.map((crew) => (
-            <article className="crew-card" key={crew.crew_id}>
-              <div>
-                <strong>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></strong>
-                <span>{crew.capability}</span>
-              </div>
-              <span className={`crew-status ${crew.status}`}>{formatCrewStatus(crew.status)}</span>
-              <p>{crew.current_location}</p>
+            <article className={`crew-card ${selectedCrewId === crew.crew_id ? "selected-card" : ""}`} key={crew.crew_id}>
+              <button
+                aria-pressed={selectedCrewId === crew.crew_id}
+                className="crew-card-select"
+                onClick={() => onSelectCrew(crew.crew_id)}
+                type="button"
+              >
+                <span className="crew-card-name">
+                  <strong>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></strong>
+                  <span>{crew.capability}</span>
+                </span>
+                <span className={`crew-status ${crew.status}`}>{formatCrewStatus(crew.status)}</span>
+                <span className="crew-location">{crew.current_location}</span>
+                <small>{crew.shift_remaining_hours} shift hours remaining</small>
+              </button>
               {crew.assigned_incidents.length ? (
                 <div className="assignment-list">
                   {crew.assigned_incidents.map((assignment) => (
@@ -795,11 +921,11 @@ function CrewBoard({ crews }: { crews: Crew[] }) {
                   ))}
                 </div>
               ) : null}
-              <small>{crew.shift_remaining_hours} shift hours remaining</small>
             </article>
           ))}
         </div>
       )}
+      {selectedCrew ? <CrewDetail crew={selectedCrew} onClose={onCloseDetails} onOpenIncident={onOpenIncident} /> : null}
     </div>
   );
 }
@@ -957,9 +1083,17 @@ function IncidentTable({
         <tbody>
           {visibleIncidents.map((incident) => (
             <tr
+              aria-selected={selectedIncidentId === incident.incident_id}
               className={selectedIncidentId === incident.incident_id ? "selected-row" : ""}
               key={incident.incident_id}
               onClick={() => onSelect(incident.incident_id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelect(incident.incident_id);
+                }
+              }}
+              tabIndex={0}
             >
               <td>
                 <strong>{incident.incident_id}</strong>
@@ -1009,6 +1143,7 @@ function ResponsiveTable({ children, label }: { children: ReactNode; label: stri
 function RecommendationPanel({
   actionLoading,
   actionMessage,
+  onOpenCrew,
   onRecordAction,
   onRetryRecommendation,
   recentActions,
@@ -1019,6 +1154,7 @@ function RecommendationPanel({
 }: {
   actionLoading: RecommendationActionType | null;
   actionMessage: string;
+  onOpenCrew: (crewId: string) => void;
   onRecordAction: (action: RecommendationActionType, note?: string) => Promise<void>;
   onRetryRecommendation: () => void;
   recentActions: RecommendationAction[];
@@ -1082,6 +1218,11 @@ function RecommendationPanel({
               {recommendation.explanation ? <span>{recommendation.explanation.confidence_rationale.reason}</span> : null}
             </small>
           </div>
+          {recommendation.recommended_crew ? (
+            <button className="detail-link" onClick={() => onOpenCrew(recommendation.recommended_crew!.crew_id)} type="button">
+              View recommended crew details
+            </button>
+          ) : null}
           <div className="decision-status">
             <span>Current decision</span>
             <strong>{currentDecision ? formatAction(currentDecision.action) : "Pending dispatcher action"}</strong>
@@ -1090,7 +1231,13 @@ function RecommendationPanel({
           {selectedIncident?.assigned_crews.length ? (
             <div className="decision-status assigned-state">
               <span>Assigned crew{selectedIncident.assigned_crews.length > 1 ? "s" : ""}</span>
-              <strong>{selectedIncident.assigned_crews.map((crew) => `${crew.crew_name} (${crew.crew_id})`).join(", ")}</strong>
+              <div className="detail-link-list compact">
+                {selectedIncident.assigned_crews.map((crew) => (
+                  <button key={crew.assignment_id} onClick={() => onOpenCrew(crew.crew_id)} type="button">
+                    {crew.crew_name} ({crew.crew_id})
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
           <p>{recommendation.expected_impact}</p>

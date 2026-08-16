@@ -282,6 +282,31 @@ describe("application states and scenario switching", () => {
     expect(comparison.textContent).toContain("15 points lower suitability");
   });
 
+  it("opens incident and crew details with assignment cross-navigation", async () => {
+    const assignedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "assigned",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: [{ assignment_id: "a-1", incident_id: "INC-1001", assigned_at: "2026-08-10T00:00:00Z", municipality: "Millbrook", severity: "critical" }]
+    };
+    apiMocks.crews.mockResolvedValue([assignedCrew]);
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, assigned_crews: [{ crew_id: "CR-01", crew_name: "North Line Alpha", assignment_id: "a-1", assigned_at: "2026-08-10T00:00:00Z" }] }]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /North Line Alpha/ }));
+    expect(await screen.findByLabelText("Crew details CR-01")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /INC-1001/ }));
+    expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
+  });
+
   it("filters, sorts, and paginates large incident queues", async () => {
     const manyIncidents = Array.from({ length: 55 }, (_, index) => ({
       ...baseIncident,

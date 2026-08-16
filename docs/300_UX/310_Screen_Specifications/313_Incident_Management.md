@@ -41,7 +41,8 @@ Distribution Dispatcher, Dispatch Supervisor
 - Filter by severity and region.
 - Sort directly from sortable table headers (Incident, Region, Customers, Severity, Hazard, Assigned Crews, Decision, and ETR); clicking the active header toggles ascending/descending order. Priority remains the default ordering.
 - Paginate large incident lists while preserving selected-incident context.
-- Open incident detail in future iteration
+- Open a compact read-only incident detail panel with operational context, assignment state, and current decision.
+- Navigate from an assigned crew in incident details to that crew's Crew Board detail panel.
 - Send selected incident to recommendation workflow
 
 ## Data Requirements
@@ -80,6 +81,7 @@ Incident selection generally does not require audit. Future recommendation view 
 - Rows show key dispatch fields
 - Selected incident state is visible
 - Incident selection can drive recommendation context
+- Incident rows support pointer and keyboard selection, and the detail panel exposes critical-facility, age, ETR, assignment, and decision context.
 
 ## Related Documents
 

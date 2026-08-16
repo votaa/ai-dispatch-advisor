@@ -31,7 +31,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
 | Phase 5: Recommendation and Optimization Engine | Complete | Phases 5.1–5.6 establish versioned policy and engine contracts, structured scoring, deterministic tie-breakers, blocking crew feasibility, nested explanations, replaceable-engine coverage, and scenario/edge-case evaluation evidence. |
-| Phase 6: Frontend Workflow Maturity | In progress | Phases 6.1–6.2, 6.3.1–6.3.2, and 6.4 add scenario loading-state hardening, shared incident and crew filtering/sorting, paginated large-list handling, crew-ID visibility, and recommendation comparison with operational tradeoffs. Detail interactions, accessibility, and broader tests remain pending. |
+| Phase 6: Frontend Workflow Maturity | In progress | Phases 6.1–6.4 add scenario loading-state hardening, shared incident and crew filtering/sorting, paginated large-list handling, crew-ID visibility, read-only detail interactions with cross-navigation, and recommendation comparison with operational tradeoffs. Accessibility and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
 | Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, request correlation, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
@@ -165,7 +165,7 @@ Exit criteria:
 
 Objective: improve the dispatcher experience from demo shell to operational workflow.
 
-Status: In progress. Phases 6.1–6.2, 6.3.1–6.3.2, and 6.4 completed on 2026-08-16: scenario refreshes now show explicit loading/progress feedback, recommendation panels avoid transient empty states, incident queues support shared search, severity/region filters, sorting, and pagination, Crew Board cards support search, filters, sorting, pagination, and crew-ID visibility, and recommendation panels compare ranked alternatives with operational tradeoffs. Detail interactions, accessibility, and broader tests remain.
+Status: In progress. Phases 6.1–6.4 completed on 2026-08-16: scenario refreshes now show explicit loading/progress feedback, recommendation panels avoid transient empty states, incident queues support shared search, severity/region filters, sorting, and pagination, Crew Board cards support search, filters, sorting, pagination, and crew-ID visibility, read-only incident and crew details support assignment cross-navigation, and recommendation panels compare ranked alternatives with operational tradeoffs. Accessibility and broader tests remain.
 
 Scope:
 
@@ -331,7 +331,7 @@ Exit criteria:
 - [x] Phase 6.3.1: add Crew Board search, status/capability/region/storm-readiness filters, labeled sorting, result summaries, and large-list pagination.
 - [ ] Phase 6.3.1 follow-up: add faceted Crew Board filter cascading and remaining-result counts, disable zero-result choices, and preserve active selections (POC-009).
 - [x] Phase 6.3.2: display crew IDs beside crew names on Crew Board and Recommendation surfaces.
-- [ ] Phase 6.3.3: add incident and crew detail interactions.
+- [x] Phase 6.3.3: add read-only incident and crew detail interactions with assignment cross-navigation and keyboard-selectable incident rows.
 - [x] Phase 6.4: add recommendation comparison and tradeoff presentation.
 - [ ] Phase 6.5: improve navigation, accessibility, and broader browser workflow coverage.
 - [ ] Phase 6.6: complete Phase 6 evaluation and documentation closeout.
