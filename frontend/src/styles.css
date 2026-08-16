@@ -220,6 +220,27 @@ h1 {
   padding: 12px 14px;
 }
 
+.loading-banner {
+  align-items: center;
+  background: #edf6ff;
+  border: 1px solid #b9d8f5;
+  border-radius: 8px;
+  color: #194d7a;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+}
+
+.loading-banner strong,
+.loading-banner span {
+  display: block;
+}
+
+.loading-banner span {
+  font-size: 13px;
+}
+
 .view-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(160px, 1fr));

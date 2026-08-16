@@ -265,6 +265,27 @@ describe("application states and scenario switching", () => {
     expect(selector.value).toBe("base");
   });
 
+  it("keeps recommendation state loading while a slow scenario refresh is in progress", async () => {
+    let resolveIncidents: (value: Array<typeof baseIncident>) => void = () => undefined;
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    const selector = await screen.findByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    await waitFor(() => expect(selector.value).toBe("base"));
+    apiMocks.incidents.mockReturnValue(new Promise((resolve) => {
+      resolveIncidents = resolve;
+    }));
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    expect((await screen.findByRole("status")).textContent).toContain("Loading scenario data...");
+    expect(screen.getByText(/Large scenarios may take longer to rank/)).toBeTruthy();
+    expect(screen.queryByText("No recommendation is available because there are no active incidents.")).toBeNull();
+    expect(selector.disabled).toBe(true);
+
+    resolveIncidents([baseIncident]);
+    await waitFor(() => expect(selector.value).toBe("storm"));
+  });
+
   it("requires confirmation when the active scenario has recorded decisions", async () => {
     const confirm = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
     render(<App />);

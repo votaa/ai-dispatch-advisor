@@ -276,7 +276,14 @@ function App() {
           </div>
         </header>
 
-        {scenarioMessage ? (
+        {scenarioLoading ? (
+          <div aria-live="polite" className="loading-banner" role="status">
+            <strong>Loading scenario data...</strong>
+            <span>
+              {scenarios.find((scenario) => scenario.scenario_id === activeScenario?.scenario_id)?.name ?? "Selected scenario"} is being refreshed. Large scenarios may take longer to rank.
+            </span>
+          </div>
+        ) : scenarioMessage ? (
           <div className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}>
             {scenarioMessage}
           </div>
@@ -332,7 +339,7 @@ function App() {
                 recentActions={recommendationActions}
                 recommendation={recommendation}
                 recommendationError={recommendationError}
-                recommendationLoading={recommendationLoading}
+                recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
                 onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               />
             </div>
@@ -367,7 +374,7 @@ function App() {
               recentActions={recommendationActions}
               recommendation={recommendation}
               recommendationError={recommendationError}
-              recommendationLoading={recommendationLoading}
+              recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
               onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               selectedIncident={selectedIncident}
             />
@@ -503,7 +510,7 @@ function App() {
               recentActions={recommendationActions}
               recommendation={recommendation}
               recommendationError={recommendationError}
-              recommendationLoading={recommendationLoading || initialLoading}
+              recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
               onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
               selectedIncident={selectedIncident}
             />

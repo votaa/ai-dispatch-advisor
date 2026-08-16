@@ -31,7 +31,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
 | Phase 5: Recommendation and Optimization Engine | Complete | Phases 5.1–5.6 establish versioned policy and engine contracts, structured scoring, deterministic tie-breakers, blocking crew feasibility, nested explanations, replaceable-engine coverage, and scenario/edge-case evaluation evidence. |
-| Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
+| Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Phase 6.1 loading-state hardening is complete. Scenario controls, decision history, and focused POC workflow/state tests exist; filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
 | Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, request correlation, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
@@ -165,7 +165,7 @@ Exit criteria:
 
 Objective: improve the dispatcher experience from demo shell to operational workflow.
 
-Status: Pending, with scenario controls, decision history, and initial workflow-test groundwork complete.
+Status: In progress. Phase 6.1 completed on 2026-08-16: scenario refreshes now show explicit loading/progress feedback, disable scenario switching during refresh, and keep recommendation panels out of transient empty states. Filtering, comparison, detail interactions, accessibility, and broader tests remain.
 
 Scope:
 
@@ -320,6 +320,17 @@ Exit criteria:
 - [x] Phase 5.4: add structured explainability, confidence rationale, assumptions, uncertainty, data-quality warnings, and version metadata.
 - [x] Phase 5.5: complete replaceable engine contract tests and document the future advanced-optimization adapter path.
 - [x] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
+
+### Phase 6: Current Implementation Phase
+
+- [x] Phase 6.1: keep recommendation panels in an explicit loading state during scenario refreshes and prevent transient empty-state messaging.
+- [x] Phase 6.1: add large-scenario loading/progress feedback and disable scenario switching while operational data refreshes.
+- [x] Phase 6.1: add delayed-response frontend coverage for scenario activation and recommendation loading.
+- [ ] Phase 6.2: add incident queue filtering, sorting, and large-list handling.
+- [ ] Phase 6.3: add incident and crew detail interactions, including the accepted crew-ID visibility follow-up.
+- [ ] Phase 6.4: add recommendation comparison and tradeoff presentation.
+- [ ] Phase 6.5: improve navigation, accessibility, and broader browser workflow coverage.
+- [ ] Phase 6.6: complete Phase 6 evaluation and documentation closeout.
 
 ### Later Pending Phases
 
