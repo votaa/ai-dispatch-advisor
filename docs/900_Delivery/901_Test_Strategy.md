@@ -191,6 +191,7 @@ Validation should include:
 - Phase 5.3 feasibility tests verify capability and travel-within-shift blocking rules and assert typed exclusion reasons for each rejected crew.
 - Phase 5.4 explanation tests verify nested schemas, confidence rationale, policy/version metadata, assumptions, warnings, and no-feasible-crew explanations.
 - Phase 5.5 contract tests run the same engine expectations against the deterministic and fake adapters and verify services can be wired without implementation-specific changes.
+- Phase 5.6 evaluation tests run recommendation invariants across every manifested scenario and explicit edge-case fixtures; SME review evidence is maintained in `docs/900_Delivery/905_Phase_5_SME_Review_Checklist.md`.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.

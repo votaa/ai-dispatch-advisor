@@ -30,7 +30,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
-| Phase 5: Recommendation and Optimization Engine | In progress | Phases 5.1–5.5 establish versioned policy and engine contracts, structured incident scoring, deterministic tie-breakers, blocking crew feasibility, a nested public explanation contract, and replaceable-engine contract coverage. Scenario evaluation remains. |
+| Phase 5: Recommendation and Optimization Engine | Complete | Phases 5.1–5.6 establish versioned policy and engine contracts, structured scoring, deterministic tie-breakers, blocking crew feasibility, nested explanations, replaceable-engine coverage, and scenario/edge-case evaluation evidence. |
 | Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
@@ -143,7 +143,7 @@ Exit criteria:
 
 Objective: make recommendation generation explainable, testable, and configurable.
 
-Status: In progress. Phases 5.1–5.5 completed on 2026-08-16: versioned scoring policy, configurable incident prioritization, blocking crew feasibility, a backward-compatible nested explanation contract, and replaceable-engine contract coverage. Scenario evaluation and SME review evidence remain.
+Status: Complete. Phases 5.1–5.6 completed on 2026-08-16: versioned scoring policy, configurable incident prioritization, blocking crew feasibility, a backward-compatible nested explanation contract, replaceable-engine contract coverage, and manifested-scenario/edge-case evaluation evidence. SME review is documented as a follow-up review activity.
 
 Scope:
 
@@ -319,7 +319,7 @@ Exit criteria:
 - [x] Phase 5.3: enforce crew feasibility constraints and add transparent internal candidate exclusion and suitability results.
 - [x] Phase 5.4: add structured explainability, confidence rationale, assumptions, uncertainty, data-quality warnings, and version metadata.
 - [x] Phase 5.5: complete replaceable engine contract tests and document the future advanced-optimization adapter path.
-- [ ] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
+- [x] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
 
 ### Later Pending Phases
 
@@ -329,7 +329,7 @@ Exit criteria:
 - [ ] Phase 9: add structured logs, readiness, metrics, hardened deployment, environment configuration, and operational support tooling.
 - [ ] Phase 10: complete SME validation, pilot success criteria, readiness reviews, release controls, rollback, and support procedures.
 
-The sequence now continues with Phase 5 recommendation maturity, Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
+The sequence now continues with Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
 
 ## Definition of Done
 

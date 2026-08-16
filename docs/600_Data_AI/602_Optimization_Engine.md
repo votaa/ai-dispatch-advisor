@@ -43,6 +43,10 @@ Recommendations now include an optional nested `RecommendationExplanation` objec
 
 `OptimizationEngine` is injectable at the service composition root. Contract coverage runs against both `DeterministicOptimizationEngine` and a minimal fake adapter for ranking, structured incident evaluation, crew feasibility, and recommendation generation. The deterministic adapter remains active. A future OR-Tools or similar adapter must map normalized scenario inputs into the same typed request and return the same recommendation and explanation contract. Solver timeouts, invalid solutions, and fallback selection belong in that future adapter rather than current services.
 
+### Phase 5.6 Evaluation and Closeout
+
+Evaluation runs across every manifested scenario, including the generated `august-storm-preview`, while canonical scenarios retain explicit expected-result fixtures. Edge-case coverage includes no feasible crew, capability mismatch, insufficient shift time, missing travel estimates, active assignments, and deterministic ties. The SME review checklist records expected evidence and keeps solver adoption, repair-duration modeling, and crew-ID presentation as documented follow-up items.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals
@@ -266,7 +270,7 @@ Known gaps:
 - No optimization library usage.
 - No calibration against real operating policy.
 - No persistence of recommendation inputs or outputs.
-- Four canonical scenarios have exact baseline winner, score, and alternative-order characterization; broader edge-case fixtures remain pending.
+- Four canonical scenarios retain exact winner, score, and alternative-order characterization; broader manifested-scenario and edge-case evaluation fixtures are now covered.
 - No quantitative evaluation metrics.
 - Structured incident contributions remain internal until the Phase 5.4 public explanation contract is introduced.
 
