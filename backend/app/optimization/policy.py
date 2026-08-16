@@ -269,6 +269,18 @@ DEFAULT_RECOMMENDATION_POLICY = RecommendationPolicy.model_validate(
         **POC_BASELINE_RECOMMENDATION_POLICY.model_dump(),
         "algorithm_version": "deterministic-scoring-v2",
         "policy_version": "incident-priority-v1",
+        "constraints": [
+            {
+                **constraint,
+                "status": (
+                    "implemented"
+                    if constraint["constraint_id"]
+                    in {"crew_capability_required", "shift_sufficiency"}
+                    else constraint["status"]
+                ),
+            }
+            for constraint in POC_BASELINE_RECOMMENDATION_POLICY.model_dump()["constraints"]
+        ],
         "incident_tie_breakers": [
             {
                 "field": "severity",

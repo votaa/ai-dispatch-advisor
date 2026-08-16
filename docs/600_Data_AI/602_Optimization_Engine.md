@@ -31,6 +31,10 @@ This package does not intentionally alter recommendation API fields or canonical
 
 Phase 5.2 advances the active policy to `incident-priority-v1` and algorithm `deterministic-scoring-v2`. Incident evaluation now returns an internal typed score containing the total and five contributions: customer impact, critical-facility impact, hazard, incident age, and severity. Each contribution records the raw value, configured divisor or weight, calculation type, and resulting points. Application services continue returning the established public `Incident` shape; richer public explanation fields remain Phase 5.4 work.
 
+### Phase 5.3 Crew Feasibility
+
+The active policy now enables `crew_capability_required` and `shift_sufficiency` as blocking constraints in addition to availability and active-assignment checks. Before suitability scoring, the deterministic engine evaluates every crew and returns an internal `CrewFeasibility` result with typed `CrewExclusionReason` entries. Capability must match the incident required skill (except `general`), and estimated travel must fit within the remaining shift. The current data model has no repair-duration estimate, so the shift rule covers travel time only and remains an explicit assumption. Infeasible crews are removed from the recommendation and alternatives; the public recommendation schema remains unchanged until Phase 5.4.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals
@@ -130,12 +134,12 @@ Target constraints include:
 
 | Classification | Implemented Baseline | Planned Follow-Up |
 | --- | --- | --- |
-| Blocking constraints | Crew has `available` status; crew has no active assignment; assignments match the request scenario; human approval remains required | Required capability/certification; shift sufficiency; equipment, safety, access, weather, and topology feasibility |
+| Blocking constraints | Crew has `available` status; crew has no active assignment; assignments match the request scenario; human approval remains required; required capability; travel fits remaining shift | Equipment, safety, access, weather, and topology feasibility |
 | Soft factors | Customer impact, critical facility, hazard, incident age, severity, travel time, capability match, storm readiness | Restoration impact, data freshness penalties, objective tradeoffs |
 | Assumptions | Crew state is current; travel estimate is valid; incident impact and condition data are current | Replace assumptions with source freshness and integration-health evidence |
 | Data-quality conditions | None currently influence scores or confidence | Missing or stale crew, travel, and incident context should reduce confidence |
 
-Capability match remains a soft factor in `poc-baseline-v1` to preserve current demo behavior. It must become a blocking rule only through an intentional policy version and Phase 5.3 regression review.
+Capability match remains a soft factor in `poc-baseline-v1` to preserve current demo behavior. The active `incident-priority-v1` policy intentionally promotes capability and travel-within-shift to blocking feasibility rules in Phase 5.3.
 
 ### Baseline Scoring Policy
 

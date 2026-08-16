@@ -3,6 +3,8 @@ from __future__ import annotations
 from ..domain.models import Incident, Recommendation
 from ..recommendations import recommend_assignment
 from .contracts import (
+    CrewExclusionReason,
+    CrewFeasibility,
     IncidentScore,
     IncidentScoreContribution,
     OptimizationRequest,
@@ -104,11 +106,85 @@ class DeterministicOptimizationEngine:
             return incident.incident_id
         raise ValueError(f"Unsupported incident tie-break field: {field}")
 
+    def evaluate_crew_feasibility(self, request: OptimizationRequest) -> list[CrewFeasibility]:
+        """Evaluate blocking crew constraints before suitability scoring."""
+        active_crews = {
+            assignment.crew_id
+            for assignment in request.assignments
+            if assignment.status.lower() == "active"
+        }
+        required_skill = request.incident.required_skill.strip().lower()
+        scoring = self._policy.crew_scoring
+        enabled_constraints = {
+            constraint.constraint_id
+            for constraint in self._policy.constraints
+            if constraint.status == "implemented" and constraint.blocking
+        }
+        results: list[CrewFeasibility] = []
+        for crew in request.crews:
+            exclusions: list[CrewExclusionReason] = []
+            if (
+                "crew_available" in enabled_constraints
+                and crew.status.strip().lower() != "available"
+            ):
+                exclusions.append(
+                    CrewExclusionReason(
+                        constraint_id="crew_available",
+                        message="Crew status is not available.",
+                        details={"status": crew.status},
+                    )
+                )
+            if "crew_unassigned" in enabled_constraints and crew.crew_id in active_crews:
+                exclusions.append(
+                    CrewExclusionReason(
+                        constraint_id="crew_unassigned",
+                        message="Crew already has an active assignment.",
+                        details={"crew_id": crew.crew_id},
+                    )
+                )
+            capability = crew.capability.strip().lower()
+            if (
+                "crew_capability_required" in enabled_constraints
+                and required_skill != "general"
+                and capability != required_skill
+            ):
+                exclusions.append(
+                    CrewExclusionReason(
+                        constraint_id="crew_capability_required",
+                        message="Crew capability does not satisfy the incident required skill.",
+                        details={"required_skill": required_skill, "capability": capability},
+                    )
+                )
+            travel_minutes = crew.travel_minutes_to_selected_incident
+            available_minutes = float(crew.shift_remaining_hours) * 60
+            if "shift_sufficiency" in enabled_constraints and travel_minutes > available_minutes:
+                exclusions.append(
+                    CrewExclusionReason(
+                        constraint_id="shift_sufficiency",
+                        message="Remaining shift does not cover estimated travel time.",
+                        details={
+                            "travel_minutes": travel_minutes,
+                            "available_shift_minutes": available_minutes,
+                        },
+                    )
+                )
+            results.append(
+                CrewFeasibility(
+                    crew_id=crew.crew_id,
+                    feasible=not exclusions,
+                    exclusions=exclusions,
+                )
+            )
+        return results
+
     def recommend(self, request: OptimizationRequest) -> Recommendation:
+        feasibility = self.evaluate_crew_feasibility(request)
+        feasible_crew_ids = {result.crew_id for result in feasibility if result.feasible}
         recommendation = recommend_assignment(
             request.incident.model_dump(),
             [crew.model_dump() for crew in request.crews],
             [assignment.model_dump() for assignment in request.assignments],
             policy=self._policy,
+            feasible_crew_ids=feasible_crew_ids,
         )
         return Recommendation.model_validate(recommendation)

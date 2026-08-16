@@ -42,6 +42,14 @@ def test_poc_baseline_policy_versions_and_rule_classification_are_stable() -> No
     } == {"crew_capability_required", "shift_sufficiency"}
 
 
+def test_active_policy_enables_phase_5_3_crew_constraints() -> None:
+    assert {
+        constraint.constraint_id
+        for constraint in DEFAULT_RECOMMENDATION_POLICY.constraints
+        if constraint.status == "implemented" and constraint.blocking
+    } >= {"crew_capability_required", "shift_sufficiency"}
+
+
 @pytest.mark.parametrize(
     ("path", "value", "message"),
     [
@@ -139,10 +147,10 @@ def test_optimization_request_rejects_cross_scenario_assignments() -> None:
 @pytest.mark.parametrize(
     ("scenario_id", "incident_id", "action", "crew_id", "score", "alternatives"),
     [
-        ("base", "INC-1001", "Assign crew", "CR-01", 132, [("CR-04", 128), ("CR-06", 119), ("CR-03", 65)]),
-        ("storm", "STM-2001", "Assign crew", "SC-06", 129, [("SC-05", 86), ("SC-03", 83), ("SC-08", 81)]),
+        ("base", "INC-1001", "Assign crew", "CR-01", 132, [("CR-04", 128), ("CR-06", 119)]),
+        ("storm", "STM-2001", "Assign crew", "SC-06", 129, []),
         ("crew-shortage", "CRS-3001", "Defer and escalate", None, None, []),
-        ("critical-facility", "CFI-4001", "Assign crew", "FC-01", 138, [("FC-02", 130), ("FC-07", 121), ("FC-03", 92)]),
+        ("critical-facility", "CFI-4001", "Assign crew", "FC-01", 138, [("FC-02", 130), ("FC-07", 121)]),
     ],
 )
 def test_canonical_recommendations_remain_stable_under_active_policy(

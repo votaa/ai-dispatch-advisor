@@ -23,6 +23,8 @@ The current recommendation implementation:
 
 Phase 5.2 makes incident-priority contributions and domain tie-breakers structured and configurable inside the engine. Public response fields and canonical scenario recommendations remain unchanged. Algorithm and policy versions currently live in the internal policy contract; Phase 5.4 will expose traceability and richer structured explanation fields through the API.
 
+Phase 5.3 evaluates crew availability, active assignments, required capability, and travel-within-shift feasibility before scoring. Infeasible crews are omitted from `recommended_crew` and `alternatives`; their typed exclusion reasons remain an internal engine result until the Phase 5.4 public explanation contract.
+
 The current Copilot implementation:
 
 - Uses keyword-based logic.

@@ -188,6 +188,7 @@ Validation should include:
 
 - Recommendation includes required explanation factors.
 - Recommendation respects hard constraints.
+- Phase 5.3 feasibility tests verify capability and travel-within-shift blocking rules and assert typed exclusion reasons for each rejected crew.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.

@@ -106,6 +106,8 @@ Phase 5.1 injects one shared `OptimizationEngine` into incident ranking and reco
 
 Phase 5.2 moves incident-priority calculation fully behind that engine. `IncidentScore` and `IncidentScoreContribution` provide internal, typed evaluation evidence, and the active policy supplies validated weights and explicit severity, age, customer-impact, and incident-ID tie-breakers. `IncidentService` intentionally projects ranked results back to the existing `Incident` API model until structured public explanations are introduced in Phase 5.4.
 
+Phase 5.3 evaluates blocking crew feasibility before suitability scoring. `CrewFeasibility` records whether each crew passed and `CrewExclusionReason` identifies unavailable status, active assignment, capability mismatch, or insufficient shift time. The engine filters infeasible candidates while preserving the existing recommendation response shape; public explanation fields remain Phase 5.4 work.
+
 ## Target Backend Structure
 
 As implementation matures, routers, configuration, persistence repositories, and integration adapters should be separated further:

@@ -1,6 +1,8 @@
 from .contracts import (
     IncidentScore,
     IncidentScoreContribution,
+    CrewExclusionReason,
+    CrewFeasibility,
     OptimizationEngine,
     OptimizationRequest,
     RankedIncident,
@@ -16,6 +18,8 @@ __all__ = [
     "POC_BASELINE_RECOMMENDATION_POLICY",
     "IncidentScore",
     "IncidentScoreContribution",
+    "CrewExclusionReason",
+    "CrewFeasibility",
     "OptimizationEngine",
     "OptimizationRequest",
     "RecommendationPolicy",

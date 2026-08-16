@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal, Protocol, Union
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 from ..domain.models import Assignment, Crew, DomainModel, Incident, Recommendation
 from .policy import RecommendationPolicy
@@ -14,6 +14,12 @@ IncidentFactorId = Literal[
     "hazard",
     "incident_age",
     "severity",
+]
+CrewConstraintId = Literal[
+    "crew_available",
+    "crew_unassigned",
+    "crew_capability_required",
+    "shift_sufficiency",
 ]
 ScoreCalculation = Literal["integer_division", "conditional_bonus", "configured_weight"]
 
@@ -37,6 +43,22 @@ class IncidentScore(DomainModel):
 class RankedIncident(DomainModel):
     incident: Incident
     score: IncidentScore
+
+
+class CrewExclusionReason(DomainModel):
+    """A typed, internal explanation for excluding one crew candidate."""
+
+    constraint_id: CrewConstraintId
+    message: str
+    details: dict[str, Union[str, int, float, bool]] = Field(default_factory=dict)
+
+
+class CrewFeasibility(DomainModel):
+    """Feasibility result retained at the optimization boundary for explainability."""
+
+    crew_id: str
+    feasible: bool
+    exclusions: list[CrewExclusionReason] = Field(default_factory=list)
 
 
 class OptimizationRequest(DomainModel):
@@ -71,5 +93,9 @@ class OptimizationEngine(Protocol):
     def rank_incidents(self, incidents: list[Incident]) -> list[Incident]: ...
 
     def evaluate_incidents(self, incidents: list[Incident]) -> list[RankedIncident]: ...
+
+    def evaluate_crew_feasibility(
+        self, request: OptimizationRequest
+    ) -> list[CrewFeasibility]: ...
 
     def recommend(self, request: OptimizationRequest) -> Recommendation: ...

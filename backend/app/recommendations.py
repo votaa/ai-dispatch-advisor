@@ -10,6 +10,7 @@ def recommend_assignment(
     crews: list[dict[str, Any]],
     assignments: list[dict[str, Any]],
     policy: RecommendationPolicy = DEFAULT_RECOMMENDATION_POLICY,
+    feasible_crew_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     scoring = policy.crew_scoring
     active_crews = {row.get("crew_id") for row in assignments if row.get("status") == "active"}
@@ -17,10 +18,12 @@ def recommend_assignment(
 
     candidates = []
     for crew in crews:
+        if feasible_crew_ids is not None and crew.get("crew_id") not in feasible_crew_ids:
+            continue
         if crew.get("crew_id") in active_crews or crew.get("status") != "available":
             continue
         capability = str(crew.get("capability") or "").lower()
-        capability_match = required_skill in capability or required_skill == "general"
+        capability_match = required_skill == "general" or capability == required_skill
         travel_minutes = int(
             crew.get("travel_minutes_to_selected_incident") or scoring.missing_travel_minutes
         )
