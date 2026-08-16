@@ -13,8 +13,10 @@ The current POC includes a Dispatch section with:
 - Recommendation panel.
 - Recommendation explanation factors and constraints.
 - Visible Accept, Modify, Defer, and Override controls.
+- Scenario-scoped action persistence, assignment overlays, and recent decision history.
+- Search, cascading Severity and Region filters with remaining-result counts, sortable headers, and pagination.
 
-The recommendation action buttons may be implemented as a later POC enhancement. When implemented, they should remain lightweight and demo-oriented until production audit and persistence requirements are finalized.
+The recommendation actions are demo-functional and remain local to the POC. Production audit, identity, authorization, and system-of-record writeback requirements remain future work.
 
 ## Primary User
 
@@ -75,6 +77,8 @@ Target queue controls:
 - Sort by priority, severity, customers out, age, region, and recommendation status.
 - Filter by region, severity, critical facility impact, hazard, assignment status, and stale data.
 - Select incident without navigating away from the dispatch workspace.
+
+Current Severity and Region filters recalculate each other's remaining-result counts using the current search. Zero-result options remain visible but disabled, active selections are preserved, and counts are scoped to the incidents available in the current Dashboard, Dispatch, Incidents, or Storm Mode view.
 
 ## Selected Incident Context
 

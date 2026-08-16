@@ -21,10 +21,13 @@ The UI should:
 
 The current POC includes:
 
-- Semantic buttons for navigation and actions.
-- Tables for incident data.
+- A skip link, main landmark, page heading focus on view changes, and `aria-current` primary navigation state.
+- Semantic buttons for navigation, incident and crew selection, sorting, pagination, and recommendation actions.
+- Tables with sortable-column state and labeled horizontally scrollable regions for incident data.
 - Text labels for severity and status.
-- Responsive layout rules.
+- Visible focus indicators and responsive layout rules.
+- Live loading and result summaries, assertive failure feedback, labeled validation errors, and required-state semantics for dispatcher reasons.
+- Labeled Crew Board and incident filter groups whose remaining-result counts and disabled zero-result choices are available in native select controls.
 
 Accessibility should be reviewed more deeply as the frontend is split into production components.
 
@@ -79,6 +82,8 @@ Incident and crew data should support:
 - Visible selected state.
 - Keyboard-friendly row interaction when implemented.
 - Avoidance of horizontal-only interaction on small screens.
+
+The current incident tables use semantic selection buttons in the Incident column so keyboard users do not need to focus an entire table row. Filter summaries and pagination controls are labeled by their owning queue.
 
 For future advanced grids, ensure sorting, filtering, and selection are accessible.
 
@@ -167,4 +172,3 @@ Future work should include:
 - [Dispatch Console Specification](302_Dispatch_Console_Specification.md)
 - [Recommendation Experience](303_Recommendation_Experience.md)
 - [Explainability and Trust](304_Explainability_and_Trust.md)
-

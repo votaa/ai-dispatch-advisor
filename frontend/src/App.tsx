@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Users
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 import { api } from "./api";
 import type {
@@ -27,7 +27,7 @@ import type {
 } from "./types";
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
-type ChatTurn = { question: string; answer: string };
+type ChatTurn = { question: string; answer: string; error?: boolean };
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
@@ -46,6 +46,18 @@ function severityClass(severity: string) {
   return `severity severity-${severity.toLowerCase()}`;
 }
 
+function countBy<T>(items: T[], valueFor: (item: T) => string) {
+  return items.reduce<Record<string, number>>((counts, item) => {
+    const value = valueFor(item);
+    counts[value] = (counts[value] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
+function facetCountsFor<T>(items: T[], valueFor: (item: T) => string): Record<string, number> {
+  return { ...countBy(items, valueFor), all: items.length };
+}
+
 function App() {
   const [view, setView] = useState<ViewKey>("dashboard");
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
@@ -61,6 +73,7 @@ function App() {
   const [chatLoading, setChatLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<RecommendationActionType | null>(null);
   const [actionMessage, setActionMessage] = useState("");
+  const [actionFailed, setActionFailed] = useState(false);
   const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
   const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
   const [scenarioLoading, setScenarioLoading] = useState(false);
@@ -70,10 +83,15 @@ function App() {
   const [recommendationLoading, setRecommendationLoading] = useState(false);
   const [recommendationError, setRecommendationError] = useState("");
   const [recommendationRequestVersion, setRecommendationRequestVersion] = useState(0);
+  const pageHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     loadApplication();
   }, []);
+
+  useEffect(() => {
+    pageHeadingRef.current?.focus();
+  }, [view]);
 
   useEffect(() => {
     let cancelled = false;
@@ -158,7 +176,7 @@ function App() {
       setChatTurns((turns) => [{ question, answer: response.answer }, ...turns]);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Copilot request failed";
-      setChatTurns((turns) => [{ question, answer: `Unable to reach Copilot: ${message}` }, ...turns]);
+      setChatTurns((turns) => [{ question, answer: `Unable to reach Copilot: ${message}`, error: true }, ...turns]);
     } finally {
       setChatLoading(false);
     }
@@ -190,6 +208,7 @@ function App() {
       setRecommendation(null);
       setRecommendationError("");
       setActionMessage("");
+      setActionFailed(false);
       setChatTurns([]);
 
       const { incidentData } = await refreshOperationalState();
@@ -222,6 +241,7 @@ function App() {
 
     setActionLoading(action);
     setActionMessage("");
+    setActionFailed(false);
     try {
       const event = await api.recordRecommendationAction(action, recommendation, note?.trim() || undefined, selectedCrewId);
       await refreshOperationalState();
@@ -233,6 +253,7 @@ function App() {
       setActionMessage(`Recommendation ${formatAction(action)}.`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Recommendation action failed";
+      setActionFailed(true);
       setActionMessage(message);
     } finally {
       setActionLoading(null);
@@ -241,6 +262,7 @@ function App() {
 
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-mark">AI</div>
@@ -255,6 +277,7 @@ function App() {
             return (
               <button
                 key={item.key}
+                aria-current={view === item.key ? "page" : undefined}
                 className={view === item.key ? "nav-item active" : "nav-item"}
                 onClick={() => setView(item.key)}
                 type="button"
@@ -267,11 +290,16 @@ function App() {
         </nav>
       </aside>
 
-      <main className="main">
+      <main
+        aria-busy={initialLoading || scenarioLoading}
+        aria-labelledby="page-heading"
+        className="main"
+        id="main-content"
+      >
         <header className="topbar">
           <div>
             <p className="eyebrow">Developer Bootstrap MVP</p>
-            <h1>{navItems.find((item) => item.key === view)?.label}</h1>
+            <h1 id="page-heading" ref={pageHeadingRef} tabIndex={-1}>{navItems.find((item) => item.key === view)?.label}</h1>
           </div>
           <div className="scenario-selector">
             <label htmlFor="active-scenario">
@@ -303,7 +331,11 @@ function App() {
             </span>
           </div>
         ) : scenarioMessage ? (
-          <div className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}>
+          <div
+            aria-live={scenarioMessage.endsWith("activated.") ? "polite" : "assertive"}
+            className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}
+            role={scenarioMessage.endsWith("activated.") ? "status" : "alert"}
+          >
             {scenarioMessage}
           </div>
         ) : null}
@@ -353,6 +385,7 @@ function App() {
 
               <RecommendationPanel
                 actionLoading={actionLoading}
+                actionFailed={actionFailed}
                 actionMessage={actionMessage}
                 onOpenCrew={openCrewDetails}
                 onRecordAction={recordRecommendationAction}
@@ -389,6 +422,7 @@ function App() {
             </section>
             <RecommendationPanel
               actionLoading={actionLoading}
+              actionFailed={actionFailed}
               actionMessage={actionMessage}
               onOpenCrew={openCrewDetails}
               onRecordAction={recordRecommendationAction}
@@ -512,6 +546,7 @@ function App() {
             </section>
             <RecommendationPanel
               actionLoading={actionLoading}
+              actionFailed={actionFailed}
               actionMessage={actionMessage}
               onOpenCrew={openCrewDetails}
               onRecordAction={recordRecommendationAction}
@@ -541,7 +576,8 @@ function App() {
                 </button>
               ))}
             </div>
-            <textarea value={chatMessage} onChange={(event) => setChatMessage(event.target.value)} />
+            <label className="sr-only" htmlFor="copilot-question">Copilot question</label>
+            <textarea id="copilot-question" value={chatMessage} onChange={(event) => setChatMessage(event.target.value)} />
             <button className="primary-action" disabled={chatLoading} onClick={askCopilot} type="button">
               {chatLoading ? "Asking..." : "Ask Copilot"}
             </button>
@@ -550,7 +586,7 @@ function App() {
                 <div className="copilot-answer">Ask one of the sample questions to query the synthetic dispatch data.</div>
               ) : (
                 chatTurns.map((turn, index) => (
-                  <article className="chat-turn" key={`${turn.question}-${index}`}>
+                  <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>
                     <strong>{turn.question}</strong>
                     <p>{turn.answer}</p>
                   </article>
@@ -803,12 +839,21 @@ function CrewBoard({
   const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>({ key: "name", direction: "asc" });
   const [page, setPage] = useState(0);
 
-  const statuses = useMemo(() => Array.from(new Set(crews.map((crew) => crew.status))).sort(), [crews]);
-  const capabilities = useMemo(() => Array.from(new Set(crews.map((crew) => crew.capability))).sort(), [crews]);
-  const regions = useMemo(() => Array.from(new Set(crews.map((crew) => crew.home_region))).sort(), [crews]);
-  const filteredCrews = useMemo(() => {
+  const statuses = useMemo(
+    () => Array.from(new Set([...crews.map((crew) => crew.status), ...(status !== "all" ? [status] : [])])).sort(),
+    [crews, status]
+  );
+  const capabilities = useMemo(
+    () => Array.from(new Set([...crews.map((crew) => crew.capability), ...(capability !== "all" ? [capability] : [])])).sort(),
+    [capability, crews]
+  );
+  const regions = useMemo(
+    () => Array.from(new Set([...crews.map((crew) => crew.home_region), ...(region !== "all" ? [region] : [])])).sort(),
+    [crews, region]
+  );
+  const { filteredCrews, facetCounts } = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const matching = crews.filter((crew) => {
+    const matches = (crew: Crew, excludedFacet?: "status" | "capability" | "region" | "stormReady") => {
       const searchable = [
         crew.crew_id,
         crew.crew_name,
@@ -819,13 +864,18 @@ function CrewBoard({
       ].join(" ").toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
-        (status === "all" || crew.status === status) &&
-        (capability === "all" || crew.capability === capability) &&
-        (region === "all" || crew.home_region === region) &&
-        (stormReady === "all" || (stormReady === "ready" ? crew.storm_ready : !crew.storm_ready))
+        (excludedFacet === "status" || status === "all" || crew.status === status) &&
+        (excludedFacet === "capability" || capability === "all" || crew.capability === capability) &&
+        (excludedFacet === "region" || region === "all" || crew.home_region === region) &&
+        (excludedFacet === "stormReady" || stormReady === "all" || (stormReady === "ready" ? crew.storm_ready : !crew.storm_ready))
       );
-    });
-    return matching.sort((left, right) => {
+    };
+    const matching = crews.filter((crew) => matches(crew));
+    const statusEligible = crews.filter((crew) => matches(crew, "status"));
+    const capabilityEligible = crews.filter((crew) => matches(crew, "capability"));
+    const regionEligible = crews.filter((crew) => matches(crew, "region"));
+    const stormReadyEligible = crews.filter((crew) => matches(crew, "stormReady"));
+    const sorted = matching.sort((left, right) => {
       const direction = sort.direction === "asc" ? 1 : -1;
       let comparison = 0;
       if (sort.key === "name") comparison = left.crew_name.localeCompare(right.crew_name);
@@ -836,6 +886,15 @@ function CrewBoard({
       if (sort.key === "travel") comparison = left.travel_minutes_to_selected_incident - right.travel_minutes_to_selected_incident;
       return comparison * direction || left.crew_id.localeCompare(right.crew_id);
     });
+    return {
+      filteredCrews: sorted,
+      facetCounts: {
+        status: facetCountsFor(statusEligible, (crew) => crew.status),
+        capability: facetCountsFor(capabilityEligible, (crew) => crew.capability),
+        region: facetCountsFor(regionEligible, (crew) => crew.home_region),
+        stormReady: facetCountsFor(stormReadyEligible, (crew) => crew.storm_ready ? "ready" : "not-ready")
+      }
+    };
   }, [capability, crews, query, region, sort, status, stormReady]);
   const pageCount = Math.max(1, Math.ceil(filteredCrews.length / pageSize));
   const visibleCrews = filteredCrews.slice(page * pageSize, (page + 1) * pageSize);
@@ -850,7 +909,7 @@ function CrewBoard({
 
   return (
     <div className="crew-board">
-      <div className="crew-board-controls" aria-label="Crew Board filters">
+      <div className="crew-board-controls" aria-label="Crew Board filters" role="group">
         <label>
           Search
           <input aria-label="Crew Board search" onChange={(event) => setQuery(event.target.value)} placeholder="Crew, capability, region, or incident" type="search" value={query} />
@@ -858,30 +917,30 @@ function CrewBoard({
         <label>
           Status
           <select aria-label="Crew Board status" onChange={(event) => setStatus(event.target.value)} value={status}>
-            <option value="all">All statuses</option>
-            {statuses.map((item) => <option key={item} value={item}>{formatCrewStatus(item)}</option>)}
+            <option value="all">All statuses ({facetCounts.status.all})</option>
+            {statuses.map((item) => <option disabled={(facetCounts.status[item] ?? 0) === 0 && status !== item} key={item} value={item}>{formatCrewStatus(item)} ({facetCounts.status[item] ?? 0})</option>)}
           </select>
         </label>
         <label>
           Capability
           <select aria-label="Crew Board capability" onChange={(event) => setCapability(event.target.value)} value={capability}>
-            <option value="all">All capabilities</option>
-            {capabilities.map((item) => <option key={item} value={item}>{item}</option>)}
+            <option value="all">All capabilities ({facetCounts.capability.all})</option>
+            {capabilities.map((item) => <option disabled={(facetCounts.capability[item] ?? 0) === 0 && capability !== item} key={item} value={item}>{item} ({facetCounts.capability[item] ?? 0})</option>)}
           </select>
         </label>
         <label>
           Region
           <select aria-label="Crew Board region" onChange={(event) => setRegion(event.target.value)} value={region}>
-            <option value="all">All regions</option>
-            {regions.map((item) => <option key={item} value={item}>{item}</option>)}
+            <option value="all">All regions ({facetCounts.region.all})</option>
+            {regions.map((item) => <option disabled={(facetCounts.region[item] ?? 0) === 0 && region !== item} key={item} value={item}>{item} ({facetCounts.region[item] ?? 0})</option>)}
           </select>
         </label>
         <label>
           Storm-ready
           <select aria-label="Crew Board storm readiness" onChange={(event) => setStormReady(event.target.value)} value={stormReady}>
-            <option value="all">All crews</option>
-            <option value="ready">Storm-ready</option>
-            <option value="not-ready">Not storm-ready</option>
+            <option value="all">All crews ({facetCounts.stormReady.all})</option>
+            <option disabled={(facetCounts.stormReady.ready ?? 0) === 0 && stormReady !== "ready"} value="ready">Storm-ready ({facetCounts.stormReady.ready ?? 0})</option>
+            <option disabled={(facetCounts.stormReady["not-ready"] ?? 0) === 0 && stormReady !== "not-ready"} value="not-ready">Not storm-ready ({facetCounts.stormReady["not-ready"] ?? 0})</option>
           </select>
         </label>
         <label>
@@ -902,10 +961,10 @@ function CrewBoard({
       <div className="crew-board-summary" aria-live="polite">
         <span>Showing {visibleCrews.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredCrews.length)} of {filteredCrews.length} matching crews ({crews.length} total)</span>
         {pageCount > 1 ? (
-          <div className="incident-pagination">
-            <button disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+          <div aria-label="Crew Board pagination" className="incident-pagination" role="navigation">
+            <button aria-label="Previous Crew Board page" disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
             <span>Page {page + 1} of {pageCount}</span>
-            <button disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+            <button aria-label="Next Crew Board page" disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
           </div>
         ) : null}
       </div>
@@ -967,27 +1026,36 @@ function IncidentTable({
   const [page, setPage] = useState(0);
 
   const regions = useMemo(
-    () => Array.from(new Set(incidents.map((incident) => incident.region))).sort(),
-    [incidents]
+    () => Array.from(new Set([...incidents.map((incident) => incident.region), ...(region !== "all" ? [region] : [])])).sort(),
+    [incidents, region]
   );
   const severities = useMemo(
-    () => Array.from(new Set(incidents.map((incident) => incident.severity.toLowerCase()))),
-    [incidents]
+    () => {
+      const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+      return Array.from(new Set([
+        ...incidents.map((incident) => incident.severity.toLowerCase()),
+        ...(severity !== "all" ? [severity] : [])
+      ])).sort((left, right) => (severityRank[right] ?? 0) - (severityRank[left] ?? 0) || left.localeCompare(right));
+    },
+    [incidents, severity]
   );
-  const filteredIncidents = useMemo(() => {
+  const { filteredIncidents, facetCounts } = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const matching = incidents.filter((incident) => {
+    const matches = (incident: Incident, excludedFacet?: "severity" | "region") => {
       const searchable = [incident.incident_id, incident.municipality, incident.feeder, incident.hazard]
         .join(" ")
         .toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
-        (severity === "all" || incident.severity.toLowerCase() === severity) &&
-        (region === "all" || incident.region === region)
+        (excludedFacet === "severity" || severity === "all" || incident.severity.toLowerCase() === severity) &&
+        (excludedFacet === "region" || region === "all" || incident.region === region)
       );
-    });
+    };
+    const matching = incidents.filter((incident) => matches(incident));
+    const severityEligible = incidents.filter((incident) => matches(incident, "severity"));
+    const regionEligible = incidents.filter((incident) => matches(incident, "region"));
     const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-    return matching.sort((left, right) => {
+    const sorted = matching.sort((left, right) => {
       if (sort) {
         const direction = sort.direction === "asc" ? 1 : -1;
         let comparison = 0;
@@ -1010,6 +1078,13 @@ function IncidentTable({
         left.incident_id.localeCompare(right.incident_id)
       );
     });
+    return {
+      filteredIncidents: sorted,
+      facetCounts: {
+        severity: facetCountsFor(severityEligible, (incident) => incident.severity.toLowerCase()),
+        region: facetCountsFor(regionEligible, (incident) => incident.region)
+      }
+    };
   }, [incidents, query, region, severity, sort]);
   const pageCount = Math.max(1, Math.ceil(filteredIncidents.length / pageSize));
   const visibleIncidents = filteredIncidents.slice(page * pageSize, (page + 1) * pageSize);
@@ -1035,7 +1110,7 @@ function IncidentTable({
 
   return (
     <div className="incident-table">
-      <div className="incident-table-controls" aria-label={`${tableLabel} filters`}>
+      <div className="incident-table-controls" aria-label={`${tableLabel} filters`} role="group">
         <label>
           Search
           <input
@@ -1049,25 +1124,25 @@ function IncidentTable({
         <label>
           Severity
           <select aria-label={`${tableLabel} severity`} onChange={(event) => setSeverity(event.target.value)} value={severity}>
-            <option value="all">All severities</option>
-            {severities.map((item) => <option key={`severity-${item}`} value={item}>{item}</option>)}
+            <option value="all">All severities ({facetCounts.severity.all})</option>
+            {severities.map((item) => <option disabled={(facetCounts.severity[item] ?? 0) === 0 && severity !== item} key={`severity-${item}`} value={item}>{formatCrewStatus(item)} ({facetCounts.severity[item] ?? 0})</option>)}
           </select>
         </label>
         <label>
           Region
           <select aria-label={`${tableLabel} region`} onChange={(event) => setRegion(event.target.value)} value={region}>
-            <option value="all">All regions</option>
-            {regions.map((item) => <option key={`region-${item}`} value={item}>{item}</option>)}
+            <option value="all">All regions ({facetCounts.region.all})</option>
+            {regions.map((item) => <option disabled={(facetCounts.region[item] ?? 0) === 0 && region !== item} key={`region-${item}`} value={item}>{item} ({facetCounts.region[item] ?? 0})</option>)}
           </select>
         </label>
       </div>
       <div className="incident-table-summary" aria-live="polite">
         <span>Showing {visibleIncidents.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredIncidents.length)} of {filteredIncidents.length} matching incidents ({incidents.length} total)</span>
         {pageCount > 1 ? (
-          <div className="incident-pagination">
-            <button disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+          <div aria-label={`${tableLabel} pagination`} className="incident-pagination" role="navigation">
+            <button aria-label={`Previous ${tableLabel} page`} disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
             <span>Page {page + 1} of {pageCount}</span>
-            <button disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+            <button aria-label={`Next ${tableLabel} page`} disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
           </div>
         ) : null}
       </div>
@@ -1103,16 +1178,19 @@ function IncidentTable({
               className={selectedIncidentId === incident.incident_id ? "selected-row" : ""}
               key={incident.incident_id}
               onClick={() => onSelect(incident.incident_id)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onSelect(incident.incident_id);
-                }
-              }}
-              tabIndex={0}
             >
               <td>
-                <strong>{incident.incident_id}</strong>
+                <button
+                  aria-pressed={selectedIncidentId === incident.incident_id}
+                  className="incident-select-button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSelect(incident.incident_id);
+                  }}
+                  type="button"
+                >
+                  {incident.incident_id}
+                </button>
                 <span>{incident.municipality} / {incident.feeder}</span>
               </td>
               <td>{incident.region}</td>
@@ -1157,6 +1235,7 @@ function ResponsiveTable({ children, label }: { children: ReactNode; label: stri
 }
 
 function RecommendationPanel({
+  actionFailed,
   actionLoading,
   actionMessage,
   onOpenCrew,
@@ -1168,6 +1247,7 @@ function RecommendationPanel({
   recommendationLoading,
   selectedIncident
 }: {
+  actionFailed: boolean;
   actionLoading: RecommendationActionType | null;
   actionMessage: string;
   onOpenCrew: (crewId: string) => void;
@@ -1183,6 +1263,7 @@ function RecommendationPanel({
   const [draftNote, setDraftNote] = useState("");
   const [draftError, setDraftError] = useState("");
   const [selectedActionCrewId, setSelectedActionCrewId] = useState<string | undefined>();
+  const actionNoteRef = useRef<HTMLTextAreaElement>(null);
   const incidentActions = recentActions.filter((action) => action.incident_id === recommendation?.incident_id).slice(0, 4);
   const currentDecision = selectedIncident?.current_decision ?? incidentActions[0] ?? null;
   const recommendedCrewId = recommendation?.recommended_crew?.crew_id;
@@ -1201,6 +1282,10 @@ function RecommendationPanel({
     setDraftNote("");
     setDraftError("");
   }, [recommendation?.recommendation_id]);
+
+  useEffect(() => {
+    if (draftAction) actionNoteRef.current?.focus();
+  }, [draftAction]);
 
   function startDraft(action: RecommendationActionType) {
     setDraftAction(action);
@@ -1332,7 +1417,7 @@ function RecommendationPanel({
           />
           <div className="action-row">
             <button
-              disabled={actionLoading !== null || alternativeSelected}
+              disabled={actionLoading !== null || alternativeSelected || !recommendedCrewId}
               onClick={() => onRecordAction("accepted", undefined, recommendedCrewId)}
               type="button"
             >
@@ -1362,8 +1447,12 @@ function RecommendationPanel({
                     : `${formatAction(draftAction)} reason`}
               </label>
               <textarea
+                aria-describedby={draftError ? "recommendation-action-error" : undefined}
+                aria-invalid={Boolean(draftError)}
+                aria-required={draftAction === "deferred" || draftAction === "overridden" || (draftAction === "modified" && alternativeSelected)}
                 id="recommendation-action-note"
                 onChange={(event) => setDraftNote(event.target.value)}
+                ref={actionNoteRef}
                 placeholder={
                   draftAction === "modified"
                     ? alternativeSelected
@@ -1375,7 +1464,7 @@ function RecommendationPanel({
                 }
                 value={draftNote}
               />
-              {draftError ? <p className="action-error">{draftError}</p> : null}
+              {draftError ? <p className="action-error" id="recommendation-action-error" role="alert">{draftError}</p> : null}
               <div className="note-action-row">
                 <button disabled={actionLoading !== null} onClick={submitDraftAction} type="button">
                   {actionLoading === draftAction
@@ -1398,7 +1487,15 @@ function RecommendationPanel({
               </div>
             </div>
           ) : null}
-          {actionMessage ? <p className="action-message">{actionMessage}</p> : null}
+          {actionMessage ? (
+            <p
+              aria-live={actionFailed ? "assertive" : "polite"}
+              className={actionFailed ? "action-message action-error" : "action-message"}
+              role={actionFailed ? "alert" : "status"}
+            >
+              {actionMessage}
+            </p>
+          ) : null}
           <RecentActions actions={incidentActions.length ? incidentActions : recentActions.slice(0, 4)} />
         </>
       ) : (

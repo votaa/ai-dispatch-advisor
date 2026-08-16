@@ -91,6 +91,10 @@ const recordedDecision = {
   actor: "demo-dispatcher"
 };
 
+function selectOption(select: HTMLSelectElement, value: string) {
+  return Array.from(select.options).find((option) => option.value === value);
+}
+
 function dashboard(scenario: string) {
   return {
     active_incidents: 1,
@@ -240,7 +244,65 @@ describe("application states and scenario switching", () => {
     expect(await screen.findByText("Showing 1–1 of 1 matching crews (2 total)")).toBeTruthy();
     expect(screen.getByText("North Line Alpha")).toBeTruthy();
     expect(screen.queryByText("South Vegetation")).toBeNull();
+    const capabilityFilter = screen.getByLabelText("Crew Board capability") as HTMLSelectElement;
+    expect(selectOption(capabilityFilter, "vegetation")?.disabled).toBe(true);
+    expect(selectOption(capabilityFilter, "line")?.textContent).toBe("line (1)");
+    const regionFilter = screen.getByLabelText("Crew Board region") as HTMLSelectElement;
+    expect(selectOption(regionFilter, "South")?.disabled).toBe(true);
+    expect(selectOption(regionFilter, "North")?.textContent).toBe("North (1)");
     expect(screen.getByRole("button", { name: /Crew Board sort ascending/ })).toBeTruthy();
+  });
+
+  it("cascades severity and region counts consistently across incident views", async () => {
+    const facetedIncidents = [
+      { ...baseIncident, incident_id: "INC-NC", region: "North", severity: "critical", critical_facility: true },
+      { ...baseIncident, incident_id: "INC-SC", region: "South", severity: "critical", critical_facility: true },
+      { ...baseIncident, incident_id: "INC-NH", region: "North", severity: "high", critical_facility: true },
+      { ...baseIncident, incident_id: "INC-EM", region: "East", severity: "medium", critical_facility: true }
+    ];
+    apiMocks.incidents.mockResolvedValue(facetedIncidents);
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: facetedIncidents.length,
+      top_incidents: facetedIncidents
+    });
+    render(<App />);
+
+    const verifyFacets = async (label: string) => {
+      const regionFilter = await screen.findByLabelText(`${label} region`) as HTMLSelectElement;
+      fireEvent.change(regionFilter, { target: { value: "North" } });
+      const severityFilter = screen.getByLabelText(`${label} severity`) as HTMLSelectElement;
+      expect(selectOption(severityFilter, "critical")?.textContent).toBe("Critical (1)");
+      expect(selectOption(severityFilter, "high")?.textContent).toBe("High (1)");
+      expect(selectOption(severityFilter, "medium")?.disabled).toBe(true);
+
+      fireEvent.change(severityFilter, { target: { value: "critical" } });
+      expect(selectOption(regionFilter, "North")?.textContent).toBe("North (1)");
+      expect(selectOption(regionFilter, "South")?.textContent).toBe("South (1)");
+      expect(selectOption(regionFilter, "East")?.disabled).toBe(true);
+    };
+
+    await verifyFacets("Priority dispatch queue");
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    await verifyFacets("Dispatch incident queue");
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    await verifyFacets("Active incidents");
+    fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
+    await verifyFacets("Storm exceptions");
+  });
+
+  it("provides current-page, focus, skip-link, and labeled-input semantics", async () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", { name: "Skip to main content" }).getAttribute("href")).toBe("#main-content");
+    expect(screen.getByRole("button", { name: "Dashboard" }).getAttribute("aria-current")).toBe("page");
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    await waitFor(() => expect(screen.getByRole("heading", { level: 1, name: "Incidents" })).toBe(document.activeElement));
+    expect(screen.getByRole("button", { name: "Incidents" }).getAttribute("aria-current")).toBe("page");
+    expect(screen.getByRole("button", { name: "INC-1001" }).getAttribute("aria-pressed")).toBe("true");
+
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    expect(screen.getByLabelText("Copilot question")).toBeTruthy();
   });
 
   it("compares the recommended crew with ranked alternatives and tradeoffs", async () => {
@@ -326,7 +388,11 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Alternative crew selection reason")).toBeTruthy();
     expect((screen.getByRole("button", { name: "Accept" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "Assign selected crew" }));
-    expect(screen.getByText("Modified reason is required.")).toBeTruthy();
+    const validationError = screen.getByRole("alert");
+    expect(validationError.textContent).toBe("Modified reason is required.");
+    const reasonField = screen.getByLabelText("Alternative crew selection reason");
+    expect(reasonField.getAttribute("aria-invalid")).toBe("true");
+    expect(reasonField.getAttribute("aria-required")).toBe("true");
 
     fireEvent.change(screen.getByLabelText("Alternative crew selection reason"), {
       target: { value: "Crew is already staged near the switching location" }
@@ -340,6 +406,60 @@ describe("application states and scenario switching", () => {
       "CR-02"
     ));
     expect(await screen.findByText("AI recommended North Line Alpha; dispatcher selected East Line Beta.")).toBeTruthy();
+  });
+
+  it("supports keyboard-focused Defer and Override reason workflows", async () => {
+    const recommendedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "available",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: []
+    };
+    const actionableRecommendation = { ...recommendation, recommended_crew: recommendedCrew };
+    apiMocks.optimize.mockResolvedValue(actionableRecommendation);
+    apiMocks.recordRecommendationAction.mockImplementation(async (action: string, currentRecommendation: typeof actionableRecommendation, note?: string) => ({
+      ...recordedDecision,
+      event_id: `event-${action}`,
+      action,
+      reason: note ?? null,
+      note: note ?? null,
+      recommendation: currentRecommendation
+    }));
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Defer" }));
+    const deferReason = screen.getByLabelText("Deferred reason");
+    expect(deferReason).toBe(document.activeElement);
+    expect(deferReason.getAttribute("aria-required")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Record Action" }));
+    expect(screen.getByRole("alert").textContent).toBe("Deferred reason is required.");
+    fireEvent.change(deferReason, { target: { value: "Awaiting field safety confirmation" } });
+    fireEvent.click(screen.getByRole("button", { name: "Record Action" }));
+    await waitFor(() => expect(apiMocks.recordRecommendationAction).toHaveBeenCalledWith(
+      "deferred",
+      actionableRecommendation,
+      "Awaiting field safety confirmation",
+      undefined
+    ));
+
+    await waitFor(() => expect((screen.getByRole("button", { name: "Override" }) as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(screen.getByRole("button", { name: "Override" }));
+    const overrideReason = screen.getByLabelText("Overridden reason");
+    expect(overrideReason).toBe(document.activeElement);
+    fireEvent.change(overrideReason, { target: { value: "Supervisor-directed switching plan" } });
+    fireEvent.click(screen.getByRole("button", { name: "Record Action" }));
+    await waitFor(() => expect(apiMocks.recordRecommendationAction).toHaveBeenCalledWith(
+      "overridden",
+      actionableRecommendation,
+      "Supervisor-directed switching plan",
+      undefined
+    ));
   });
 
   it("opens incident and crew details with assignment cross-navigation", async () => {
@@ -385,7 +505,7 @@ describe("application states and scenario switching", () => {
 
     expect(await screen.findByText("Showing 1–50 of 55 matching incidents (55 total)")).toBeTruthy();
     expect(screen.getAllByRole("columnheader")).toHaveLength(8);
-    expect((screen.getByRole("button", { name: "Next" }) as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByRole("button", { name: "Next Active incidents page" }) as HTMLButtonElement).disabled).toBe(false);
     const customersHeader = screen.getByRole("button", { name: /Active incidents Sort by Customers ascending/ });
     fireEvent.click(customersHeader);
     expect(customersHeader.closest("th")?.getAttribute("aria-sort")).toBe("ascending");
@@ -394,7 +514,7 @@ describe("application states and scenario switching", () => {
     const etrHeader = screen.getByRole("button", { name: /Active incidents Sort by ETR ascending/ });
     fireEvent.click(etrHeader);
     expect(etrHeader.closest("th")?.getAttribute("aria-sort")).toBe("ascending");
-    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next Active incidents page" }));
     expect(screen.getByText("Page 2 of 2")).toBeTruthy();
 
     const search = screen.getByLabelText("Active incidents search");
