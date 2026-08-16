@@ -190,6 +190,7 @@ Validation should include:
 - Recommendation respects hard constraints.
 - Phase 5.3 feasibility tests verify capability and travel-within-shift blocking rules and assert typed exclusion reasons for each rejected crew.
 - Phase 5.4 explanation tests verify nested schemas, confidence rationale, policy/version metadata, assumptions, warnings, and no-feasible-crew explanations.
+- Phase 5.5 contract tests run the same engine expectations against the deterministic and fake adapters and verify services can be wired without implementation-specific changes.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.

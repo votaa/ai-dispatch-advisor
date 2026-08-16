@@ -39,6 +39,10 @@ The active policy now enables `crew_capability_required` and `shift_sufficiency`
 
 Recommendations now include an optional nested `RecommendationExplanation` object. It publishes structured incident score factors, constraint outcomes, excluded candidate reasons, confidence rationale, assumptions, data-quality warnings, and the active algorithm and policy versions. The legacy flat fields remain populated for compatibility. Missing travel estimates generate a warning and use the configured missing-data value; repair duration remains an explicit uncertainty because it is not yet present in the scenario contract.
 
+### Phase 5.5 Replaceable Engine Boundary
+
+`OptimizationEngine` is injectable at the service composition root. Contract coverage runs against both `DeterministicOptimizationEngine` and a minimal fake adapter for ranking, structured incident evaluation, crew feasibility, and recommendation generation. The deterministic adapter remains active. A future OR-Tools or similar adapter must map normalized scenario inputs into the same typed request and return the same recommendation and explanation contract. Solver timeouts, invalid solutions, and fallback selection belong in that future adapter rather than current services.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals
@@ -167,7 +171,7 @@ Crew score:
 minimum score 0
 ```
 
-A score of at least `115` currently produces `high` confidence; otherwise a selected crew produces `medium` confidence. Phase 5.4 will replace this single-threshold approach with confidence and uncertainty evidence.
+A score of at least `115` contributes to `high` confidence when blocking constraints are satisfied; otherwise a selected crew produces `medium` confidence. Phase 5.4 now publishes the threshold and rationale through the nested explanation contract.
 
 `poc-baseline-v1` retains source-file ordering solely for historical characterization. The active `incident-priority-v1` policy resolves equal total scores explicitly in this order:
 

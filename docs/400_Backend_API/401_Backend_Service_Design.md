@@ -110,6 +110,8 @@ Phase 5.3 evaluates blocking crew feasibility before suitability scoring. `CrewF
 
 Phase 5.4 adds the optional nested `RecommendationExplanation` contract. It contains structured factors, constraint outcomes, excluded candidates, confidence rationale, assumptions, data-quality warnings, and algorithm/policy versions. The existing flat fields remain for compatibility, while the nested object gives new clients a stable path to richer evidence.
 
+Phase 5.5 makes the engine boundary injectable at the service composition root. Contract tests exercise both the deterministic adapter and a minimal fake adapter, proving incident ranking, incident evaluation, crew feasibility, and recommendation generation are service dependencies rather than implementation details. A future OR-Tools adapter can therefore be introduced behind the same contract; solver timeout and invalid-result fallback behavior remain future adapter work.
+
 ## Target Backend Structure
 
 As implementation matures, routers, configuration, persistence repositories, and integration adapters should be separated further:
