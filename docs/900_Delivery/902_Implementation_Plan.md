@@ -30,7 +30,7 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 2: Dispatch Decision Workflow | Complete | Recommendation actions, required reasons, SQLite persistence, audit history, accepted assignment overlays, and visible status are implemented. |
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
-| Phase 5: Recommendation and Optimization Engine | In progress | Phases 5.1–5.3 establish versioned policy and engine contracts, structured incident scoring, deterministic tie-breakers, and blocking crew feasibility with typed exclusion reasons. Public explanations, confidence, and evaluation remain. |
+| Phase 5: Recommendation and Optimization Engine | In progress | Phases 5.1–5.4 establish versioned policy and engine contracts, structured incident scoring, deterministic tie-breakers, blocking crew feasibility, and a nested public explanation contract. Engine contract tests and evaluation remain. |
 | Phase 6: Frontend Workflow Maturity | Pending with partial foundation | Scenario controls, decision history, and focused POC workflow/state tests exist. Filtering, comparison, detail interactions, accessibility, and broader tests remain pending. |
 | Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
@@ -143,7 +143,7 @@ Exit criteria:
 
 Objective: make recommendation generation explainable, testable, and configurable.
 
-Status: In progress. Phases 5.1–5.3 completed on 2026-08-16: versioned scoring policy, configurable incident prioritization, and blocking crew feasibility with typed exclusion reasons. Public API shapes remain stable; public explanations, confidence evidence, and evaluation remain.
+Status: In progress. Phases 5.1–5.4 completed on 2026-08-16: versioned scoring policy, configurable incident prioritization, blocking crew feasibility, and a backward-compatible nested explanation contract with confidence rationale, assumptions, exclusions, and data-quality warnings. Engine contract tests and evaluation remain.
 
 Scope:
 
@@ -317,7 +317,7 @@ Exit criteria:
 - [x] Phase 5.1: characterize canonical winners, suitability scores, alternatives, and current stable source-order tie behavior without changing the API contract.
 - [x] Phase 5.2: implement configurable incident prioritization with structured factor contributions and explicit domain tie-breakers.
 - [x] Phase 5.3: enforce crew feasibility constraints and add transparent internal candidate exclusion and suitability results.
-- [ ] Phase 5.4: add structured explainability, confidence rationale, assumptions, uncertainty, data-quality warnings, and version metadata.
+- [x] Phase 5.4: add structured explainability, confidence rationale, assumptions, uncertainty, data-quality warnings, and version metadata.
 - [ ] Phase 5.5: complete replaceable engine contract tests and document the future advanced-optimization adapter path.
 - [ ] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
 

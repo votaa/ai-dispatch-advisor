@@ -25,6 +25,8 @@ Phase 5.2 makes incident-priority contributions and domain tie-breakers structur
 
 Phase 5.3 evaluates crew availability, active assignments, required capability, and travel-within-shift feasibility before scoring. Infeasible crews are omitted from `recommended_crew` and `alternatives`; their typed exclusion reasons remain an internal engine result until the Phase 5.4 public explanation contract.
 
+Phase 5.4 exposes those results through an optional nested `explanation` object. It includes confidence rationale, structured scoring factors, satisfied or failed constraints, excluded candidates, assumptions, data-quality warnings, and algorithm/policy versions. Existing flat `factors`, `constraints`, and `confidence` fields remain unchanged for existing clients.
+
 The current Copilot implementation:
 
 - Uses keyword-based logic.

@@ -35,6 +35,10 @@ Phase 5.2 advances the active policy to `incident-priority-v1` and algorithm `de
 
 The active policy now enables `crew_capability_required` and `shift_sufficiency` as blocking constraints in addition to availability and active-assignment checks. Before suitability scoring, the deterministic engine evaluates every crew and returns an internal `CrewFeasibility` result with typed `CrewExclusionReason` entries. Capability must match the incident required skill (except `general`), and estimated travel must fit within the remaining shift. The current data model has no repair-duration estimate, so the shift rule covers travel time only and remains an explicit assumption. Infeasible crews are removed from the recommendation and alternatives; the public recommendation schema remains unchanged until Phase 5.4.
 
+### Phase 5.4 Public Explanation Contract
+
+Recommendations now include an optional nested `RecommendationExplanation` object. It publishes structured incident score factors, constraint outcomes, excluded candidate reasons, confidence rationale, assumptions, data-quality warnings, and the active algorithm and policy versions. The legacy flat fields remain populated for compatibility. Missing travel estimates generate a warning and use the configured missing-data value; repair duration remains an explicit uncertainty because it is not yet present in the scenario contract.
+
 This is intentionally illustrative. It is not operationally validated optimization.
 
 ## Optimization Goals

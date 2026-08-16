@@ -15,7 +15,13 @@ def test_services_return_typed_domain_models() -> None:
     assert all(isinstance(row, Assignment) for row in services.assignments.list_active())
     assert all(isinstance(row, Incident) for row in services.incidents.list_ranked())
     assert all(isinstance(row, Crew) for row in services.crews.list())
-    assert isinstance(services.recommendations.recommend(), Recommendation)
+    recommendation = services.recommendations.recommend()
+    assert isinstance(recommendation, Recommendation)
+    assert recommendation.explanation is not None
+    assert recommendation.explanation.algorithm_version == "deterministic-scoring-v2"
+    assert recommendation.explanation.policy_version == "incident-priority-v1"
+    assert recommendation.explanation.confidence_rationale.score == recommendation.recommended_crew.suitability_score
+    assert recommendation.explanation.constraints
     assert services.recommendations.dashboard().scenario == "base"
     assert services.context.weather()
     assert services.context.critical_facilities()

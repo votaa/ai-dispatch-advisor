@@ -49,6 +49,43 @@ class CrewCandidate(Crew):
     estimated_travel_minutes: int
 
 
+class ConfidenceRationale(DomainModel):
+    score: Optional[int] = None
+    threshold: Optional[int] = None
+    reason: str
+
+
+class ExplanationFactor(DomainModel):
+    factor_id: str
+    description: str
+    contribution: Optional[int] = None
+    evidence: Optional[str] = None
+
+
+class ExplanationConstraint(DomainModel):
+    constraint_id: str
+    status: Literal["satisfied", "not_satisfied"]
+    description: str
+
+
+class ExcludedCandidate(DomainModel):
+    crew_id: str
+    reasons: list[str]
+
+
+class RecommendationExplanation(DomainModel):
+    """Versioned public explanation evidence for a recommendation."""
+
+    confidence_rationale: ConfidenceRationale
+    factors: list[ExplanationFactor] = Field(default_factory=list)
+    constraints: list[ExplanationConstraint] = Field(default_factory=list)
+    excluded_candidates: list[ExcludedCandidate] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+    data_quality_warnings: list[str] = Field(default_factory=list)
+    algorithm_version: str
+    policy_version: str
+
+
 class Recommendation(DomainModel):
     recommendation_id: str
     incident_id: str
@@ -59,6 +96,7 @@ class Recommendation(DomainModel):
     factors: list[str]
     constraints: list[str]
     alternatives: list[CrewCandidate]
+    explanation: Optional[RecommendationExplanation] = None
 
 
 class RecommendationDecision(DomainModel):

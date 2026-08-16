@@ -762,6 +762,7 @@ function RecommendationPanel({
             <span>{recommendation.recommended_action}</span>
             <strong>{recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</strong>
             <small>Confidence: {recommendation.confidence}</small>
+            {recommendation.explanation ? <small>{recommendation.explanation.confidence_rationale.reason}</small> : null}
           </div>
           <div className="decision-status">
             <span>Current decision</span>
@@ -789,6 +790,18 @@ function RecommendationPanel({
               </ul>
             </div>
           </div>
+          {recommendation.explanation?.data_quality_warnings.length ? (
+            <div className="decision-status">
+              <span>Data quality</span>
+              <small>{recommendation.explanation.data_quality_warnings.join(" ")}</small>
+            </div>
+          ) : null}
+          {recommendation.explanation?.excluded_candidates.length ? (
+            <div className="decision-status">
+              <span>Excluded candidates</span>
+              <small>{recommendation.explanation.excluded_candidates.length} crew candidate(s) failed blocking constraints.</small>
+            </div>
+          ) : null}
           <div className="action-row">
             <button disabled={actionLoading !== null} onClick={() => onRecordAction("accepted")} type="button">
               <Check size={16} />

@@ -72,6 +72,13 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
         "schema"
     ]["$ref"].endswith("/ErrorResponse")
     assert {"ApiError", "ErrorDetail", "ErrorResponse"}.issubset(schema["components"]["schemas"])
+    assert {
+        "RecommendationExplanation",
+        "ConfidenceRationale",
+        "ExplanationFactor",
+        "ExplanationConstraint",
+        "ExcludedCandidate",
+    }.issubset(schema["components"]["schemas"])
 
 
 def test_core_requests_reject_undeclared_fields() -> None:

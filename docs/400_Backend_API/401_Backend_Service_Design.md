@@ -108,6 +108,8 @@ Phase 5.2 moves incident-priority calculation fully behind that engine. `Inciden
 
 Phase 5.3 evaluates blocking crew feasibility before suitability scoring. `CrewFeasibility` records whether each crew passed and `CrewExclusionReason` identifies unavailable status, active assignment, capability mismatch, or insufficient shift time. The engine filters infeasible candidates while preserving the existing recommendation response shape; public explanation fields remain Phase 5.4 work.
 
+Phase 5.4 adds the optional nested `RecommendationExplanation` contract. It contains structured factors, constraint outcomes, excluded candidates, confidence rationale, assumptions, data-quality warnings, and algorithm/policy versions. The existing flat fields remain for compatibility, while the nested object gives new clients a stable path to richer evidence.
+
 ## Target Backend Structure
 
 As implementation matures, routers, configuration, persistence repositories, and integration adapters should be separated further:

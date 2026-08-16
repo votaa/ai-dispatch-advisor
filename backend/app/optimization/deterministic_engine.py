@@ -1,6 +1,14 @@
 from __future__ import annotations
 
-from ..domain.models import Incident, Recommendation
+from ..domain.models import (
+    ConfidenceRationale,
+    ExcludedCandidate,
+    ExplanationConstraint,
+    ExplanationFactor,
+    Incident,
+    Recommendation,
+    RecommendationExplanation,
+)
 from ..recommendations import recommend_assignment
 from .contracts import (
     CrewExclusionReason,
@@ -187,4 +195,131 @@ class DeterministicOptimizationEngine:
             policy=self._policy,
             feasible_crew_ids=feasible_crew_ids,
         )
+        recommendation["explanation"] = self._build_explanation(
+            request,
+            feasibility,
+            recommendation,
+        ).model_dump()
         return Recommendation.model_validate(recommendation)
+
+    def _build_explanation(
+        self,
+        request: OptimizationRequest,
+        feasibility: list[CrewFeasibility],
+        recommendation: dict,
+    ) -> RecommendationExplanation:
+        incident_score = self.evaluate_incidents([request.incident])[0].score
+        selected = recommendation.get("recommended_crew")
+        selected_score = selected.get("suitability_score") if selected else None
+        threshold = self._policy.crew_scoring.high_confidence_threshold
+        if selected is None:
+            confidence_reason = (
+                "No crew satisfied all active blocking constraints; supervisor review is required."
+            )
+        elif recommendation["confidence"] == "high":
+            confidence_reason = (
+                "Selected crew satisfies all active blocking constraints and exceeds the high-confidence threshold."
+            )
+        else:
+            confidence_reason = (
+                "Selected crew satisfies all active blocking constraints but remains below the high-confidence threshold."
+            )
+
+        factors = [
+            ExplanationFactor(
+                factor_id=contribution.factor_id,
+                description=f"Incident {contribution.factor_id.replace('_', ' ')} contribution.",
+                contribution=contribution.contribution,
+                evidence=f"Raw value: {contribution.raw_value}",
+            )
+            for contribution in incident_score.contributions
+        ]
+        if selected is not None:
+            factors.extend(
+                [
+                    ExplanationFactor(
+                        factor_id="crew_suitability",
+                        description="Selected crew suitability score.",
+                        contribution=selected.get("suitability_score"),
+                        evidence=f"Estimated travel: {selected.get('estimated_travel_minutes')} minutes",
+                    ),
+                    ExplanationFactor(
+                        factor_id="capability_match",
+                        description="Required skill capability match.",
+                        contribution=(
+                            self._policy.crew_scoring.capability_match_bonus
+                            if selected.get("capability_match")
+                            else 0
+                        ),
+                        evidence=str(selected.get("capability")),
+                    ),
+                    ExplanationFactor(
+                        factor_id="storm_readiness",
+                        description="Storm readiness bonus.",
+                        contribution=(
+                            self._policy.crew_scoring.storm_ready_bonus
+                            if selected.get("storm_ready")
+                            else 0
+                        ),
+                        evidence=str(selected.get("storm_ready")),
+                    ),
+                ]
+            )
+        enabled_constraints = [
+            constraint
+            for constraint in self._policy.constraints
+            if constraint.scope == "crew" and constraint.blocking and constraint.status == "implemented"
+        ]
+        selected_feasibility = next(
+            (result for result in feasibility if selected and result.crew_id == selected.get("crew_id")),
+            None,
+        )
+        rejected_constraint_ids = {
+            reason.constraint_id
+            for reason in (selected_feasibility.exclusions if selected_feasibility else [])
+        }
+        constraints = [
+            ExplanationConstraint(
+                constraint_id=constraint.constraint_id,
+                status=(
+                    "satisfied"
+                    if selected is not None and constraint.constraint_id not in rejected_constraint_ids
+                    else "not_satisfied"
+                ),
+                description=constraint.description,
+            )
+            for constraint in enabled_constraints
+        ]
+        excluded_candidates = [
+            ExcludedCandidate(
+                crew_id=result.crew_id,
+                reasons=[reason.message for reason in result.exclusions],
+            )
+            for result in feasibility
+            if not result.feasible
+        ]
+        data_quality_warnings = []
+        if any(
+            crew.travel_minutes_to_selected_incident == self._policy.crew_scoring.missing_travel_minutes
+            for crew in request.crews
+        ):
+            data_quality_warnings.append(
+                "One or more crew travel estimates are unavailable and were treated as the configured missing-data value."
+            )
+        return RecommendationExplanation(
+            confidence_rationale=ConfidenceRationale(
+                score=selected_score,
+                threshold=threshold,
+                reason=confidence_reason,
+            ),
+            factors=factors,
+            constraints=constraints,
+            excluded_candidates=excluded_candidates,
+            assumptions=[
+                "Shift sufficiency currently covers estimated travel time only; repair duration is not modeled.",
+                "Recommendation remains advisory and requires dispatcher approval.",
+            ],
+            data_quality_warnings=data_quality_warnings,
+            algorithm_version=self._policy.algorithm_version,
+            policy_version=self._policy.policy_version,
+        )

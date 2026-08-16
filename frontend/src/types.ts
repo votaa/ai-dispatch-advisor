@@ -99,6 +99,31 @@ export type Recommendation = {
   factors: string[];
   constraints: string[];
   alternatives: Crew[];
+  explanation?: RecommendationExplanation | null;
+};
+
+export type RecommendationExplanation = {
+  confidence_rationale: {
+    score: number | null;
+    threshold: number | null;
+    reason: string;
+  };
+  factors: Array<{
+    factor_id: string;
+    description: string;
+    contribution: number | null;
+    evidence: string | null;
+  }>;
+  constraints: Array<{
+    constraint_id: string;
+    status: "satisfied" | "not_satisfied";
+    description: string;
+  }>;
+  excluded_candidates: Array<{ crew_id: string; reasons: string[] }>;
+  assumptions: string[];
+  data_quality_warnings: string[];
+  algorithm_version: string;
+  policy_version: string;
 };
 
 export type RecommendationActionType = "accepted" | "modified" | "deferred" | "overridden";
