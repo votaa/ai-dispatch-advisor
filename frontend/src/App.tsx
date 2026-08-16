@@ -217,13 +217,13 @@ function App() {
     setView("incidents");
   }
 
-  async function recordRecommendationAction(action: RecommendationActionType, note?: string) {
+  async function recordRecommendationAction(action: RecommendationActionType, note?: string, selectedCrewId?: string) {
     if (!recommendation) return;
 
     setActionLoading(action);
     setActionMessage("");
     try {
-      const event = await api.recordRecommendationAction(action, recommendation, note?.trim() || undefined);
+      const event = await api.recordRecommendationAction(action, recommendation, note?.trim() || undefined, selectedCrewId);
       await refreshOperationalState();
       if (selectedIncidentId) {
         const nextRecommendation = await api.optimize(selectedIncidentId);
@@ -651,7 +651,15 @@ function recommendationTradeoff(recommended: Crew, option: Crew) {
   return tradeoffs.length ? tradeoffs.join("; ") : "Operationally comparable; ranking uses the configured scoring policy.";
 }
 
-function RecommendationComparison({ recommendation }: { recommendation: Recommendation }) {
+function RecommendationComparison({
+  onSelectCrew,
+  recommendation,
+  selectedCrewId
+}: {
+  onSelectCrew: (crewId: string) => void;
+  recommendation: Recommendation;
+  selectedCrewId?: string;
+}) {
   if (!recommendation.recommended_crew || recommendation.alternatives.length === 0) return null;
   const recommended = recommendation.recommended_crew;
   const options = [recommended, ...recommendation.alternatives];
@@ -665,7 +673,7 @@ function RecommendationComparison({ recommendation }: { recommendation: Recommen
         {options.map((option, index) => {
           const travelMinutes = option.estimated_travel_minutes ?? option.travel_minutes_to_selected_incident;
           return (
-            <article className={`comparison-card ${index === 0 ? "recommended" : ""}`} key={option.crew_id}>
+            <article className={`comparison-card ${index === 0 ? "recommended" : ""} ${selectedCrewId === option.crew_id ? "selected-option" : ""}`} key={option.crew_id}>
               <div className="comparison-card-heading">
                 <span>{index === 0 ? "Recommended" : `Alternative ${index}`}</span>
                 {option.suitability_score !== undefined ? <strong>{option.suitability_score} score</strong> : null}
@@ -678,6 +686,14 @@ function RecommendationComparison({ recommendation }: { recommendation: Recommen
                 <div><dt>Storm-ready</dt><dd>{option.storm_ready ? "Yes" : "No"}</dd></div>
               </dl>
               <p><strong>Tradeoff:</strong> {index === 0 ? "Highest-ranked feasible option under the active policy." : recommendationTradeoff(recommended, option)}</p>
+              <button
+                aria-pressed={selectedCrewId === option.crew_id}
+                className="comparison-select"
+                onClick={() => onSelectCrew(option.crew_id)}
+                type="button"
+              >
+                {selectedCrewId === option.crew_id ? "Selected for assignment" : index === 0 ? "Use recommended crew" : "Select this crew"}
+              </button>
             </article>
           );
         })}
@@ -1155,7 +1171,7 @@ function RecommendationPanel({
   actionLoading: RecommendationActionType | null;
   actionMessage: string;
   onOpenCrew: (crewId: string) => void;
-  onRecordAction: (action: RecommendationActionType, note?: string) => Promise<void>;
+  onRecordAction: (action: RecommendationActionType, note?: string, selectedCrewId?: string) => Promise<void>;
   onRetryRecommendation: () => void;
   recentActions: RecommendationAction[];
   recommendation: Recommendation | null;
@@ -1166,8 +1182,25 @@ function RecommendationPanel({
   const [draftAction, setDraftAction] = useState<RecommendationActionType | null>(null);
   const [draftNote, setDraftNote] = useState("");
   const [draftError, setDraftError] = useState("");
+  const [selectedActionCrewId, setSelectedActionCrewId] = useState<string | undefined>();
   const incidentActions = recentActions.filter((action) => action.incident_id === recommendation?.incident_id).slice(0, 4);
   const currentDecision = selectedIncident?.current_decision ?? incidentActions[0] ?? null;
+  const recommendedCrewId = recommendation?.recommended_crew?.crew_id;
+  const selectedActionCrew = recommendation
+    ? [recommendation.recommended_crew, ...recommendation.alternatives].find(
+        (crew) => crew?.crew_id === selectedActionCrewId
+      )
+    : undefined;
+  const alternativeSelected = Boolean(
+    selectedActionCrewId && recommendedCrewId && selectedActionCrewId !== recommendedCrewId
+  );
+
+  useEffect(() => {
+    setSelectedActionCrewId(recommendation?.recommended_crew?.crew_id);
+    setDraftAction(null);
+    setDraftNote("");
+    setDraftError("");
+  }, [recommendation?.recommendation_id]);
 
   function startDraft(action: RecommendationActionType) {
     setDraftAction(action);
@@ -1175,16 +1208,27 @@ function RecommendationPanel({
     setDraftError("");
   }
 
+  function selectComparisonCrew(crewId: string) {
+    setSelectedActionCrewId(crewId);
+    setDraftNote("");
+    setDraftError("");
+    setDraftAction(crewId === recommendedCrewId ? null : "modified");
+  }
+
   async function submitDraftAction() {
     if (!draftAction) return;
     const note = draftNote.trim();
-    if ((draftAction === "deferred" || draftAction === "overridden") && !note) {
+    if ((draftAction === "deferred" || draftAction === "overridden" || (draftAction === "modified" && alternativeSelected)) && !note) {
       setDraftError(`${formatAction(draftAction)} reason is required.`);
       return;
     }
 
     setDraftError("");
-    await onRecordAction(draftAction, note);
+    await onRecordAction(
+      draftAction,
+      note,
+      draftAction === "modified" ? selectedActionCrewId : undefined
+    );
     setDraftAction(null);
     setDraftNote("");
   }
@@ -1267,9 +1311,31 @@ function RecommendationPanel({
               <small>{recommendation.explanation.excluded_candidates.length} crew candidate(s) failed blocking constraints.</small>
             </div>
           ) : null}
-          <RecommendationComparison recommendation={recommendation} />
+          {recommendation.recommended_crew ? (
+            <div className={`pending-crew-choice ${alternativeSelected ? "alternative" : ""}`}>
+              <span>Pending crew choice</span>
+              <strong>
+                {selectedActionCrew?.crew_name ?? recommendation.recommended_crew.crew_name}{" "}
+                <span className="crew-id">({selectedActionCrewId ?? recommendation.recommended_crew.crew_id})</span>
+              </strong>
+              <small>
+                {alternativeSelected
+                  ? "A lower-ranked feasible crew is selected. Record a reason to create a modified assignment."
+                  : "The top-ranked recommendation will be assigned if accepted."}
+              </small>
+            </div>
+          ) : null}
+          <RecommendationComparison
+            onSelectCrew={selectComparisonCrew}
+            recommendation={recommendation}
+            selectedCrewId={selectedActionCrewId}
+          />
           <div className="action-row">
-            <button disabled={actionLoading !== null} onClick={() => onRecordAction("accepted")} type="button">
+            <button
+              disabled={actionLoading !== null || alternativeSelected}
+              onClick={() => onRecordAction("accepted", undefined, recommendedCrewId)}
+              type="button"
+            >
               <Check size={16} />
               Accept
             </button>
@@ -1289,14 +1355,20 @@ function RecommendationPanel({
           {draftAction ? (
             <div className="action-note-form">
               <label htmlFor="recommendation-action-note">
-                {draftAction === "modified" ? "Modification note" : `${formatAction(draftAction)} reason`}
+                {draftAction === "modified" && alternativeSelected
+                  ? "Alternative crew selection reason"
+                  : draftAction === "modified"
+                    ? "Modification note"
+                    : `${formatAction(draftAction)} reason`}
               </label>
               <textarea
                 id="recommendation-action-note"
                 onChange={(event) => setDraftNote(event.target.value)}
                 placeholder={
                   draftAction === "modified"
-                    ? "Add a short note for the modified recommendation."
+                    ? alternativeSelected
+                      ? "Explain why this lower-ranked feasible crew should be assigned."
+                      : "Add a short note for the modified recommendation."
                     : draftAction === "deferred"
                       ? "Explain why this recommendation is being deferred."
                     : "Explain why this recommendation is being overridden."
@@ -1306,7 +1378,11 @@ function RecommendationPanel({
               {draftError ? <p className="action-error">{draftError}</p> : null}
               <div className="note-action-row">
                 <button disabled={actionLoading !== null} onClick={submitDraftAction} type="button">
-                  {actionLoading === draftAction ? "Recording..." : "Record Action"}
+                  {actionLoading === draftAction
+                    ? "Recording..."
+                    : draftAction === "modified" && alternativeSelected
+                      ? "Assign selected crew"
+                      : "Record Action"}
                 </button>
                 <button
                   disabled={actionLoading !== null}
@@ -1340,16 +1416,26 @@ function RecentActions({ actions }: { actions: RecommendationAction[] }) {
         <p>No recommendation actions recorded yet.</p>
       ) : (
         <div className="action-history">
-          {actions.map((action) => (
-            <article className="action-event" key={action.event_id}>
-              <div>
-                <strong>{action.action}</strong>
-                <span>{action.incident_id} / {action.recommendation.recommended_crew?.crew_name ?? "Supervisor review"}</span>
-              </div>
-              <time>{new Date(action.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
-              {action.note ? <p>{action.note}</p> : null}
-            </article>
-          ))}
+          {actions.map((action) => {
+            const recommendedCrew = action.recommendation.recommended_crew;
+            const selectedCrew = [recommendedCrew, ...action.recommendation.alternatives].find(
+              (crew) => crew?.crew_id === action.crew_id
+            );
+            const alternativeAssigned = Boolean(
+              selectedCrew && recommendedCrew && selectedCrew.crew_id !== recommendedCrew.crew_id
+            );
+            return (
+              <article className="action-event" key={action.event_id}>
+                <div>
+                  <strong>{action.action}</strong>
+                  <span>{action.incident_id} / {selectedCrew?.crew_name ?? recommendedCrew?.crew_name ?? "Supervisor review"}</span>
+                </div>
+                <time>{new Date(action.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
+                {alternativeAssigned ? <p>AI recommended {recommendedCrew!.crew_name}; dispatcher selected {selectedCrew!.crew_name}.</p> : null}
+                {action.note ? <p>{action.note}</p> : null}
+              </article>
+            );
+          })}
         </div>
       )}
     </section>

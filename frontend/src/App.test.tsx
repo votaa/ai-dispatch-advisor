@@ -282,6 +282,66 @@ describe("application states and scenario switching", () => {
     expect(comparison.textContent).toContain("15 points lower suitability");
   });
 
+  it("assigns a selected ranked alternative as a reasoned modified decision", async () => {
+    const recommendedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "available",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      estimated_travel_minutes: 10,
+      suitability_score: 92,
+      capability_match: true,
+      assigned_incidents: []
+    };
+    const alternativeCrew = {
+      ...recommendedCrew,
+      crew_id: "CR-02",
+      crew_name: "East Line Beta",
+      estimated_travel_minutes: 20,
+      suitability_score: 77
+    };
+    const rankedRecommendation = {
+      ...recommendation,
+      recommended_crew: recommendedCrew,
+      alternatives: [alternativeCrew]
+    };
+    apiMocks.optimize.mockResolvedValue(rankedRecommendation);
+    apiMocks.recordRecommendationAction.mockResolvedValue({
+      ...recordedDecision,
+      event_id: "event-modified-alternative",
+      crew_id: "CR-02",
+      action: "modified",
+      reason: "Crew is already staged near the switching location",
+      note: "Crew is already staged near the switching location",
+      recommendation: rankedRecommendation
+    });
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Select this crew" }));
+    expect(screen.getByText("Alternative crew selection reason")).toBeTruthy();
+    expect((screen.getByRole("button", { name: "Accept" }) as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Assign selected crew" }));
+    expect(screen.getByText("Modified reason is required.")).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Alternative crew selection reason"), {
+      target: { value: "Crew is already staged near the switching location" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Assign selected crew" }));
+
+    await waitFor(() => expect(apiMocks.recordRecommendationAction).toHaveBeenCalledWith(
+      "modified",
+      rankedRecommendation,
+      "Crew is already staged near the switching location",
+      "CR-02"
+    ));
+    expect(await screen.findByText("AI recommended North Line Alpha; dispatcher selected East Line Beta.")).toBeTruthy();
+  });
+
   it("opens incident and crew details with assignment cross-navigation", async () => {
     const assignedCrew = {
       crew_id: "CR-01",

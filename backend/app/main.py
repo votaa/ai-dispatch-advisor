@@ -121,6 +121,7 @@ def recommendation_action(request: RecommendationActionRequest) -> Recommendatio
         incident_id=request.incident_id,
         action=request.action,
         recommendation=request.recommendation,
+        selected_crew_id=request.selected_crew_id,
         reason=request.reason,
         note=request.note,
     )

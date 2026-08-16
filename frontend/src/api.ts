@@ -67,12 +67,14 @@ export const api = {
   recordRecommendationAction: (
     action: RecommendationActionType,
     recommendation: Recommendation,
-    note?: string
+    note?: string,
+    selectedCrewId?: string
   ) =>
     postJson<RecommendationAction>("/api/recommendation-actions", {
       incident_id: recommendation.incident_id,
       action,
       recommendation,
+      selected_crew_id: selectedCrewId,
       reason: note
     }),
   chat: (message: string, incidentId?: string) =>

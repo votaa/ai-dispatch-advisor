@@ -109,8 +109,8 @@ The current POC implements these demo-functional actions:
 
 | Action | Current API Behavior |
 | --- | --- |
-| Accept | Record recommendation as accepted |
-| Modify | Record modification note and action |
+| Accept | Record the top recommendation as accepted and create its demo assignment |
+| Modify | Record a modification; when `selected_crew_id` identifies a ranked alternative, require a reason and create that crew's demo assignment |
 | Defer | Require a reason and record deferred status |
 | Override | Require override reason and record overridden status |
 
@@ -125,9 +125,10 @@ Current request shape:
 
 ```json
 {
-  "action": "overridden",
+  "action": "modified",
   "incident_id": "INC-1001",
-  "reason": "Field condition",
+  "selected_crew_id": "CR-02",
+  "reason": "Crew is already staged near the switching location.",
   "recommendation": {
     "recommendation_id": "REC-INC-1001-CR-01",
     "incident_id": "INC-1001",
@@ -135,6 +136,8 @@ Current request shape:
   }
 }
 ```
+
+`selected_crew_id` is optional for existing action clients. Accept may only use the recommendation's top-ranked crew. A different crew must appear in the recommendation's feasible `alternatives`, must use the Modified action, and must include a reason. Immediately before persistence, the service verifies the selected crew still exists and has no active assignment. Invalid, unranked, or stale selections return `409 decision_crew_selection_invalid` and do not create an assignment.
 
 Current response shape includes:
 
@@ -152,7 +155,7 @@ Current response shape includes:
 }
 ```
 
-The current POC stores recommendation decisions and accepted demo assignments in local SQLite, scoped by `scenario_id`. Existing pre-migration records are assigned to the `base` scenario. Production must use durable audit persistence with enterprise identity, retention, and access controls.
+The current POC stores recommendation decisions plus accepted and modified-alternative demo assignments in local SQLite, scoped by `scenario_id`. The event's `crew_id` is the crew actually selected, while the embedded recommendation preserves the original top crew and ranked alternatives. Existing pre-migration records are assigned to the `base` scenario. Production must use durable audit persistence with enterprise identity, retention, and access controls.
 
 ## POST /api/chat
 
@@ -206,7 +209,8 @@ Expected target error cases:
 | Incident not found | `404` |
 | No suitable crew | `200` with defer or supervisor-review recommendation, or explicit domain status |
 | Invalid action | `422` |
-| Override without reason | `422` |
+| Required decision reason omitted | `400` |
+| Alternative is unranked or no longer available | `409 Conflict` |
 | Recommendation expired | `409 Conflict` |
 | Unauthorized action | `401` |
 | Forbidden action | `403` |
@@ -234,6 +238,7 @@ Tests should cover:
 - No-crew case.
 - Action recording once implemented.
 - Override reason validation once implemented.
+- Ranked-alternative reason, membership, live-availability, assignment, and audit-evidence behavior.
 - Copilot intent responses.
 
 ## Related Documents

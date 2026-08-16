@@ -19,3 +19,9 @@ class DecisionConflictError(ValueError):
         self.incident_id = incident_id
         self.recommendation_incident_id = recommendation_incident_id
         super().__init__("Recommendation incident does not match the decision incident")
+
+
+class DecisionCrewSelectionError(ValueError):
+    def __init__(self, selected_crew_id: str, message: str) -> None:
+        self.selected_crew_id = selected_crew_id
+        super().__init__(message)

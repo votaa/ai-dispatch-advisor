@@ -634,6 +634,11 @@ tbody tr:focus-visible {
   border-color: #e7b84f;
 }
 
+.comparison-card.selected-option {
+  border-color: #2f6f9f;
+  box-shadow: 0 0 0 2px rgb(47 111 159 / 16%);
+}
+
 .comparison-card-heading strong {
   color: #2f6f9f;
   font-size: 12px;
@@ -674,6 +679,26 @@ tbody tr:focus-visible {
   margin: 0;
 }
 
+.comparison-select {
+  background: #ffffff;
+  border: 1px solid #9fb1c2;
+  border-radius: 7px;
+  color: #183247;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  min-height: 34px;
+  padding: 7px 10px;
+  width: 100%;
+}
+
+.comparison-select[aria-pressed="true"] {
+  background: #e8f2fa;
+  border-color: #2f6f9f;
+  color: #194f78;
+}
+
 .recommendation-hero strong,
 .selected-context strong,
 .decision-status strong,
@@ -696,6 +721,27 @@ tbody tr:focus-visible {
 
 .decision-status span,
 .decision-status small {
+  color: #607080;
+  font-size: 13px;
+}
+
+.pending-crew-choice {
+  background: #f4f8fb;
+  border: 1px solid #b9c9d7;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  margin: 14px 0 12px;
+  padding: 10px 12px;
+}
+
+.pending-crew-choice.alternative {
+  background: #fff8e8;
+  border-color: #e7b84f;
+}
+
+.pending-crew-choice span,
+.pending-crew-choice small {
   color: #607080;
   font-size: 13px;
 }

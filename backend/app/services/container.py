@@ -56,6 +56,7 @@ def build_services(optimization_engine: OptimizationEngine | None = None) -> App
     )
     decisions = DecisionService(
         active_scenario_id=data_loader.get_active_scenario,
+        crews=crews,
         incidents=incidents,
         record_decision=decision_store.record_decision,
         recent_decisions=decision_store.recent_decisions,

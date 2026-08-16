@@ -56,13 +56,16 @@ def record_decision(
     incident_id: str,
     action: ActionStatus,
     recommendation: dict[str, Any],
+    create_assignment: bool = False,
+    selected_crew_id: str | None = None,
     reason: str | None = None,
     actor: str = "demo-dispatcher",
 ) -> dict[str, Any]:
     init_store()
 
     crew = recommendation.get("recommended_crew") or {}
-    crew_id = crew.get("crew_id")
+    recommended_crew_id = crew.get("crew_id")
+    crew_id = selected_crew_id or recommended_crew_id
     recommendation_id = str(recommendation.get("recommendation_id") or f"REC-{incident_id}-{crew_id or 'REVIEW'}")
     event_id = str(uuid4())
     created_at = datetime.now(timezone.utc).isoformat()
@@ -91,7 +94,7 @@ def record_decision(
             ),
         )
 
-        if action == "accepted" and crew_id:
+        if create_assignment and crew_id:
             existing = connection.execute(
                 """
                 SELECT assignment_id
@@ -115,7 +118,8 @@ def record_decision(
                         incident_id,
                         crew_id,
                         created_at,
-                        f"Accepted recommendation {recommendation_id}",
+                        f"{action.title()} recommendation {recommendation_id}"
+                        + (f": {reason}" if reason else ""),
                         event_id,
                     ),
                 )

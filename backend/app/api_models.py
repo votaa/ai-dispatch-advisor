@@ -30,6 +30,7 @@ class RecommendationActionRequest(DomainModel):
     incident_id: str
     action: RecommendationAction
     recommendation: Recommendation
+    selected_crew_id: Optional[str] = None
     reason: Optional[str] = None
     note: Optional[str] = None
 

@@ -12,7 +12,12 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException
 
 from .scenario_service import ScenarioServiceError
-from .services.errors import DecisionConflictError, DecisionReasonRequiredError, EntityNotFoundError
+from .services.errors import (
+    DecisionConflictError,
+    DecisionCrewSelectionError,
+    DecisionReasonRequiredError,
+    EntityNotFoundError,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -175,6 +180,28 @@ async def _decision_conflict_handler(request: Request, exc: DecisionConflictErro
     )
 
 
+async def _decision_crew_selection_handler(
+    request: Request,
+    exc: DecisionCrewSelectionError,
+) -> JSONResponse:
+    return _error_response(
+        request,
+        status_code=409,
+        code="decision_crew_selection_invalid",
+        message=str(exc),
+        details=[
+            {
+                "location": "body.selected_crew_id",
+                "message": str(exc),
+                "type": "value_error.decision_crew_selection",
+                "selected_crew_id": exc.selected_crew_id,
+            }
+        ],
+        entity="Crew",
+        entity_id=exc.selected_crew_id,
+    )
+
+
 async def _scenario_service_error_handler(
     request: Request,
     exc: ScenarioServiceError,
@@ -257,6 +284,7 @@ def install_error_contract(app: FastAPI) -> None:
     app.add_exception_handler(EntityNotFoundError, _entity_not_found_handler)
     app.add_exception_handler(DecisionReasonRequiredError, _decision_reason_required_handler)
     app.add_exception_handler(DecisionConflictError, _decision_conflict_handler)
+    app.add_exception_handler(DecisionCrewSelectionError, _decision_crew_selection_handler)
     app.add_exception_handler(ScenarioServiceError, _scenario_service_error_handler)
     app.add_exception_handler(RequestValidationError, _request_validation_error_handler)
     app.add_exception_handler(HTTPException, _http_exception_handler)

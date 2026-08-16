@@ -196,6 +196,7 @@ Validation should include:
 - Phase 6.2 frontend tests verify shared incident search, severity and region filtering, sortable table-header direction toggles across incident columns, deterministic default ordering, pagination, responsive controls, and no-match messaging with large-list fixtures.
 - Phase 6.3 frontend tests verify Crew Board search, status filtering, crew-ID visibility, result summaries, sort-direction controls, read-only incident and crew detail panels, and assignment cross-navigation.
 - Phase 6.4 frontend tests verify recommended-versus-alternative crew presentation and plain-language travel, suitability, shift, capability, and storm-readiness tradeoffs.
+- Phase 6.4.1 frontend and API tests verify alternative selection, required rationale, ranked-membership and live-availability validation, modified assignment overlays, and preservation of original recommendation evidence beside the actual selected crew.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.

@@ -158,6 +158,8 @@ When alternatives exist, the UI should show:
 
 Alternatives should be concise. The primary recommendation should remain visually distinct.
 
+The current POC allows a dispatcher to select a ranked feasible alternative for assignment. The pending crew choice must be visibly distinct from the original top recommendation. Accept remains limited to the top recommendation; assigning a lower-ranked option is recorded as a Modified decision and requires a dispatcher reason. The backend rechecks that the selected crew is still available before creating the assignment.
+
 ## Confidence Presentation
 
 Confidence should be shown as a decision-support indicator, not a guarantee.

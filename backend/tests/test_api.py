@@ -64,6 +64,7 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
     assert paths["/api/recommendation-actions"]["post"]["responses"]["200"]["content"]["application/json"][
         "schema"
     ]["$ref"].endswith("/RecommendationDecision")
+    assert "selected_crew_id" in schema["components"]["schemas"]["RecommendationActionRequest"]["properties"]
     assert paths["/api/optimize"]["post"]["responses"]["404"]["content"]["application/json"][
         "schema"
     ]["$ref"].endswith("/ErrorResponse")
@@ -249,6 +250,145 @@ def test_accepting_recommendation_updates_assignment_state() -> None:
     assigned_crew = next(crew for crew in crews if crew["crew_id"] == crew_id)
     assert assigned_crew["status"] == "assigned"
     assert assigned_crew["assigned_incidents"][0]["incident_id"] == "INC-1001"
+
+
+def test_modified_alternative_creates_assignment_and_preserves_recommendation_evidence() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    assert recommendation["alternatives"]
+    recommended_crew_id = recommendation["recommended_crew"]["crew_id"]
+    selected_crew_id = recommendation["alternatives"][0]["crew_id"]
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "selected_crew_id": selected_crew_id,
+            "reason": "Closer to the switching location reported by operations",
+            "recommendation": recommendation,
+        },
+    )
+
+    assert response.status_code == 200
+    event = response.json()
+    assert event["action"] == "modified"
+    assert event["crew_id"] == selected_crew_id
+    assert event["recommendation"]["recommended_crew"]["crew_id"] == recommended_crew_id
+    assert event["recommendation"]["alternatives"][0]["crew_id"] == selected_crew_id
+
+    assignments = client.get("/api/assignments").json()
+    assert any(
+        assignment["incident_id"] == "INC-1001" and assignment["crew_id"] == selected_crew_id
+        for assignment in assignments
+    )
+    incident = client.get("/api/incidents/INC-1001").json()
+    assert any(crew["crew_id"] == selected_crew_id for crew in incident["assigned_crews"])
+
+
+def test_modified_alternative_requires_reason() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    selected_crew_id = recommendation["alternatives"][0]["crew_id"]
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "selected_crew_id": selected_crew_id,
+            "reason": "   ",
+            "recommendation": recommendation,
+        },
+    )
+
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "decision_reason_required"
+
+
+def test_note_only_modification_does_not_create_an_assignment() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "reason": "Review the work package before dispatch",
+            "recommendation": recommendation,
+        },
+    )
+
+    assert response.status_code == 200
+    assert not any(
+        assignment["incident_id"] == "INC-1001"
+        for assignment in client.get("/api/assignments").json()
+    )
+
+
+def test_accept_rejects_a_ranked_alternative_selection() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    selected_crew_id = recommendation["alternatives"][0]["crew_id"]
+
+    response = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "accepted",
+            "selected_crew_id": selected_crew_id,
+            "recommendation": recommendation,
+        },
+    )
+
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "decision_crew_selection_invalid"
+    assert "use Modify" in response.json()["error"]["message"]
+
+
+def test_decision_rejects_unranked_or_stale_alternative_selection() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    selected_crew_id = recommendation["alternatives"][0]["crew_id"]
+
+    unranked = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "selected_crew_id": "CR-NOT-RANKED",
+            "reason": "Dispatcher requested a different crew",
+            "recommendation": recommendation,
+        },
+    )
+    assert unranked.status_code == 409
+    assert unranked.json()["error"]["code"] == "decision_crew_selection_invalid"
+
+    first_assignment = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "selected_crew_id": selected_crew_id,
+            "reason": "Operational preference",
+            "recommendation": recommendation,
+        },
+    )
+    assert first_assignment.status_code == 200
+
+    stale = client.post(
+        "/api/recommendation-actions",
+        json={
+            "incident_id": recommendation["incident_id"],
+            "action": "modified",
+            "selected_crew_id": selected_crew_id,
+            "reason": "Retry stale choice",
+            "recommendation": recommendation,
+        },
+    )
+    assert stale.status_code == 409
+    assert "no longer available" in stale.json()["error"]["message"]
 
 
 def test_decision_rejects_recommendation_for_a_different_incident() -> None:
