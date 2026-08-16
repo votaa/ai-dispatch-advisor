@@ -14,6 +14,8 @@ data/scenarios/base/
 
 These files represent outage events, crews, assignments, weather, critical facilities, historical repairs, and topology context.
 
+Phase 7 will introduce the adapter boundary incrementally. Work should begin with the discovery and feedback gate defined in `docs/900_Delivery/907_Phase_7_Implementation_Plan.md`; the first enterprise vertical slice remains read-only and must be selected from an identified source owner, contract or sample payload, and operational freshness requirements.
+
 ## Integration Goals
 
 The integration architecture should:
@@ -243,4 +245,3 @@ Integration security should include:
 - [Solution Architecture](202_Solution_Architecture.md)
 - [Component Architecture](203_Component_Architecture.md)
 - [Data Flow Architecture](205_Data_Flow_Architecture.md)
-

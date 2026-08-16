@@ -198,6 +198,7 @@ Validation should include:
 - Phase 6.4 frontend tests verify recommended-versus-alternative crew presentation and plain-language travel, suitability, shift, capability, and storm-readiness tradeoffs.
 - Phase 6.4.1 frontend and API tests verify alternative selection, required rationale, ranked-membership and live-availability validation, modified assignment overlays, and preservation of original recommendation evidence beside the actual selected crew.
 - Phase 6.5 frontend tests verify cascading facet counts and disabled zero-result choices across Crew Board and every incident-queue view, current-page navigation and focus movement, skip navigation, labeled Copilot input, semantic incident selection, accessible reason validation, and keyboard-focused Defer and Override workflows.
+- Phase 6.6 closeout verification passed 92 backend tests, 17 frontend tests, and the frontend production build on 2026-08-16; the detailed evaluation is recorded in `docs/900_Delivery/906_Phase_6_Closeout.md`.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.
 - Crew skills match incident requirements.
@@ -237,6 +238,24 @@ Recommended environments:
 | Production | Controlled operational deployment |
 
 The current POC primarily supports local development.
+
+## Phase 7 Integration Test Direction
+
+Phase 7 should add a reusable contract suite before connecting to a live or sandbox enterprise source. The same behavioral expectations should run against the current CSV adapter, deterministic mocks, and each future real adapter.
+
+Coverage should include:
+
+- Vendor-payload mapping into normalized domain contracts.
+- Stable source identifiers, provenance, source timestamps, load timestamps, freshness, quality, and health states.
+- Healthy, stale, delayed, partial, malformed, timeout, unavailable, disabled, and recovery paths.
+- Source-to-normalized reconciliation and schema-drift detection.
+- Sanitized integration errors and correlation identifiers.
+- API backward compatibility when the configured adapter changes.
+- Recommendation warnings or confidence effects when required data is stale or degraded.
+- Frontend freshness and degraded-state messaging.
+- Representative source volumes and update rates.
+
+The first integration test plan must use requirements from the selected source owner and an approved sample payload or sandbox. Writeback tests remain out of scope until later IAM, authorization, audit, acknowledgement, and recovery controls are approved.
 
 ## Quality Gates
 

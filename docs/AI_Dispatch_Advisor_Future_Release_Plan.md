@@ -20,7 +20,7 @@ Completed in the POC usability patch:
 - One reusable, keyboard-focusable responsive table shell for Dashboard, Dispatch, Incidents, and Storm Exceptions.
 - Contained horizontal table scrolling without page-level overflow at desktop, tablet, or mobile widths.
 
-The remaining Release 1 search, filtering, sorting, highlighting, Reset, Crew Board, and crew-identity work should follow the Phase 4 domain and API foundation.
+Phase 6 subsequently delivered shared incident search, cascading severity and region filters with remaining counts, sortable operational columns, pagination, Crew Board search and faceted filtering, crew-ID presentation, read-only detail navigation, recommendation comparison, ranked-alternative assignment, and accessibility improvements. The more extensive per-column filtering, match highlighting, and Reset behavior described below remain future refinements rather than Phase 6 blockers.
 
 ## Release 1 — UI and Data Presentation
 
@@ -68,7 +68,7 @@ The remaining Release 1 search, filtering, sorting, highlighting, Reset, Crew Bo
   - Keep supervisor-review or no-feasible-crew states free of misleading placeholder IDs.
   - Treat this as a separate UI usability item after the behavior-preserving Phase 5.1 package.
 
-- Storm Exceptions now uses the full available content width and shared responsive table shell. Shared search, filter, sort, and Reset behavior remains future Release 1 work.
+- Storm Exceptions uses the full available content width and shared responsive table shell. Shared severity and region facets, counts, sorting, and pagination are implemented; match highlighting, more extensive per-column filters, and Reset behavior remain future Release 1 refinements.
 
 ## Release 2 — Real AI Copilot
 

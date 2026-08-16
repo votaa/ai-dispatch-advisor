@@ -31,8 +31,8 @@ This baseline is suitable for POC demonstrations, stakeholder walkthroughs, and 
 | Phase 3: Scenario Data and Demo Management | Complete | Multiple manifested scenarios, dynamic discovery, runtime activation, frontend selection, scenario-isolated state, validation, and four canonical deterministic fixtures are implemented. |
 | Phase 4: Backend Domain Model | Complete | Phases 4.1–4.4 established the persistence boundary, typed contracts, service boundaries, versioned SQLite migrations, structured errors, request correlation, and API failure-contract coverage. |
 | Phase 5: Recommendation and Optimization Engine | Complete | Phases 5.1–5.6 establish versioned policy and engine contracts, structured scoring, deterministic tie-breakers, blocking crew feasibility, nested explanations, replaceable-engine coverage, and scenario/edge-case evaluation evidence. |
-| Phase 6: Frontend Workflow Maturity | In progress | Phases 6.1–6.5 add loading-state hardening, paginated operational lists, shared faceted filters with remaining-result counts, read-only detail navigation, recommendation comparison and alternative assignment, keyboard/focus semantics, accessible feedback, and broader frontend workflow coverage. Phase 6.6 evaluation and documentation closeout remains. |
-| Phase 7: Enterprise Integration Adapters | Pending | Integration documentation exists, but adapter interfaces, mock adapters, contract tests, and degradation handling are not implemented. |
+| Phase 6: Frontend Workflow Maturity | Complete | Phases 6.1–6.6 deliver loading-state hardening, paginated operational lists, shared faceted filters with remaining-result counts, read-only detail navigation, recommendation comparison and alternative assignment, keyboard/focus semantics, accessible feedback, test coverage, and documented closeout evidence. |
+| Phase 7: Enterprise Integration Adapters | Pending at entry gate | The adapter plan is defined, but implementation should wait until POC feedback and integration discovery identify the first read-only source, owner, contract, and freshness requirements. |
 | Phase 8: Security, IAM, and Audit | Pending with POC audit foundation | Local decision auditing exists. Authentication, authorization, enterprise identity, security controls, and production audit handling remain pending. |
 | Phase 9: Observability and Deployment | Pending with bootstrap foundation | Basic health, request correlation, CI, Docker, and runbook assets exist. Structured telemetry, readiness, hardened deployment, and operational metrics remain pending. |
 | Phase 10: Pilot Readiness | Pending | SME validation, pilot criteria, readiness reviews, release controls, and support procedures remain pending. |
@@ -165,7 +165,7 @@ Exit criteria:
 
 Objective: improve the dispatcher experience from demo shell to operational workflow.
 
-Status: In progress. Phases 6.1–6.5 completed on 2026-08-16: scenario refreshes now show explicit loading/progress feedback, operational queues support search, cascading faceted filters with remaining-result counts, sorting, and pagination, read-only incident and crew details support assignment cross-navigation, recommendation panels compare and assign feasible alternatives, and primary navigation, selection, form validation, status feedback, and decision workflows have stronger keyboard and assistive-technology semantics. Phase 6.6 evaluation and documentation closeout remains.
+Status: Complete as of 2026-08-16. Phases 6.1–6.5 delivered explicit scenario loading/progress feedback, operational search, cascading faceted filters with remaining-result counts, sorting, pagination, read-only detail navigation, recommendation comparison and alternative assignment, and stronger keyboard and assistive-technology semantics. Phase 6.6 verified the committed baseline and recorded the exit evaluation, carry-forward work, and POC readiness boundary in `906_Phase_6_Closeout.md`.
 
 Scope:
 
@@ -188,7 +188,11 @@ Exit criteria:
 
 Objective: prepare for controlled integration with utility systems.
 
-Status: Pending.
+Status: Pending at the Phase 7 entry gate.
+
+Detailed plan: `907_Phase_7_Implementation_Plan.md`.
+
+Recommended entry: pause after Phase 6 to fix accepted scenario-generator defects, collect representative user and dispatch-SME feedback, and select the first read-only source integration with an identified owner, source contract or sample payload, freshness expectations, and security constraints. This feedback gate prevents speculative vendor adapters and does not block continued POC hardening.
 
 Scope:
 
@@ -198,6 +202,16 @@ Scope:
 - Add freshness, source, and quality metadata.
 - Add integration failure handling.
 - Keep control-system boundaries read-only unless formally approved.
+
+Recommended sequence:
+
+- Phase 7.0: integration discovery and readiness decision.
+- Phase 7.1: stable adapter and source-metadata contracts.
+- Phase 7.2: move current CSV scenario access behind the adapter boundary.
+- Phase 7.3: deterministic mock adapters and a shared contract-test harness.
+- Phase 7.4: one approved read-only enterprise integration vertical slice.
+- Phase 7.5: health, freshness, quality, and degraded-state behavior.
+- Phase 7.6: evaluation, documentation closeout, and Phase 8 prerequisites.
 
 Exit criteria:
 
@@ -310,7 +324,7 @@ Exit criteria:
 - [x] Expand API tests for contracts, persistence, invalid state transitions, and failure responses.
 - [x] Update architecture, API, and data documentation for the implemented Phase 4 design.
 
-### Phase 5: Current Implementation Phase
+### Phase 5: Completed Implementation Phase
 
 - [x] Phase 5.1: define immutable versioned scoring-policy contracts and classify implemented versus planned factors, blocking constraints, assumptions, and data-quality conditions.
 - [x] Phase 5.1: introduce a typed optimization request and replaceable engine protocol consumed by incident and recommendation services.
@@ -321,7 +335,7 @@ Exit criteria:
 - [x] Phase 5.5: complete replaceable engine contract tests and document the future advanced-optimization adapter path.
 - [x] Phase 5.6: expand scenario and edge-case evaluation, prepare SME review evidence, and close Phase 5 documentation.
 
-### Phase 6: Current Implementation Phase
+### Phase 6: Completed Implementation Phase
 
 - [x] Phase 6.1: keep recommendation panels in an explicit loading state during scenario refreshes and prevent transient empty-state messaging.
 - [x] Phase 6.1: add large-scenario loading/progress feedback and disable scenario switching while operational data refreshes.
@@ -336,17 +350,20 @@ Exit criteria:
 - [x] Phase 6.4.1: allow a dispatcher to select a ranked feasible alternative, require a modification reason, revalidate live crew availability, create the selected assignment overlay, and preserve both the original recommendation and actual crew choice in audit history.
 - [x] Phase 6.5: improve navigation and focus semantics, accessible validation and status feedback, semantic incident selection and pagination, and broader dispatcher workflow coverage.
 - [x] Phase 6.5: apply cascading filters, remaining-result counts, visible disabled zero-result choices, and active-selection preservation consistently across Crew Board and the Dashboard, Dispatch, Incidents, and Storm Mode incident queues.
-- [ ] Phase 6.6: complete Phase 6 evaluation and documentation closeout.
+- [x] Phase 6.6: complete Phase 6 evaluation and documentation closeout.
 
 ### Later Pending Phases
 
-- [ ] Phase 6: mature dispatcher navigation, filtering, comparison, detail, accessibility, and frontend test coverage.
-- [ ] Phase 7: implement enterprise integration adapter contracts, mocks, quality metadata, and failure handling.
+- [x] Phase 6: mature dispatcher navigation, filtering, comparison, detail, accessibility, and frontend test coverage.
+- [ ] Pre-Phase 7 feedback gate: address accepted scenario-generator defects, collect representative user/SME feedback, and approve the first integration source and read-only use case.
+- [ ] Phase 7.0: complete integration discovery, source ownership, contract, freshness, security, and failure-mode decisions.
+- [ ] Phase 7.1–7.3: implement source-neutral adapter contracts, move CSV access behind them, and add mocks plus shared contract tests.
+- [ ] Phase 7.4–7.6: implement one approved read-only integration slice, expose safe health/freshness behavior, and complete evaluation.
 - [ ] Phase 8: implement authentication, role authorization, enterprise audit controls, configuration protection, and security tests.
 - [ ] Phase 9: add structured logs, readiness, metrics, hardened deployment, environment configuration, and operational support tooling.
 - [ ] Phase 10: complete SME validation, pilot success criteria, readiness reviews, release controls, rollback, and support procedures.
 
-The sequence now continues with Phase 6 frontend maturity, Phase 7 integrations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
+The sequence now pauses at the Phase 6 POC milestone for targeted scenario-generator hardening and user/SME feedback. When the Phase 7 entry gate is satisfied, work continues through enterprise integration foundations, Phase 8 security, Phase 9 operations, and Phase 10 pilot readiness.
 
 ## Definition of Done
 
@@ -388,3 +405,5 @@ As the POC reveals new requirements, the team should:
 - `docs/200_Architecture/202_Solution_Architecture.md`
 - `docs/900_Delivery/901_Test_Strategy.md`
 - `docs/900_Delivery/903_Release_Management.md`
+- `docs/900_Delivery/906_Phase_6_Closeout.md`
+- `docs/900_Delivery/907_Phase_7_Implementation_Plan.md`

@@ -158,6 +158,8 @@ Writeback should require:
 
 The current POC does not perform writeback.
 
+Phase 7 implementation remains read-only. Operational writeback requires later authentication, authorization, production audit, source acknowledgement, retry/reconciliation, and governance approval; defining an adapter method here does not authorize its implementation or use.
+
 ## Adapter Contract Direction
 
 Each adapter should expose internal methods such as:
@@ -217,4 +219,4 @@ Future integration APIs must:
 - [Outage API](403_Outage_API.md)
 - [Crew API](404_Crew_API.md)
 - [Recommendation API](405_Recommendation_API.md)
-
+- [Phase 7 Enterprise Integration Adapter Plan](../900_Delivery/907_Phase_7_Implementation_Plan.md)

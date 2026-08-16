@@ -28,7 +28,7 @@ This checklist is the review evidence package for closing Phase 5. It records th
 - Recommendations remain advisory; dispatch approval is required.
 - Shift sufficiency currently covers estimated travel only because repair duration is not in the scenario contract.
 - OR-Tools or another advanced solver is deferred until multi-incident requirements and operational inputs exist.
-- Crew ID display remains a separate POC usability item and is not required for Phase 5 closeout.
+- Crew IDs are now visible beside descriptive crew names on Crew Board and recommendation surfaces. This later Phase 6 usability change does not alter the Phase 5 recommendation evidence under review.
 
 ## SME review record
 
