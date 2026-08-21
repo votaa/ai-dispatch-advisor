@@ -53,9 +53,9 @@ VEGETATION_LOCATIONS = {
 }
 MUA_CONTRACTOR_LOCATIONS = {
     "Queens-Nassau": ("RDA1 MUA Staging",),
-    "Central-Nassau": ("RDA4MUA Staging", "RDA7MUA Staging"),
-    "Western Suffolk": ("RDA10MUA Staging", "RDA13MUA Staging"),
-    "Eastern Suffolk": ("RDAMUA16 Staging", "RDA19MUA Staging"),
+    "Central-Nassau": ("RDA4 MUA Staging", "RDA7 MUA Staging"),
+    "Western Suffolk": ("RDA10 MUA Staging", "RDA13 MUA Staging"),
+    "Eastern Suffolk": ("RDA16 MUA Staging", "RDA19 MUA Staging"),
 }
 DEFAULT_START_DAY_LOCATION_RATE = 0.35
 DEFAULT_CRITICAL_FACILITY_RATE = 0.04

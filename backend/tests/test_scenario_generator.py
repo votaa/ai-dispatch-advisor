@@ -94,6 +94,17 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
 
 
 def test_start_day_locations_use_approved_facilities() -> None:
+    expected_mua_contractor_locations = {
+        "Queens-Nassau": {"RDA1 MUA Staging"},
+        "Central-Nassau": {"RDA4 MUA Staging", "RDA7 MUA Staging"},
+        "Western Suffolk": {"RDA10 MUA Staging", "RDA13 MUA Staging"},
+        "Eastern Suffolk": {"RDA16 MUA Staging", "RDA19 MUA Staging"},
+    }
+    assert {
+        region: set(locations)
+        for region, locations in MUA_CONTRACTOR_LOCATIONS.items()
+    } == expected_mua_contractor_locations
+
     scenario = generate_scenario(
         scenario_id="start-day-locations",
         start_date=date(2026, 8, 10),
@@ -109,7 +120,7 @@ def test_start_day_locations_use_approved_facilities() -> None:
         if crew_type == "tree":
             assert crew["current_location"] == VEGETATION_LOCATIONS[crew["home_region"]]
         elif crew_type in {"mua", "cntr"}:
-            assert crew["current_location"] in MUA_CONTRACTOR_LOCATIONS[crew["home_region"]]
+            assert crew["current_location"] in expected_mua_contractor_locations[crew["home_region"]]
         else:
             assert crew["current_location"] == SERVICE_LOCATIONS[crew["home_region"]]
 

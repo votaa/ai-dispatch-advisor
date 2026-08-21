@@ -38,7 +38,7 @@ Automated verification was run against the committed Phase 6.5 baseline on 2026-
 
 The following items do not block Phase 6 closure:
 
-- `POC-010`: normalize generated RDA/MUA crew staging-location labels in `backend/app/scenario_generator.py`, regenerate affected scenario data, and add regression coverage. This is recommended as a focused POC hardening change before Phase 7.
+- `POC-010` was resolved after Phase 6 closure: generated RDA/MUA crew staging-location labels were normalized, affected preview and demo data were regenerated, and regression coverage now protects the approved location set.
 - `POC-002`: the AI Copilot remains a rule-based demo placeholder. A production AI implementation is a separately governed future release and is not part of the Phase 7 adapter foundation.
 - Phase 5 dispatch-SME review remains open in `905_Phase_5_SME_Review_Checklist.md`. The automated evidence is complete, but user/SME judgment must be recorded before pilot-readiness claims.
 - Live source integrations, enterprise identity and authorization, production audit controls, observability, deployment hardening, and pilot operating procedures remain future phases.
@@ -60,4 +60,3 @@ Pausing at this gate is recommended. It keeps Phase 7 from building speculative 
 - Demo/POC readiness: achieved for the implemented workflow.
 - Enterprise integration readiness: planned in Phase 7, not yet achieved.
 - Production readiness: not yet achieved; Phases 7–10 contain integration, security, operational, and pilot-readiness work.
-

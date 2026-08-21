@@ -7,12 +7,12 @@ WW-1198,Queens-Nassau Wire Watcher 1198,Queens-Nassau,available,general,Hewlett 
 6987,Queens-Nassau Line Crew 6987,Queens-Nassau,available,line,Hewlett Service Center,10,false,63
 CNTR-2196,Central-Nassau Contractor Crew 2196,Central-Nassau,assigned,line,Mineola,10,false,46
 TREE-4735,Eastern Suffolk Tree Crew 4735,Eastern Suffolk,available,vegetation,Manorville,12,true,63
-CNTR-3896,Western Suffolk Contractor Crew 3896,Western Suffolk,assigned,line,RDA13MUA Staging,9,true,63
+CNTR-3896,Western Suffolk Contractor Crew 3896,Western Suffolk,assigned,line,RDA13 MUA Staging,9,true,63
 WW-4739,Eastern Suffolk Wire Watcher 4739,Eastern Suffolk,available,general,Hampton Bays,5,true,66
-MUA-4497,Eastern Suffolk Mutual Aid Crew 4497,Eastern Suffolk,available,line,RDA19MUA Staging,7,true,22
+MUA-4497,Eastern Suffolk Mutual Aid Crew 4497,Eastern Suffolk,available,line,RDA19 MUA Staging,7,true,22
 WW-1556,Queens-Nassau Wire Watcher 1556,Queens-Nassau,available,general,Woodmere,3,true,14
 6207,Central-Nassau Line Crew 6207,Central-Nassau,available,line,Hicksville Operations Yard,10,false,44
-MUA-2010,Central-Nassau Mutual Aid Crew 2010,Central-Nassau,available,line,RDA7MUA Staging,5,true,62
+MUA-2010,Central-Nassau Mutual Aid Crew 2010,Central-Nassau,available,line,RDA7 MUA Staging,5,true,62
 1890,Queens-Nassau Troubleshooter 1890,Queens-Nassau,available,general,Hewlett Service Center,9,true,32
 5814,Central-Nassau Low Voltage Crew 5814,Central-Nassau,available,low_voltage,Hicksville Operations Yard,10,true,75
 6629,Western Suffolk Line Crew 6629,Western Suffolk,available,line,Brentwood Operations Yard,10,false,71
@@ -21,7 +21,7 @@ CNTR-3029,Western Suffolk Contractor Crew 3029,Western Suffolk,available,line,Li
 CNTR-1651,Queens-Nassau Contractor Crew 1651,Queens-Nassau,assigned,line,Cedarhurst,9,true,66
 6955,Eastern Suffolk Line Crew 6955,Eastern Suffolk,available,line,Riverhead Operations Yard,12,true,43
 LKP-4551,Eastern Suffolk Lookup Crew 4551,Eastern Suffolk,assigned,general,Center Moriches,3,false,41
-MUA-4968,Eastern Suffolk Mutual Aid Crew 4968,Eastern Suffolk,available,line,RDA19MUA Staging,6,false,55
+MUA-4968,Eastern Suffolk Mutual Aid Crew 4968,Eastern Suffolk,available,line,RDA19 MUA Staging,6,false,55
 WW-4154,Eastern Suffolk Wire Watcher 4154,Eastern Suffolk,available,general,Manorville,5,true,33
 LKP-3712,Western Suffolk Lookup Crew 3712,Western Suffolk,assigned,general,Smithtown,6,true,30
 MUA-3027,Western Suffolk Mutual Aid Crew 3027,Western Suffolk,available,line,Bay Shore,7,false,61
@@ -38,7 +38,7 @@ CG-1419,Queens-Nassau Crew Guide 1419,Queens-Nassau,available,general,Lawrence,1
 2371,Central-Nassau Troubleshooter 2371,Central-Nassau,available,general,Hicksville Operations Yard,5,true,31
 7031,Central-Nassau Low Voltage Crew 7031,Central-Nassau,available,low_voltage,Hicksville Operations Yard,7,false,14
 3227,Western Suffolk Troubleshooter 3227,Western Suffolk,available,general,Smithtown,6,true,62
-CNTR-4076,Eastern Suffolk Contractor Crew 4076,Eastern Suffolk,available,line,RDAMUA16 Staging,6,true,51
+CNTR-4076,Eastern Suffolk Contractor Crew 4076,Eastern Suffolk,available,line,RDA16 MUA Staging,6,true,51
 LKP-3442,Western Suffolk Lookup Crew 3442,Western Suffolk,available,general,Brentwood,10,true,28
 2292,Central-Nassau Troubleshooter 2292,Central-Nassau,available,general,Hicksville Operations Yard,7,false,8
 2858,Central-Nassau Troubleshooter 2858,Central-Nassau,available,general,East Meadow,7,true,66
@@ -65,10 +65,10 @@ TREE-4448,Eastern Suffolk Tree Crew 4448,Eastern Suffolk,assigned,vegetation,Eas
 LKP-4419,Eastern Suffolk Lookup Crew 4419,Eastern Suffolk,available,general,Manorville,11,false,44
 2914,Central-Nassau Troubleshooter 2914,Central-Nassau,available,general,Westbury,10,false,11
 CNTR-2072,Central-Nassau Contractor Crew 2072,Central-Nassau,assigned,line,Freeport,10,true,9
-CNTR-2585,Central-Nassau Contractor Crew 2585,Central-Nassau,available,line,RDA7MUA Staging,5,true,71
+CNTR-2585,Central-Nassau Contractor Crew 2585,Central-Nassau,available,line,RDA7 MUA Staging,5,true,71
 5894,Eastern Suffolk Low Voltage Crew 5894,Eastern Suffolk,available,low_voltage,Montauk,3,true,12
-CNTR-4761,Eastern Suffolk Contractor Crew 4761,Eastern Suffolk,available,line,RDA19MUA Staging,4,true,10
-MUA-4249,Eastern Suffolk Mutual Aid Crew 4249,Eastern Suffolk,available,line,RDAMUA16 Staging,11,true,40
+CNTR-4761,Eastern Suffolk Contractor Crew 4761,Eastern Suffolk,available,line,RDA19 MUA Staging,4,true,10
+MUA-4249,Eastern Suffolk Mutual Aid Crew 4249,Eastern Suffolk,available,line,RDA16 MUA Staging,11,true,40
 LKP-4285,Eastern Suffolk Lookup Crew 4285,Eastern Suffolk,available,general,Greenport,6,true,22
 LKP-2364,Central-Nassau Lookup Crew 2364,Central-Nassau,available,general,Wantagh,7,true,32
 CNTR-3715,Western Suffolk Contractor Crew 3715,Western Suffolk,available,line,Lindenhurst,7,true,74
@@ -107,7 +107,7 @@ CNTR-1002,Queens-Nassau Contractor Crew 1002,Queens-Nassau,available,line,Cedarh
 7120,Western Suffolk Low Voltage Crew 7120,Western Suffolk,available,low_voltage,Commack,3,false,22
 5854,Central-Nassau Low Voltage Crew 5854,Central-Nassau,available,low_voltage,Levittown,10,true,25
 WW-2866,Central-Nassau Wire Watcher 2866,Central-Nassau,available,general,Wantagh,3,true,13
-CNTR-3700,Western Suffolk Contractor Crew 3700,Western Suffolk,available,line,RDA10MUA Staging,9,true,75
+CNTR-3700,Western Suffolk Contractor Crew 3700,Western Suffolk,available,line,RDA10 MUA Staging,9,true,75
 LKP-2768,Central-Nassau Lookup Crew 2768,Central-Nassau,available,general,Hicksville,6,true,50
 LKP-4142,Eastern Suffolk Lookup Crew 4142,Eastern Suffolk,available,general,Center Moriches,4,true,38
 7655,Queens-Nassau Low Voltage Crew 7655,Queens-Nassau,available,low_voltage,Hewlett,5,true,20
@@ -126,11 +126,11 @@ CNTR-1656,Queens-Nassau Contractor Crew 1656,Queens-Nassau,available,line,Woodme
 TREE-3293,Western Suffolk Tree Crew 3293,Western Suffolk,available,vegetation,Brentwood Vegetation Staging Area,4,false,27
 LKP-1606,Queens-Nassau Lookup Crew 1606,Queens-Nassau,available,general,Inwood,5,true,55
 MUA-1435,Queens-Nassau Mutual Aid Crew 1435,Queens-Nassau,available,line,Rockaway Park,11,true,66
-CNTR-2795,Central-Nassau Contractor Crew 2795,Central-Nassau,assigned,line,RDA4MUA Staging,10,true,50
+CNTR-2795,Central-Nassau Contractor Crew 2795,Central-Nassau,assigned,line,RDA4 MUA Staging,10,true,50
 3071,Western Suffolk Troubleshooter 3071,Western Suffolk,available,general,Brentwood Operations Yard,5,true,64
-CNTR-3154,Western Suffolk Contractor Crew 3154,Western Suffolk,assigned,line,RDA13MUA Staging,12,true,51
+CNTR-3154,Western Suffolk Contractor Crew 3154,Western Suffolk,assigned,line,RDA13 MUA Staging,12,true,51
 6614,Eastern Suffolk Line Crew 6614,Eastern Suffolk,available,line,East Hampton,12,false,18
-CNTR-2022,Central-Nassau Contractor Crew 2022,Central-Nassau,available,line,RDA7MUA Staging,7,false,66
+CNTR-2022,Central-Nassau Contractor Crew 2022,Central-Nassau,available,line,RDA7 MUA Staging,7,false,66
 CNTR-2843,Central-Nassau Contractor Crew 2843,Central-Nassau,available,line,Freeport,11,true,63
 7149,Western Suffolk Low Voltage Crew 7149,Western Suffolk,available,low_voltage,Copiague,4,true,16
 4806,Eastern Suffolk Troubleshooter 4806,Eastern Suffolk,available,general,Riverhead Operations Yard,11,true,64
@@ -149,16 +149,16 @@ CNTR-1238,Queens-Nassau Contractor Crew 1238,Queens-Nassau,available,line,Lawren
 7501,Central-Nassau Low Voltage Crew 7501,Central-Nassau,available,low_voltage,Hicksville Operations Yard,7,false,55
 TREE-2241,Central-Nassau Tree Crew 2241,Central-Nassau,available,vegetation,Hicksville Vegetation Staging Area,7,true,63
 7172,Western Suffolk Low Voltage Crew 7172,Western Suffolk,available,low_voltage,Commack,9,true,73
-CNTR-4275,Eastern Suffolk Contractor Crew 4275,Eastern Suffolk,available,line,RDAMUA16 Staging,11,true,62
+CNTR-4275,Eastern Suffolk Contractor Crew 4275,Eastern Suffolk,available,line,RDA16 MUA Staging,11,true,62
 1033,Queens-Nassau Troubleshooter 1033,Queens-Nassau,available,general,Rockaway Park,7,false,37
 CG-1138,Queens-Nassau Crew Guide 1138,Queens-Nassau,available,general,Edgemere,4,true,63
 5998,Western Suffolk Low Voltage Crew 5998,Western Suffolk,available,low_voltage,Lindenhurst,7,true,30
 5622,Eastern Suffolk Low Voltage Crew 5622,Eastern Suffolk,available,low_voltage,Riverhead Operations Yard,9,true,18
 4512,Eastern Suffolk Troubleshooter 4512,Eastern Suffolk,available,general,Riverhead Operations Yard,8,true,46
 CNTR-1835,Queens-Nassau Contractor Crew 1835,Queens-Nassau,available,line,Edgemere,6,true,37
-CNTR-4573,Eastern Suffolk Contractor Crew 4573,Eastern Suffolk,assigned,line,RDA19MUA Staging,11,true,71
+CNTR-4573,Eastern Suffolk Contractor Crew 4573,Eastern Suffolk,assigned,line,RDA19 MUA Staging,11,true,71
 LKP-1199,Queens-Nassau Lookup Crew 1199,Queens-Nassau,available,general,Hewlett,12,true,10
-CNTR-4532,Eastern Suffolk Contractor Crew 4532,Eastern Suffolk,available,line,RDA19MUA Staging,4,true,17
+CNTR-4532,Eastern Suffolk Contractor Crew 4532,Eastern Suffolk,available,line,RDA19 MUA Staging,4,true,17
 LKP-4665,Eastern Suffolk Lookup Crew 4665,Eastern Suffolk,assigned,general,Southampton,7,true,28
 CNTR-3045,Western Suffolk Contractor Crew 3045,Western Suffolk,available,line,Amityville,12,true,31
 LKP-3265,Western Suffolk Lookup Crew 3265,Western Suffolk,available,general,Brentwood Operations Yard,3,true,20
@@ -185,7 +185,7 @@ CNTR-1886,Queens-Nassau Contractor Crew 1886,Queens-Nassau,available,line,Inwood
 1265,Queens-Nassau Troubleshooter 1265,Queens-Nassau,available,general,Woodmere,4,true,47
 6772,Western Suffolk Line Crew 6772,Western Suffolk,available,line,Smithtown,3,false,36
 7208,Western Suffolk Low Voltage Crew 7208,Western Suffolk,available,low_voltage,Commack,10,true,64
-MUA-3157,Western Suffolk Mutual Aid Crew 3157,Western Suffolk,assigned,line,RDA10MUA Staging,12,false,43
+MUA-3157,Western Suffolk Mutual Aid Crew 3157,Western Suffolk,assigned,line,RDA10 MUA Staging,12,false,43
 MUA-1543,Queens-Nassau Mutual Aid Crew 1543,Queens-Nassau,available,line,Rockaway Park,4,true,54
 2310,Central-Nassau Troubleshooter 2310,Central-Nassau,available,general,Hicksville Operations Yard,10,false,44
 7405,Eastern Suffolk Low Voltage Crew 7405,Eastern Suffolk,available,low_voltage,Riverhead Operations Yard,4,true,45
@@ -210,7 +210,7 @@ MUA-1777,Queens-Nassau Mutual Aid Crew 1777,Queens-Nassau,available,line,Edgemer
 LKP-4448,Eastern Suffolk Lookup Crew 4448,Eastern Suffolk,available,general,Riverhead Operations Yard,11,true,34
 4341,Eastern Suffolk Troubleshooter 4341,Eastern Suffolk,available,general,Riverhead Operations Yard,4,true,23
 WW-4413,Eastern Suffolk Wire Watcher 4413,Eastern Suffolk,assigned,general,Riverhead Operations Yard,4,true,52
-CNTR-2510,Central-Nassau Contractor Crew 2510,Central-Nassau,available,line,RDA7MUA Staging,6,false,74
+CNTR-2510,Central-Nassau Contractor Crew 2510,Central-Nassau,available,line,RDA7 MUA Staging,6,false,74
 1378,Queens-Nassau Troubleshooter 1378,Queens-Nassau,available,general,Inwood,5,false,75
 5303,Central-Nassau Low Voltage Crew 5303,Central-Nassau,assigned,low_voltage,Uniondale,5,false,26
 1641,Queens-Nassau Troubleshooter 1641,Queens-Nassau,assigned,general,Elmont,10,false,69
@@ -226,7 +226,7 @@ MUA-3092,Western Suffolk Mutual Aid Crew 3092,Western Suffolk,available,line,Bab
 2276,Central-Nassau Troubleshooter 2276,Central-Nassau,assigned,general,Westbury,7,true,25
 6527,Queens-Nassau Line Crew 6527,Queens-Nassau,available,line,Hewlett Service Center,9,true,46
 5566,Eastern Suffolk Low Voltage Crew 5566,Eastern Suffolk,assigned,low_voltage,Riverhead Operations Yard,5,true,23
-MUA-2127,Central-Nassau Mutual Aid Crew 2127,Central-Nassau,available,line,RDA7MUA Staging,7,true,8
+MUA-2127,Central-Nassau Mutual Aid Crew 2127,Central-Nassau,available,line,RDA7 MUA Staging,7,true,8
 2807,Central-Nassau Troubleshooter 2807,Central-Nassau,available,general,Hicksville Operations Yard,10,true,50
 6375,Eastern Suffolk Line Crew 6375,Eastern Suffolk,assigned,line,Southampton,3,true,16
 5868,Central-Nassau Low Voltage Crew 5868,Central-Nassau,assigned,low_voltage,Hempstead,11,true,19
@@ -242,7 +242,7 @@ TREE-3111,Western Suffolk Tree Crew 3111,Western Suffolk,available,vegetation,Br
 CNTR-1416,Queens-Nassau Contractor Crew 1416,Queens-Nassau,available,line,RDA1 MUA Staging,9,false,49
 7893,Eastern Suffolk Low Voltage Crew 7893,Eastern Suffolk,available,low_voltage,Yaphank,4,true,8
 4380,Eastern Suffolk Troubleshooter 4380,Eastern Suffolk,available,general,Center Moriches,6,false,29
-MUA-3745,Western Suffolk Mutual Aid Crew 3745,Western Suffolk,assigned,line,RDA13MUA Staging,4,false,17
+MUA-3745,Western Suffolk Mutual Aid Crew 3745,Western Suffolk,assigned,line,RDA13 MUA Staging,4,false,17
 MUA-4101,Eastern Suffolk Mutual Aid Crew 4101,Eastern Suffolk,available,line,Center Moriches,4,true,75
 6304,Central-Nassau Line Crew 6304,Central-Nassau,available,line,Hicksville Operations Yard,12,true,12
 LKP-4835,Eastern Suffolk Lookup Crew 4835,Eastern Suffolk,available,general,Wading River,3,true,37
@@ -302,7 +302,7 @@ LKP-3652,Western Suffolk Lookup Crew 3652,Western Suffolk,assigned,general,Brent
 WW-3612,Western Suffolk Wire Watcher 3612,Western Suffolk,assigned,general,Amityville,8,true,66
 6263,Western Suffolk Line Crew 6263,Western Suffolk,available,line,Brentwood Operations Yard,11,true,60
 1449,Queens-Nassau Troubleshooter 1449,Queens-Nassau,available,general,Edgemere,7,true,43
-MUA-2029,Central-Nassau Mutual Aid Crew 2029,Central-Nassau,available,line,RDA7MUA Staging,10,true,72
+MUA-2029,Central-Nassau Mutual Aid Crew 2029,Central-Nassau,available,line,RDA7 MUA Staging,10,true,72
 6493,Queens-Nassau Line Crew 6493,Queens-Nassau,available,line,Woodmere,7,true,24
 6918,Queens-Nassau Line Crew 6918,Queens-Nassau,assigned,line,Arverne,11,true,12
 5168,Queens-Nassau Low Voltage Crew 5168,Queens-Nassau,assigned,low_voltage,Hewlett Service Center,6,true,68
@@ -327,8 +327,8 @@ LKP-4323,Eastern Suffolk Lookup Crew 4323,Eastern Suffolk,available,general,Yaph
 LKP-2667,Central-Nassau Lookup Crew 2667,Central-Nassau,available,general,Garden City,9,true,68
 3688,Western Suffolk Troubleshooter 3688,Western Suffolk,assigned,general,Smithtown,10,false,49
 5906,Central-Nassau Low Voltage Crew 5906,Central-Nassau,available,low_voltage,Merrick,4,true,28
-CNTR-3437,Western Suffolk Contractor Crew 3437,Western Suffolk,available,line,RDA10MUA Staging,10,true,34
-MUA-3173,Western Suffolk Mutual Aid Crew 3173,Western Suffolk,assigned,line,RDA10MUA Staging,8,true,52
+CNTR-3437,Western Suffolk Contractor Crew 3437,Western Suffolk,available,line,RDA10 MUA Staging,10,true,34
+MUA-3173,Western Suffolk Mutual Aid Crew 3173,Western Suffolk,assigned,line,RDA10 MUA Staging,8,true,52
 WW-2419,Central-Nassau Wire Watcher 2419,Central-Nassau,available,general,Hempstead,5,true,14
 CG-1711,Queens-Nassau Crew Guide 1711,Queens-Nassau,available,general,Cedarhurst,12,false,13
 TREE-3822,Western Suffolk Tree Crew 3822,Western Suffolk,available,vegetation,Smithtown,11,true,65
@@ -394,7 +394,7 @@ MUA-2571,Central-Nassau Mutual Aid Crew 2571,Central-Nassau,assigned,line,Garden
 WW-1205,Queens-Nassau Wire Watcher 1205,Queens-Nassau,available,general,Inwood,3,true,27
 TREE-4695,Eastern Suffolk Tree Crew 4695,Eastern Suffolk,available,vegetation,Riverhead Vegetation Staging Area,3,true,33
 4051,Eastern Suffolk Troubleshooter 4051,Eastern Suffolk,available,general,Riverhead Operations Yard,12,true,20
-CNTR-4582,Eastern Suffolk Contractor Crew 4582,Eastern Suffolk,assigned,line,RDAMUA16 Staging,12,true,30
+CNTR-4582,Eastern Suffolk Contractor Crew 4582,Eastern Suffolk,assigned,line,RDA16 MUA Staging,12,true,30
 LKP-3212,Western Suffolk Lookup Crew 3212,Western Suffolk,available,general,Copiague,3,true,31
 CNTR-3005,Western Suffolk Contractor Crew 3005,Western Suffolk,available,line,Brentwood,11,true,55
 TREE-1847,Queens-Nassau Tree Crew 1847,Queens-Nassau,available,vegetation,Floral Park,5,true,58
@@ -408,7 +408,7 @@ WW-3986,Western Suffolk Wire Watcher 3986,Western Suffolk,assigned,general,Comma
 LKP-1165,Queens-Nassau Lookup Crew 1165,Queens-Nassau,assigned,general,Far Rockaway,11,true,71
 2880,Central-Nassau Troubleshooter 2880,Central-Nassau,available,general,Westbury,12,true,66
 5490,Central-Nassau Low Voltage Crew 5490,Central-Nassau,assigned,low_voltage,Wantagh,6,true,63
-MUA-3181,Western Suffolk Mutual Aid Crew 3181,Western Suffolk,available,line,RDA10MUA Staging,11,true,58
+MUA-3181,Western Suffolk Mutual Aid Crew 3181,Western Suffolk,available,line,RDA10 MUA Staging,11,true,58
 7895,Queens-Nassau Low Voltage Crew 7895,Queens-Nassau,available,low_voltage,Floral Park,8,true,32
 WW-2307,Central-Nassau Wire Watcher 2307,Central-Nassau,available,general,Wantagh,9,true,58
 3034,Western Suffolk Troubleshooter 3034,Western Suffolk,available,general,Ronkonkoma,7,true,28
@@ -423,8 +423,8 @@ TREE-1668,Queens-Nassau Tree Crew 1668,Queens-Nassau,available,vegetation,Elmont
 MUA-2937,Central-Nassau Mutual Aid Crew 2937,Central-Nassau,available,line,Hicksville,4,true,67
 CNTR-1368,Queens-Nassau Contractor Crew 1368,Queens-Nassau,available,line,RDA1 MUA Staging,6,true,36
 WW-4116,Eastern Suffolk Wire Watcher 4116,Eastern Suffolk,available,general,Riverhead Operations Yard,6,true,60
-MUA-2460,Central-Nassau Mutual Aid Crew 2460,Central-Nassau,available,line,RDA7MUA Staging,9,true,16
-CNTR-4910,Eastern Suffolk Contractor Crew 4910,Eastern Suffolk,assigned,line,RDAMUA16 Staging,5,true,45
+MUA-2460,Central-Nassau Mutual Aid Crew 2460,Central-Nassau,available,line,RDA7 MUA Staging,9,true,16
+CNTR-4910,Eastern Suffolk Contractor Crew 4910,Eastern Suffolk,assigned,line,RDA16 MUA Staging,5,true,45
 4647,Eastern Suffolk Troubleshooter 4647,Eastern Suffolk,available,general,Wading River,11,true,21
 6451,Eastern Suffolk Line Crew 6451,Eastern Suffolk,available,line,Montauk,6,true,16
 MUA-1951,Queens-Nassau Mutual Aid Crew 1951,Queens-Nassau,available,line,Rockaway Park,8,true,24
@@ -439,15 +439,15 @@ WW-4674,Eastern Suffolk Wire Watcher 4674,Eastern Suffolk,available,general,Rive
 4165,Eastern Suffolk Troubleshooter 4165,Eastern Suffolk,available,general,Yaphank,11,true,18
 CNTR-4279,Eastern Suffolk Contractor Crew 4279,Eastern Suffolk,available,line,Yaphank,6,false,36
 6066,Eastern Suffolk Line Crew 6066,Eastern Suffolk,available,line,Riverhead Operations Yard,8,false,15
-CNTR-4844,Eastern Suffolk Contractor Crew 4844,Eastern Suffolk,available,line,RDA19MUA Staging,12,true,57
+CNTR-4844,Eastern Suffolk Contractor Crew 4844,Eastern Suffolk,available,line,RDA19 MUA Staging,12,true,57
 LKP-2770,Central-Nassau Lookup Crew 2770,Central-Nassau,available,general,Westbury,12,true,36
 7824,Central-Nassau Low Voltage Crew 7824,Central-Nassau,available,low_voltage,Uniondale,8,true,33
 6943,Eastern Suffolk Line Crew 6943,Eastern Suffolk,assigned,line,Riverhead Operations Yard,12,true,57
 1073,Queens-Nassau Troubleshooter 1073,Queens-Nassau,available,general,Floral Park,8,true,72
 MUA-4935,Eastern Suffolk Mutual Aid Crew 4935,Eastern Suffolk,available,line,Hampton Bays,7,true,53
 WW-1133,Queens-Nassau Wire Watcher 1133,Queens-Nassau,assigned,general,Arverne,6,true,62
-MUA-3651,Western Suffolk Mutual Aid Crew 3651,Western Suffolk,assigned,line,RDA13MUA Staging,8,true,22
-MUA-2725,Central-Nassau Mutual Aid Crew 2725,Central-Nassau,available,line,RDA4MUA Staging,3,false,46
+MUA-3651,Western Suffolk Mutual Aid Crew 3651,Western Suffolk,assigned,line,RDA13 MUA Staging,8,true,22
+MUA-2725,Central-Nassau Mutual Aid Crew 2725,Central-Nassau,available,line,RDA4 MUA Staging,3,false,46
 LKP-3253,Western Suffolk Lookup Crew 3253,Western Suffolk,available,general,Brentwood,3,true,58
 6006,Central-Nassau Line Crew 6006,Central-Nassau,available,line,Hicksville Operations Yard,7,true,12
 6658,Queens-Nassau Line Crew 6658,Queens-Nassau,available,line,Far Rockaway,6,true,69
@@ -458,7 +458,7 @@ LKP-3253,Western Suffolk Lookup Crew 3253,Western Suffolk,available,general,Bren
 6994,Eastern Suffolk Line Crew 6994,Eastern Suffolk,available,line,Southampton,11,true,70
 5940,Queens-Nassau Low Voltage Crew 5940,Queens-Nassau,available,low_voltage,Hewlett,7,true,50
 MUA-3357,Western Suffolk Mutual Aid Crew 3357,Western Suffolk,available,line,Lindenhurst,3,true,43
-MUA-3014,Western Suffolk Mutual Aid Crew 3014,Western Suffolk,available,line,RDA10MUA Staging,10,true,60
+MUA-3014,Western Suffolk Mutual Aid Crew 3014,Western Suffolk,available,line,RDA10 MUA Staging,10,true,60
 LKP-1340,Queens-Nassau Lookup Crew 1340,Queens-Nassau,available,general,Floral Park,8,false,75
 7510,Central-Nassau Low Voltage Crew 7510,Central-Nassau,available,low_voltage,Mineola,8,false,48
 TREE-4970,Eastern Suffolk Tree Crew 4970,Eastern Suffolk,assigned,vegetation,Riverhead Vegetation Staging Area,10,true,48
@@ -476,26 +476,26 @@ LKP-1456,Queens-Nassau Lookup Crew 1456,Queens-Nassau,assigned,general,Edgemere,
 7996,Central-Nassau Low Voltage Crew 7996,Central-Nassau,available,low_voltage,Wantagh,6,true,70
 MUA-1817,Queens-Nassau Mutual Aid Crew 1817,Queens-Nassau,available,line,Woodmere,12,true,46
 5870,Eastern Suffolk Low Voltage Crew 5870,Eastern Suffolk,available,low_voltage,Riverhead Operations Yard,5,true,28
-MUA-3128,Western Suffolk Mutual Aid Crew 3128,Western Suffolk,assigned,line,RDA10MUA Staging,4,false,37
+MUA-3128,Western Suffolk Mutual Aid Crew 3128,Western Suffolk,assigned,line,RDA10 MUA Staging,4,false,37
 2693,Central-Nassau Troubleshooter 2693,Central-Nassau,available,general,Freeport,8,true,41
 CNTR-2719,Central-Nassau Contractor Crew 2719,Central-Nassau,available,line,Mineola,10,true,53
 4153,Eastern Suffolk Troubleshooter 4153,Eastern Suffolk,available,general,Riverhead Operations Yard,9,true,18
 6140,Central-Nassau Line Crew 6140,Central-Nassau,assigned,line,Hempstead,10,true,67
-MUA-2213,Central-Nassau Mutual Aid Crew 2213,Central-Nassau,available,line,RDA4MUA Staging,11,true,59
+MUA-2213,Central-Nassau Mutual Aid Crew 2213,Central-Nassau,available,line,RDA4 MUA Staging,11,true,59
 6193,Queens-Nassau Line Crew 6193,Queens-Nassau,available,line,Floral Park,8,true,52
 MUA-4127,Eastern Suffolk Mutual Aid Crew 4127,Eastern Suffolk,assigned,line,Manorville,7,true,34
 5392,Eastern Suffolk Low Voltage Crew 5392,Eastern Suffolk,available,low_voltage,Westhampton Beach,5,true,28
-CNTR-3329,Western Suffolk Contractor Crew 3329,Western Suffolk,available,line,RDA13MUA Staging,6,true,48
+CNTR-3329,Western Suffolk Contractor Crew 3329,Western Suffolk,available,line,RDA13 MUA Staging,6,true,48
 1755,Queens-Nassau Troubleshooter 1755,Queens-Nassau,assigned,general,Floral Park,10,true,70
 WW-3641,Western Suffolk Wire Watcher 3641,Western Suffolk,available,general,Brentwood Operations Yard,5,true,26
 5233,Queens-Nassau Low Voltage Crew 5233,Queens-Nassau,available,low_voltage,Hewlett Service Center,10,false,55
 3072,Western Suffolk Troubleshooter 3072,Western Suffolk,available,general,Brentwood Operations Yard,6,true,63
 5898,Queens-Nassau Low Voltage Crew 5898,Queens-Nassau,assigned,low_voltage,Edgemere,11,true,34
-CNTR-4714,Eastern Suffolk Contractor Crew 4714,Eastern Suffolk,available,line,RDAMUA16 Staging,5,false,12
+CNTR-4714,Eastern Suffolk Contractor Crew 4714,Eastern Suffolk,available,line,RDA16 MUA Staging,5,false,12
 3357,Western Suffolk Troubleshooter 3357,Western Suffolk,available,general,Brentwood Operations Yard,8,true,33
 1493,Queens-Nassau Troubleshooter 1493,Queens-Nassau,assigned,general,Far Rockaway,3,true,44
 6867,Western Suffolk Line Crew 6867,Western Suffolk,available,line,Brentwood Operations Yard,4,true,75
 CG-4572,Eastern Suffolk Crew Guide 4572,Eastern Suffolk,assigned,general,Greenport,12,false,67
-MUA-2060,Central-Nassau Mutual Aid Crew 2060,Central-Nassau,available,line,RDA7MUA Staging,6,true,40
+MUA-2060,Central-Nassau Mutual Aid Crew 2060,Central-Nassau,available,line,RDA7 MUA Staging,6,true,40
 4664,Eastern Suffolk Troubleshooter 4664,Eastern Suffolk,available,general,East Hampton,5,false,9
 5240,Eastern Suffolk Low Voltage Crew 5240,Eastern Suffolk,assigned,low_voltage,Southampton,5,false,64
