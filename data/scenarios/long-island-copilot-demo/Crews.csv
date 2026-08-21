@@ -1,0 +1,33 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+MUA-3603,Western Suffolk Mutual Aid Crew 3603,Western Suffolk,available,line,Cedarhurst,12,true,17
+5638,Western Suffolk Low Voltage Crew 5638,Western Suffolk,available,low_voltage,Bay Shore,4,true,71
+3533,Western Suffolk Troubleshooter 3533,Western Suffolk,available,general,Arverne,12,true,8
+CNTR-2322,Central-Nassau Contractor Crew 2322,Central-Nassau,available,line,Hicksville,12,false,46
+LKP-3460,Western Suffolk Lookup Crew 3460,Western Suffolk,available,general,Brentwood,4,true,74
+CNTR-1117,Queens-Nassau Contractor Crew 1117,Queens-Nassau,assigned,line,Valley Stream,5,true,24
+CNTR-3320,Western Suffolk Contractor Crew 3320,Western Suffolk,assigned,line,Babylon,5,true,61
+MUA-1450,Queens-Nassau Mutual Aid Crew 1450,Queens-Nassau,available,line,Hicksville,12,false,46
+6395,Central-Nassau Line Crew 6395,Central-Nassau,assigned,line,Westbury,11,true,39
+6865,Queens-Nassau Line Crew 6865,Queens-Nassau,assigned,line,Hewlett,8,true,23
+5210,Eastern Suffolk Low Voltage Crew 5210,Eastern Suffolk,available,low_voltage,Greenport,7,true,184
+TREE-1403,Queens-Nassau Tree Crew 1403,Queens-Nassau,assigned,vegetation,Hewlett,7,true,23
+1258,Queens-Nassau Troubleshooter 1258,Queens-Nassau,available,general,Rockaway Park,11,true,12
+2686,Central-Nassau Troubleshooter 2686,Central-Nassau,assigned,general,Massapequa,12,true,44
+WW-2069,Central-Nassau Wire Watcher 2069,Central-Nassau,available,general,Hempstead,5,true,39
+5328,Central-Nassau Low Voltage Crew 5328,Central-Nassau,available,low_voltage,Hicksville,9,true,46
+LKP-2575,Central-Nassau Lookup Crew 2575,Central-Nassau,available,general,Westbury,12,false,39
+LKP-1304,Queens-Nassau Lookup Crew 1304,Queens-Nassau,available,general,Edgemere,10,true,9
+1599,Queens-Nassau Troubleshooter 1599,Queens-Nassau,available,general,Hewlett,10,true,23
+3021,Western Suffolk Troubleshooter 3021,Western Suffolk,available,general,Bay Shore,12,true,71
+MUA-4676,Eastern Suffolk Mutual Aid Crew 4676,Eastern Suffolk,available,line,Hicksville,12,false,46
+2028,Central-Nassau Troubleshooter 2028,Central-Nassau,available,general,East Meadow,11,false,38
+WW-1709,Queens-Nassau Wire Watcher 1709,Queens-Nassau,available,general,Edgemere,7,false,9
+CG-1832,Queens-Nassau Crew Guide 1832,Queens-Nassau,available,general,Far Rockaway,12,true,12
+6466,Western Suffolk Line Crew 6466,Western Suffolk,available,line,Hicksville,12,false,46
+4729,Eastern Suffolk Troubleshooter 4729,Eastern Suffolk,assigned,general,Southampton,9,true,170
+MUA-2615,Central-Nassau Mutual Aid Crew 2615,Central-Nassau,available,line,Hicksville,12,false,46
+WW-3721,Western Suffolk Wire Watcher 3721,Western Suffolk,available,general,Melville,3,true,58
+TREE-2121,Central-Nassau Tree Crew 2121,Central-Nassau,available,vegetation,Mineola,7,false,35
+5972,Queens-Nassau Low Voltage Crew 5972,Queens-Nassau,available,low_voltage,Edgemere,5,true,9
+6024,Eastern Suffolk Line Crew 6024,Eastern Suffolk,available,line,Hicksville,12,false,46
+LKP-4940,Eastern Suffolk Lookup Crew 4940,Eastern Suffolk,available,general,Greenport,5,true,184

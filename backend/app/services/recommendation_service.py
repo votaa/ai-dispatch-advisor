@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from ..api_models import DashboardResponse
 from ..domain.models import Recommendation
+from ..geography import TravelEstimateService
 from ..optimization.contracts import OptimizationEngine, OptimizationRequest
 from ..optimization.deterministic_engine import DeterministicOptimizationEngine
 from ..recommendations import dashboard_summary
@@ -22,12 +23,14 @@ class RecommendationService:
         crews: CrewService,
         assignments: AssignmentService,
         optimization_engine: OptimizationEngine | None = None,
+        travel_estimates: TravelEstimateService | None = None,
     ) -> None:
         self._active_scenario_id = active_scenario_id
         self._incidents = incidents
         self._crews = crews
         self._assignments = assignments
         self._optimization_engine = optimization_engine or DeterministicOptimizationEngine()
+        self._travel_estimates = travel_estimates
 
     def dashboard(self) -> DashboardResponse:
         summary = dashboard_summary(
@@ -45,11 +48,16 @@ class RecommendationService:
         if not incidents:
             raise EntityNotFoundError("Incident", incident_id)
 
+        incident = incidents[0]
+        crews = self._crews.list()
+        if self._travel_estimates is not None:
+            crews = self._travel_estimates.crews_for_incident(crews, incident)
+
         return self._optimization_engine.recommend(
             OptimizationRequest(
                 scenario_id=self._active_scenario_id(),
-                incident=incidents[0],
-                crews=self._crews.list(),
+                incident=incident,
+                crews=crews,
                 assignments=self._assignments.list_active(),
             )
         )

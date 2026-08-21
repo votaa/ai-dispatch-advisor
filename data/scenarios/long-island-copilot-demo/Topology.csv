@@ -1,0 +1,64 @@
+asset_id,asset_type,feeder,parent_asset_id,region,normal_status
+SUB-QN-001,substation,FDR-QN-01,,Queens-Nassau,energized
+SW-QN-001,switch,FDR-QN-01,SUB-QN-001,Queens-Nassau,closed
+TR-QN-001,transformer,FDR-QN-01,SW-QN-001,Queens-Nassau,energized
+SUB-QN-002,substation,FDR-QN-04,,Queens-Nassau,energized
+SW-QN-002,switch,FDR-QN-04,SUB-QN-002,Queens-Nassau,closed
+TR-QN-002,transformer,FDR-QN-04,SW-QN-002,Queens-Nassau,energized
+SUB-QN-003,substation,FDR-QN-05,,Queens-Nassau,energized
+SW-QN-003,switch,FDR-QN-05,SUB-QN-003,Queens-Nassau,closed
+TR-QN-003,transformer,FDR-QN-05,SW-QN-003,Queens-Nassau,energized
+SUB-QN-004,substation,FDR-QN-19,,Queens-Nassau,energized
+SW-QN-004,switch,FDR-QN-19,SUB-QN-004,Queens-Nassau,closed
+TR-QN-004,transformer,FDR-QN-19,SW-QN-004,Queens-Nassau,energized
+SUB-QN-005,substation,FDR-QN-35,,Queens-Nassau,energized
+SW-QN-005,switch,FDR-QN-35,SUB-QN-005,Queens-Nassau,closed
+TR-QN-005,transformer,FDR-QN-35,SW-QN-005,Queens-Nassau,energized
+SUB-CN-001,substation,FDR-CN-02,,Central-Nassau,energized
+SW-CN-001,switch,FDR-CN-02,SUB-CN-001,Central-Nassau,closed
+TR-CN-001,transformer,FDR-CN-02,SW-CN-001,Central-Nassau,energized
+SUB-CN-002,substation,FDR-CN-07,,Central-Nassau,energized
+SW-CN-002,switch,FDR-CN-07,SUB-CN-002,Central-Nassau,closed
+TR-CN-002,transformer,FDR-CN-07,SW-CN-002,Central-Nassau,energized
+SUB-CN-003,substation,FDR-CN-08,,Central-Nassau,energized
+SW-CN-003,switch,FDR-CN-08,SUB-CN-003,Central-Nassau,closed
+TR-CN-003,transformer,FDR-CN-08,SW-CN-003,Central-Nassau,energized
+SUB-CN-004,substation,FDR-CN-09,,Central-Nassau,energized
+SW-CN-004,switch,FDR-CN-09,SUB-CN-004,Central-Nassau,closed
+TR-CN-004,transformer,FDR-CN-09,SW-CN-004,Central-Nassau,energized
+SUB-CN-005,substation,FDR-CN-10,,Central-Nassau,energized
+SW-CN-005,switch,FDR-CN-10,SUB-CN-005,Central-Nassau,closed
+TR-CN-005,transformer,FDR-CN-10,SW-CN-005,Central-Nassau,energized
+SUB-CN-006,substation,FDR-CN-12,,Central-Nassau,energized
+SW-CN-006,switch,FDR-CN-12,SUB-CN-006,Central-Nassau,closed
+TR-CN-006,transformer,FDR-CN-12,SW-CN-006,Central-Nassau,energized
+SUB-CN-007,substation,FDR-CN-33,,Central-Nassau,energized
+SW-CN-007,switch,FDR-CN-33,SUB-CN-007,Central-Nassau,closed
+TR-CN-007,transformer,FDR-CN-33,SW-CN-007,Central-Nassau,energized
+SUB-CN-008,substation,FDR-CN-35,,Central-Nassau,energized
+SW-CN-008,switch,FDR-CN-35,SUB-CN-008,Central-Nassau,closed
+TR-CN-008,transformer,FDR-CN-35,SW-CN-008,Central-Nassau,energized
+SUB-CN-009,substation,FDR-CN-37,,Central-Nassau,energized
+SW-CN-009,switch,FDR-CN-37,SUB-CN-009,Central-Nassau,closed
+TR-CN-009,transformer,FDR-CN-37,SW-CN-009,Central-Nassau,energized
+SUB-CN-010,substation,FDR-CN-39,,Central-Nassau,energized
+SW-CN-010,switch,FDR-CN-39,SUB-CN-010,Central-Nassau,closed
+TR-CN-010,transformer,FDR-CN-39,SW-CN-010,Central-Nassau,energized
+SUB-WS-001,substation,FDR-WS-03,,Western Suffolk,energized
+SW-WS-001,switch,FDR-WS-03,SUB-WS-001,Western Suffolk,closed
+TR-WS-001,transformer,FDR-WS-03,SW-WS-001,Western Suffolk,energized
+SUB-WS-002,substation,FDR-WS-31,,Western Suffolk,energized
+SW-WS-002,switch,FDR-WS-31,SUB-WS-002,Western Suffolk,closed
+TR-WS-002,transformer,FDR-WS-31,SW-WS-002,Western Suffolk,energized
+SUB-WS-003,substation,FDR-WS-32,,Western Suffolk,energized
+SW-WS-003,switch,FDR-WS-32,SUB-WS-003,Western Suffolk,closed
+TR-WS-003,transformer,FDR-WS-32,SW-WS-003,Western Suffolk,energized
+SUB-WS-004,substation,FDR-WS-37,,Western Suffolk,energized
+SW-WS-004,switch,FDR-WS-37,SUB-WS-004,Western Suffolk,closed
+TR-WS-004,transformer,FDR-WS-37,SW-WS-004,Western Suffolk,energized
+SUB-ES-001,substation,FDR-ES-04,,Eastern Suffolk,energized
+SW-ES-001,switch,FDR-ES-04,SUB-ES-001,Eastern Suffolk,closed
+TR-ES-001,transformer,FDR-ES-04,SW-ES-001,Eastern Suffolk,energized
+SUB-ES-002,substation,FDR-ES-08,,Eastern Suffolk,energized
+SW-ES-002,switch,FDR-ES-08,SUB-ES-002,Eastern Suffolk,closed
+TR-ES-002,transformer,FDR-ES-08,SW-ES-002,Eastern Suffolk,energized

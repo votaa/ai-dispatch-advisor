@@ -1,6 +1,7 @@
 import type {
   Assignment,
   Crew,
+  CopilotResponse,
   DashboardSummary,
   Incident,
   Recommendation,
@@ -78,7 +79,7 @@ export const api = {
       reason: note
     }),
   chat: (message: string, incidentId?: string) =>
-    postJson<{ answer: string; source: string; safety_note: string }>("/api/chat", {
+    postJson<CopilotResponse>("/api/chat", {
       message,
       incident_id: incidentId
     })

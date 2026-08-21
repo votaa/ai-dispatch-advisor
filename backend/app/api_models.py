@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import Field
 
@@ -51,8 +51,30 @@ class DashboardResponse(DomainModel):
     data_freshness: str
 
 
+class CopilotEvidence(DomainModel):
+    source_type: Literal[
+        "dashboard",
+        "incident",
+        "crew",
+        "recommendation",
+        "critical_facility",
+        "geography",
+        "travel_estimate",
+    ]
+    record_id: str
+    label: str
+
+
 class ChatResponse(DomainModel):
     answer: str
     intent: str
     source: str
     safety_note: str
+    execution_mode: Literal["local_query", "llm_grounded", "rule_based_fallback"]
+    scenario_id: str
+    generated_at: str
+    data_snapshot_at: Optional[str] = None
+    provider: Optional[str] = None
+    model: Optional[str] = None
+    warning: Optional[str] = None
+    evidence: list[CopilotEvidence] = Field(default_factory=list)

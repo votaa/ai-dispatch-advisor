@@ -3,11 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .. import data_loader, decision_store
+from ..copilot_config import CopilotConfig
+from ..copilot_provider import CopilotProvider, configured_provider
+from ..geography import GeographyRegistry, TravelEstimateService
 from ..optimization.deterministic_engine import DeterministicOptimizationEngine
 from ..optimization.contracts import OptimizationEngine
 from .assignment_service import AssignmentService
 from .copilot_service import CopilotService
 from .context_service import OperationalContextService
+from .copilot_context_service import CopilotContextBuilder
 from .crew_service import CrewService
 from .decision_service import DecisionService
 from .incident_service import IncidentService
@@ -25,10 +29,21 @@ class ApplicationServices:
     scenarios: ScenarioManagementService
     copilot: CopilotService
     context: OperationalContextService
+    geography: GeographyRegistry
+    travel_estimates: TravelEstimateService
 
 
-def build_services(optimization_engine: OptimizationEngine | None = None) -> ApplicationServices:
+def build_services(
+    optimization_engine: OptimizationEngine | None = None,
+    *,
+    copilot_config: CopilotConfig | None = None,
+    copilot_provider: CopilotProvider | None = None,
+) -> ApplicationServices:
     optimization_engine = optimization_engine or DeterministicOptimizationEngine()
+    copilot_config = copilot_config or CopilotConfig.from_env()
+    copilot_provider = copilot_provider or configured_provider(copilot_config)
+    geography = GeographyRegistry.from_csv()
+    travel_estimates = TravelEstimateService(geography)
     assignments = AssignmentService(
         active_scenario_id=data_loader.get_active_scenario,
         baseline_assignments=data_loader.assignments,
@@ -53,6 +68,7 @@ def build_services(optimization_engine: OptimizationEngine | None = None) -> App
         crews=crews,
         assignments=assignments,
         optimization_engine=optimization_engine,
+        travel_estimates=travel_estimates,
     )
     decisions = DecisionService(
         active_scenario_id=data_loader.get_active_scenario,
@@ -66,11 +82,31 @@ def build_services(optimization_engine: OptimizationEngine | None = None) -> App
         active_scenario_id=data_loader.get_active_scenario,
         set_active_scenario=data_loader.set_active_scenario,
     )
-    copilot = CopilotService(incidents=incidents, recommendations=recommendations)
     context = OperationalContextService(
         weather_rows=data_loader.weather,
         critical_facility_rows=data_loader.critical_facilities,
         topology_rows=data_loader.topology,
+    )
+    copilot_context = CopilotContextBuilder(
+        active_scenario_id=data_loader.get_active_scenario,
+        incidents=incidents,
+        crews=crews,
+        recommendations=recommendations,
+        context=context,
+        travel_estimates=travel_estimates,
+        max_records=copilot_config.max_context_records,
+    )
+    copilot = CopilotService(
+        active_scenario_id=data_loader.get_active_scenario,
+        incidents=incidents,
+        crews=crews,
+        recommendations=recommendations,
+        context=context,
+        geography=geography,
+        travel_estimates=travel_estimates,
+        config=copilot_config,
+        context_builder=copilot_context,
+        provider=copilot_provider,
     )
     return ApplicationServices(
         assignments=assignments,
@@ -81,6 +117,8 @@ def build_services(optimization_engine: OptimizationEngine | None = None) -> App
         scenarios=scenarios,
         copilot=copilot,
         context=context,
+        geography=geography,
+        travel_estimates=travel_estimates,
     )
 
 

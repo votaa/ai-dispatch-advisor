@@ -149,6 +149,22 @@ python scripts/generate_scenario.py \
 
 The approved crew-type distribution scales proportionally to the requested crew count. Assigned incidents are calculated from `--assignment-rate`, which defaults to `0.05` (5%). Use `--dual-tree-incidents` to specify how many assigned incidents receive an additional TREE crew. For example, 1,200 incidents at the default assignment rate produce 60 assigned incidents; specifying three dual-TREE incidents produces 63 assignment records.
 
+POC-002 adds a bounded `copilot-demo` preset. It uses the local County/Township/Village registry and prints geographic and crew-travel samples without writing files:
+
+```bash
+backend/.venv/bin/python scripts/generate_scenario.py \
+  --preset copilot-demo \
+  --scenario-id long-island-copilot-demo \
+  --start-date 2026-08-21 \
+  --preview-rows 5
+```
+
+Do not add `--write` until the dry-run records have been reviewed. The preset never overwrites an existing scenario folder.
+
+To enable grounded POC Copilot synthesis, copy the server-side values from `backend/.env.example` into the backend runtime environment. The POC uses Ollama Cloud's direct hosted API model identifier, `gpt-oss:120b`; the local Ollama proxy uses the distinct `gpt-oss:120b-cloud` identifier. Provider, model, API root, timeout, temperature, prompt version, context limit, and fallback are all configurable. Set `AIDA_COPILOT_ENABLED=true` and provide `AIDA_COPILOT_API_KEY`. Never use a `VITE_` variable or otherwise expose the key to frontend code. When the provider is disabled, unconfigured, timed out, or unavailable, synthesis questions visibly use the rule-based fallback; supported factual questions continue to use local scenario services without a model call.
+
+After exporting the server-side values, verify the configured model and one non-streaming chat call with `backend/.venv/bin/python scripts/smoke_copilot.py`. The smoke test reports only provider, model, and response length; it never prints the key or response content.
+
 Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`.
 
 By default, 35% of crews start at an approved home facility and the rest use a plain municipality name to represent their last completed job. Adjust that mix with `--start-day-location-rate`. Internal, LKP, WW, and CG crews use the Hewlett, Hicksville, Brentwood, or Riverhead service location for their region; TREE crews use the corresponding Vegetation Staging Area; and MUA/CNTR crews use the configured RDA MUA locations. No generic municipality-based `Staging Area` names are generated.

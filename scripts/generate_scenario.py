@@ -23,9 +23,13 @@ from app.scenario_generator import (  # noqa: E402
     INCIDENT_HEADERS,
     TOPOLOGY_HEADERS,
     WEATHER_HEADERS,
+    COPILOT_DEMO_SCENARIO_ID,
+    COPILOT_DEMO_SEED,
+    generate_copilot_demo_scenario,
     generate_scenario,
     write_scenario,
 )
+from app.geography import GeographyRegistry, TravelEstimateService  # noqa: E402
 
 
 def _csv_preview(headers: list[str], rows: list[dict], limit: int) -> str:
@@ -39,6 +43,12 @@ def _csv_preview(headers: list[str], rows: list[dict], limit: int) -> str:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Generate protected synthetic AI Dispatch Advisor scenario data.")
     parser.add_argument("--scenario-id", required=True, help="Lowercase scenario directory name")
+    parser.add_argument(
+        "--preset",
+        choices=("standard", "copilot-demo"),
+        default="standard",
+        help="Use the standard configurable generator or the bounded POC-002 Copilot fixture",
+    )
     parser.add_argument("--start-date", type=date.fromisoformat, default=date.today())
     parser.add_argument("--end-date", type=date.fromisoformat)
     parser.add_argument("--incidents", type=int, default=2000)
@@ -50,7 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         help="Fixed facility count for each region; omit to use 4 percent of each region's incident count",
     )
-    parser.add_argument("--seed", type=int, default=20260810)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        help="Deterministic seed; defaults to the selected preset's stable seed",
+    )
     parser.add_argument(
         "--start-day-location-rate",
         type=float,
@@ -65,18 +79,31 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    scenario = generate_scenario(
-        scenario_id=args.scenario_id,
-        start_date=args.start_date,
-        end_date=args.end_date,
-        incident_count=args.incidents,
-        crew_count=args.crews,
-        assignment_rate=args.assignment_rate,
-        dual_tree_incidents=args.dual_tree_incidents,
-        critical_facilities_per_region=args.critical_facilities_per_region,
-        seed=args.seed,
-        start_day_location_rate=args.start_day_location_rate,
-    )
+    if args.preset == "copilot-demo":
+        if args.scenario_id != COPILOT_DEMO_SCENARIO_ID:
+            raise SystemExit(
+                "The copilot-demo preset requires --scenario-id "
+                f"{COPILOT_DEMO_SCENARIO_ID}"
+            )
+        scenario = generate_copilot_demo_scenario(
+            scenario_id=args.scenario_id,
+            start_date=args.start_date,
+            seed=args.seed if args.seed is not None else COPILOT_DEMO_SEED,
+        )
+    else:
+        scenario = generate_scenario(
+            scenario_id=args.scenario_id,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            incident_count=args.incidents,
+            crew_count=args.crews,
+            assignment_rate=args.assignment_rate,
+            dual_tree_incidents=args.dual_tree_incidents,
+            critical_facilities_per_region=args.critical_facilities_per_region,
+            seed=args.seed if args.seed is not None else 20260810,
+            start_day_location_rate=args.start_day_location_rate,
+        )
+    print(f"Preset: {args.preset}")
     print(json.dumps(scenario.summary(), indent=2))
     print("\nCrews.csv preview")
     print(_csv_preview(CREW_HEADERS, scenario.crews, args.preview_rows))
@@ -92,6 +119,58 @@ def main() -> None:
     print(_csv_preview(TOPOLOGY_HEADERS, scenario.topology, args.preview_rows))
     print("\nHistoricalRepairs.csv preview")
     print(_csv_preview(HISTORICAL_REPAIR_HEADERS, scenario.historical_repairs, args.preview_rows))
+    if args.preset == "copilot-demo":
+        registry = GeographyRegistry.from_csv()
+        travel_estimates = TravelEstimateService(registry)
+        geography_rows = []
+        for incident in scenario.incidents[: args.preview_rows]:
+            location = registry.require(incident["municipality"])
+            geography_rows.append(
+                {
+                    "incident_id": incident["incident_id"],
+                    "county": location.county,
+                    "township": location.township,
+                    "village": location.village,
+                }
+            )
+        print("\nGeography registry preview")
+        print(
+            _csv_preview(
+                ["incident_id", "county", "township", "village"],
+                geography_rows,
+                args.preview_rows,
+            )
+        )
+        anchor = next(
+            incident
+            for incident in scenario.incidents
+            if incident["municipality"] == "Arverne"
+        )
+        travel_rows = []
+        for crew in scenario.crews[: args.preview_rows]:
+            estimate = travel_estimates.estimate(
+                origin_name=crew["current_location"],
+                destination_name=anchor["municipality"],
+                destination_latitude=anchor["latitude"],
+                destination_longitude=anchor["longitude"],
+            )
+            travel_rows.append(
+                {
+                    "crew_id": crew["crew_id"],
+                    "origin": estimate.origin if estimate else "unavailable",
+                    "destination": estimate.destination if estimate else "unavailable",
+                    "road_miles": estimate.estimated_road_miles if estimate else "",
+                    "travel_minutes": estimate.estimated_travel_minutes if estimate else "",
+                }
+            )
+        print("\nTravel estimate preview for Arverne incident")
+        print(
+            _csv_preview(
+                ["crew_id", "origin", "destination", "road_miles", "travel_minutes"],
+                travel_rows,
+                args.preview_rows,
+            )
+        )
     if args.write:
         print(f"\nCreated {write_scenario(scenario, args.output_root)}")
     else:

@@ -1,0 +1,8 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-20260821-0001,ESD-20260821-0001,CNTR-3320,active,2026-08-21T08:52:00-04:00,Repair crew assigned to primary restoration
+ASG-20260821-0002,ESD-20260821-0005,6395,active,2026-08-21T08:15:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260821-0003,ESD-20260821-0016,6865,active,2026-08-21T08:53:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260821-0004,ESD-20260821-0017,2686,active,2026-08-21T08:11:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260821-0005,ESD-20260821-0022,4729,active,2026-08-21T08:00:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260821-0006,ESD-20260821-0023,CNTR-1117,active,2026-08-21T08:33:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260821-0007,ESD-20260821-0023,TREE-1403,active,2026-08-21T08:54:00-04:00,Tree crew paired with repair crew to clear primary conductors

@@ -8,14 +8,18 @@ from pathlib import Path
 import pytest
 
 from app.scenario_generator import (
+    COPILOT_DEMO_CREW_COUNT,
+    COPILOT_DEMO_INCIDENT_COUNT,
     MUA_CONTRACTOR_LOCATIONS,
     SERVICE_LOCATIONS,
     VEGETATION_LOCATIONS,
     REGIONS,
+    generate_copilot_demo_scenario,
     generate_scenario,
     load_municipalities,
     write_scenario,
 )
+from app.geography import GeographyRegistry
 from app.scenario_service import ScenarioService
 
 
@@ -196,3 +200,30 @@ def test_generator_refuses_to_replace_base_or_existing_output(tmp_path: Path) ->
     write_scenario(scenario, tmp_path)
     with pytest.raises(FileExistsError):
         write_scenario(scenario, tmp_path)
+
+
+def test_copilot_demo_preset_is_bounded_and_geographically_complete() -> None:
+    scenario = generate_copilot_demo_scenario(start_date=date(2026, 8, 21))
+    registry = GeographyRegistry.from_csv()
+
+    assert scenario.scenario_id == "long-island-copilot-demo"
+    assert len(scenario.incidents) == COPILOT_DEMO_INCIDENT_COUNT
+    assert len(scenario.crews) == COPILOT_DEMO_CREW_COUNT
+    assert {registry.require(row["municipality"]).county for row in scenario.incidents} == {
+        "Nassau",
+        "Suffolk",
+        "Queens",
+    }
+    assert all(registry.resolve(row["municipality"]) for row in scenario.incidents)
+    assert all(registry.resolve(row["current_location"]) for row in scenario.crews)
+    assert {row["status"] for row in scenario.crews} == {"available", "assigned"}
+    assert any(row["hazard"] == "none" for row in scenario.incidents)
+    assert len({row["hazard"] for row in scenario.incidents}) >= 4
+    assert any(row["critical_facility"] == "true" for row in scenario.incidents)
+    arverne = next(row for row in scenario.incidents if row["municipality"] == "Arverne")
+    assert arverne["required_skill"] == "line"
+    assert any(
+        row["facility_name"] == "Arverne Emergency Services Center"
+        and row["feeder"] == arverne["feeder"]
+        for row in scenario.critical_facilities
+    )

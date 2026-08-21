@@ -573,6 +573,63 @@ describe("application states and scenario switching", () => {
     expect(screen.getByRole("button", { name: "Ask Copilot" })).toBeTruthy();
   });
 
+  it("shows Copilot execution mode, snapshot, and evidence metadata", async () => {
+    apiMocks.chat.mockResolvedValue({
+      answer: "INC-1001 is the local top priority.",
+      intent: "priority_focus",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "base",
+      generated_at: "2026-08-21T12:00:00Z",
+      data_snapshot_at: "2026-08-21T11:45:00Z",
+      provider: null,
+      model: null,
+      warning: null,
+      evidence: [
+        { source_type: "incident", record_id: "INC-1001", label: "Millbrook" }
+      ]
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(await screen.findByText("INC-1001 is the local top priority.")).toBeTruthy();
+    expect(screen.getByText("Local scenario query")).toBeTruthy();
+    expect(screen.getByText("Scenario: base")).toBeTruthy();
+    expect(screen.getByText("Snapshot: 2026-08-21T11:45:00Z")).toBeTruthy();
+    expect(screen.getByText("Evidence (1)")).toBeTruthy();
+  });
+
+  it("shows an explicit rule-based fallback warning", async () => {
+    apiMocks.chat.mockResolvedValue({
+      answer: "Rule-based storm summary.",
+      intent: "scenario_summary",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "rule_based_fallback",
+      scenario_id: "base",
+      generated_at: "2026-08-21T12:00:00Z",
+      data_snapshot_at: null,
+      provider: null,
+      model: null,
+      warning: "AI provider unavailable; using the rule-based scenario summary.",
+      evidence: []
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(await screen.findByText("Rule-based fallback")).toBeTruthy();
+    expect(
+      screen.getByText("AI provider unavailable; using the rule-based scenario summary.")
+    ).toBeTruthy();
+  });
+
   it("keeps the current scenario selected when activation fails", async () => {
     apiMocks.auditEvents.mockResolvedValue([]);
     apiMocks.activateScenario.mockRejectedValue(new Error("Scenario validation failed"));

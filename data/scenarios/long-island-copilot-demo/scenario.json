@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "long-island-copilot-demo",
+  "name": "Generated Scenario long-island-copilot-demo",
+  "description": "Synthetic Long Island outage dispatch scenario generated from approved seed rules.",
+  "event_type": "storm",
+  "expected_conditions": [
+    "Synthetic Long Island incidents",
+    "Region-coded crews",
+    "Human dispatcher approval required"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  }
+}

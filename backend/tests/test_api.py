@@ -61,6 +61,9 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
     assert paths["/api/optimize"]["post"]["responses"]["200"]["content"]["application/json"]["schema"][
         "$ref"
     ].endswith("/Recommendation-Output")
+    assert paths["/api/chat"]["post"]["responses"]["200"]["content"]["application/json"]["schema"][
+        "$ref"
+    ].endswith("/ChatResponse")
     assert paths["/api/recommendation-actions"]["post"]["responses"]["200"]["content"]["application/json"][
         "schema"
     ]["$ref"].endswith("/RecommendationDecision")
@@ -80,6 +83,16 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
         "ExplanationConstraint",
         "ExcludedCandidate",
     }.issubset(schema["components"]["schemas"])
+    assert {
+        "answer",
+        "intent",
+        "source",
+        "safety_note",
+        "execution_mode",
+        "scenario_id",
+        "generated_at",
+        "evidence",
+    }.issubset(schema["components"]["schemas"]["ChatResponse"]["properties"])
 
 
 def test_core_requests_reject_undeclared_fields() -> None:
@@ -193,6 +206,21 @@ def test_optimize() -> None:
     response = client.post("/api/optimize", json={})
     assert response.status_code == 200
     assert "recommended_action" in response.json()
+
+
+def test_chat_preserves_existing_fields_and_adds_local_evidence_metadata() -> None:
+    response = client.post("/api/chat", json={"message": "How many crews are available?"})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["answer"]
+    assert payload["intent"] == "crew_status"
+    assert payload["source"] == "synthetic-demo-data"
+    assert payload["safety_note"]
+    assert payload["execution_mode"] == "local_query"
+    assert payload["scenario_id"] == "base"
+    assert payload["generated_at"]
+    assert payload["evidence"][0]["source_type"] == "dashboard"
 
 
 def test_recommendation_action_records_audit_event() -> None:

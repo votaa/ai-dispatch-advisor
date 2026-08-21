@@ -70,6 +70,34 @@ export type DashboardSummary = {
   data_freshness: string;
 };
 
+export type CopilotEvidence = {
+  source_type:
+    | "dashboard"
+    | "incident"
+    | "crew"
+    | "recommendation"
+    | "critical_facility"
+    | "geography"
+    | "travel_estimate";
+  record_id: string;
+  label: string;
+};
+
+export type CopilotResponse = {
+  answer: string;
+  intent: string;
+  source: string;
+  safety_note: string;
+  execution_mode: "local_query" | "llm_grounded" | "rule_based_fallback";
+  scenario_id: string;
+  generated_at: string;
+  data_snapshot_at: string | null;
+  provider: string | null;
+  model: string | null;
+  warning: string | null;
+  evidence: CopilotEvidence[];
+};
+
 export type ScenarioEventType = "blue_sky" | "storm" | "crew_shortage" | "critical_facility";
 
 export type ScenarioDescriptor = {

@@ -17,6 +17,7 @@ import type { ElementType, ReactNode } from "react";
 import { api } from "./api";
 import type {
   Assignment,
+  CopilotResponse,
   Crew,
   DashboardSummary,
   Incident,
@@ -27,7 +28,12 @@ import type {
 } from "./types";
 
 type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
-type ChatTurn = { question: string; answer: string; error?: boolean };
+type ChatTurn = {
+  question: string;
+  answer: string;
+  error?: boolean;
+  metadata?: Omit<CopilotResponse, "answer">;
+};
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
@@ -173,7 +179,8 @@ function App() {
     setChatLoading(true);
     try {
       const response = await api.chat(question, selectedIncidentId);
-      setChatTurns((turns) => [{ question, answer: response.answer }, ...turns]);
+      const { answer, ...metadata } = response;
+      setChatTurns((turns) => [{ question, answer, metadata }, ...turns]);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Copilot request failed";
       setChatTurns((turns) => [{ question, answer: `Unable to reach Copilot: ${message}`, error: true }, ...turns]);
@@ -589,6 +596,32 @@ function App() {
                   <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>
                     <strong>{turn.question}</strong>
                     <p>{turn.answer}</p>
+                    {turn.metadata && (
+                      <div className="copilot-metadata">
+                        <span className={`copilot-mode copilot-mode-${turn.metadata.execution_mode}`}>
+                          {turn.metadata.execution_mode === "local_query"
+                            ? "Local scenario query"
+                            : turn.metadata.execution_mode === "llm_grounded"
+                              ? `Grounded AI${turn.metadata.model ? ` · ${turn.metadata.model}` : ""}`
+                              : "Rule-based fallback"}
+                        </span>
+                        <span>Scenario: {turn.metadata.scenario_id}</span>
+                        {turn.metadata.data_snapshot_at && <span>Snapshot: {turn.metadata.data_snapshot_at}</span>}
+                        {turn.metadata.warning && <p className="copilot-warning">{turn.metadata.warning}</p>}
+                        {turn.metadata.evidence.length > 0 && (
+                          <details>
+                            <summary>Evidence ({turn.metadata.evidence.length})</summary>
+                            <ul>
+                              {turn.metadata.evidence.map((item) => (
+                                <li key={`${item.source_type}-${item.record_id}`}>
+                                  {item.label} <code>{item.record_id}</code>
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
+                        )}
+                      </div>
+                    )}
                   </article>
                 ))
               )}

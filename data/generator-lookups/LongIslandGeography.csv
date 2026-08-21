@@ -1,0 +1,25 @@
+region,municipality,locality_type,latitude,longitude,county,township,village,aliases,reference_source
+Queens-Nassau,Arverne,Queens neighborhood,40.5912,-73.7957,Queens,Rockaway Peninsula,Arverne,,POC-002-approved-registry-v1
+Queens-Nassau,Edgemere,Queens neighborhood,40.5965,-73.7696,Queens,Rockaway Peninsula,Edgemere,,POC-002-approved-registry-v1
+Queens-Nassau,Far Rockaway,Queens neighborhood,40.6034,-73.7551,Queens,Rockaway Peninsula,Far Rockaway,,POC-002-approved-registry-v1
+Queens-Nassau,Rockaway Park,Queens neighborhood,40.5807,-73.8371,Queens,Rockaway Peninsula,Rockaway Park,Rockaway Beach,POC-002-approved-registry-v1
+Queens-Nassau,Hewlett,hamlet and CDP,40.6432,-73.6957,Nassau,Hempstead,Hewlett,Hewlett Service Center,POC-002-approved-registry-v1
+Queens-Nassau,Cedarhurst,incorporated village,40.6229,-73.7243,Nassau,Hempstead,Cedarhurst,,POC-002-approved-registry-v1
+Queens-Nassau,Valley Stream,incorporated village,40.6643,-73.7085,Nassau,Hempstead,Valley Stream,,POC-002-approved-registry-v1
+Central-Nassau,Mineola,incorporated village,40.7493,-73.6407,Nassau,North Hempstead,Mineola,,POC-002-approved-registry-v1
+Central-Nassau,Hicksville,hamlet and CDP,40.7684,-73.5251,Nassau,Oyster Bay,Hicksville,Hicksville Operations Yard,POC-002-approved-registry-v1
+Central-Nassau,East Meadow,hamlet and CDP,40.7139,-73.5590,Nassau,Hempstead,East Meadow,,POC-002-approved-registry-v1
+Central-Nassau,Westbury,incorporated village,40.7557,-73.5876,Nassau,North Hempstead,Westbury,,POC-002-approved-registry-v1
+Central-Nassau,Hempstead,incorporated village,40.7062,-73.6187,Nassau,Hempstead,Hempstead,,POC-002-approved-registry-v1
+Central-Nassau,Massapequa,hamlet and CDP,40.6807,-73.4743,Nassau,Oyster Bay,Massapequa,,POC-002-approved-registry-v1
+Western Suffolk,Babylon,incorporated village,40.6957,-73.3257,Suffolk,Babylon,Babylon,,POC-002-approved-registry-v1
+Western Suffolk,Brentwood,hamlet and CDP,40.7812,-73.2462,Suffolk,Islip,Brentwood,Brentwood Operations Yard,POC-002-approved-registry-v1
+Western Suffolk,Melville,hamlet and CDP,40.7934,-73.4151,Suffolk,Huntington,Melville,,POC-002-approved-registry-v1
+Western Suffolk,Smithtown,hamlet and CDP,40.8559,-73.2007,Suffolk,Smithtown,Smithtown,,POC-002-approved-registry-v1
+Western Suffolk,Bay Shore,hamlet and CDP,40.7251,-73.2454,Suffolk,Islip,Bay Shore,,POC-002-approved-registry-v1
+Eastern Suffolk,Riverhead,hamlet and CDP,40.9170,-72.6620,Suffolk,Riverhead,Riverhead,Riverhead Operations Yard,POC-002-approved-registry-v1
+Eastern Suffolk,Yaphank,hamlet and CDP,40.8368,-72.9170,Suffolk,Brookhaven,Yaphank,,POC-002-approved-registry-v1
+Eastern Suffolk,Westhampton Beach,incorporated village,40.8098,-72.6454,Suffolk,Southampton,Westhampton Beach,,POC-002-approved-registry-v1
+Eastern Suffolk,Southampton,incorporated village,40.8843,-72.3895,Suffolk,Southampton,Southampton,,POC-002-approved-registry-v1
+Eastern Suffolk,Montauk,hamlet and CDP,41.0359,-71.9545,Suffolk,East Hampton,Montauk,,POC-002-approved-registry-v1
+Eastern Suffolk,Greenport,incorporated village,41.1034,-72.3593,Suffolk,Southold,Greenport,,POC-002-approved-registry-v1

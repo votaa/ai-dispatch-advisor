@@ -1,0 +1,25 @@
+incident_id,region,municipality,feeder,severity,status,customers_out,critical_facility,hazard,required_skill,age_minutes,latitude,longitude,etr
+ESD-20260821-0001,Western Suffolk,Bay Shore,FDR-WS-37,critical,assigned,2842,false,broken crossarm,line,38,40.72045,-73.24808,2026-08-21T20:15:00-04:00
+ESD-20260821-0002,Queens-Nassau,Arverne,FDR-QN-01,critical,unassigned,5000,true,downed wire,line,180,40.5912,-73.7957,2026-08-21T20:15:00-04:00
+ESD-20260821-0003,Central-Nassau,Hicksville,FDR-CN-02,high,unassigned,1250,false,transformer fire,line,95,40.7684,-73.5251,2026-08-21T16:00:00-04:00
+ESD-20260821-0004,Western Suffolk,Melville,FDR-WS-03,medium,unassigned,420,false,tree limb,vegetation,65,40.7934,-73.4151,2026-08-21T19:45:00-04:00
+ESD-20260821-0005,Central-Nassau,Hempstead,FDR-CN-09,high,assigned,2028,false,feeder lockout,line,136,40.71039,-73.62638,2026-08-21T14:15:00-04:00
+ESD-20260821-0006,Eastern Suffolk,Riverhead,FDR-ES-04,low,unassigned,18,false,none,general,20,40.917,-72.662,2026-08-21T11:00:00-04:00
+ESD-20260821-0007,Western Suffolk,Babylon,FDR-WS-31,high,unassigned,244,false,downed wire,general,63,40.697,-73.33764,2026-08-21T10:15:00-04:00
+ESD-20260821-0008,Central-Nassau,Hicksville,FDR-CN-12,critical,unassigned,421,false,transformer fire,line,107,40.76293,-73.53286,2026-08-21T13:45:00-04:00
+ESD-20260821-0009,Central-Nassau,Mineola,FDR-CN-39,high,unassigned,64,false,burning wire,general,138,40.75897,-73.65042,2026-08-21T18:30:00-04:00
+ESD-20260821-0010,Central-Nassau,Massapequa,FDR-CN-33,low,unassigned,43,false,none,general,167,40.68809,-73.48471,2026-08-21T12:00:00-04:00
+ESD-20260821-0011,Central-Nassau,East Meadow,FDR-CN-35,high,unassigned,307,true,burning wire,general,113,40.70665,-73.56644,2026-08-21T12:00:00-04:00
+ESD-20260821-0012,Central-Nassau,Mineola,FDR-CN-08,medium,unassigned,59,false,partial outage,general,38,40.74965,-73.64489,2026-08-21T19:45:00-04:00
+ESD-20260821-0013,Central-Nassau,Westbury,FDR-CN-09,high,unassigned,955,false,underground cable fault,underground,46,40.75003,-73.59029,2026-08-21T15:45:00-04:00
+ESD-20260821-0014,Central-Nassau,Hempstead,FDR-CN-07,high,unassigned,310,false,burning wire,general,8,40.71319,-73.62012,2026-08-21T16:45:00-04:00
+ESD-20260821-0015,Central-Nassau,Mineola,FDR-CN-10,high,unassigned,971,false,underground cable fault,underground,83,40.7544,-73.62978,2026-08-21T17:00:00-04:00
+ESD-20260821-0016,Queens-Nassau,Edgemere,FDR-QN-19,critical,assigned,98,false,transformer fire,line,124,40.59506,-73.77755,2026-08-21T21:00:00-04:00
+ESD-20260821-0017,Central-Nassau,Hicksville,FDR-CN-07,critical,assigned,1897,false,equipment failure,general,22,40.77051,-73.52349,2026-08-21T13:15:00-04:00
+ESD-20260821-0018,Western Suffolk,Brentwood,FDR-WS-32,high,unassigned,225,false,burning wire,general,143,40.77188,-73.24923,2026-08-21T14:00:00-04:00
+ESD-20260821-0019,Eastern Suffolk,Yaphank,FDR-ES-08,medium,unassigned,245,false,partial outage,general,18,40.83436,-72.91017,2026-08-21T10:00:00-04:00
+ESD-20260821-0020,Central-Nassau,Westbury,FDR-CN-37,high,unassigned,1271,false,tree on primary,vegetation,129,40.74431,-73.59694,2026-08-21T19:45:00-04:00
+ESD-20260821-0021,Queens-Nassau,Hewlett,FDR-QN-35,low,unassigned,1,false,damaged service drop,low_voltage,175,40.63582,-73.69225,2026-08-21T10:30:00-04:00
+ESD-20260821-0022,Eastern Suffolk,Riverhead,FDR-ES-08,critical,assigned,2149,false,partial outage,general,107,40.91957,-72.65563,2026-08-21T12:00:00-04:00
+ESD-20260821-0023,Queens-Nassau,Valley Stream,FDR-QN-05,high,assigned,1428,false,tree on primary,vegetation,176,40.67032,-73.70363,2026-08-21T14:15:00-04:00
+ESD-20260821-0024,Queens-Nassau,Rockaway Park,FDR-QN-04,high,unassigned,388,false,broken crossarm,line,34,40.56929,-73.84012,2026-08-21T14:45:00-04:00

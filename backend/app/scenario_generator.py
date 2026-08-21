@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
+from .geography import DEFAULT_GEOGRAPHY_PATH, GeographyRegistry, TravelEstimateService
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "scenario-previews"
@@ -59,6 +61,13 @@ MUA_CONTRACTOR_LOCATIONS = {
 }
 DEFAULT_START_DAY_LOCATION_RATE = 0.35
 DEFAULT_CRITICAL_FACILITY_RATE = 0.04
+COPILOT_DEMO_SCENARIO_ID = "long-island-copilot-demo"
+COPILOT_DEMO_INCIDENT_COUNT = 24
+COPILOT_DEMO_CREW_COUNT = 32
+COPILOT_DEMO_ASSIGNMENT_RATE = 0.25
+COPILOT_DEMO_DUAL_TREE_INCIDENTS = 1
+COPILOT_DEMO_CRITICAL_FACILITIES_PER_REGION = 2
+COPILOT_DEMO_SEED = 20260821
 
 INCIDENT_HEADERS = [
     "incident_id",
@@ -207,8 +216,8 @@ def load_municipalities(path: Path = DEFAULT_LOOKUP_PATH) -> dict[str, list[dict
     with path.open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         expected = ["region", "municipality", "locality_type", "latitude", "longitude"]
-        if reader.fieldnames != expected:
-            raise ValueError(f"Municipality lookup headers must be {expected}")
+        if reader.fieldnames is None or reader.fieldnames[: len(expected)] != expected:
+            raise ValueError(f"Municipality lookup headers must begin with {expected}")
         for row in reader:
             if row["region"] not in REGIONS:
                 raise ValueError(f"Unknown municipality region: {row['region']}")
@@ -674,6 +683,244 @@ def generate_scenario(
     )
     validate_generated_scenario(result, assigned_incident_count, dual_tree_incidents)
     return result
+
+
+def _apply_demo_location(
+    incident: dict[str, Any],
+    locality: dict[str, Any],
+    *,
+    feeder_number: int,
+) -> None:
+    region = locality["region"]
+    incident.update(
+        {
+            "region": region,
+            "municipality": locality["municipality"],
+            "latitude": round(float(locality["latitude"]), 5),
+            "longitude": round(float(locality["longitude"]), 5),
+            "feeder": f"FDR-{REGION_CODES[region]}-{feeder_number:02d}",
+        }
+    )
+
+
+def generate_copilot_demo_scenario(
+    *,
+    scenario_id: str = COPILOT_DEMO_SCENARIO_ID,
+    start_date: date,
+    seed: int = COPILOT_DEMO_SEED,
+    geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
+) -> GeneratedScenario:
+    """Build the bounded, deterministic POC-002 scenario without writing it."""
+
+    scenario = generate_scenario(
+        scenario_id=scenario_id,
+        start_date=start_date,
+        incident_count=COPILOT_DEMO_INCIDENT_COUNT,
+        crew_count=COPILOT_DEMO_CREW_COUNT,
+        assignment_rate=COPILOT_DEMO_ASSIGNMENT_RATE,
+        dual_tree_incidents=COPILOT_DEMO_DUAL_TREE_INCIDENTS,
+        seed=seed,
+        start_day_location_rate=0,
+        critical_facilities_per_region=(
+            COPILOT_DEMO_CRITICAL_FACILITIES_PER_REGION
+        ),
+        lookup_path=geography_path,
+    )
+    municipalities = load_municipalities(geography_path)
+    registry = GeographyRegistry.from_csv(geography_path)
+    travel_estimates = TravelEstimateService(registry)
+    locality_by_name = {
+        row["municipality"]: row
+        for rows in municipalities.values()
+        for row in rows
+    }
+    unassigned = [row for row in scenario.incidents if row["status"] == "unassigned"]
+    profiles = (
+        (
+            "Arverne",
+            {
+                "severity": "critical",
+                "customers_out": 5000,
+                "critical_facility": "true",
+                "hazard": "downed wire",
+                "required_skill": "line",
+                "age_minutes": 180,
+            },
+        ),
+        (
+            "Hicksville",
+            {
+                "severity": "high",
+                "customers_out": 1250,
+                "critical_facility": "false",
+                "hazard": "transformer fire",
+                "required_skill": "line",
+                "age_minutes": 95,
+            },
+        ),
+        (
+            "Melville",
+            {
+                "severity": "medium",
+                "customers_out": 420,
+                "critical_facility": "false",
+                "hazard": "tree limb",
+                "required_skill": "vegetation",
+                "age_minutes": 65,
+            },
+        ),
+        (
+            "Riverhead",
+            {
+                "severity": "low",
+                "customers_out": 18,
+                "critical_facility": "false",
+                "hazard": "none",
+                "required_skill": "general",
+                "age_minutes": 20,
+            },
+        ),
+    )
+    for feeder_number, (locality_name, profile) in enumerate(profiles, start=1):
+        incident = unassigned[feeder_number - 1]
+        _apply_demo_location(
+            incident,
+            locality_by_name[locality_name],
+            feeder_number=feeder_number,
+        )
+        incident.update(profile)
+
+    anchor_incident = unassigned[0]
+    available_general = next(
+        crew
+        for crew in scenario.crews
+        if crew["status"] == "available" and crew["capability"] == "general"
+    )
+    available_line_crews = [
+        crew
+        for crew in scenario.crews
+        if crew["status"] == "available" and crew["capability"] == "line"
+    ]
+    if len(available_line_crews) < 2:
+        raise ValueError("Copilot demo requires at least two available line crews")
+    available_general.update(
+        current_location="Arverne",
+        shift_remaining_hours=12,
+        storm_ready="true",
+    )
+    for index, crew in enumerate(available_line_crews):
+        crew.update(
+            current_location="Cedarhurst" if index == 0 else "Hicksville",
+            shift_remaining_hours=12,
+            storm_ready="true" if index == 0 else "false",
+        )
+
+    for crew in scenario.crews:
+        estimate = travel_estimates.estimate(
+            origin_name=crew["current_location"],
+            destination_name=anchor_incident["municipality"],
+            destination_latitude=float(anchor_incident["latitude"]),
+            destination_longitude=float(anchor_incident["longitude"]),
+        )
+        if estimate is None:
+            raise ValueError(
+                f"Copilot demo crew location is not registered: {crew['current_location']}"
+            )
+        crew["travel_minutes_to_selected_incident"] = (
+            estimate.estimated_travel_minutes
+        )
+
+    rng = random.Random(seed + 1)
+    scenario.critical_facilities = _generate_critical_facilities(
+        scenario.incidents,
+        municipalities,
+        rng,
+        COPILOT_DEMO_CRITICAL_FACILITIES_PER_REGION,
+    )
+    scenario.critical_facilities[0].update(
+        facility_name="Arverne Emergency Services Center",
+        facility_type="emergency_services",
+        region=anchor_incident["region"],
+        municipality=anchor_incident["municipality"],
+        feeder=anchor_incident["feeder"],
+        priority_level="critical",
+    )
+    scenario.topology = _generate_topology(scenario.incidents)
+    validate_generated_scenario(
+        scenario,
+        round(COPILOT_DEMO_INCIDENT_COUNT * COPILOT_DEMO_ASSIGNMENT_RATE),
+        COPILOT_DEMO_DUAL_TREE_INCIDENTS,
+    )
+    validate_copilot_demo_scenario(scenario, registry)
+    return scenario
+
+
+def validate_copilot_demo_scenario(
+    scenario: GeneratedScenario,
+    registry: GeographyRegistry | None = None,
+) -> None:
+    registry = registry or GeographyRegistry.from_csv()
+    incident_locations = [
+        registry.require(str(incident["municipality"]))
+        for incident in scenario.incidents
+    ]
+    for crew in scenario.crews:
+        registry.require(str(crew["current_location"]))
+
+    counties = {record.county for record in incident_locations}
+    if counties != {"Nassau", "Suffolk", "Queens"}:
+        raise ValueError("Copilot demo incidents must cover Nassau, Suffolk, and Queens")
+    if not any(record.township == "Rockaway Peninsula" for record in incident_locations):
+        raise ValueError("Copilot demo must include the Rockaway Peninsula")
+    if not any(incident["hazard"] == "none" for incident in scenario.incidents):
+        raise ValueError("Copilot demo must include a no-hazard incident")
+    if len({incident["hazard"] for incident in scenario.incidents}) < 4:
+        raise ValueError("Copilot demo must include multiple hazard types")
+    if not any(incident["critical_facility"] == "true" for incident in scenario.incidents):
+        raise ValueError("Copilot demo must include a critical-facility incident")
+    statuses = {crew["status"] for crew in scenario.crews}
+    if not {"available", "assigned"}.issubset(statuses):
+        raise ValueError("Copilot demo must include available and assigned crews")
+
+    anchor = next(
+        incident
+        for incident in scenario.incidents
+        if incident["municipality"] == "Arverne"
+        and incident["required_skill"] == "line"
+    )
+    travel_estimates = TravelEstimateService(registry)
+    closer_ineligible = min(
+        (
+            travel_estimates.estimate(
+                origin_name=crew["current_location"],
+                destination_name=anchor["municipality"],
+                destination_latitude=float(anchor["latitude"]),
+                destination_longitude=float(anchor["longitude"]),
+            )
+            for crew in scenario.crews
+            if crew["status"] == "available" and crew["capability"] != "line"
+        ),
+        key=lambda estimate: estimate.estimated_travel_minutes if estimate else 9999,
+    )
+    feasible_line = min(
+        (
+            travel_estimates.estimate(
+                origin_name=crew["current_location"],
+                destination_name=anchor["municipality"],
+                destination_latitude=float(anchor["latitude"]),
+                destination_longitude=float(anchor["longitude"]),
+            )
+            for crew in scenario.crews
+            if crew["status"] == "available" and crew["capability"] == "line"
+        ),
+        key=lambda estimate: estimate.estimated_travel_minutes if estimate else 9999,
+    )
+    if closer_ineligible is None or feasible_line is None:
+        raise ValueError("Copilot demo crew travel contrast could not be calculated")
+    if closer_ineligible.estimated_travel_minutes >= feasible_line.estimated_travel_minutes:
+        raise ValueError(
+            "Copilot demo must include a closer capability-ineligible crew"
+        )
 
 
 def validate_generated_scenario(
