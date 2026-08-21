@@ -155,6 +155,63 @@ By default, 35% of crews start at an approved home facility and the rest use a p
 
 Each run generates all seven scenario CSVs. `Weather.csv` contains one observation per Long Island operating region. By default, `CriticalFacilities.csv` contains facilities equal to 4% of each region's actual incident count, which produces approximately 80 facilities for a 2,000-incident scenario. Use `--critical-facilities-per-region` to override the percentage with a fixed count for every region; for example, `--critical-facilities-per-region 10` produces 40 facilities. `Topology.csv` creates a substation, switch, and transformer chain for every feeder used by incidents or facilities, and `HistoricalRepairs.csv` provides repair-duration examples for every supported incident type in each region. The generator does not copy these supporting files from `base`, so a generated scenario remains geographically consistent when moved into `data/scenarios/`.
 
+### Generate a multi-snapshot storm timeline
+
+The separate timeline generator creates 1–10 complete sibling scenario folders while leaving the single-snapshot generator and application behavior unchanged. Run it without flags to use an interactive wizard. Every prompt shows its default, and a supplied command-line flag skips the corresponding prompt:
+
+```bash
+python scripts/generate_scenario_timeline.py
+```
+
+For automation, use `--no-prompt` and provide a scenario ID. This dry run uses the defaults: five snapshots at 12-hour intervals, 500 crews, 2,000 initial incidents, 5% initially assigned incidents, five dual repair/TREE incidents, 92% final recovery, and new incidents totaling 18% of the initial backlog:
+
+```bash
+python scripts/generate_scenario_timeline.py \
+  --scenario-id august-storm \
+  --start-date 2026-08-10 \
+  --no-prompt
+```
+
+The recovery profiles are `fast` (92%, default), `balanced` (75%), and `severe` (55%). Arrival profiles are `low` (8%), `moderate` (18%, default), and `persistent` (35%). Percentages apply to the initial incident count. Custom profiles accept either decimal shares or whole percentages:
+
+```bash
+python scripts/generate_scenario_timeline.py \
+  --scenario-id custom-storm \
+  --start-date 2026-08-10 \
+  --start-time 06:30 \
+  --snapshots 7 \
+  --hours-apart 8 \
+  --incidents 1200 \
+  --crews 300 \
+  --dual-tree-incidents 3 \
+  --recovery-profile custom \
+  --recovery-target 85 \
+  --arrival-profile custom \
+  --new-incident-share 22 \
+  --arrival-decay 0.55 \
+  --repair-duration-variation 30 \
+  --no-prompt
+```
+
+The timeline generator is also dry-run-first. It prints the resolved configuration, per-snapshot counts, and sample rows from the first and final snapshots without creating directories. After review, add `--write` to stage and validate the complete batch before publishing it under `data/scenario-previews/`, or use `--output-root` for another isolated destination. If any target already exists, no snapshot is created. A five-snapshot run produces:
+
+```text
+data/scenario-previews/
+  august-storm_01/
+  august-storm_02/
+  august-storm_03/
+  august-storm_04/
+  august-storm_05/
+```
+
+Each folder has its own matching `scenario_id`, `scenario.json`, and all seven CSVs. The `_01`–`_10` suffixes are zero-padded so folders sort chronologically. To inspect the sequence in AIDA, copy the complete sibling folders into `data/scenarios/`, refresh the scenario selector, and select them in order. Do not merge their individual CSV files.
+
+Pending incidents progress through `unassigned → assigned → en_route → onsite → energized`. The incident field-work phase is `onsite`; it is never called `active`. The corresponding `Assignments.csv.status` remains `active` throughout every nonterminal incident phase because the current assignment loader recognizes only `active` rows. Crews remain `assigned` while those rows exist. Cleared/completed incidents and inactive assignments are removed from later snapshots, and released crews return to `available` or `off_shift` according to their staggered 16-hours-on/8-hours-rest rotation.
+
+This feature is generator-only. Raw CSVs preserve the detailed operational incident phase, but the current API can display an incident with an active assignment simply as `assigned`. Decisions recorded while one snapshot is selected remain scoped to that snapshot's scenario ID and do not flow into the next folder. Timeline folders are synthetic preview data; production scenarios must be delivered through a controlled deployment process or managed source rather than copied ad hoc from preview output.
+
+The approved design and lifecycle contract are recorded in `docs/900_Delivery/AI_Dispatch_Advisor_Timeline_Generator_Plan.md`.
+
 ## Initial API Surface
 
 ```text
