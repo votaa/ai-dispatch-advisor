@@ -153,6 +153,10 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/902_Implementation_Plan.md` | Committed | Phase status, completed and pending checklist, sequencing, definition of done, delivery risks, and documentation revision cycle |
 | `docs/900_Delivery/903_Release_Management.md` | Committed | Versioning, branching, release types, CI gates, rollback, release notes, and approvals |
 | `docs/900_Delivery/904_Runbook.md` | Committed | Local POC startup, validation, troubleshooting, demo checklist, shutdown, and future runbook areas |
+| `docs/900_Delivery/905_Phase_5_SME_Review_Checklist.md` | Drafted | Dispatch-SME review checklist and evidence gate for Phase 5 behavior |
+| `docs/900_Delivery/906_Phase_6_Closeout.md` | Committed | Phase 6 completion evidence, carry-forward items, and feedback gate |
+| `docs/900_Delivery/907_Phase_7_Implementation_Plan.md` | Drafted | Paused enterprise integration adapter plan and required owner inputs |
+| `docs/900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md` | Drafted | Approval-ready hybrid Copilot POC scope, acceptance suite, sequencing, and safety boundary |
 
 ## Planned Documentation Structure
 

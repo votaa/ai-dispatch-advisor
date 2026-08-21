@@ -44,15 +44,22 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 - Recommendation context
 - Crew summary
 - Critical facility summary
+- Hazard and assignment context
+- County, Township, and Village registry
+- Deterministic crew-to-incident distance and estimated travel time
+- Scenario and data-snapshot timestamps
+- Bounded evidence references and response execution mode
 
 ## Backend and API Dependencies
 
 - `POST /api/chat`
-- Future: AI service endpoint with retrieval context
+- Deterministic local Copilot query service
+- Configurable server-side Copilot provider with Ollama Cloud as the POC default
+- Rule-based fallback service
 
 ## AI and Recommendation Behavior
 
-Current POC is keyword-based. Target implementation should use a governed AI service with retrieved operational context and strict no-action execution boundaries.
+The current POC is keyword-based. The POC-002 target uses deterministic local services for supported factual and calculation questions, a grounded model call for bounded synthesis, and the current rule-based behavior as a visibly labeled fallback. The model must not supply incident, crew, recommendation, geography, distance, travel, customer, or demographic facts from general model knowledge. All modes retain strict no-action execution boundaries.
 
 ## Audit Requirements
 
@@ -68,9 +75,15 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 ## Acceptance Criteria
 
 - Prompt examples are visible
-- Responses vary by common prompt intent
+- Free-form questions and prompt examples are supported
+- Supported factual questions return active-scenario values without calling the model
+- Grounded model responses cite only supplied scenario evidence
+- County, Township, and Village answers resolve through the geographic registry
+- Distance and travel-time answers use the same deterministic values as recommendations
+- Response mode, evidence, data freshness, and advisory safety note are visible
+- Provider failure produces an explicit unavailable warning and rule-based fallback when supported
 - Conversation history is readable
-- Safety note is visible
+- Copilot cannot execute or mutate a dispatch decision or assignment
 
 ## Related Documents
 
@@ -78,3 +91,4 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - [Dispatch Console Specification](../302_Dispatch_Console_Specification.md)
 - [Recommendation Experience](../303_Recommendation_Experience.md)
 - [Explainability and Trust](../304_Explainability_and_Trust.md)
+- [POC-002 AI Copilot Implementation Plan](../../900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md)

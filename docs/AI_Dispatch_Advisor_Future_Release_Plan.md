@@ -5,7 +5,7 @@
 Deliver two releases:
 
 1. **Release 1 — Operational UI and usability:** consistent search, filtering, sorting, reset controls, responsive tables, corrected recommendation layouts, Crew Board filtering, and normalized crew IDs.
-2. **Release 2 — LLM-backed AI Copilot:** replace canned responses with advisory analysis grounded in current dispatch and scenario data.
+2. **Release 2 — LLM-backed AI Copilot:** add a hybrid Copilot that answers supported facts deterministically and uses a configurable model only for grounded advisory synthesis.
 
 ## Delivery Sequencing
 
@@ -70,19 +70,20 @@ Phase 6 subsequently delivered shared incident search, cascading severity and re
 
 - Storm Exceptions uses the full available content width and shared responsive table shell. Shared severity and region facets, counts, sorting, and pagination are implemented; match highlighting, more extensive per-column filters, and Reset behavior remain future Release 1 refinements.
 
-## Release 2 — Real AI Copilot
+## Release 2 — LLM-Backed POC Copilot
+
+The detailed, controlling scope is the [POC-002 AI Copilot implementation plan](900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md). Phase 7 remains paused and is not a dependency for this bounded POC enhancement.
 
 - Retain the existing sample questions as shortcuts while allowing free-form questions.
-- Send Copilot requests through a server-side LLM service; do not expose credentials in the browser.
-- Ground each request in the active scenario and current incidents, crews, recommendations, decisions, hazards, facilities, and ETR data.
-- Replace canned answer matching with generated operational analysis that:
-  - Answers the dispatcher’s actual question.
-  - Distinguishes known data from analysis or uncertainty.
-  - Refuses to fabricate unavailable information.
-  - Preserves the advisory-only boundary and cannot execute dispatch actions.
-- Show loading, empty-data, provider-error, and timeout states.
-- Include the data snapshot timestamp in responses so dispatchers understand freshness.
-- Log request metadata and failures without storing credentials or unnecessary sensitive prompt content.
+- Route supported incident, recommendation, crew, hazard, critical-facility, geography, distance, and travel-time questions through deterministic local services without calling the model.
+- Use a configurable server-side provider for bounded synthesis and explanation; default to Ollama Cloud with the owner-selected model and keep credentials out of the browser.
+- Ground model calls only in selected active-scenario facts and evidence. The model is not an authoritative lookup source for operational, geographic, customer, or demographic facts.
+- Normalize canonical demo geography as County to Township to Village, treating villages, hamlets, CDPs, and neighborhoods as the lowest user-facing level.
+- Generate and owner-review a purpose-built `long-island-copilot-demo` fixture before publishing it.
+- Preserve the current rule-based responder as a visible degraded mode when the provider is disabled or unavailable.
+- Show execution mode, source/evidence, data freshness, provider warnings, loading, empty-data, error, and timeout states.
+- Preserve the advisory-only boundary; Copilot cannot execute or mutate dispatch actions.
+- Keep a future PSEG Long Island customers-served reference or adapter in `POC-012`, outside the POC-002 critical path.
 
 ## Interfaces and Data Changes
 
@@ -93,8 +94,8 @@ Phase 6 subsequently delivered shared incident search, cascading severity and re
   - View-specific default sort definition.
   - Derived indicator showing whether Reset should be available.
 - Extend crew presentation data with separate `displayName`, optional normalized `crewId`, `company`, and `status` fields.
-- Add a backend Copilot request interface containing the user question and active scenario identifier.
-- Return the generated answer, data timestamp, and structured error state from the Copilot service.
+- Preserve the backend Copilot request interface containing the user question and active scenario identifier.
+- Extend the response compatibly with execution mode, scenario and snapshot timestamps, bounded evidence, optional provider/model identity, and visible fallback or partial-data warnings.
 
 ## Test and Acceptance Plan
 
@@ -111,7 +112,10 @@ Phase 6 subsequently delivered shared incident search, cascading severity and re
 - Verify Crew Board status, crew, and company filters individually and together.
 - Confirm alphanumeric crew IDs use their source prefixes and numeric-only crews remain unchanged.
 - Confirm Crew Board and recommendation panels show each available crew ID beside the correct descriptive name, while no-crew recommendations show no placeholder ID.
-- Confirm generated Copilot answers change when the selected scenario or underlying data changes.
+- Confirm deterministic factual answers use fixture-expected values and do not call the model provider.
+- Confirm grounded synthesis changes when the selected scenario or underlying data changes and cites only supplied evidence.
+- Confirm every canonical incident and crew location resolves through the County/Township/Village registry.
+- Confirm crew-to-incident distance and travel estimates are deterministic, realistic for the canonical Long Island fixture, and consistent with recommendation inputs.
 - Verify Copilot handles unsupported questions, stale or missing data, timeouts, and provider failures safely.
 - Confirm Copilot cannot accept, modify, defer, override, or otherwise execute dispatch decisions.
 
@@ -123,3 +127,4 @@ Phase 6 subsequently delivered shared incident search, cascading severity and re
 - Reset returns each view to its existing view-specific default order rather than imposing one universal order.
 - Crew-ID prefixes come from structured scenario data and are never inferred from descriptive crew names.
 - The current human-approval requirement remains unchanged.
+- The canonical Copilot scenario is generated dry-run-first and is not published until owner review.
