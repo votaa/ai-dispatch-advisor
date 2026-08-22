@@ -120,6 +120,12 @@ function emptyDashboard(scenario: string) {
   };
 }
 
+async function openRecommendations() {
+  const trigger = await screen.findByRole("button", { name: "Open recommendations" });
+  fireEvent.click(trigger);
+  return screen.findByRole("complementary", { name: "Dispatch recommendations" });
+}
+
 describe("application states and scenario switching", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -171,6 +177,7 @@ describe("application states and scenario switching", () => {
     render(<App />);
 
     expect(await screen.findByText("No priority incidents are active in this scenario.")).toBeTruthy();
+    await openRecommendations();
     expect(screen.getByText("No recommendation is available because there are no active incidents.")).toBeTruthy();
     expect(apiMocks.optimize).not.toHaveBeenCalled();
 
@@ -192,11 +199,15 @@ describe("application states and scenario switching", () => {
     const { container } = render(<App />);
 
     expect(await screen.findByRole("region", { name: "Priority dispatch queue" })).toBeTruthy();
-    expect(container.querySelector(".dashboard-workspace .recommendation-panel")).toBeTruthy();
+    expect(container.querySelector(".dashboard-workspace .recommendation-panel")).toBeNull();
+    await openRecommendations();
+    expect(screen.getByRole("complementary", { name: "Dispatch recommendations" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Close Recommendations" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
     expect(screen.getByRole("region", { name: "Dispatch incident queue" })).toBeTruthy();
-    expect(container.querySelector(".split-layout .recommendation-panel")).toBeTruthy();
+    expect(container.querySelector(".queue-workspace .recommendation-panel")).toBeNull();
+    await openRecommendations();
     for (const action of ["Accept", "Modify", "Defer", "Override"]) {
       expect(screen.getByRole("button", { name: action })).toBeTruthy();
     }
@@ -207,6 +218,61 @@ describe("application states and scenario switching", () => {
     fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
     const stormTable = screen.getByRole("region", { name: "Storm exceptions" });
     expect(stormTable.closest(".panel")?.classList.contains("full-width")).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: "Scenario" }));
+    expect(container.querySelector(".split-layout .recommendation-panel")).toBeTruthy();
+  });
+
+  it("keeps the recommendation sheet synchronized and restores focus when dismissed", async () => {
+    const secondIncident = {
+      ...baseIncident,
+      incident_id: "INC-2002",
+      municipality: "Southport",
+      feeder: "FDR-2",
+      severity: "high"
+    };
+    apiMocks.incidents.mockResolvedValue([baseIncident, secondIncident]);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), top_incidents: [baseIncident, secondIncident] });
+    apiMocks.optimize.mockImplementation(async (incidentId: string) => ({
+      ...recommendation,
+      incident_id: incidentId,
+      recommendation_id: `REC-${incidentId}`
+    }));
+    render(<App />);
+
+    const trigger = await screen.findByRole("button", { name: "Open recommendations" });
+    fireEvent.click(trigger);
+    expect(await screen.findByText("INC-1001 · Millbrook")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "INC-2002" }));
+    expect(await screen.findByText("INC-2002 · Southport")).toBeTruthy();
+    await waitFor(() => expect(apiMocks.optimize).toHaveBeenLastCalledWith("INC-2002"));
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("complementary", { name: "Dispatch recommendations" })).toBeNull();
+    await waitFor(() => expect(trigger).toBe(document.activeElement));
+  });
+
+  it("provides compact queue sorting and labeled reflow fields", async () => {
+    const secondIncident = {
+      ...baseIncident,
+      incident_id: "INC-2002",
+      municipality: "Southport",
+      customers_out: 250
+    };
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), top_incidents: [baseIncident, secondIncident] });
+    const { container } = render(<App />);
+
+    const compactSort = await screen.findByLabelText("Priority dispatch queue compact sort") as HTMLSelectElement;
+    fireEvent.change(compactSort, { target: { value: "customers" } });
+    expect(compactSort.value).toBe("customers");
+    expect(screen.getByRole("button", { name: /Priority dispatch queue compact sort ascending/ })).toBeTruthy();
+
+    const compactLabels = Array.from(container.querySelectorAll(".compact-cell-label")).map((label) => label.textContent);
+    expect(compactLabels).toEqual([
+      "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR",
+      "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR"
+    ]);
   });
 
   it("filters and sorts Crew Board cards while showing crew IDs", async () => {
@@ -350,6 +416,7 @@ describe("application states and scenario switching", () => {
     });
     render(<App />);
 
+    await openRecommendations();
     const comparison = await screen.findByRole("region", { name: "Recommendation comparison" });
     expect(comparison.textContent).toContain("Recommended");
     expect(comparison.textContent).toContain("Alternative 1");
@@ -397,6 +464,7 @@ describe("application states and scenario switching", () => {
     });
     render(<App />);
 
+    await openRecommendations();
     fireEvent.click(await screen.findByRole("button", { name: "Select this crew" }));
     expect(screen.getByText("Alternative crew selection reason")).toBeTruthy();
     expect((screen.getByRole("button", { name: "Accept" }) as HTMLButtonElement).disabled).toBe(true);
@@ -446,6 +514,7 @@ describe("application states and scenario switching", () => {
     }));
     render(<App />);
 
+    await openRecommendations();
     fireEvent.click(await screen.findByRole("button", { name: "Defer" }));
     const deferReason = screen.getByLabelText("Deferred reason");
     expect(deferReason).toBe(document.activeElement);
@@ -556,6 +625,7 @@ describe("application states and scenario switching", () => {
     apiMocks.optimize.mockRejectedValueOnce(new Error("Optimization service unavailable"));
     render(<App />);
 
+    await openRecommendations();
     expect(await screen.findByText("Recommendation unavailable")).toBeTruthy();
     expect(screen.getByText("Optimization service unavailable")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();

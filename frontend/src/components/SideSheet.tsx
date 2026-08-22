@@ -5,13 +5,14 @@ import type { ReactNode, RefObject } from "react";
 type SideSheetProps = {
   ariaLabel?: string;
   children: ReactNode;
+  id?: string;
   onClose: () => void;
   open: boolean;
   returnFocusRef?: RefObject<HTMLElement | null>;
   title: string;
 };
 
-export function SideSheet({ ariaLabel, children, onClose, open, returnFocusRef, title }: SideSheetProps) {
+export function SideSheet({ ariaLabel, children, id, onClose, open, returnFocusRef, title }: SideSheetProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const onCloseRef = useRef(onClose);
 
@@ -42,7 +43,7 @@ export function SideSheet({ ariaLabel, children, onClose, open, returnFocusRef, 
   };
 
   return (
-    <aside aria-label={ariaLabel ?? title} className="side-sheet">
+    <aside aria-label={ariaLabel ?? title} className="side-sheet" id={id}>
       <div className="side-sheet-heading">
         <h2 ref={headingRef} tabIndex={-1}>{title}</h2>
         <button aria-label={`Close ${title}`} className="side-sheet-close" onClick={closeAndRestoreFocus} type="button">

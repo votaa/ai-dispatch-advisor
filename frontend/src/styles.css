@@ -387,9 +387,11 @@ h1 {
 }
 
 .dashboard-workspace {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.35fr) minmax(440px, 1fr);
+  min-width: 0;
+}
+
+.queue-workspace {
+  min-width: 0;
 }
 
 .split-layout {
@@ -399,6 +401,7 @@ h1 {
 }
 
 .dashboard-workspace > .panel,
+.queue-workspace > .panel,
 .split-layout > .panel {
   overflow: hidden;
 }
@@ -489,6 +492,23 @@ h1 {
   margin: 0;
 }
 
+.panel-title-action {
+  background: #12212f;
+  border: 0;
+  border-radius: 7px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  margin-left: auto;
+  min-height: 36px;
+  padding: 7px 12px;
+}
+
+.panel-title-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .incident-table {
   container-type: inline-size;
   display: grid;
@@ -562,6 +582,11 @@ h1 {
   font-size: 13px;
   gap: 12px;
   justify-content: space-between;
+}
+
+.compact-sort-controls,
+.compact-cell-label {
+  display: none;
 }
 
 .incident-pagination {
@@ -682,6 +707,93 @@ tbody tr:hover,
 tbody tr:focus-visible {
   outline: 3px solid rgba(47, 111, 159, 0.35);
   outline-offset: -3px;
+}
+
+@container (max-width: 900px) {
+  .compact-sort-controls {
+    align-items: end;
+    background: #f7f9fb;
+    border: 1px solid #d8e0e8;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .compact-sort-controls label {
+    color: #526170;
+    display: grid;
+    flex: 1;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 5px;
+  }
+
+  .compact-sort-controls select,
+  .compact-sort-controls button {
+    background: #ffffff;
+    border: 1px solid #cfd8e3;
+    border-radius: 6px;
+    color: #17202a;
+    min-height: 34px;
+    padding: 6px 8px;
+  }
+
+  .compact-sort-controls button {
+    color: #2f6f9f;
+    cursor: pointer;
+    font-size: 18px;
+    min-width: 38px;
+  }
+
+  .compact-sort-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .table-shell {
+    overflow: visible;
+  }
+
+  .table-shell table,
+  .table-shell tbody {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .table-shell thead {
+    display: none;
+  }
+
+  .table-shell tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .table-shell tbody tr {
+    border: 1px solid #d8e0e8;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    overflow: hidden;
+  }
+
+  .table-shell tbody td {
+    border-bottom: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: 10px;
+  }
+
+  .compact-cell-label {
+    color: #607080;
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 0 5px;
+    text-transform: uppercase;
+  }
 }
 
 .severity {

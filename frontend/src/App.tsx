@@ -22,6 +22,7 @@ import {
   SIDEBAR_MAX_WIDTH,
   SIDEBAR_MIN_WIDTH
 } from "./components/ResizableSidebar";
+import { SideSheet } from "./components/SideSheet";
 import type {
   Assignment,
   CopilotResponse,
@@ -44,6 +45,17 @@ type ChatTurn = {
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
+
+const incidentSortOptions: Array<[IncidentSortKey, string]> = [
+  ["id", "Incident"],
+  ["region", "Region"],
+  ["customers", "Customers"],
+  ["severity", "Severity"],
+  ["hazard", "Hazard"],
+  ["assigned", "Assigned Crews"],
+  ["decision", "Decision"],
+  ["etr", "ETR"]
+];
 
 const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -88,6 +100,7 @@ function facetCountsFor<T>(items: T[], valueFor: (item: T) => string): Record<st
 function App() {
   const [view, setView] = useState<ViewKey>("dashboard");
   const [sidebarWidth, setSidebarWidth] = useState(initialSidebarWidth);
+  const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [crews, setCrews] = useState<Crew[]>([]);
@@ -112,6 +125,7 @@ function App() {
   const [recommendationError, setRecommendationError] = useState("");
   const [recommendationRequestVersion, setRecommendationRequestVersion] = useState(0);
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
+  const recommendationTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     loadApplication();
@@ -235,6 +249,7 @@ function App() {
     setScenarioMessage("");
     setError("");
     try {
+      setRecommendationsOpen(false);
       const activatedScenario = await api.activateScenario(scenarioId);
       setActiveScenario(activatedScenario);
       setScenarios((items) =>
@@ -263,14 +278,21 @@ function App() {
     setChatMessage(prompt);
   }
 
+  function selectView(nextView: ViewKey) {
+    if (nextView !== "dashboard" && nextView !== "dispatch") {
+      setRecommendationsOpen(false);
+    }
+    setView(nextView);
+  }
+
   function openCrewDetails(crewId: string) {
     setSelectedCrewId(crewId);
-    setView("crews");
+    selectView("crews");
   }
 
   function openIncidentDetails(incidentId: string) {
     setSelectedIncidentId(incidentId);
-    setView("incidents");
+    selectView("incidents");
   }
 
   async function recordRecommendationAction(action: RecommendationActionType, note?: string, selectedCrewId?: string) {
@@ -316,7 +338,7 @@ function App() {
                 key={item.key}
                 aria-current={view === item.key ? "page" : undefined}
                 className={view === item.key ? "nav-item active" : "nav-item"}
-                onClick={() => setView(item.key)}
+                onClick={() => selectView(item.key)}
                 type="button"
               >
                 <Icon size={18} />
@@ -410,7 +432,23 @@ function App() {
 
             <div className="dashboard-workspace">
               <section className="panel">
-                <PanelTitle icon={AlertTriangle} title="Priority Dispatch Queue" />
+                <PanelTitle
+                  action={(
+                    <button
+                      aria-controls="recommendations-sheet"
+                      aria-expanded={recommendationsOpen}
+                      aria-label="Open recommendations"
+                      className="panel-title-action"
+                      onClick={() => setRecommendationsOpen(true)}
+                      ref={recommendationTriggerRef}
+                      type="button"
+                    >
+                      Recommendations
+                    </button>
+                  )}
+                  icon={AlertTriangle}
+                  title="Priority Dispatch Queue"
+                />
                 <IncidentTable
                   emptyMessage="No priority incidents are active in this scenario."
                   incidents={dashboard.top_incidents}
@@ -419,19 +457,6 @@ function App() {
                   onSelect={setSelectedIncidentId}
                 />
               </section>
-
-              <RecommendationPanel
-                actionLoading={actionLoading}
-                actionFailed={actionFailed}
-                actionMessage={actionMessage}
-                onOpenCrew={openCrewDetails}
-                onRecordAction={recordRecommendationAction}
-                recentActions={recommendationActions}
-                recommendation={recommendation}
-                recommendationError={recommendationError}
-                recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
-                onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
-              />
             </div>
           </section>
         ))}
@@ -446,9 +471,25 @@ function App() {
             title="Dispatch unavailable"
           />
         ) : (
-          <section className="split-layout">
+          <section className="queue-workspace">
             <section className="panel">
-              <PanelTitle icon={RadioTower} title="Incident Queue" />
+              <PanelTitle
+                action={(
+                  <button
+                    aria-controls="recommendations-sheet"
+                    aria-expanded={recommendationsOpen}
+                    aria-label="Open recommendations"
+                    className="panel-title-action"
+                    onClick={() => setRecommendationsOpen(true)}
+                    ref={recommendationTriggerRef}
+                    type="button"
+                  >
+                    Recommendations
+                  </button>
+                )}
+                icon={RadioTower}
+                title="Incident Queue"
+              />
               <IncidentTable
                 emptyMessage="No active incidents are available for dispatch."
                 incidents={incidents}
@@ -457,19 +498,6 @@ function App() {
                 onSelect={setSelectedIncidentId}
               />
             </section>
-            <RecommendationPanel
-              actionLoading={actionLoading}
-              actionFailed={actionFailed}
-              actionMessage={actionMessage}
-              onOpenCrew={openCrewDetails}
-              onRecordAction={recordRecommendationAction}
-              recentActions={recommendationActions}
-              recommendation={recommendation}
-              recommendationError={recommendationError}
-              recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
-              onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
-              selectedIncident={selectedIncident}
-            />
           </section>
         ))}
 
@@ -659,6 +687,28 @@ function App() {
             <p className="safety-note">Copilot responses are advisory and cannot execute dispatch actions.</p>
           </section>
         )}
+        <SideSheet
+          ariaLabel="Dispatch recommendations"
+          id="recommendations-sheet"
+          onClose={() => setRecommendationsOpen(false)}
+          open={recommendationsOpen && (view === "dashboard" || view === "dispatch")}
+          returnFocusRef={recommendationTriggerRef}
+          title="Recommendations"
+        >
+          <RecommendationPanel
+            actionLoading={actionLoading}
+            actionFailed={actionFailed}
+            actionMessage={actionMessage}
+            onOpenCrew={openCrewDetails}
+            onRecordAction={recordRecommendationAction}
+            recentActions={recommendationActions}
+            recommendation={recommendation}
+            recommendationError={recommendationError}
+            recommendationLoading={recommendationLoading || scenarioLoading || initialLoading}
+            onRetryRecommendation={() => setRecommendationRequestVersion((version) => version + 1)}
+            selectedIncident={selectedIncident}
+          />
+        </SideSheet>
       </main>
     </div>
   );
@@ -673,11 +723,12 @@ function Metric({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function PanelTitle({ icon: Icon, title }: { icon: ElementType; title: string }) {
+function PanelTitle({ action, icon: Icon, title }: { action?: ReactNode; icon: ElementType; title: string }) {
   return (
     <div className="panel-title">
       <Icon size={18} />
       <h2>{title}</h2>
+      {action}
     </div>
   );
 }
@@ -1199,6 +1250,27 @@ function IncidentTable({
           </select>
         </label>
       </div>
+      <div aria-label={`${tableLabel} compact sorting`} className="compact-sort-controls" role="group">
+        <label>
+          Sort by
+          <select
+            aria-label={`${tableLabel} compact sort`}
+            onChange={(event) => setSort(event.target.value === "default" ? null : { key: event.target.value as IncidentSortKey, direction: "asc" })}
+            value={sort?.key ?? "default"}
+          >
+            <option value="default">Default priority</option>
+            {incidentSortOptions.map(([key, label]) => <option key={`compact-${key}`} value={key}>{label}</option>)}
+          </select>
+        </label>
+        <button
+          aria-label={`${tableLabel} compact sort ${sort?.direction === "desc" ? "descending" : "ascending"}; click to reverse`}
+          disabled={!sort}
+          onClick={() => setSort((current) => current ? { ...current, direction: current.direction === "asc" ? "desc" : "asc" } : current)}
+          type="button"
+        >
+          {sort?.direction === "desc" ? "↓" : "↑"}
+        </button>
+      </div>
       <div className="incident-table-summary" aria-live="polite">
         <span>Showing {visibleIncidents.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredIncidents.length)} of {filteredIncidents.length} matching incidents ({incidents.length} total)</span>
         {pageCount > 1 ? (
@@ -1216,16 +1288,7 @@ function IncidentTable({
           <table>
         <thead>
           <tr>
-            {([
-              ["id", "Incident"],
-              ["region", "Region"],
-              ["customers", "Customers"],
-              ["severity", "Severity"],
-              ["hazard", "Hazard"],
-              ["assigned", "Assigned Crews"],
-              ["decision", "Decision"],
-              ["etr", "ETR"]
-            ] as Array<[IncidentSortKey, string]>).map(([key, label]) => (
+            {incidentSortOptions.map(([key, label]) => (
               <th aria-sort={sort?.key === key ? (sort.direction === "asc" ? "ascending" : "descending") : "none"} key={key}>
                 <button aria-label={`${tableLabel} ${sortLabel(key, label)}`} className="table-sort-button" onClick={() => toggleSort(key)} type="button">
                   {label}<span aria-hidden="true">{sortIndicator(key)}</span>
@@ -1243,6 +1306,7 @@ function IncidentTable({
               onClick={() => onSelect(incident.incident_id)}
             >
               <td>
+                <span className="compact-cell-label">Incident</span>
                 <button
                   aria-pressed={selectedIncidentId === incident.incident_id}
                   className="incident-select-button"
@@ -1256,11 +1320,12 @@ function IncidentTable({
                 </button>
                 <span>{incident.municipality} / {incident.feeder}</span>
               </td>
-              <td>{incident.region}</td>
-              <td>{incident.customers_out.toLocaleString()}</td>
-              <td><span className={severityClass(incident.severity)}>{incident.severity}</span></td>
-              <td>{incident.hazard}</td>
+              <td><span className="compact-cell-label">Region</span>{incident.region}</td>
+              <td><span className="compact-cell-label">Customers</span>{incident.customers_out.toLocaleString()}</td>
+              <td><span className="compact-cell-label">Severity</span><span className={severityClass(incident.severity)}>{incident.severity}</span></td>
+              <td><span className="compact-cell-label">Hazard</span>{incident.hazard}</td>
               <td>
+                <span className="compact-cell-label">Assigned Crews</span>
                 {incident.assigned_crews.length ? (
                   incident.assigned_crews.map((crew) => (
                     <span className="assignment-chip" key={crew.assignment_id}>{crew.crew_name}</span>
@@ -1270,6 +1335,7 @@ function IncidentTable({
                 )}
               </td>
               <td>
+                <span className="compact-cell-label">Decision</span>
                 {incident.current_decision ? (
                   <span className={`decision-badge decision-${incident.current_decision.action}`}>
                     {formatAction(incident.current_decision.action)}
@@ -1278,7 +1344,7 @@ function IncidentTable({
                   <span>No decision</span>
                 )}
               </td>
-              <td>{incident.etr}</td>
+              <td><span className="compact-cell-label">ETR</span>{incident.etr}</td>
             </tr>
           ))}
         </tbody>
