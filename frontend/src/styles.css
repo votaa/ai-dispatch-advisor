@@ -1409,6 +1409,10 @@ tbody tr:focus-visible {
   padding: 14px;
 }
 
+.side-sheet .incident-detail {
+  margin-top: 0;
+}
+
 .detail-heading {
   align-items: flex-start;
   display: flex;

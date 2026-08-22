@@ -101,6 +101,7 @@ function App() {
   const [view, setView] = useState<ViewKey>("dashboard");
   const [sidebarWidth, setSidebarWidth] = useState(initialSidebarWidth);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
+  const [incidentDetailOpen, setIncidentDetailOpen] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [crews, setCrews] = useState<Crew[]>([]);
@@ -126,6 +127,7 @@ function App() {
   const [recommendationRequestVersion, setRecommendationRequestVersion] = useState(0);
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
   const recommendationTriggerRef = useRef<HTMLButtonElement>(null);
+  const incidentDetailTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     loadApplication();
@@ -173,6 +175,10 @@ function App() {
     () => incidents.find((incident) => incident.incident_id === selectedIncidentId) ?? incidents[0],
     [incidents, selectedIncidentId]
   );
+  const incidentDetail = useMemo(
+    () => incidents.find((incident) => incident.incident_id === selectedIncidentId),
+    [incidents, selectedIncidentId]
+  );
   const selectedCrew = useMemo(
     () => crews.find((crew) => crew.crew_id === selectedCrewId),
     [crews, selectedCrewId]
@@ -180,6 +186,12 @@ function App() {
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
   const operationalDataUnavailable = Boolean(error && !dashboard && incidents.length === 0 && crews.length === 0);
+
+  useEffect(() => {
+    if (incidentDetailOpen && !incidentDetail) {
+      setIncidentDetailOpen(false);
+    }
+  }, [incidentDetail, incidentDetailOpen]);
 
   async function loadApplication() {
     setInitialLoading(true);
@@ -250,6 +262,7 @@ function App() {
     setError("");
     try {
       setRecommendationsOpen(false);
+      setIncidentDetailOpen(false);
       const activatedScenario = await api.activateScenario(scenarioId);
       setActiveScenario(activatedScenario);
       setScenarios((items) =>
@@ -282,6 +295,9 @@ function App() {
     if (nextView !== "dashboard" && nextView !== "dispatch") {
       setRecommendationsOpen(false);
     }
+    if (nextView !== "incidents") {
+      setIncidentDetailOpen(false);
+    }
     setView(nextView);
   }
 
@@ -290,8 +306,10 @@ function App() {
     selectView("crews");
   }
 
-  function openIncidentDetails(incidentId: string) {
+  function openIncidentDetails(incidentId: string, trigger?: HTMLButtonElement) {
+    incidentDetailTriggerRef.current = trigger ?? null;
     setSelectedIncidentId(incidentId);
+    setIncidentDetailOpen(true);
     selectView("incidents");
   }
 
@@ -518,9 +536,8 @@ function App() {
               incidents={incidents}
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
-              onSelect={setSelectedIncidentId}
+              onSelect={openIncidentDetails}
             />
-            {selectedIncident ? <IncidentDetail incident={selectedIncident} onOpenCrew={openCrewDetails} /> : null}
           </section>
         ))}
 
@@ -709,6 +726,16 @@ function App() {
             selectedIncident={selectedIncident}
           />
         </SideSheet>
+        <SideSheet
+          ariaLabel={incidentDetail ? `Incident details ${incidentDetail.incident_id}` : "Incident details"}
+          id="incident-detail-sheet"
+          onClose={() => setIncidentDetailOpen(false)}
+          open={incidentDetailOpen && view === "incidents" && Boolean(incidentDetail)}
+          returnFocusRef={incidentDetailTriggerRef}
+          title="Incident details"
+        >
+          {incidentDetail ? <IncidentDetail incident={incidentDetail} onOpenCrew={openCrewDetails} /> : null}
+        </SideSheet>
       </main>
     </div>
   );
@@ -854,7 +881,7 @@ function RecommendationComparison({
 
 function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCrew: (crewId: string) => void }) {
   return (
-    <aside aria-label={`Incident details ${incident.incident_id}`} className="detail-panel incident-detail">
+    <div className="detail-panel incident-detail">
       <div className="detail-heading">
         <div>
           <span>Selected incident</span>
@@ -889,11 +916,11 @@ function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCr
         <p>{incident.current_decision ? formatAction(incident.current_decision.action) : "No decision recorded."}</p>
         {incident.current_decision?.reason ? <small>{incident.current_decision.reason}</small> : null}
       </div>
-    </aside>
+    </div>
   );
 }
 
-function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: () => void; onOpenIncident: (incidentId: string) => void }) {
+function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: () => void; onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void }) {
   return (
     <aside aria-label={`Crew details ${crew.crew_id}`} className="detail-panel crew-detail">
       <div className="detail-heading">
@@ -918,7 +945,7 @@ function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: ()
         {crew.assigned_incidents.length ? (
           <div className="detail-link-list">
             {crew.assigned_incidents.map((assignment) => (
-              <button key={assignment.assignment_id} onClick={() => onOpenIncident(assignment.incident_id)} type="button">
+              <button key={assignment.assignment_id} onClick={(event) => onOpenIncident(assignment.incident_id, event.currentTarget)} type="button">
                 {assignment.incident_id}{assignment.municipality ? ` · ${assignment.municipality}` : ""}
               </button>
             ))}
@@ -939,7 +966,7 @@ function CrewBoard({
 }: {
   crews: Crew[];
   onCloseDetails: () => void;
-  onOpenIncident: (incidentId: string) => void;
+  onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void;
   onSelectCrew: (crewId: string) => void;
   selectedCrew?: Crew;
   selectedCrewId?: string;
@@ -1130,7 +1157,7 @@ function IncidentTable({
   incidents: Incident[];
   selectedIncidentId?: string;
   tableLabel: string;
-  onSelect: (incidentId: string) => void;
+  onSelect: (incidentId: string, trigger?: HTMLButtonElement) => void;
 }) {
   const pageSize = 50;
   const [query, setQuery] = useState("");
@@ -1303,7 +1330,10 @@ function IncidentTable({
               aria-selected={selectedIncidentId === incident.incident_id}
               className={selectedIncidentId === incident.incident_id ? "selected-row" : ""}
               key={incident.incident_id}
-              onClick={() => onSelect(incident.incident_id)}
+              onClick={(event) => onSelect(
+                incident.incident_id,
+                event.currentTarget.querySelector<HTMLButtonElement>(".incident-select-button") ?? undefined
+              )}
             >
               <td>
                 <span className="compact-cell-label">Incident</span>
@@ -1312,7 +1342,7 @@ function IncidentTable({
                   className="incident-select-button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    onSelect(incident.incident_id);
+                    onSelect(incident.incident_id, event.currentTarget);
                   }}
                   type="button"
                 >

@@ -562,11 +562,54 @@ describe("application states and scenario switching", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    await screen.findByRole("region", { name: "Active incidents" });
+    expect(screen.queryByRole("complementary", { name: "Incident details INC-1001" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "INC-1001" }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /North Line Alpha/ }));
     expect(await screen.findByLabelText("Crew details CR-01")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /INC-1001/ }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
+  });
+
+  it("updates and dismisses incident details without clearing selection", async () => {
+    const secondIncident = {
+      ...baseIncident,
+      incident_id: "INC-2002",
+      municipality: "Southport",
+      feeder: "FDR-2"
+    };
+    apiMocks.incidents.mockResolvedValue([baseIncident, secondIncident]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    const firstTrigger = await screen.findByRole("button", { name: "INC-1001" });
+    fireEvent.click(firstTrigger);
+    expect(await screen.findByText("INC-1001 · Millbrook")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "INC-2002" }));
+    expect(await screen.findByText("INC-2002 · Southport")).toBeTruthy();
+    const secondTrigger = screen.getByRole("button", { name: "INC-2002" });
+    fireEvent.click(screen.getByRole("button", { name: "Close Incident details" }));
+
+    expect(screen.queryByRole("complementary", { name: "Incident details INC-2002" })).toBeNull();
+    await waitFor(() => expect(secondTrigger).toBe(document.activeElement));
+    expect(secondTrigger.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("closes incident details when the active scenario changes", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "INC-1001" }));
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1001" })).toBeTruthy();
+
+    const selector = screen.getByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    await waitFor(() => expect(apiMocks.activateScenario).toHaveBeenCalledWith("storm"));
+    expect(screen.queryByRole("complementary", { name: "Incident details INC-1001" })).toBeNull();
   });
 
   it("filters, sorts, and paginates large incident queues", async () => {
