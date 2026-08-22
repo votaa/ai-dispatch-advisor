@@ -116,7 +116,10 @@ The Copilot panel should:
 
 - Provide visible prompt examples.
 - Use a labeled text area.
+- Expose Clear and Ask Copilot as labeled native buttons in logical keyboard order.
+- Disable Clear when the composer is empty or whitespace-only, while preserving conversation history when it is activated.
 - Display question and answer history in reading order.
+- Explain in visible helper text that supported facts use local scenario data while broader summaries and explanations use grounded AI.
 - Avoid auto-executing actions from natural language.
 - Provide clear advisory safety text.
 

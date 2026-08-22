@@ -733,7 +733,7 @@ describe("application states and scenario switching", () => {
 
     await screen.findByLabelText("Active synthetic scenario");
     fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
-    expect(screen.getByText("Ask one of the sample questions to query the synthetic dispatch data.")).toBeTruthy();
+    expect(screen.getByText("Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
     expect(screen.getByRole("button", { name: "Asking..." })).toBeTruthy();
@@ -741,6 +741,51 @@ describe("application states and scenario switching", () => {
 
     expect(await screen.findByText(/Unable to reach Copilot: Copilot service unavailable/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Ask Copilot" })).toBeTruthy();
+  });
+
+  it("clears only the Copilot composer and disables Clear for blank input", async () => {
+    apiMocks.chat.mockResolvedValue({
+      answer: "Five crews are available.",
+      intent: "crew_availability",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "base",
+      generated_at: "2026-08-21T12:00:00Z",
+      data_snapshot_at: "2026-08-21T11:45:00Z",
+      provider: null,
+      model: null,
+      warning: null,
+      evidence: []
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    const composer = screen.getByLabelText("Copilot question") as HTMLTextAreaElement;
+    const clear = screen.getByRole("button", { name: "Clear" }) as HTMLButtonElement;
+    const ask = screen.getByRole("button", { name: "Ask Copilot" });
+
+    expect(composer.value).toBe("What should I focus on first?");
+    expect(clear.disabled).toBe(false);
+    expect(clear.nextElementSibling).toBe(ask);
+    clear.focus();
+    expect(clear).toBe(document.activeElement);
+    fireEvent.click(clear);
+    expect(composer.value).toBe("");
+    expect(clear.disabled).toBe(true);
+
+    fireEvent.change(composer, { target: { value: "   " } });
+    expect(clear.disabled).toBe(true);
+    fireEvent.change(composer, { target: { value: "How many crews are available?" } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+    expect(await screen.findByText("Five crews are available.")).toBeTruthy();
+
+    fireEvent.change(composer, { target: { value: "Start a new question" } });
+    fireEvent.click(clear);
+    expect(composer.value).toBe("");
+    expect(screen.getByText("Five crews are available.")).toBeTruthy();
+    expect(screen.getAllByText("How many crews are available?")).toHaveLength(2);
   });
 
   it("shows Copilot execution mode, snapshot, and evidence metadata", async () => {

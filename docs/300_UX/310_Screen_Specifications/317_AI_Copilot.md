@@ -18,7 +18,7 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 
 - Prompt examples
 - Text input
-- Ask button
+- Clear and Ask Copilot buttons
 - Question/answer history
 - Advisory safety note
 
@@ -26,6 +26,7 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 
 - Sample prompt chips
 - Copilot text area
+- Composer action row with `Clear` immediately left of `Ask Copilot`
 - Conversation history
 - Safety boundary message
 
@@ -36,6 +37,8 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 - Ask about critical facilities
 - Ask why recommendation was made
 - Ask storm status
+- Clear the default, previous, or partially entered question without clearing conversation history
+- Enter free-form questions beyond the sample prompts
 
 ## Data Requirements
 
@@ -59,7 +62,9 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 
 ## AI and Recommendation Behavior
 
-The current POC is keyword-based. The POC-002 target uses deterministic local services for supported factual and calculation questions, a grounded model call for bounded synthesis, and the current rule-based behavior as a visibly labeled fallback. The model must not supply incident, crew, recommendation, geography, distance, travel, customer, or demographic facts from general model knowledge. All modes retain strict no-action execution boundaries.
+The current POC uses deterministic local services for supported factual and calculation questions, a grounded model call for bounded synthesis, and rule-based behavior as a visibly labeled fallback. The model must not supply incident, crew, recommendation, geography, distance, travel, customer, or demographic facts from general model knowledge. All modes retain strict no-action execution boundaries.
+
+The empty-history helper copy is: “Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.”
 
 ## Audit Requirements
 
@@ -68,6 +73,7 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 ## Accessibility Notes
 
 - Preserve keyboard access for all interactive controls.
+- Expose Clear as a labeled native button and disable it for empty or whitespace-only composer input.
 - Do not rely on color alone for severity, status, confidence, or integration health.
 - Keep dense operational data readable at expected dispatcher workstation sizes.
 - Provide visible focus and confirmation states for user actions.
@@ -76,6 +82,9 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 
 - Prompt examples are visible
 - Free-form questions and prompt examples are supported
+- Clear appears immediately left of Ask Copilot, clears only the composer, and preserves conversation history
+- Clear is disabled when the composer contains no non-whitespace text
+- The approved helper copy distinguishes local scenario facts from grounded-AI summaries and explanations
 - Supported factual questions return active-scenario values without calling the model
 - Grounded model responses cite only supplied scenario evidence
 - County, Township, and Village answers resolve through the geographic registry

@@ -666,12 +666,22 @@ function App() {
             </div>
             <label className="sr-only" htmlFor="copilot-question">Copilot question</label>
             <textarea id="copilot-question" value={chatMessage} onChange={(event) => setChatMessage(event.target.value)} />
-            <button className="primary-action" disabled={chatLoading} onClick={askCopilot} type="button">
-              {chatLoading ? "Asking..." : "Ask Copilot"}
-            </button>
+            <div className="copilot-actions">
+              <button
+                className="secondary-action"
+                disabled={!chatMessage.trim()}
+                onClick={() => setChatMessage("")}
+                type="button"
+              >
+                Clear
+              </button>
+              <button className="primary-action" disabled={chatLoading} onClick={askCopilot} type="button">
+                {chatLoading ? "Asking..." : "Ask Copilot"}
+              </button>
+            </div>
             <div aria-live="polite" className="chat-history">
               {chatTurns.length === 0 ? (
-                <div className="copilot-answer">Ask one of the sample questions to query the synthetic dispatch data.</div>
+                <div className="copilot-answer">Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.</div>
               ) : (
                 chatTurns.map((turn, index) => (
                   <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>

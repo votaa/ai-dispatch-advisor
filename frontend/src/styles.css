@@ -585,7 +585,7 @@ h1 {
   padding-right: 30px;
 }
 
-@container (max-width: 720px) {
+@container (max-width: 600px) {
   .incident-table-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1630,11 +1630,34 @@ textarea {
   width: 100%;
 }
 
-.primary-action {
+.copilot-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
   margin: 12px 0;
 }
 
-.primary-action:disabled {
+.copilot-actions .primary-action {
+  margin: 0;
+}
+
+.secondary-action {
+  background: #ffffff;
+  border: 1px solid #b8c7d6;
+  border-radius: 7px;
+  color: #245a83;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 7px 12px;
+}
+
+.secondary-action:hover:not(:disabled) {
+  background: #edf5fb;
+}
+
+.primary-action:disabled,
+.secondary-action:disabled {
   cursor: not-allowed;
   opacity: 0.65;
 }
@@ -1862,7 +1885,7 @@ textarea {
   }
 
   .metric-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
 }
@@ -1887,6 +1910,10 @@ textarea {
   .view-grid,
   .split-layout {
     grid-template-columns: 1fr;
+  }
+
+  .storm-view {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .crew-board-controls {
@@ -1924,6 +1951,14 @@ textarea {
 
   .crew-board-controls {
     grid-template-columns: 1fr;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .storm-view {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .incident-table-summary {
