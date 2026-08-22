@@ -23,6 +23,7 @@ import {
   SIDEBAR_MIN_WIDTH
 } from "./components/ResizableSidebar";
 import { SideSheet } from "./components/SideSheet";
+import { useFittedPageSize } from "./hooks/useFittedPageSize";
 import type {
   Assignment,
   CopilotResponse,
@@ -470,6 +471,7 @@ function App() {
                 <IncidentTable
                   emptyMessage="No priority incidents are active in this scenario."
                   incidents={dashboard.top_incidents}
+                  key={`dashboard-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                   selectedIncidentId={selectedIncidentId}
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
@@ -511,6 +513,7 @@ function App() {
               <IncidentTable
                 emptyMessage="No active incidents are available for dispatch."
                 incidents={incidents}
+                key={`dispatch-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
@@ -534,6 +537,7 @@ function App() {
             <IncidentTable
               emptyMessage="No active incidents are available in this scenario."
               incidents={incidents}
+              key={`active-incidents-${activeScenario?.scenario_id ?? "loading"}`}
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
               onSelect={openIncidentDetails}
@@ -558,6 +562,7 @@ function App() {
             ) : (
               <CrewBoard
                 crews={crews}
+                key={`crew-board-${activeScenario?.scenario_id ?? "loading"}`}
                 onCloseDetails={() => setSelectedCrewId(undefined)}
                 onOpenIncident={openIncidentDetails}
                 onSelectCrew={setSelectedCrewId}
@@ -578,7 +583,7 @@ function App() {
             title="Storm mode unavailable"
           />
         ) : (
-          <section className="view-grid">
+          <section className="view-grid storm-view">
             <Metric label="High Priority Incidents" value={dashboard.high_priority_incidents} />
             <Metric label="Critical Facilities" value={criticalIncidents.length} />
             <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
@@ -588,6 +593,7 @@ function App() {
               <IncidentTable
                 emptyMessage="No storm exceptions are active in this scenario."
                 incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)}
+                key={`storm-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Storm exceptions"
                 onSelect={setSelectedIncidentId}
@@ -971,7 +977,6 @@ function CrewBoard({
   selectedCrew?: Crew;
   selectedCrewId?: string;
 }) {
-  const pageSize = 24;
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [capability, setCapability] = useState("all");
@@ -1037,19 +1042,31 @@ function CrewBoard({
       }
     };
   }, [capability, crews, query, region, sort, status, stormReady]);
+  const { containerRef, pageSize } = useFittedPageSize({
+    fallbackPageSize: 24,
+    itemCount: filteredCrews.length,
+    itemSelector: ".crew-card",
+    layout: "grid",
+    measurementKey: `${capability}|${page}|${query}|${region}|${sort.key}|${sort.direction}|${status}|${stormReady}`
+  });
   const pageCount = Math.max(1, Math.ceil(filteredCrews.length / pageSize));
-  const visibleCrews = filteredCrews.slice(page * pageSize, (page + 1) * pageSize);
+  const currentPage = Math.min(page, pageCount - 1);
+  const visibleCrews = filteredCrews.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   useEffect(() => {
     setPage(0);
   }, [capability, query, region, sort, status, stormReady, crews.length]);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, pageCount - 1));
+  }, [pageCount]);
 
   const toggleSortDirection = () => {
     setSort((current) => ({ ...current, direction: current.direction === "asc" ? "desc" : "asc" }));
   };
 
   return (
-    <div className="crew-board">
+    <div className="crew-board" ref={containerRef}>
       <div className="crew-board-controls" aria-label="Crew Board filters" role="group">
         <label>
           Search
@@ -1100,12 +1117,12 @@ function CrewBoard({
         </label>
       </div>
       <div className="crew-board-summary" aria-live="polite">
-        <span>Showing {visibleCrews.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredCrews.length)} of {filteredCrews.length} matching crews ({crews.length} total)</span>
+        <span>Showing {visibleCrews.length ? currentPage * pageSize + 1 : 0}–{Math.min((currentPage + 1) * pageSize, filteredCrews.length)} of {filteredCrews.length} matching crews ({crews.length} total)</span>
         {pageCount > 1 ? (
           <div aria-label="Crew Board pagination" className="incident-pagination" role="navigation">
-            <button aria-label="Previous Crew Board page" disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
-            <span>Page {page + 1} of {pageCount}</span>
-            <button aria-label="Next Crew Board page" disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+            <button aria-label="Previous Crew Board page" disabled={currentPage === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+            <span>Page {currentPage + 1} of {pageCount}</span>
+            <button aria-label="Next Crew Board page" disabled={currentPage >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
           </div>
         ) : null}
       </div>
@@ -1159,7 +1176,6 @@ function IncidentTable({
   tableLabel: string;
   onSelect: (incidentId: string, trigger?: HTMLButtonElement) => void;
 }) {
-  const pageSize = 50;
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState("all");
   const [region, setRegion] = useState("all");
@@ -1227,12 +1243,24 @@ function IncidentTable({
       }
     };
   }, [incidents, query, region, severity, sort]);
+  const { containerRef, pageSize } = useFittedPageSize({
+    fallbackPageSize: 50,
+    itemCount: filteredIncidents.length,
+    itemSelector: "tbody tr",
+    layout: "rows",
+    measurementKey: `${page}|${query}|${region}|${severity}|${sort?.key ?? "default"}|${sort?.direction ?? "default"}`
+  });
   const pageCount = Math.max(1, Math.ceil(filteredIncidents.length / pageSize));
-  const visibleIncidents = filteredIncidents.slice(page * pageSize, (page + 1) * pageSize);
+  const currentPage = Math.min(page, pageCount - 1);
+  const visibleIncidents = filteredIncidents.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   useEffect(() => {
     setPage(0);
   }, [query, region, severity, sort, incidents.length]);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, pageCount - 1));
+  }, [pageCount]);
 
   const toggleSort = (key: IncidentSortKey) => {
     setSort((current) => current?.key === key
@@ -1250,7 +1278,7 @@ function IncidentTable({
   }
 
   return (
-    <div className="incident-table">
+    <div className="incident-table" ref={containerRef}>
       <div className="incident-table-controls" aria-label={`${tableLabel} filters`} role="group">
         <label>
           Search
@@ -1299,12 +1327,12 @@ function IncidentTable({
         </button>
       </div>
       <div className="incident-table-summary" aria-live="polite">
-        <span>Showing {visibleIncidents.length ? page * pageSize + 1 : 0}–{Math.min((page + 1) * pageSize, filteredIncidents.length)} of {filteredIncidents.length} matching incidents ({incidents.length} total)</span>
+        <span>Showing {visibleIncidents.length ? currentPage * pageSize + 1 : 0}–{Math.min((currentPage + 1) * pageSize, filteredIncidents.length)} of {filteredIncidents.length} matching incidents ({incidents.length} total)</span>
         {pageCount > 1 ? (
           <div aria-label={`${tableLabel} pagination`} className="incident-pagination" role="navigation">
-            <button aria-label={`Previous ${tableLabel} page`} disabled={page === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
-            <span>Page {page + 1} of {pageCount}</span>
-            <button aria-label={`Next ${tableLabel} page`} disabled={page >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
+            <button aria-label={`Previous ${tableLabel} page`} disabled={currentPage === 0} onClick={() => setPage((current) => Math.max(0, current - 1))} type="button">Previous</button>
+            <span>Page {currentPage + 1} of {pageCount}</span>
+            <button aria-label={`Next ${tableLabel} page`} disabled={currentPage >= pageCount - 1} onClick={() => setPage((current) => Math.min(pageCount - 1, current + 1))} type="button">Next</button>
           </div>
         ) : null}
       </div>

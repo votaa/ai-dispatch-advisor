@@ -375,6 +375,36 @@ h1 {
   gap: 16px;
 }
 
+.storm-view {
+  gap: 10px;
+}
+
+.storm-view > .metric {
+  padding: 12px 14px;
+}
+
+.storm-view > .metric span {
+  margin-bottom: 4px;
+}
+
+.storm-view > .metric strong {
+  font-size: 24px;
+}
+
+.storm-view > .panel {
+  padding: 14px;
+}
+
+.storm-view .panel-title,
+.storm-view .incident-table-controls {
+  margin-bottom: 8px;
+}
+
+.storm-view .incident-table-controls {
+  gap: 8px;
+  padding: 8px;
+}
+
 .dashboard-view {
   display: grid;
   gap: 16px;
@@ -1235,7 +1265,7 @@ tbody tr:focus-visible {
 .crew-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .crew-board {
@@ -1249,11 +1279,11 @@ tbody tr:focus-visible {
   border-radius: 8px;
   box-sizing: border-box;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: minmax(240px, 1.7fr) repeat(4, minmax(155px, 1fr)) minmax(210px, 1.4fr);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   min-width: 0;
-  padding: 10px;
+  padding: 8px;
   width: 100%;
 }
 
@@ -1262,7 +1292,7 @@ tbody tr:focus-visible {
   display: grid;
   font-size: 12px;
   font-weight: 700;
-  gap: 5px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -1272,7 +1302,7 @@ tbody tr:focus-visible {
   border: 1px solid #cfd8e3;
   border-radius: 6px;
   color: #17202a;
-  min-height: 34px;
+  min-height: 32px;
   min-width: 0;
   padding: 6px 8px;
 }
@@ -1304,7 +1334,7 @@ tbody tr:focus-visible {
   font-size: 13px;
   gap: 12px;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .crew-id {
@@ -1323,7 +1353,7 @@ tbody tr:focus-visible {
 .crew-card {
   border: 1px solid #d8e0e8;
   border-radius: 8px;
-  padding: 14px;
+  padding: 10px;
 }
 
 .crew-card.selected-card {
@@ -1360,15 +1390,15 @@ tbody tr:focus-visible {
 }
 
 .crew-location {
-  margin: 12px 0 6px;
+  margin: 8px 0 4px;
 }
 
 .assignment-list {
   border-top: 1px solid #e4e9ef;
   display: grid;
   gap: 4px;
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 7px;
+  padding-top: 7px;
 }
 
 .assignment-list span {
@@ -1380,7 +1410,7 @@ tbody tr:focus-visible {
   border-radius: 999px;
   display: inline-block;
   font-weight: 700;
-  margin-top: 10px;
+  margin-top: 7px;
   padding: 4px 8px;
 }
 

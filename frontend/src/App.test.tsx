@@ -320,6 +320,50 @@ describe("application states and scenario switching", () => {
     expect(screen.getByRole("button", { name: /Crew Board sort ascending/ })).toBeTruthy();
   });
 
+  it("resets Crew Board pagination inputs when the scenario changes with the same crew count", async () => {
+    const scenarioCrews = [
+      {
+        crew_id: "CR-01",
+        crew_name: "North Line Alpha",
+        home_region: "North",
+        status: "available",
+        capability: "line",
+        current_location: "Millbrook",
+        shift_remaining_hours: 8,
+        storm_ready: true,
+        travel_minutes_to_selected_incident: 12,
+        assigned_incidents: []
+      },
+      {
+        crew_id: "CR-02",
+        crew_name: "South Line Beta",
+        home_region: "South",
+        status: "assigned",
+        capability: "line",
+        current_location: "Fairview",
+        shift_remaining_hours: 5,
+        storm_ready: true,
+        travel_minutes_to_selected_incident: 18,
+        assigned_incidents: []
+      }
+    ];
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.crews.mockResolvedValue(scenarioCrews);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    expect(await screen.findByText("Showing 1–2 of 2 matching crews (2 total)")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Crew Board status"), { target: { value: "available" } });
+    expect(await screen.findByText("Showing 1–1 of 1 matching crews (2 total)")).toBeTruthy();
+
+    const selector = screen.getByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    await waitFor(() => expect(selector.value).toBe("storm"));
+    expect((screen.getByLabelText("Crew Board status") as HTMLSelectElement).value).toBe("all");
+    expect(screen.getByText("Showing 1–2 of 2 matching crews (2 total)")).toBeTruthy();
+  });
+
   it("cascades severity and region counts consistently across incident views", async () => {
     const facetedIncidents = [
       { ...baseIncident, incident_id: "INC-NC", region: "North", severity: "critical", critical_facility: true },
