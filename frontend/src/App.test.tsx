@@ -123,6 +123,7 @@ function emptyDashboard(scenario: string) {
 describe("application states and scenario switching", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.localStorage.clear();
     apiMocks.scenarios.mockResolvedValue([baseScenario, stormScenario]);
     apiMocks.activeScenario.mockResolvedValue(baseScenario);
     apiMocks.activateScenario.mockResolvedValue({ ...stormScenario, is_active: true });
@@ -299,10 +300,22 @@ describe("application states and scenario switching", () => {
     fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
     await waitFor(() => expect(screen.getByRole("heading", { level: 1, name: "Incidents" })).toBe(document.activeElement));
     expect(screen.getByRole("button", { name: "Incidents" }).getAttribute("aria-current")).toBe("page");
-    expect(screen.getByRole("button", { name: "INC-1001" }).getAttribute("aria-pressed")).toBe("true");
+    expect((await screen.findByRole("button", { name: "INC-1001" })).getAttribute("aria-pressed")).toBe("true");
 
     fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
     expect(screen.getByLabelText("Copilot question")).toBeTruthy();
+  });
+
+  it("restores and persists the bounded desktop navigation width", async () => {
+    window.localStorage.setItem("aida.ui.sidebar-width.v1", "310");
+    render(<App />);
+
+    const separator = screen.getByRole("separator", { name: "Resize primary navigation" });
+    expect(separator.getAttribute("aria-valuenow")).toBe("310");
+    fireEvent.keyDown(separator, { key: "ArrowRight" });
+
+    await waitFor(() => expect(window.localStorage.getItem("aida.ui.sidebar-width.v1")).toBe("320"));
+    expect(separator.getAttribute("aria-valuenow")).toBe("320");
   });
 
   it("compares the recommended crew with ranked alternatives and tradeoffs", async () => {

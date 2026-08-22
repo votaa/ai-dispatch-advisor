@@ -13,9 +13,15 @@ import {
   Users
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ElementType, ReactNode } from "react";
+import type { CSSProperties, ElementType, ReactNode } from "react";
 import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
+import {
+  ResizableSidebar,
+  SIDEBAR_DEFAULT_WIDTH,
+  SIDEBAR_MAX_WIDTH,
+  SIDEBAR_MIN_WIDTH
+} from "./components/ResizableSidebar";
 import type {
   Assignment,
   CopilotResponse,
@@ -49,6 +55,20 @@ const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "copilot", label: "AI Copilot", icon: Bot }
 ];
 
+const SIDEBAR_STORAGE_KEY = "aida.ui.sidebar-width.v1";
+
+function initialSidebarWidth() {
+  try {
+    const storedWidth = Number.parseInt(window.localStorage.getItem(SIDEBAR_STORAGE_KEY) ?? "", 10);
+    if (Number.isFinite(storedWidth)) {
+      return Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, storedWidth));
+    }
+  } catch {
+    // Storage can be unavailable in privacy-restricted browser contexts.
+  }
+  return SIDEBAR_DEFAULT_WIDTH;
+}
+
 function severityClass(severity: string) {
   return `severity severity-${severity.toLowerCase()}`;
 }
@@ -67,6 +87,7 @@ function facetCountsFor<T>(items: T[], valueFor: (item: T) => string): Record<st
 
 function App() {
   const [view, setView] = useState<ViewKey>("dashboard");
+  const [sidebarWidth, setSidebarWidth] = useState(initialSidebarWidth);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [crews, setCrews] = useState<Crew[]>([]);
@@ -99,6 +120,14 @@ function App() {
   useEffect(() => {
     pageHeadingRef.current?.focus();
   }, [view]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarWidth));
+    } catch {
+      // Resizing remains available when persistence is blocked.
+    }
+  }, [sidebarWidth]);
 
   useEffect(() => {
     let cancelled = false;
@@ -269,9 +298,9 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" style={{ "--sidebar-width": `${sidebarWidth}px` } as CSSProperties}>
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <aside className="sidebar">
+      <ResizableSidebar onWidthChange={setSidebarWidth} width={sidebarWidth}>
         <div className="brand">
           <div className="brand-mark">AI</div>
           <div>
@@ -296,7 +325,7 @@ function App() {
             );
           })}
         </nav>
-      </aside>
+      </ResizableSidebar>
 
       <main
         aria-busy={initialLoading || scenarioLoading}
