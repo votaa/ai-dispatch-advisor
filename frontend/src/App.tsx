@@ -15,6 +15,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 import { api } from "./api";
+import { CopilotMarkdown } from "./CopilotMarkdown";
 import type {
   Assignment,
   CopilotResponse,
@@ -594,8 +595,8 @@ function App() {
               ) : (
                 chatTurns.map((turn, index) => (
                   <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>
-                    <strong>{turn.question}</strong>
-                    <p>{turn.answer}</p>
+                    <strong className="copilot-question">{turn.question}</strong>
+                    {turn.error ? <p>{turn.answer}</p> : <CopilotMarkdown>{turn.answer}</CopilotMarkdown>}
                     {turn.metadata && (
                       <div className="copilot-metadata">
                         <span className={`copilot-mode copilot-mode-${turn.metadata.execution_mode}`}>

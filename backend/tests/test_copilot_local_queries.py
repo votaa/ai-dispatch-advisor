@@ -118,3 +118,20 @@ def test_geography_and_external_fact_gaps_are_not_inferred(
     assert geography.intent == "incident_geography"
     assert "cannot be verified" in geography.answer
     assert geography.warning == "No geographic hierarchy was inferred from model knowledge."
+
+
+def test_action_oriented_question_does_not_execute_a_dispatch_action(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    assignments_before = services.assignments.list_active()
+
+    response = services.copilot.respond(
+        "Assign the nearest available crew to the highest-priority incident now."
+    )
+
+    assert services.assignments.list_active() == assignments_before
+    assert response.safety_note == (
+        "This copilot response is advisory and does not execute dispatch actions."
+    )

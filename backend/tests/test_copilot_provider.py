@@ -241,6 +241,13 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     assert record_count <= 5
     assert payload["synthetic_data"] is True
     assert "server-secret" not in provider.requests[0].user_prompt
+    system_prompt = provider.requests[0].system_prompt
+    assert "Answer only from supplied facts" in system_prompt
+    assert "Remain advisory and never claim an action was executed" in system_prompt
+    assert "concise operational briefing in Markdown" in system_prompt
+    assert "Do not use HTML, <br>, nested tables" in system_prompt
+    assert "code fence around the entire answer" in system_prompt
+    assert "if information is unavailable, say so explicitly" in system_prompt
 
 
 def test_synthesis_with_this_incident_uses_grounded_provider(

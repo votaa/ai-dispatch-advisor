@@ -1429,13 +1429,142 @@ textarea {
   padding: 14px;
 }
 
-.chat-turn strong {
+.copilot-question {
   display: block;
   margin-bottom: 8px;
 }
 
-.chat-turn p {
+.copilot-markdown {
+  color: #263746;
+  line-height: 1.6;
+  max-width: 72ch;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.copilot-markdown > :first-child {
+  margin-top: 0;
+}
+
+.copilot-markdown > :last-child {
   margin-bottom: 0;
+}
+
+.copilot-markdown h3,
+.copilot-markdown h4,
+.copilot-markdown h5,
+.copilot-markdown h6 {
+  color: #173d56;
+  line-height: 1.3;
+  margin: 20px 0 8px;
+}
+
+.copilot-markdown h3 {
+  border-bottom: 1px solid #cbd9e3;
+  font-size: 20px;
+  padding-bottom: 7px;
+}
+
+.copilot-markdown h4 {
+  font-size: 17px;
+}
+
+.copilot-markdown h5,
+.copilot-markdown h6 {
+  font-size: 15px;
+}
+
+.copilot-markdown p,
+.copilot-markdown ul,
+.copilot-markdown ol,
+.copilot-markdown pre,
+.copilot-markdown .copilot-table-scroll {
+  margin: 0 0 12px;
+}
+
+.copilot-markdown ul,
+.copilot-markdown ol {
+  padding-left: 24px;
+}
+
+.copilot-markdown li + li {
+  margin-top: 5px;
+}
+
+.copilot-markdown code {
+  background: #e4edf3;
+  border: 1px solid #c8d7e1;
+  border-radius: 4px;
+  color: #153c55;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+  padding: 2px 4px;
+}
+
+.copilot-markdown pre {
+  background: #172633;
+  border-radius: 6px;
+  color: #edf5fa;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px;
+}
+
+.copilot-markdown pre code {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  padding: 0;
+}
+
+.copilot-markdown a {
+  color: #1d608c;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.copilot-markdown a:hover {
+  color: #123f5c;
+}
+
+.copilot-markdown hr {
+  border: 0;
+  border-top: 1px solid #cbd9e3;
+  margin: 18px 0;
+}
+
+.copilot-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.copilot-table-scroll:focus-visible {
+  outline: 3px solid #2f6f9f;
+  outline-offset: 2px;
+}
+
+.copilot-markdown table {
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 100%;
+}
+
+.copilot-markdown th,
+.copilot-markdown td {
+  border: 1px solid #c7d3dc;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.copilot-markdown th {
+  background: #ddeaf2;
+  color: #173d56;
+  font-weight: 750;
+}
+
+.copilot-markdown tbody tr:nth-child(even) {
+  background: #edf3f7;
 }
 
 .copilot-metadata {

@@ -603,6 +603,57 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Evidence (1)")).toBeTruthy();
   });
 
+  it("renders safe, semantic Markdown in Copilot responses", async () => {
+    apiMocks.chat.mockResolvedValue({
+      answer: [
+        "# Operational impact",
+        "",
+        "A concise **grounded** summary with `scenario data`.",
+        "",
+        "## Key impacts",
+        "",
+        "- **Safety:** Downed wire controls are required.",
+        "",
+        "| Incident | Customers |",
+        "| --- | ---: |",
+        "| INC-1001 | 500 |",
+        "",
+        "[Source](https://example.com/evidence) [Run script](javascript:alert('unsafe'))<br><script>window.injected = true</script>"
+      ].join("\n"),
+      intent: "grounded_synthesis",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "llm_grounded",
+      scenario_id: "base",
+      generated_at: "2026-08-21T12:00:00Z",
+      data_snapshot_at: null,
+      provider: "ollama",
+      model: "gpt-oss:120b",
+      warning: null,
+      evidence: []
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(await screen.findByRole("heading", { level: 3, name: "Operational impact" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 4, name: "Key impacts" })).toBeTruthy();
+    expect(screen.getByText("grounded").tagName).toBe("STRONG");
+    expect(screen.getByText("scenario data").tagName).toBe("CODE");
+    expect(screen.getByRole("listitem")).toBeTruthy();
+    expect(screen.getByRole("table")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "Copilot response table" })).toBeTruthy();
+    const sourceLink = screen.getByRole("link", { name: "Source" });
+    expect(sourceLink.getAttribute("href")).toBe("https://example.com/evidence");
+    expect(sourceLink.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(screen.queryByRole("link", { name: "Run script" })).toBeNull();
+    expect(screen.getByText("Run script")).toBeTruthy();
+    expect(document.querySelector("script")).toBeNull();
+    expect(screen.queryByText("<br>")).toBeNull();
+  });
+
   it("shows an explicit rule-based fallback warning", async () => {
     apiMocks.chat.mockResolvedValue({
       answer: "Rule-based storm summary.",
