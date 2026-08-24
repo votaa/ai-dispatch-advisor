@@ -10,6 +10,7 @@ import pytest
 from app.scenario_generator import (
     COPILOT_DEMO_CREW_COUNT,
     COPILOT_DEMO_INCIDENT_COUNT,
+    FACILITY_CATALOG,
     MUA_CONTRACTOR_LOCATIONS,
     SERVICE_LOCATIONS,
     VEGETATION_LOCATIONS,
@@ -18,6 +19,7 @@ from app.scenario_generator import (
     generate_scenario,
     load_municipalities,
     write_scenario,
+    validate_critical_facility_linkage,
 )
 from app.geography import GeographyRegistry
 from app.scenario_service import ScenarioService
@@ -47,6 +49,15 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
     assert {row["region"] for row in scenario.weather} == set(REGIONS)
     assert {row["region"] for row in scenario.critical_facilities} == set(REGIONS)
     assert {row["region"] for row in scenario.historical_repairs} == set(REGIONS)
+    facility_keys = {
+        (row["region"], row["feeder"])
+        for row in scenario.critical_facilities
+    }
+    assert all(
+        row["critical_facility"] == "false"
+        or (row["region"], row["feeder"]) in facility_keys
+        for row in scenario.incidents
+    )
 
     distribution = Counter(scenario.crew_types.values())
     assert distribution == {
@@ -95,6 +106,39 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
             assert incident["customers_out"] >= 40
             assert incident["severity"] in {"high", "critical"}
             assert incident["required_skill"] == "line"
+
+
+def test_facility_catalog_uses_approved_level_priority_mapping() -> None:
+    assert {profile.dps_level for profile in FACILITY_CATALOG} == {1, 2, 3}
+    assert all(
+        profile.priority_level == {1: "critical", 2: "high", 3: "medium"}[
+            profile.dps_level
+        ]
+        for profile in FACILITY_CATALOG
+    )
+
+
+def test_linkage_validation_reports_orphan_context() -> None:
+    incident = {
+        "incident_id": "ESD-20260810-0001",
+        "region": "Central-Nassau",
+        "feeder": "FDR-CN-99",
+        "critical_facility": "true",
+    }
+    facility = {
+        "facility_id": "FAC-CN-01",
+        "region": "Central-Nassau",
+        "feeder": "FDR-CN-01",
+    }
+
+    with pytest.raises(ValueError) as error:
+        validate_critical_facility_linkage([incident], [facility])
+
+    message = str(error.value)
+    assert "ESD-20260810-0001" in message
+    assert "Central-Nassau" in message
+    assert "FDR-CN-99" in message
+    assert "FAC-CN-01:FDR-CN-01" in message
 
 
 def test_start_day_locations_use_approved_facilities() -> None:
@@ -225,5 +269,22 @@ def test_copilot_demo_preset_is_bounded_and_geographically_complete() -> None:
     assert any(
         row["facility_name"] == "Arverne Emergency Services Center"
         and row["feeder"] == arverne["feeder"]
+        for row in scenario.critical_facilities
+    )
+    east_meadow = next(
+        row for row in scenario.incidents if row["incident_id"] == "ESD-20260821-0011"
+    )
+    assert east_meadow["municipality"] == "East Meadow"
+    assert east_meadow["feeder"] == "FDR-CN-35"
+    assert east_meadow["critical_facility"] == "true"
+    assert sum(
+        row["critical_facility"] == "true" for row in scenario.incidents
+    ) == 2
+    assert any(
+        row["facility_name"] == "East Meadow Fire Department"
+        and row["facility_type"] == "emergency_services"
+        and row["region"] == east_meadow["region"]
+        and row["feeder"] == east_meadow["feeder"]
+        and row["priority_level"] == "critical"
         for row in scenario.critical_facilities
     )

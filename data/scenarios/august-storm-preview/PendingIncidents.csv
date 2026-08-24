@@ -12,7 +12,7 @@ ESD-20260810-0010,Queens-Nassau,Rockaway Park,FDR-QN-10,medium,unassigned,189,fa
 ESD-20260810-0011,Central-Nassau,Massapequa,FDR-CN-19,low,unassigned,1,false,damaged service drop,low_voltage,138,40.69258,-73.46331,2026-08-10T11:30:00-04:00
 ESD-20260810-0012,Central-Nassau,Mineola,FDR-CN-20,high,unassigned,1051,false,underground cable fault,underground,23,40.73797,-73.64887,2026-08-10T20:30:00-04:00
 ESD-20260810-0013,Eastern Suffolk,East Hampton,FDR-ES-05,high,unassigned,21,false,downed wire,general,139,40.97019,-72.1902,2026-08-10T12:00:00-04:00
-ESD-20260810-0014,Western Suffolk,Ronkonkoma,FDR-WS-10,high,unassigned,639,false,underground cable fault,underground,28,40.8087,-73.11572,2026-08-10T12:15:00-04:00
+ESD-20260810-0014,Western Suffolk,Ronkonkoma,FDR-WS-10,high,unassigned,639,true,underground cable fault,underground,28,40.8087,-73.11572,2026-08-10T12:15:00-04:00
 ESD-20260810-0015,Central-Nassau,Hempstead,FDR-CN-06,critical,unassigned,922,false,transformer fire,line,42,40.71031,-73.60865,2026-08-10T15:15:00-04:00
 ESD-20260810-0016,Western Suffolk,Babylon,FDR-WS-01,medium,unassigned,455,false,tree limb,vegetation,27,40.69706,-73.3373,2026-08-10T11:30:00-04:00
 ESD-20260810-0017,Queens-Nassau,Elmont,FDR-QN-01,high,unassigned,371,false,broken crossarm,line,45,40.69403,-73.70757,2026-08-10T16:30:00-04:00
@@ -45,7 +45,7 @@ ESD-20260810-0043,Western Suffolk,Copiague,FDR-WS-37,low,unassigned,178,false,no
 ESD-20260810-0044,Western Suffolk,Huntington,FDR-WS-08,low,unassigned,1,false,damaged service drop,low_voltage,44,40.86111,-73.42403,2026-08-10T12:15:00-04:00
 ESD-20260810-0045,Eastern Suffolk,Westhampton Beach,FDR-ES-07,high,unassigned,1302,false,broken crossarm,line,163,40.81033,-72.63505,2026-08-10T12:45:00-04:00
 ESD-20260810-0046,Western Suffolk,Bay Shore,FDR-WS-39,high,unassigned,867,false,broken crossarm,line,102,40.72899,-73.24331,2026-08-10T14:15:00-04:00
-ESD-20260810-0047,Central-Nassau,East Meadow,FDR-CN-40,high,unassigned,371,true,underground cable fault,underground,174,40.70673,-73.55639,2026-08-10T14:30:00-04:00
+ESD-20260810-0047,Central-Nassau,East Meadow,FDR-CN-40,high,unassigned,371,false,underground cable fault,underground,174,40.70673,-73.55639,2026-08-10T14:30:00-04:00
 ESD-20260810-0048,Queens-Nassau,Hewlett,FDR-QN-14,low,unassigned,1,false,damaged service drop,low_voltage,126,40.65289,-73.68853,2026-08-10T10:00:00-04:00
 ESD-20260810-0049,Eastern Suffolk,Hampton Bays,FDR-ES-27,high,unassigned,348,false,underground cable fault,underground,33,40.87698,-72.51741,2026-08-10T12:45:00-04:00
 ESD-20260810-0050,Western Suffolk,Huntington,FDR-WS-19,high,unassigned,492,false,broken crossarm,line,178,40.86639,-73.42611,2026-08-10T14:00:00-04:00
@@ -95,7 +95,7 @@ ESD-20260810-0093,Western Suffolk,Lindenhurst,FDR-WS-39,medium,unassigned,247,fa
 ESD-20260810-0094,Eastern Suffolk,Greenport,FDR-ES-34,high,unassigned,123,false,burning wire,general,30,41.11219,-72.37045,2026-08-10T13:45:00-04:00
 ESD-20260810-0095,Queens-Nassau,Cedarhurst,FDR-QN-09,high,unassigned,1130,false,tree on primary,vegetation,53,40.62904,-73.71865,2026-08-10T18:45:00-04:00
 ESD-20260810-0096,Central-Nassau,Westbury,FDR-CN-31,high,unassigned,153,false,downed wire,general,176,40.75782,-73.58421,2026-08-10T14:15:00-04:00
-ESD-20260810-0097,Western Suffolk,Commack,FDR-WS-19,high,unassigned,1125,true,broken crossarm,line,21,40.83637,-73.30381,2026-08-10T15:45:00-04:00
+ESD-20260810-0097,Western Suffolk,Commack,FDR-WS-19,high,unassigned,1125,false,broken crossarm,line,21,40.83637,-73.30381,2026-08-10T15:45:00-04:00
 ESD-20260810-0098,Eastern Suffolk,Yaphank,FDR-ES-09,high,unassigned,985,false,broken crossarm,line,89,40.83054,-72.92533,2026-08-10T13:30:00-04:00
 ESD-20260810-0099,Queens-Nassau,Woodmere,FDR-QN-38,low,unassigned,142,false,none,general,127,40.62489,-73.70727,2026-08-10T12:15:00-04:00
 ESD-20260810-0100,Central-Nassau,Massapequa,FDR-CN-32,low,unassigned,129,false,none,general,145,40.68687,-73.48198,2026-08-10T21:00:00-04:00
@@ -113,7 +113,7 @@ ESD-20260810-0111,Queens-Nassau,Inwood,FDR-QN-15,high,unassigned,1174,false,unde
 ESD-20260810-0112,Eastern Suffolk,Yaphank,FDR-ES-37,high,unassigned,294,false,burning wire,general,126,40.83759,-72.92434,2026-08-10T14:15:00-04:00
 ESD-20260810-0113,Queens-Nassau,Hewlett,FDR-QN-20,low,unassigned,1,false,damaged service drop,low_voltage,55,40.655,-73.68879,2026-08-10T22:45:00-04:00
 ESD-20260810-0114,Central-Nassau,Hempstead,FDR-CN-17,medium,unassigned,241,false,tree limb,vegetation,173,40.71765,-73.62349,2026-08-10T21:00:00-04:00
-ESD-20260810-0115,Queens-Nassau,Valley Stream,FDR-QN-05,high,unassigned,1214,true,broken crossarm,line,118,40.67527,-73.70119,2026-08-10T20:30:00-04:00
+ESD-20260810-0115,Queens-Nassau,Valley Stream,FDR-QN-05,high,unassigned,1214,false,broken crossarm,line,118,40.67527,-73.70119,2026-08-10T20:30:00-04:00
 ESD-20260810-0116,Central-Nassau,Uniondale,FDR-CN-06,high,unassigned,1563,false,broken crossarm,line,68,40.69744,-73.58179,2026-08-10T10:00:00-04:00
 ESD-20260810-0117,Central-Nassau,Massapequa,FDR-CN-02,high,unassigned,212,false,downed wire,general,177,40.68233,-73.47376,2026-08-10T15:00:00-04:00
 ESD-20260810-0118,Eastern Suffolk,Greenport,FDR-ES-13,high,unassigned,347,false,underground cable fault,underground,164,41.10764,-72.37021,2026-08-10T17:30:00-04:00
@@ -127,7 +127,7 @@ ESD-20260810-0125,Central-Nassau,Hempstead,FDR-CN-37,medium,unassigned,156,false
 ESD-20260810-0126,Western Suffolk,Commack,FDR-WS-20,high,unassigned,247,false,underground cable fault,underground,67,40.83663,-73.29053,2026-08-10T15:15:00-04:00
 ESD-20260810-0127,Queens-Nassau,Far Rockaway,FDR-QN-26,high,unassigned,1340,false,tree on primary,vegetation,110,40.60249,-73.74621,2026-08-10T16:00:00-04:00
 ESD-20260810-0128,Western Suffolk,Amityville,FDR-WS-23,high,unassigned,284,false,burning wire,general,97,40.68744,-73.41512,2026-08-10T17:30:00-04:00
-ESD-20260810-0129,Queens-Nassau,Cedarhurst,FDR-QN-15,critical,unassigned,78,false,transformer fire,line,151,40.62037,-73.72306,2026-08-10T15:00:00-04:00
+ESD-20260810-0129,Queens-Nassau,Cedarhurst,FDR-QN-15,critical,unassigned,78,true,transformer fire,line,151,40.62037,-73.72306,2026-08-10T15:00:00-04:00
 ESD-20260810-0130,Queens-Nassau,Lawrence,FDR-QN-01,medium,unassigned,311,false,tree limb,vegetation,16,40.62271,-73.73646,2026-08-10T18:00:00-04:00
 ESD-20260810-0131,Eastern Suffolk,Wading River,FDR-ES-30,high,unassigned,1347,false,tree on primary,vegetation,126,40.95092,-72.84213,2026-08-10T20:00:00-04:00
 ESD-20260810-0132,Western Suffolk,Islip,FDR-WS-18,critical,unassigned,672,false,transformer fire,line,6,40.74054,-73.21683,2026-08-10T17:30:00-04:00
@@ -135,7 +135,7 @@ ESD-20260810-0133,Central-Nassau,Hicksville,FDR-CN-37,critical,assigned,1761,fal
 ESD-20260810-0134,Central-Nassau,Uniondale,FDR-CN-25,high,unassigned,77,false,broken crossarm,line,131,40.70389,-73.58466,2026-08-10T19:15:00-04:00
 ESD-20260810-0135,Eastern Suffolk,Manorville,FDR-ES-36,critical,unassigned,174,false,transformer fire,line,62,40.88343,-72.81737,2026-08-10T12:45:00-04:00
 ESD-20260810-0136,Eastern Suffolk,Southampton,FDR-ES-34,high,unassigned,372,false,downed wire,general,47,40.88427,-72.39315,2026-08-10T19:15:00-04:00
-ESD-20260810-0137,Eastern Suffolk,Southampton,FDR-ES-15,high,unassigned,123,true,underground cable fault,underground,142,40.87423,-72.39614,2026-08-10T21:45:00-04:00
+ESD-20260810-0137,Eastern Suffolk,Southampton,FDR-ES-15,high,unassigned,123,false,underground cable fault,underground,142,40.87423,-72.39614,2026-08-10T21:45:00-04:00
 ESD-20260810-0138,Western Suffolk,Amityville,FDR-WS-21,high,unassigned,348,false,downed wire,general,48,40.68034,-73.42504,2026-08-10T20:30:00-04:00
 ESD-20260810-0139,Queens-Nassau,Woodmere,FDR-QN-17,low,unassigned,1,false,damaged service drop,low_voltage,39,40.63635,-73.7082,2026-08-10T19:15:00-04:00
 ESD-20260810-0140,Central-Nassau,Uniondale,FDR-CN-16,high,unassigned,222,false,broken crossarm,line,177,40.71226,-73.60287,2026-08-10T13:15:00-04:00
@@ -149,8 +149,8 @@ ESD-20260810-0147,Central-Nassau,Freeport,FDR-CN-12,low,unassigned,1,false,damag
 ESD-20260810-0148,Queens-Nassau,Woodmere,FDR-QN-33,high,unassigned,1314,false,tree on primary,vegetation,105,40.62694,-73.71912,2026-08-10T21:30:00-04:00
 ESD-20260810-0149,Central-Nassau,Massapequa,FDR-CN-40,low,unassigned,90,false,none,general,49,40.67141,-73.46308,2026-08-10T21:00:00-04:00
 ESD-20260810-0150,Western Suffolk,Bay Shore,FDR-WS-27,high,unassigned,6,false,downed wire,general,76,40.72701,-73.235,2026-08-10T18:30:00-04:00
-ESD-20260810-0151,Western Suffolk,Brentwood,FDR-WS-05,high,unassigned,635,true,underground cable fault,underground,110,40.78795,-73.252,2026-08-10T15:30:00-04:00
-ESD-20260810-0152,Western Suffolk,Brentwood,FDR-WS-18,high,unassigned,1449,false,broken crossarm,line,135,40.78024,-73.2375,2026-08-10T19:00:00-04:00
+ESD-20260810-0151,Western Suffolk,Brentwood,FDR-WS-05,high,unassigned,635,false,underground cable fault,underground,110,40.78795,-73.252,2026-08-10T15:30:00-04:00
+ESD-20260810-0152,Western Suffolk,Brentwood,FDR-WS-18,high,unassigned,1449,true,broken crossarm,line,135,40.78024,-73.2375,2026-08-10T19:00:00-04:00
 ESD-20260810-0153,Western Suffolk,Smithtown,FDR-WS-20,critical,unassigned,1185,false,transformer fire,line,16,40.84712,-73.20853,2026-08-10T17:15:00-04:00
 ESD-20260810-0154,Western Suffolk,Babylon,FDR-WS-26,high,unassigned,1541,false,tree on primary,vegetation,138,40.69182,-73.3222,2026-08-10T13:45:00-04:00
 ESD-20260810-0155,Central-Nassau,Westbury,FDR-CN-34,high,unassigned,103,false,broken crossarm,line,48,40.76147,-73.58963,2026-08-10T13:30:00-04:00
@@ -179,20 +179,20 @@ ESD-20260810-0177,Western Suffolk,Smithtown,FDR-WS-25,high,unassigned,687,false,
 ESD-20260810-0178,Eastern Suffolk,Montauk,FDR-ES-26,medium,unassigned,361,false,tree limb,vegetation,72,41.03175,-71.94975,2026-08-10T13:15:00-04:00
 ESD-20260810-0179,Central-Nassau,Hicksville,FDR-CN-15,low,unassigned,177,false,none,general,47,40.77629,-73.53088,2026-08-10T15:30:00-04:00
 ESD-20260810-0180,Queens-Nassau,Cedarhurst,FDR-QN-27,low,unassigned,1,false,damaged service drop,low_voltage,157,40.61092,-73.72036,2026-08-10T15:45:00-04:00
-ESD-20260810-0181,Eastern Suffolk,Manorville,FDR-ES-17,high,unassigned,858,true,broken crossarm,line,142,40.88129,-72.80874,2026-08-10T19:15:00-04:00
+ESD-20260810-0181,Eastern Suffolk,Manorville,FDR-ES-17,high,unassigned,858,false,broken crossarm,line,142,40.88129,-72.80874,2026-08-10T19:15:00-04:00
 ESD-20260810-0182,Queens-Nassau,Elmont,FDR-QN-40,high,unassigned,296,false,burning wire,general,13,40.69873,-73.70691,2026-08-10T12:45:00-04:00
 ESD-20260810-0183,Western Suffolk,Amityville,FDR-WS-24,high,unassigned,18,false,downed wire,general,6,40.68193,-73.40732,2026-08-10T12:15:00-04:00
 ESD-20260810-0184,Central-Nassau,Hicksville,FDR-CN-05,high,unassigned,246,false,tree on primary,vegetation,81,40.76595,-73.52029,2026-08-10T20:00:00-04:00
 ESD-20260810-0185,Eastern Suffolk,Calverton,FDR-ES-36,low,unassigned,1,false,damaged service drop,low_voltage,12,40.91058,-72.73958,2026-08-10T21:30:00-04:00
-ESD-20260810-0186,Eastern Suffolk,Westhampton Beach,FDR-ES-13,high,unassigned,395,true,downed wire,general,137,40.80444,-72.65729,2026-08-10T14:15:00-04:00
+ESD-20260810-0186,Eastern Suffolk,Westhampton Beach,FDR-ES-13,high,unassigned,395,false,downed wire,general,137,40.80444,-72.65729,2026-08-10T14:15:00-04:00
 ESD-20260810-0187,Central-Nassau,Westbury,FDR-CN-19,high,assigned,2286,false,transformer fire,line,130,40.75822,-73.59505,2026-08-10T20:30:00-04:00
 ESD-20260810-0188,Western Suffolk,Huntington,FDR-WS-13,low,assigned,1883,false,equipment failure,general,36,40.87018,-73.41857,2026-08-10T12:15:00-04:00
 ESD-20260810-0189,Eastern Suffolk,Wading River,FDR-ES-06,low,unassigned,1,false,damaged service drop,low_voltage,137,40.96097,-72.83983,2026-08-10T11:15:00-04:00
 ESD-20260810-0190,Queens-Nassau,Arverne,FDR-QN-20,medium,unassigned,398,false,tree limb,vegetation,59,40.59274,-73.79288,2026-08-10T14:15:00-04:00
 ESD-20260810-0191,Western Suffolk,Smithtown,FDR-WS-34,low,unassigned,1,false,damaged service drop,low_voltage,70,40.84418,-73.19684,2026-08-10T14:30:00-04:00
 ESD-20260810-0192,Eastern Suffolk,Hampton Bays,FDR-ES-36,high,unassigned,438,false,tree on primary,vegetation,33,40.86107,-72.51798,2026-08-10T17:15:00-04:00
-ESD-20260810-0193,Queens-Nassau,Lawrence,FDR-QN-34,high,unassigned,553,true,broken crossarm,line,90,40.62722,-73.74158,2026-08-10T12:45:00-04:00
-ESD-20260810-0194,Central-Nassau,Mineola,FDR-CN-31,high,unassigned,1538,true,broken crossarm,line,51,40.74732,-73.63346,2026-08-10T17:15:00-04:00
+ESD-20260810-0193,Queens-Nassau,Lawrence,FDR-QN-34,high,unassigned,553,false,broken crossarm,line,90,40.62722,-73.74158,2026-08-10T12:45:00-04:00
+ESD-20260810-0194,Central-Nassau,Mineola,FDR-CN-31,high,unassigned,1538,false,broken crossarm,line,51,40.74732,-73.63346,2026-08-10T17:15:00-04:00
 ESD-20260810-0195,Central-Nassau,Mineola,FDR-CN-13,low,unassigned,39,false,none,general,47,40.75988,-73.64347,2026-08-10T21:30:00-04:00
 ESD-20260810-0196,Central-Nassau,Uniondale,FDR-CN-13,high,unassigned,319,false,tree on primary,vegetation,117,40.70808,-73.60008,2026-08-10T11:15:00-04:00
 ESD-20260810-0197,Eastern Suffolk,Center Moriches,FDR-ES-25,high,unassigned,1006,false,tree on primary,vegetation,63,40.81038,-72.79235,2026-08-10T14:30:00-04:00
@@ -226,7 +226,7 @@ ESD-20260810-0224,Western Suffolk,Smithtown,FDR-WS-33,medium,unassigned,85,false
 ESD-20260810-0225,Eastern Suffolk,Manorville,FDR-ES-22,critical,unassigned,416,false,transformer fire,line,164,40.87755,-72.80794,2026-08-10T14:15:00-04:00
 ESD-20260810-0226,Eastern Suffolk,Center Moriches,FDR-ES-29,high,unassigned,849,false,broken crossarm,line,144,40.79201,-72.78596,2026-08-10T11:00:00-04:00
 ESD-20260810-0227,Central-Nassau,Mineola,FDR-CN-16,high,unassigned,143,false,underground cable fault,underground,127,40.75477,-73.6322,2026-08-10T20:45:00-04:00
-ESD-20260810-0228,Central-Nassau,Hempstead,FDR-CN-26,high,unassigned,8,true,downed wire,general,18,40.70348,-73.62354,2026-08-10T11:30:00-04:00
+ESD-20260810-0228,Central-Nassau,Hempstead,FDR-CN-26,high,unassigned,8,false,downed wire,general,18,40.70348,-73.62354,2026-08-10T11:30:00-04:00
 ESD-20260810-0229,Eastern Suffolk,Yaphank,FDR-ES-15,high,unassigned,970,false,tree on primary,vegetation,146,40.84621,-72.91661,2026-08-10T14:00:00-04:00
 ESD-20260810-0230,Eastern Suffolk,Center Moriches,FDR-ES-30,medium,unassigned,83,false,partial outage,general,105,40.81225,-72.80001,2026-08-10T15:00:00-04:00
 ESD-20260810-0231,Western Suffolk,Huntington,FDR-WS-34,high,unassigned,331,false,underground cable fault,underground,133,40.87456,-73.43246,2026-08-10T21:15:00-04:00
@@ -235,7 +235,7 @@ ESD-20260810-0233,Queens-Nassau,Valley Stream,FDR-QN-26,low,unassigned,14,false,
 ESD-20260810-0234,Queens-Nassau,Edgemere,FDR-QN-08,low,unassigned,14,false,none,general,111,40.6049,-73.76847,2026-08-10T22:00:00-04:00
 ESD-20260810-0235,Central-Nassau,Wantagh,FDR-CN-14,high,unassigned,347,false,downed wire,general,7,40.6831,-73.51701,2026-08-10T16:00:00-04:00
 ESD-20260810-0236,Queens-Nassau,Edgemere,FDR-QN-32,medium,unassigned,561,false,tree limb,vegetation,100,40.60821,-73.76376,2026-08-10T14:45:00-04:00
-ESD-20260810-0237,Central-Nassau,Hempstead,FDR-CN-07,high,unassigned,232,false,downed wire,general,135,40.69707,-73.62606,2026-08-10T11:45:00-04:00
+ESD-20260810-0237,Central-Nassau,Hempstead,FDR-CN-07,high,unassigned,232,true,downed wire,general,135,40.69707,-73.62606,2026-08-10T11:45:00-04:00
 ESD-20260810-0238,Eastern Suffolk,Montauk,FDR-ES-37,high,unassigned,269,false,downed wire,general,172,41.02772,-71.95564,2026-08-10T15:15:00-04:00
 ESD-20260810-0239,Queens-Nassau,Hewlett,FDR-QN-31,high,unassigned,1700,false,broken crossarm,line,136,40.65138,-73.69486,2026-08-10T14:30:00-04:00
 ESD-20260810-0240,Central-Nassau,Mineola,FDR-CN-06,high,unassigned,339,false,burning wire,general,77,40.75837,-73.65,2026-08-10T13:00:00-04:00
@@ -246,7 +246,7 @@ ESD-20260810-0244,Western Suffolk,Babylon,FDR-WS-39,medium,unassigned,414,false,
 ESD-20260810-0245,Western Suffolk,Copiague,FDR-WS-26,low,unassigned,125,false,none,general,95,40.67432,-73.39363,2026-08-10T20:00:00-04:00
 ESD-20260810-0246,Central-Nassau,Hempstead,FDR-CN-32,low,unassigned,170,false,none,general,149,40.70674,-73.62147,2026-08-10T18:00:00-04:00
 ESD-20260810-0247,Western Suffolk,Commack,FDR-WS-30,medium,unassigned,334,false,partial outage,general,128,40.83538,-73.30315,2026-08-10T16:30:00-04:00
-ESD-20260810-0248,Western Suffolk,Smithtown,FDR-WS-36,high,unassigned,285,true,downed wire,general,156,40.8555,-73.19962,2026-08-10T10:00:00-04:00
+ESD-20260810-0248,Western Suffolk,Smithtown,FDR-WS-36,high,unassigned,285,false,downed wire,general,156,40.8555,-73.19962,2026-08-10T10:00:00-04:00
 ESD-20260810-0249,Queens-Nassau,Hewlett,FDR-QN-28,high,unassigned,210,false,tree on primary,vegetation,65,40.64958,-73.69438,2026-08-10T19:45:00-04:00
 ESD-20260810-0250,Central-Nassau,Westbury,FDR-CN-08,critical,unassigned,2006,false,transformer fire,line,71,40.7546,-73.57609,2026-08-10T16:30:00-04:00
 ESD-20260810-0251,Western Suffolk,Babylon,FDR-WS-05,high,unassigned,145,false,burning wire,general,135,40.69334,-73.32852,2026-08-10T13:00:00-04:00
@@ -290,13 +290,13 @@ ESD-20260810-0288,Queens-Nassau,Woodmere,FDR-QN-12,high,unassigned,303,false,dow
 ESD-20260810-0289,Eastern Suffolk,Wading River,FDR-ES-12,high,unassigned,147,false,downed wire,general,67,40.94724,-72.83143,2026-08-10T15:00:00-04:00
 ESD-20260810-0290,Queens-Nassau,Lawrence,FDR-QN-20,low,unassigned,99,false,none,general,174,40.61597,-73.72621,2026-08-10T20:00:00-04:00
 ESD-20260810-0291,Western Suffolk,Bay Shore,FDR-WS-30,high,unassigned,1402,false,broken crossarm,line,87,40.73187,-73.23788,2026-08-10T17:45:00-04:00
-ESD-20260810-0292,Queens-Nassau,Far Rockaway,FDR-QN-06,critical,unassigned,552,true,transformer fire,line,159,40.61156,-73.74841,2026-08-10T18:15:00-04:00
+ESD-20260810-0292,Queens-Nassau,Far Rockaway,FDR-QN-06,critical,unassigned,552,false,transformer fire,line,159,40.61156,-73.74841,2026-08-10T18:15:00-04:00
 ESD-20260810-0293,Central-Nassau,Merrick,FDR-CN-22,medium,assigned,1,false,damaged service drop,low_voltage,142,40.67002,-73.54662,2026-08-10T14:00:00-04:00
 ESD-20260810-0294,Central-Nassau,Uniondale,FDR-CN-30,medium,unassigned,100,false,tree limb,vegetation,46,40.70309,-73.60052,2026-08-10T15:00:00-04:00
 ESD-20260810-0295,Queens-Nassau,Floral Park,FDR-QN-32,medium,unassigned,774,false,tree limb,vegetation,135,40.73309,-73.71552,2026-08-10T11:30:00-04:00
 ESD-20260810-0296,Eastern Suffolk,East Hampton,FDR-ES-07,high,unassigned,558,false,broken crossarm,line,17,40.97091,-72.18237,2026-08-10T19:15:00-04:00
 ESD-20260810-0297,Eastern Suffolk,Southampton,FDR-ES-03,low,assigned,1,false,damaged service drop,low_voltage,107,40.88804,-72.3858,2026-08-10T13:15:00-04:00
-ESD-20260810-0298,Queens-Nassau,Hewlett,FDR-QN-03,high,unassigned,183,true,underground cable fault,underground,87,40.65104,-73.68712,2026-08-10T15:15:00-04:00
+ESD-20260810-0298,Queens-Nassau,Hewlett,FDR-QN-03,high,unassigned,183,false,underground cable fault,underground,87,40.65104,-73.68712,2026-08-10T15:15:00-04:00
 ESD-20260810-0299,Central-Nassau,Mineola,FDR-CN-25,high,unassigned,273,false,burning wire,general,111,40.73732,-73.64332,2026-08-10T21:15:00-04:00
 ESD-20260810-0300,Queens-Nassau,Rockaway Park,FDR-QN-33,medium,unassigned,130,false,partial outage,general,59,40.57555,-73.84112,2026-08-10T15:45:00-04:00
 ESD-20260810-0301,Western Suffolk,Bay Shore,FDR-WS-13,high,unassigned,970,false,underground cable fault,underground,60,40.72506,-73.23534,2026-08-10T19:30:00-04:00
@@ -304,7 +304,7 @@ ESD-20260810-0302,Western Suffolk,Commack,FDR-WS-06,high,unassigned,350,false,do
 ESD-20260810-0303,Eastern Suffolk,Southampton,FDR-ES-10,medium,unassigned,358,false,tree limb,vegetation,44,40.87676,-72.38714,2026-08-10T22:00:00-04:00
 ESD-20260810-0304,Eastern Suffolk,Riverhead,FDR-ES-13,medium,unassigned,592,false,tree limb,vegetation,132,40.90536,-72.67371,2026-08-10T20:45:00-04:00
 ESD-20260810-0305,Central-Nassau,Garden City,FDR-CN-22,high,unassigned,286,false,broken crossarm,line,81,40.72711,-73.62659,2026-08-10T21:45:00-04:00
-ESD-20260810-0306,Queens-Nassau,Lawrence,FDR-QN-16,high,unassigned,463,false,broken crossarm,line,96,40.61397,-73.73329,2026-08-10T17:00:00-04:00
+ESD-20260810-0306,Queens-Nassau,Lawrence,FDR-QN-16,high,unassigned,463,true,broken crossarm,line,96,40.61397,-73.73329,2026-08-10T17:00:00-04:00
 ESD-20260810-0307,Queens-Nassau,Woodmere,FDR-QN-17,high,unassigned,964,false,underground cable fault,underground,140,40.64253,-73.71818,2026-08-10T18:45:00-04:00
 ESD-20260810-0308,Western Suffolk,Commack,FDR-WS-19,low,unassigned,170,false,none,general,24,40.84816,-73.30044,2026-08-10T14:15:00-04:00
 ESD-20260810-0309,Central-Nassau,Merrick,FDR-CN-03,high,unassigned,1096,false,broken crossarm,line,136,40.6716,-73.56258,2026-08-10T20:00:00-04:00
@@ -344,7 +344,7 @@ ESD-20260810-0342,Western Suffolk,Huntington,FDR-WS-26,high,unassigned,734,false
 ESD-20260810-0343,Queens-Nassau,Inwood,FDR-QN-27,high,assigned,515,false,arcing wire,general,87,40.61562,-73.7498,2026-08-10T20:45:00-04:00
 ESD-20260810-0344,Central-Nassau,Levittown,FDR-CN-30,high,unassigned,123,false,underground cable fault,underground,87,40.72853,-73.50417,2026-08-10T18:45:00-04:00
 ESD-20260810-0345,Western Suffolk,Lindenhurst,FDR-WS-36,high,unassigned,25,false,downed wire,general,8,40.68398,-73.37073,2026-08-10T16:45:00-04:00
-ESD-20260810-0346,Queens-Nassau,Lawrence,FDR-QN-13,high,unassigned,324,false,burning wire,general,63,40.61763,-73.72385,2026-08-10T22:00:00-04:00
+ESD-20260810-0346,Queens-Nassau,Lawrence,FDR-QN-13,high,unassigned,324,true,burning wire,general,63,40.61763,-73.72385,2026-08-10T22:00:00-04:00
 ESD-20260810-0347,Eastern Suffolk,Center Moriches,FDR-ES-14,high,unassigned,142,false,underground cable fault,underground,111,40.80393,-72.7903,2026-08-10T18:45:00-04:00
 ESD-20260810-0348,Central-Nassau,Uniondale,FDR-CN-15,low,unassigned,1,false,damaged service drop,low_voltage,162,40.70038,-73.59152,2026-08-10T10:00:00-04:00
 ESD-20260810-0349,Eastern Suffolk,Wading River,FDR-ES-01,high,unassigned,170,false,burning wire,general,32,40.94522,-72.83164,2026-08-10T11:30:00-04:00
@@ -401,7 +401,7 @@ ESD-20260810-0399,Western Suffolk,Deer Park,FDR-WS-20,medium,unassigned,62,false
 ESD-20260810-0400,Queens-Nassau,Arverne,FDR-QN-35,low,unassigned,94,false,none,general,18,40.58645,-73.79766,2026-08-10T22:15:00-04:00
 ESD-20260810-0401,Western Suffolk,Bay Shore,FDR-WS-10,critical,assigned,2710,false,broken crossarm,line,159,40.7269,-73.23983,2026-08-10T16:45:00-04:00
 ESD-20260810-0402,Eastern Suffolk,Montauk,FDR-ES-24,high,unassigned,261,false,burning wire,general,77,41.02524,-71.94391,2026-08-10T14:45:00-04:00
-ESD-20260810-0403,Western Suffolk,Huntington,FDR-WS-04,high,unassigned,431,true,tree on primary,vegetation,102,40.86748,-73.4191,2026-08-10T11:00:00-04:00
+ESD-20260810-0403,Western Suffolk,Huntington,FDR-WS-04,high,unassigned,431,false,tree on primary,vegetation,102,40.86748,-73.4191,2026-08-10T11:00:00-04:00
 ESD-20260810-0404,Central-Nassau,Levittown,FDR-CN-03,low,unassigned,1,false,damaged service drop,low_voltage,64,40.71494,-73.5151,2026-08-10T19:15:00-04:00
 ESD-20260810-0405,Central-Nassau,East Meadow,FDR-CN-04,low,unassigned,1,false,damaged service drop,low_voltage,161,40.70459,-73.56372,2026-08-10T15:00:00-04:00
 ESD-20260810-0406,Queens-Nassau,Lawrence,FDR-QN-05,low,unassigned,1,false,damaged service drop,low_voltage,76,40.62639,-73.71767,2026-08-10T17:00:00-04:00
@@ -413,7 +413,7 @@ ESD-20260810-0411,Western Suffolk,Smithtown,FDR-WS-12,medium,unassigned,628,fals
 ESD-20260810-0412,Western Suffolk,Commack,FDR-WS-38,high,unassigned,333,false,burning wire,general,154,40.84022,-73.28721,2026-08-10T21:15:00-04:00
 ESD-20260810-0413,Western Suffolk,Islip,FDR-WS-39,low,unassigned,9,false,none,general,54,40.73293,-73.2088,2026-08-10T15:15:00-04:00
 ESD-20260810-0414,Eastern Suffolk,Manorville,FDR-ES-38,high,unassigned,508,false,underground cable fault,underground,101,40.86771,-72.81653,2026-08-10T17:00:00-04:00
-ESD-20260810-0415,Western Suffolk,Islip,FDR-WS-39,high,unassigned,745,true,underground cable fault,underground,47,40.72999,-73.20994,2026-08-10T14:00:00-04:00
+ESD-20260810-0415,Western Suffolk,Islip,FDR-WS-39,high,unassigned,745,false,underground cable fault,underground,47,40.72999,-73.20994,2026-08-10T14:00:00-04:00
 ESD-20260810-0416,Western Suffolk,Copiague,FDR-WS-03,low,unassigned,1,false,damaged service drop,low_voltage,115,40.69233,-73.39875,2026-08-10T16:15:00-04:00
 ESD-20260810-0417,Western Suffolk,Bay Shore,FDR-WS-11,high,unassigned,221,false,burning wire,general,124,40.71949,-73.25163,2026-08-10T15:15:00-04:00
 ESD-20260810-0418,Eastern Suffolk,Hampton Bays,FDR-ES-07,critical,unassigned,1642,false,transformer fire,line,36,40.88087,-72.52059,2026-08-10T10:15:00-04:00
@@ -442,7 +442,7 @@ ESD-20260810-0440,Western Suffolk,Amityville,FDR-WS-33,high,unassigned,90,false,
 ESD-20260810-0441,Queens-Nassau,Rockaway Park,FDR-QN-33,medium,unassigned,821,false,tree limb,vegetation,148,40.58038,-73.84211,2026-08-10T17:45:00-04:00
 ESD-20260810-0442,Western Suffolk,Copiague,FDR-WS-15,high,unassigned,429,false,downed wire,general,59,40.68546,-73.40296,2026-08-10T19:45:00-04:00
 ESD-20260810-0443,Eastern Suffolk,East Hampton,FDR-ES-22,high,unassigned,382,false,downed wire,general,18,40.97534,-72.17335,2026-08-10T20:15:00-04:00
-ESD-20260810-0444,Western Suffolk,Babylon,FDR-WS-08,critical,unassigned,589,false,transformer fire,line,155,40.69809,-73.33648,2026-08-10T21:00:00-04:00
+ESD-20260810-0444,Western Suffolk,Babylon,FDR-WS-08,critical,unassigned,589,true,transformer fire,line,155,40.69809,-73.33648,2026-08-10T21:00:00-04:00
 ESD-20260810-0445,Queens-Nassau,Far Rockaway,FDR-QN-02,high,unassigned,24,false,downed wire,general,106,40.59735,-73.74749,2026-08-10T18:00:00-04:00
 ESD-20260810-0446,Western Suffolk,Lindenhurst,FDR-WS-27,critical,unassigned,1748,false,transformer fire,line,73,40.67763,-73.38029,2026-08-10T20:45:00-04:00
 ESD-20260810-0447,Western Suffolk,Amityville,FDR-WS-26,high,unassigned,209,false,downed wire,general,23,40.68673,-73.4202,2026-08-10T20:00:00-04:00
@@ -476,7 +476,7 @@ ESD-20260810-0474,Western Suffolk,Ronkonkoma,FDR-WS-31,high,assigned,478,false,d
 ESD-20260810-0475,Western Suffolk,Smithtown,FDR-WS-01,low,unassigned,1,false,damaged service drop,low_voltage,135,40.85833,-73.21033,2026-08-10T12:15:00-04:00
 ESD-20260810-0476,Western Suffolk,Commack,FDR-WS-18,high,unassigned,111,false,underground cable fault,underground,170,40.85336,-73.29283,2026-08-10T16:15:00-04:00
 ESD-20260810-0477,Queens-Nassau,Far Rockaway,FDR-QN-07,medium,unassigned,355,false,partial outage,general,168,40.5982,-73.74316,2026-08-10T22:30:00-04:00
-ESD-20260810-0478,Queens-Nassau,Edgemere,FDR-QN-39,critical,unassigned,1516,true,transformer fire,line,72,40.5888,-73.76904,2026-08-10T22:45:00-04:00
+ESD-20260810-0478,Queens-Nassau,Edgemere,FDR-QN-39,critical,unassigned,1516,false,transformer fire,line,72,40.5888,-73.76904,2026-08-10T22:45:00-04:00
 ESD-20260810-0479,Queens-Nassau,Elmont,FDR-QN-11,high,unassigned,89,false,burning wire,general,135,40.69188,-73.71064,2026-08-10T12:15:00-04:00
 ESD-20260810-0480,Central-Nassau,Wantagh,FDR-CN-28,critical,unassigned,143,false,transformer fire,line,32,40.68682,-73.51292,2026-08-10T22:45:00-04:00
 ESD-20260810-0481,Western Suffolk,Bay Shore,FDR-WS-36,high,unassigned,1485,false,broken crossarm,line,122,40.72254,-73.24045,2026-08-10T12:00:00-04:00
@@ -508,7 +508,7 @@ ESD-20260810-0506,Eastern Suffolk,Center Moriches,FDR-ES-24,high,unassigned,42,f
 ESD-20260810-0507,Queens-Nassau,Rockaway Park,FDR-QN-40,low,unassigned,81,false,none,general,10,40.57701,-73.8272,2026-08-10T22:15:00-04:00
 ESD-20260810-0508,Eastern Suffolk,Calverton,FDR-ES-05,high,unassigned,903,false,tree on primary,vegetation,37,40.911,-72.74253,2026-08-10T11:15:00-04:00
 ESD-20260810-0509,Queens-Nassau,Far Rockaway,FDR-QN-34,high,unassigned,106,false,tree on primary,vegetation,168,40.60185,-73.74824,2026-08-10T14:15:00-04:00
-ESD-20260810-0510,Eastern Suffolk,East Hampton,FDR-ES-06,high,unassigned,195,false,underground cable fault,underground,140,40.97521,-72.17568,2026-08-10T19:30:00-04:00
+ESD-20260810-0510,Eastern Suffolk,East Hampton,FDR-ES-06,high,unassigned,195,true,underground cable fault,underground,140,40.97521,-72.17568,2026-08-10T19:30:00-04:00
 ESD-20260810-0511,Queens-Nassau,Floral Park,FDR-QN-26,high,unassigned,578,false,underground cable fault,underground,133,40.7265,-73.71252,2026-08-10T17:30:00-04:00
 ESD-20260810-0512,Queens-Nassau,Cedarhurst,FDR-QN-40,low,unassigned,1,false,damaged service drop,low_voltage,49,40.61363,-73.73021,2026-08-10T10:15:00-04:00
 ESD-20260810-0513,Eastern Suffolk,Greenport,FDR-ES-14,high,unassigned,179,false,downed wire,general,66,41.0973,-72.35544,2026-08-10T17:00:00-04:00
@@ -516,7 +516,7 @@ ESD-20260810-0514,Queens-Nassau,Inwood,FDR-QN-21,low,unassigned,1,false,damaged 
 ESD-20260810-0515,Central-Nassau,Merrick,FDR-CN-32,high,unassigned,347,false,underground cable fault,underground,74,40.65614,-73.55692,2026-08-10T20:15:00-04:00
 ESD-20260810-0516,Eastern Suffolk,Riverhead,FDR-ES-01,low,unassigned,176,false,none,general,93,40.91467,-72.6725,2026-08-10T16:00:00-04:00
 ESD-20260810-0517,Eastern Suffolk,Center Moriches,FDR-ES-06,high,unassigned,332,false,downed wire,general,130,40.80882,-72.79218,2026-08-10T12:45:00-04:00
-ESD-20260810-0518,Western Suffolk,Babylon,FDR-WS-38,high,unassigned,751,true,tree on primary,vegetation,164,40.68461,-73.31467,2026-08-10T13:00:00-04:00
+ESD-20260810-0518,Western Suffolk,Babylon,FDR-WS-38,high,unassigned,751,false,tree on primary,vegetation,164,40.68461,-73.31467,2026-08-10T13:00:00-04:00
 ESD-20260810-0519,Central-Nassau,Hicksville,FDR-CN-09,low,assigned,1,false,damaged service drop,low_voltage,15,40.76511,-73.52384,2026-08-10T21:45:00-04:00
 ESD-20260810-0520,Eastern Suffolk,Hampton Bays,FDR-ES-11,medium,unassigned,172,false,partial outage,general,111,40.86076,-72.50899,2026-08-10T19:30:00-04:00
 ESD-20260810-0521,Central-Nassau,Merrick,FDR-CN-02,high,unassigned,1343,false,broken crossarm,line,42,40.65549,-73.5506,2026-08-10T14:00:00-04:00
@@ -531,9 +531,9 @@ ESD-20260810-0529,Queens-Nassau,Floral Park,FDR-QN-30,low,unassigned,1,false,dam
 ESD-20260810-0530,Western Suffolk,Lindenhurst,FDR-WS-02,critical,unassigned,2459,false,transformer fire,line,77,40.67785,-73.36219,2026-08-10T12:30:00-04:00
 ESD-20260810-0531,Western Suffolk,Islip,FDR-WS-07,high,unassigned,1311,false,tree on primary,vegetation,51,40.73998,-73.19843,2026-08-10T17:00:00-04:00
 ESD-20260810-0532,Eastern Suffolk,Greenport,FDR-ES-16,medium,unassigned,690,false,tree limb,vegetation,82,41.10117,-72.36356,2026-08-10T10:30:00-04:00
-ESD-20260810-0533,Queens-Nassau,Far Rockaway,FDR-QN-08,high,unassigned,868,false,tree on primary,vegetation,8,40.61504,-73.75707,2026-08-10T22:00:00-04:00
+ESD-20260810-0533,Queens-Nassau,Far Rockaway,FDR-QN-08,high,unassigned,868,true,tree on primary,vegetation,8,40.61504,-73.75707,2026-08-10T22:00:00-04:00
 ESD-20260810-0534,Eastern Suffolk,Southampton,FDR-ES-02,high,unassigned,592,false,broken crossarm,line,143,40.88942,-72.39057,2026-08-10T12:45:00-04:00
-ESD-20260810-0535,Eastern Suffolk,Westhampton Beach,FDR-ES-05,high,unassigned,327,true,downed wire,general,88,40.80339,-72.63968,2026-08-10T15:45:00-04:00
+ESD-20260810-0535,Eastern Suffolk,Westhampton Beach,FDR-ES-05,high,unassigned,327,false,downed wire,general,88,40.80339,-72.63968,2026-08-10T15:45:00-04:00
 ESD-20260810-0536,Western Suffolk,Smithtown,FDR-WS-22,medium,unassigned,422,false,partial outage,general,108,40.85088,-73.19152,2026-08-10T16:45:00-04:00
 ESD-20260810-0537,Western Suffolk,Lindenhurst,FDR-WS-16,high,unassigned,57,false,tree on primary,vegetation,98,40.68601,-73.38424,2026-08-10T17:30:00-04:00
 ESD-20260810-0538,Queens-Nassau,Rockaway Park,FDR-QN-36,high,unassigned,361,false,downed wire,general,54,40.58436,-73.83085,2026-08-10T12:45:00-04:00
@@ -549,23 +549,23 @@ ESD-20260810-0547,Central-Nassau,Mineola,FDR-CN-36,high,unassigned,386,false,dow
 ESD-20260810-0548,Central-Nassau,Uniondale,FDR-CN-05,high,unassigned,1597,false,broken crossarm,line,9,40.7047,-73.58448,2026-08-10T17:45:00-04:00
 ESD-20260810-0549,Central-Nassau,Massapequa,FDR-CN-18,high,unassigned,238,false,downed wire,general,93,40.67647,-73.46293,2026-08-10T19:45:00-04:00
 ESD-20260810-0550,Eastern Suffolk,Southampton,FDR-ES-34,high,unassigned,111,false,burning wire,general,109,40.88048,-72.39753,2026-08-10T15:00:00-04:00
-ESD-20260810-0551,Western Suffolk,Copiague,FDR-WS-15,high,unassigned,854,false,underground cable fault,underground,130,40.68276,-73.39193,2026-08-10T15:45:00-04:00
+ESD-20260810-0551,Western Suffolk,Copiague,FDR-WS-15,high,unassigned,854,true,underground cable fault,underground,130,40.68276,-73.39193,2026-08-10T15:45:00-04:00
 ESD-20260810-0552,Western Suffolk,Smithtown,FDR-WS-01,medium,unassigned,89,false,partial outage,general,127,40.85547,-73.19984,2026-08-10T21:15:00-04:00
 ESD-20260810-0553,Western Suffolk,Huntington,FDR-WS-15,medium,unassigned,660,false,tree limb,vegetation,53,40.87164,-73.42282,2026-08-10T18:15:00-04:00
 ESD-20260810-0554,Queens-Nassau,Arverne,FDR-QN-26,low,unassigned,1,false,damaged service drop,low_voltage,167,40.58949,-73.80219,2026-08-10T15:00:00-04:00
 ESD-20260810-0555,Eastern Suffolk,Wading River,FDR-ES-01,low,unassigned,1,false,damaged service drop,low_voltage,29,40.93931,-72.84813,2026-08-10T22:45:00-04:00
 ESD-20260810-0556,Queens-Nassau,Rockaway Park,FDR-QN-35,high,unassigned,1020,false,broken crossarm,line,48,40.59222,-73.84646,2026-08-10T10:15:00-04:00
 ESD-20260810-0557,Eastern Suffolk,Calverton,FDR-ES-15,low,unassigned,1,false,damaged service drop,low_voltage,56,40.89464,-72.73783,2026-08-10T16:15:00-04:00
-ESD-20260810-0558,Queens-Nassau,Woodmere,FDR-QN-09,high,unassigned,551,true,broken crossarm,line,159,40.62871,-73.715,2026-08-10T11:00:00-04:00
+ESD-20260810-0558,Queens-Nassau,Woodmere,FDR-QN-09,high,unassigned,551,false,broken crossarm,line,159,40.62871,-73.715,2026-08-10T11:00:00-04:00
 ESD-20260810-0559,Central-Nassau,Merrick,FDR-CN-18,medium,unassigned,411,false,tree limb,vegetation,110,40.66711,-73.55537,2026-08-10T19:30:00-04:00
 ESD-20260810-0560,Eastern Suffolk,Westhampton Beach,FDR-ES-01,high,unassigned,230,false,broken crossarm,line,117,40.8031,-72.65443,2026-08-10T19:15:00-04:00
 ESD-20260810-0561,Eastern Suffolk,Westhampton Beach,FDR-ES-22,low,unassigned,1,false,damaged service drop,low_voltage,59,40.80936,-72.6338,2026-08-10T11:30:00-04:00
 ESD-20260810-0562,Central-Nassau,Levittown,FDR-CN-11,high,unassigned,218,false,broken crossarm,line,93,40.73007,-73.51895,2026-08-10T22:00:00-04:00
 ESD-20260810-0563,Central-Nassau,Mineola,FDR-CN-22,high,unassigned,1029,false,underground cable fault,underground,78,40.74875,-73.64627,2026-08-10T19:00:00-04:00
-ESD-20260810-0564,Western Suffolk,Amityville,FDR-WS-03,high,unassigned,126,false,burning wire,general,53,40.68911,-73.41724,2026-08-10T10:15:00-04:00
+ESD-20260810-0564,Western Suffolk,Amityville,FDR-WS-03,high,unassigned,126,true,burning wire,general,53,40.68911,-73.41724,2026-08-10T10:15:00-04:00
 ESD-20260810-0565,Central-Nassau,Westbury,FDR-CN-31,low,unassigned,131,false,none,general,166,40.7597,-73.59754,2026-08-10T19:15:00-04:00
 ESD-20260810-0566,Western Suffolk,Ronkonkoma,FDR-WS-33,high,unassigned,491,false,downed wire,general,94,40.8161,-73.11945,2026-08-10T10:15:00-04:00
-ESD-20260810-0567,Queens-Nassau,Rockaway Park,FDR-QN-35,high,unassigned,1778,true,broken crossarm,line,171,40.58949,-73.835,2026-08-10T17:45:00-04:00
+ESD-20260810-0567,Queens-Nassau,Rockaway Park,FDR-QN-35,high,unassigned,1778,false,broken crossarm,line,171,40.58949,-73.835,2026-08-10T17:45:00-04:00
 ESD-20260810-0568,Queens-Nassau,Edgemere,FDR-QN-11,low,unassigned,1,false,damaged service drop,low_voltage,97,40.58502,-73.77856,2026-08-10T16:00:00-04:00
 ESD-20260810-0569,Queens-Nassau,Lawrence,FDR-QN-18,critical,unassigned,997,false,transformer fire,line,108,40.62018,-73.73803,2026-08-10T22:00:00-04:00
 ESD-20260810-0570,Central-Nassau,Levittown,FDR-CN-02,medium,unassigned,394,false,partial outage,general,21,40.71711,-73.51939,2026-08-10T20:30:00-04:00
@@ -578,7 +578,7 @@ ESD-20260810-0576,Queens-Nassau,Edgemere,FDR-QN-15,high,unassigned,219,false,bur
 ESD-20260810-0577,Central-Nassau,Wantagh,FDR-CN-21,medium,unassigned,108,false,partial outage,general,26,40.68153,-73.49882,2026-08-10T20:30:00-04:00
 ESD-20260810-0578,Central-Nassau,Mineola,FDR-CN-27,high,unassigned,1220,false,broken crossarm,line,51,40.7439,-73.63089,2026-08-10T16:30:00-04:00
 ESD-20260810-0579,Central-Nassau,Massapequa,FDR-CN-14,low,unassigned,8,false,none,general,35,40.6836,-73.48568,2026-08-10T13:15:00-04:00
-ESD-20260810-0580,Central-Nassau,Levittown,FDR-CN-36,high,unassigned,839,true,tree on primary,vegetation,175,40.71528,-73.51962,2026-08-10T22:45:00-04:00
+ESD-20260810-0580,Central-Nassau,Levittown,FDR-CN-36,high,unassigned,839,false,tree on primary,vegetation,175,40.71528,-73.51962,2026-08-10T22:45:00-04:00
 ESD-20260810-0581,Eastern Suffolk,Southampton,FDR-ES-20,critical,assigned,1917,false,broken crossarm,line,147,40.88553,-72.39675,2026-08-10T21:15:00-04:00
 ESD-20260810-0582,Eastern Suffolk,East Hampton,FDR-ES-23,medium,unassigned,432,false,tree limb,vegetation,100,40.97001,-72.19363,2026-08-10T12:00:00-04:00
 ESD-20260810-0583,Western Suffolk,Islip,FDR-WS-40,high,unassigned,84,false,downed wire,general,61,40.72357,-73.2014,2026-08-10T11:30:00-04:00
@@ -587,7 +587,7 @@ ESD-20260810-0585,Central-Nassau,Hempstead,FDR-CN-35,low,unassigned,1,false,dama
 ESD-20260810-0586,Central-Nassau,East Meadow,FDR-CN-35,high,unassigned,58,false,downed wire,general,109,40.70859,-73.56743,2026-08-10T22:45:00-04:00
 ESD-20260810-0587,Western Suffolk,Amityville,FDR-WS-19,medium,unassigned,332,false,partial outage,general,91,40.67049,-73.41701,2026-08-10T20:30:00-04:00
 ESD-20260810-0588,Central-Nassau,Uniondale,FDR-CN-16,high,assigned,224,false,feeder lockout,line,163,40.70414,-73.59749,2026-08-10T10:15:00-04:00
-ESD-20260810-0589,Western Suffolk,Ronkonkoma,FDR-WS-04,critical,unassigned,1184,true,transformer fire,line,7,40.80534,-73.11377,2026-08-10T15:00:00-04:00
+ESD-20260810-0589,Western Suffolk,Ronkonkoma,FDR-WS-04,critical,unassigned,1184,false,transformer fire,line,7,40.80534,-73.11377,2026-08-10T15:00:00-04:00
 ESD-20260810-0590,Central-Nassau,Garden City,FDR-CN-13,high,unassigned,141,false,burning wire,general,159,40.71934,-73.64461,2026-08-10T12:45:00-04:00
 ESD-20260810-0591,Queens-Nassau,Arverne,FDR-QN-21,high,unassigned,1719,false,broken crossarm,line,162,40.58695,-73.80576,2026-08-10T12:30:00-04:00
 ESD-20260810-0592,Western Suffolk,Babylon,FDR-WS-01,low,unassigned,99,false,none,general,16,40.68456,-73.32053,2026-08-10T19:15:00-04:00
@@ -638,7 +638,7 @@ ESD-20260810-0636,Queens-Nassau,Floral Park,FDR-QN-25,high,unassigned,540,false,
 ESD-20260810-0637,Western Suffolk,Babylon,FDR-WS-35,low,unassigned,1,false,damaged service drop,low_voltage,145,40.70099,-73.31572,2026-08-10T16:45:00-04:00
 ESD-20260810-0638,Western Suffolk,Babylon,FDR-WS-29,high,unassigned,240,false,burning wire,general,78,40.69204,-73.32448,2026-08-10T11:45:00-04:00
 ESD-20260810-0639,Central-Nassau,Hempstead,FDR-CN-05,low,unassigned,128,false,none,general,98,40.70625,-73.62856,2026-08-10T20:45:00-04:00
-ESD-20260810-0640,Western Suffolk,Lindenhurst,FDR-WS-11,high,unassigned,734,true,tree on primary,vegetation,91,40.69512,-73.37282,2026-08-10T16:30:00-04:00
+ESD-20260810-0640,Western Suffolk,Lindenhurst,FDR-WS-11,high,unassigned,734,false,tree on primary,vegetation,91,40.69512,-73.37282,2026-08-10T16:30:00-04:00
 ESD-20260810-0641,Central-Nassau,Garden City,FDR-CN-03,low,unassigned,25,false,none,general,14,40.73243,-73.63647,2026-08-10T12:30:00-04:00
 ESD-20260810-0642,Eastern Suffolk,Yaphank,FDR-ES-14,critical,unassigned,763,false,transformer fire,line,123,40.82938,-72.92802,2026-08-10T12:00:00-04:00
 ESD-20260810-0643,Eastern Suffolk,East Hampton,FDR-ES-38,high,unassigned,1488,false,tree on primary,vegetation,38,40.97356,-72.18342,2026-08-10T14:45:00-04:00
@@ -651,7 +651,7 @@ ESD-20260810-0649,Queens-Nassau,Inwood,FDR-QN-15,medium,unassigned,325,false,par
 ESD-20260810-0650,Queens-Nassau,Cedarhurst,FDR-QN-25,high,unassigned,332,false,tree on primary,vegetation,126,40.6129,-73.73347,2026-08-10T22:30:00-04:00
 ESD-20260810-0651,Central-Nassau,Hempstead,FDR-CN-02,high,assigned,459,false,downed wire,general,108,40.70619,-73.61921,2026-08-10T16:00:00-04:00
 ESD-20260810-0652,Central-Nassau,Freeport,FDR-CN-20,high,assigned,539,false,downed wire,general,104,40.66064,-73.59002,2026-08-10T12:45:00-04:00
-ESD-20260810-0653,Eastern Suffolk,East Hampton,FDR-ES-01,critical,unassigned,1984,true,transformer fire,line,23,40.96908,-72.19624,2026-08-10T13:30:00-04:00
+ESD-20260810-0653,Eastern Suffolk,East Hampton,FDR-ES-01,critical,unassigned,1984,false,transformer fire,line,23,40.96908,-72.19624,2026-08-10T13:30:00-04:00
 ESD-20260810-0654,Western Suffolk,Smithtown,FDR-WS-14,low,unassigned,141,false,none,general,116,40.86602,-73.19672,2026-08-10T12:45:00-04:00
 ESD-20260810-0655,Western Suffolk,Babylon,FDR-WS-19,high,unassigned,1015,false,broken crossarm,line,108,40.69372,-73.33618,2026-08-10T14:45:00-04:00
 ESD-20260810-0656,Central-Nassau,Hicksville,FDR-CN-37,low,unassigned,28,false,none,general,62,40.7797,-73.51902,2026-08-10T14:15:00-04:00
@@ -664,16 +664,16 @@ ESD-20260810-0662,Western Suffolk,Islip,FDR-WS-06,medium,unassigned,106,false,tr
 ESD-20260810-0663,Central-Nassau,Freeport,FDR-CN-02,critical,unassigned,2437,false,transformer fire,line,17,40.64906,-73.58815,2026-08-10T18:00:00-04:00
 ESD-20260810-0664,Central-Nassau,Westbury,FDR-CN-20,low,unassigned,1,false,damaged service drop,low_voltage,176,40.7541,-73.59236,2026-08-10T12:00:00-04:00
 ESD-20260810-0665,Eastern Suffolk,Riverhead,FDR-ES-34,high,unassigned,177,false,burning wire,general,123,40.9215,-72.66581,2026-08-10T21:00:00-04:00
-ESD-20260810-0666,Western Suffolk,Huntington,FDR-WS-07,critical,unassigned,1326,true,transformer fire,line,166,40.8628,-73.42139,2026-08-10T12:15:00-04:00
+ESD-20260810-0666,Western Suffolk,Huntington,FDR-WS-07,critical,unassigned,1326,false,transformer fire,line,166,40.8628,-73.42139,2026-08-10T12:15:00-04:00
 ESD-20260810-0667,Western Suffolk,Copiague,FDR-WS-28,high,unassigned,480,false,underground cable fault,underground,8,40.6727,-73.39127,2026-08-10T18:00:00-04:00
 ESD-20260810-0668,Central-Nassau,Westbury,FDR-CN-29,medium,unassigned,270,false,tree limb,vegetation,58,40.75922,-73.57903,2026-08-10T11:15:00-04:00
-ESD-20260810-0669,Queens-Nassau,Rockaway Park,FDR-QN-07,high,unassigned,989,false,underground cable fault,underground,165,40.58098,-73.84578,2026-08-10T18:30:00-04:00
+ESD-20260810-0669,Queens-Nassau,Rockaway Park,FDR-QN-07,high,unassigned,989,true,underground cable fault,underground,165,40.58098,-73.84578,2026-08-10T18:30:00-04:00
 ESD-20260810-0670,Central-Nassau,Garden City,FDR-CN-19,high,unassigned,98,false,burning wire,general,175,40.72227,-73.62303,2026-08-10T19:15:00-04:00
 ESD-20260810-0671,Eastern Suffolk,Greenport,FDR-ES-21,medium,unassigned,428,false,partial outage,general,88,41.11379,-72.35842,2026-08-10T20:45:00-04:00
 ESD-20260810-0672,Eastern Suffolk,Southampton,FDR-ES-19,high,unassigned,482,false,downed wire,general,65,40.87905,-72.37998,2026-08-10T14:15:00-04:00
 ESD-20260810-0673,Queens-Nassau,Elmont,FDR-QN-15,medium,unassigned,130,false,partial outage,general,26,40.69168,-73.72132,2026-08-10T14:00:00-04:00
 ESD-20260810-0674,Eastern Suffolk,Yaphank,FDR-ES-35,low,unassigned,1,false,damaged service drop,low_voltage,131,40.8473,-72.91156,2026-08-10T12:00:00-04:00
-ESD-20260810-0675,Western Suffolk,Lindenhurst,FDR-WS-38,critical,unassigned,505,true,transformer fire,line,116,40.68811,-73.36161,2026-08-10T11:30:00-04:00
+ESD-20260810-0675,Western Suffolk,Lindenhurst,FDR-WS-38,critical,unassigned,505,false,transformer fire,line,116,40.68811,-73.36161,2026-08-10T11:30:00-04:00
 ESD-20260810-0676,Western Suffolk,Ronkonkoma,FDR-WS-05,medium,unassigned,437,false,tree limb,vegetation,48,40.82025,-73.10682,2026-08-10T17:45:00-04:00
 ESD-20260810-0677,Queens-Nassau,Inwood,FDR-QN-28,high,unassigned,127,false,burning wire,general,111,40.62324,-73.7406,2026-08-10T19:45:00-04:00
 ESD-20260810-0678,Queens-Nassau,Arverne,FDR-QN-18,low,unassigned,81,false,none,general,164,40.58957,-73.7979,2026-08-10T12:00:00-04:00
@@ -687,18 +687,18 @@ ESD-20260810-0685,Central-Nassau,Garden City,FDR-CN-01,high,unassigned,193,false
 ESD-20260810-0686,Queens-Nassau,Lawrence,FDR-QN-28,medium,unassigned,28,false,partial outage,general,129,40.62726,-73.71834,2026-08-10T16:30:00-04:00
 ESD-20260810-0687,Western Suffolk,Commack,FDR-WS-14,low,unassigned,30,false,none,general,164,40.83609,-73.30128,2026-08-10T13:30:00-04:00
 ESD-20260810-0688,Queens-Nassau,Edgemere,FDR-QN-35,high,unassigned,92,false,downed wire,general,18,40.59558,-73.77631,2026-08-10T17:30:00-04:00
-ESD-20260810-0689,Eastern Suffolk,Manorville,FDR-ES-33,critical,unassigned,1388,true,transformer fire,line,23,40.87556,-72.81772,2026-08-10T19:00:00-04:00
+ESD-20260810-0689,Eastern Suffolk,Manorville,FDR-ES-33,critical,unassigned,1388,false,transformer fire,line,23,40.87556,-72.81772,2026-08-10T19:00:00-04:00
 ESD-20260810-0690,Western Suffolk,Lindenhurst,FDR-WS-18,high,unassigned,452,false,broken crossarm,line,177,40.68964,-73.37329,2026-08-10T14:00:00-04:00
 ESD-20260810-0691,Central-Nassau,Freeport,FDR-CN-22,low,unassigned,1,false,damaged service drop,low_voltage,113,40.65635,-73.58263,2026-08-10T19:45:00-04:00
 ESD-20260810-0692,Eastern Suffolk,Greenport,FDR-ES-06,high,unassigned,291,false,downed wire,general,22,41.10512,-72.3516,2026-08-10T11:45:00-04:00
 ESD-20260810-0693,Queens-Nassau,Woodmere,FDR-QN-17,high,unassigned,476,false,downed wire,general,173,40.62736,-73.71597,2026-08-10T15:00:00-04:00
-ESD-20260810-0694,Central-Nassau,Uniondale,FDR-CN-04,high,unassigned,1464,true,tree on primary,vegetation,115,40.69103,-73.59265,2026-08-10T21:00:00-04:00
+ESD-20260810-0694,Central-Nassau,Uniondale,FDR-CN-04,high,unassigned,1464,false,tree on primary,vegetation,115,40.69103,-73.59265,2026-08-10T21:00:00-04:00
 ESD-20260810-0695,Eastern Suffolk,Westhampton Beach,FDR-ES-13,critical,unassigned,335,false,transformer fire,line,169,40.82092,-72.63683,2026-08-10T17:45:00-04:00
 ESD-20260810-0696,Eastern Suffolk,Wading River,FDR-ES-01,low,unassigned,1,false,damaged service drop,low_voltage,98,40.96201,-72.85126,2026-08-10T22:45:00-04:00
-ESD-20260810-0697,Eastern Suffolk,East Hampton,FDR-ES-14,high,unassigned,1123,true,broken crossarm,line,28,40.97236,-72.1968,2026-08-10T16:30:00-04:00
+ESD-20260810-0697,Eastern Suffolk,East Hampton,FDR-ES-14,high,unassigned,1123,false,broken crossarm,line,28,40.97236,-72.1968,2026-08-10T16:30:00-04:00
 ESD-20260810-0698,Eastern Suffolk,Greenport,FDR-ES-03,low,unassigned,1,false,damaged service drop,low_voltage,80,41.11046,-72.35945,2026-08-10T20:45:00-04:00
 ESD-20260810-0699,Eastern Suffolk,Calverton,FDR-ES-16,high,unassigned,493,false,tree on primary,vegetation,78,40.90173,-72.74399,2026-08-10T14:00:00-04:00
-ESD-20260810-0700,Central-Nassau,Hempstead,FDR-CN-29,high,unassigned,344,true,downed wire,general,139,40.70345,-73.60862,2026-08-10T10:30:00-04:00
+ESD-20260810-0700,Central-Nassau,Hempstead,FDR-CN-29,high,unassigned,344,false,downed wire,general,139,40.70345,-73.60862,2026-08-10T10:30:00-04:00
 ESD-20260810-0701,Queens-Nassau,Rockaway Park,FDR-QN-39,critical,unassigned,1297,false,transformer fire,line,167,40.59018,-73.84396,2026-08-10T18:30:00-04:00
 ESD-20260810-0702,Western Suffolk,Deer Park,FDR-WS-25,low,unassigned,127,false,none,general,162,40.76494,-73.32319,2026-08-10T17:15:00-04:00
 ESD-20260810-0703,Central-Nassau,Hempstead,FDR-CN-06,high,unassigned,911,false,tree on primary,vegetation,85,40.69863,-73.62701,2026-08-10T11:30:00-04:00
@@ -711,7 +711,7 @@ ESD-20260810-0709,Western Suffolk,Ronkonkoma,FDR-WS-14,critical,unassigned,671,f
 ESD-20260810-0710,Western Suffolk,Islip,FDR-WS-39,high,unassigned,1393,false,broken crossarm,line,103,40.74069,-73.20217,2026-08-10T15:00:00-04:00
 ESD-20260810-0711,Eastern Suffolk,East Hampton,FDR-ES-12,high,unassigned,485,false,broken crossarm,line,76,40.95935,-72.18791,2026-08-10T14:15:00-04:00
 ESD-20260810-0712,Western Suffolk,Copiague,FDR-WS-20,medium,unassigned,317,false,tree limb,vegetation,121,40.67253,-73.40798,2026-08-10T20:15:00-04:00
-ESD-20260810-0713,Queens-Nassau,Inwood,FDR-QN-35,high,unassigned,54,true,burning wire,general,106,40.61324,-73.74117,2026-08-10T22:00:00-04:00
+ESD-20260810-0713,Queens-Nassau,Inwood,FDR-QN-35,high,unassigned,54,false,burning wire,general,106,40.61324,-73.74117,2026-08-10T22:00:00-04:00
 ESD-20260810-0714,Central-Nassau,Freeport,FDR-CN-22,high,unassigned,9,false,burning wire,general,57,40.65319,-73.57988,2026-08-10T18:00:00-04:00
 ESD-20260810-0715,Queens-Nassau,Cedarhurst,FDR-QN-02,medium,unassigned,590,false,tree limb,vegetation,166,40.63115,-73.73428,2026-08-10T16:45:00-04:00
 ESD-20260810-0716,Queens-Nassau,Valley Stream,FDR-QN-01,low,unassigned,83,false,none,general,94,40.66992,-73.71443,2026-08-10T18:45:00-04:00
@@ -727,11 +727,11 @@ ESD-20260810-0725,Central-Nassau,Hempstead,FDR-CN-34,high,unassigned,929,false,t
 ESD-20260810-0726,Western Suffolk,Bay Shore,FDR-WS-33,medium,unassigned,495,false,tree limb,vegetation,134,40.71652,-73.24814,2026-08-10T15:45:00-04:00
 ESD-20260810-0727,Eastern Suffolk,Yaphank,FDR-ES-14,medium,unassigned,110,false,partial outage,general,123,40.83463,-72.91417,2026-08-10T19:30:00-04:00
 ESD-20260810-0728,Eastern Suffolk,Greenport,FDR-ES-04,high,unassigned,196,false,downed wire,general,130,41.09516,-72.36803,2026-08-10T14:45:00-04:00
-ESD-20260810-0729,Eastern Suffolk,Riverhead,FDR-ES-03,high,unassigned,121,false,burning wire,general,59,40.91178,-72.66709,2026-08-10T17:15:00-04:00
+ESD-20260810-0729,Eastern Suffolk,Riverhead,FDR-ES-03,high,unassigned,121,true,burning wire,general,59,40.91178,-72.66709,2026-08-10T17:15:00-04:00
 ESD-20260810-0730,Eastern Suffolk,East Hampton,FDR-ES-03,critical,unassigned,2515,false,transformer fire,line,177,40.97113,-72.18419,2026-08-10T16:30:00-04:00
 ESD-20260810-0731,Eastern Suffolk,Manorville,FDR-ES-31,high,unassigned,196,false,burning wire,general,161,40.86548,-72.80759,2026-08-10T18:45:00-04:00
 ESD-20260810-0732,Queens-Nassau,Valley Stream,FDR-QN-31,low,unassigned,1,false,damaged service drop,low_voltage,92,40.66166,-73.6998,2026-08-10T20:00:00-04:00
-ESD-20260810-0733,Western Suffolk,Islip,FDR-WS-15,high,unassigned,331,false,downed wire,general,20,40.72934,-73.21919,2026-08-10T12:30:00-04:00
+ESD-20260810-0733,Western Suffolk,Islip,FDR-WS-15,high,unassigned,331,true,downed wire,general,20,40.72934,-73.21919,2026-08-10T12:30:00-04:00
 ESD-20260810-0734,Western Suffolk,Deer Park,FDR-WS-23,high,assigned,261,false,downed wire,general,45,40.76793,-73.33681,2026-08-10T10:00:00-04:00
 ESD-20260810-0735,Central-Nassau,Levittown,FDR-CN-01,high,unassigned,883,false,tree on primary,vegetation,55,40.7283,-73.51139,2026-08-10T10:45:00-04:00
 ESD-20260810-0736,Queens-Nassau,Woodmere,FDR-QN-10,medium,unassigned,39,false,partial outage,general,121,40.62419,-73.71462,2026-08-10T13:00:00-04:00
@@ -739,13 +739,13 @@ ESD-20260810-0737,Eastern Suffolk,Manorville,FDR-ES-10,critical,unassigned,1325,
 ESD-20260810-0738,Queens-Nassau,Elmont,FDR-QN-21,high,unassigned,330,false,burning wire,general,137,40.69836,-73.70259,2026-08-10T14:30:00-04:00
 ESD-20260810-0739,Western Suffolk,Commack,FDR-WS-13,critical,unassigned,1408,false,transformer fire,line,97,40.85378,-73.29758,2026-08-10T16:45:00-04:00
 ESD-20260810-0740,Central-Nassau,Merrick,FDR-CN-06,medium,unassigned,762,false,tree limb,vegetation,10,40.66382,-73.5631,2026-08-10T18:30:00-04:00
-ESD-20260810-0741,Eastern Suffolk,Montauk,FDR-ES-31,high,unassigned,725,true,tree on primary,vegetation,147,41.03826,-71.96638,2026-08-10T22:30:00-04:00
+ESD-20260810-0741,Eastern Suffolk,Montauk,FDR-ES-31,high,unassigned,725,false,tree on primary,vegetation,147,41.03826,-71.96638,2026-08-10T22:30:00-04:00
 ESD-20260810-0742,Queens-Nassau,Lawrence,FDR-QN-37,high,unassigned,1318,false,broken crossarm,line,44,40.62722,-73.72753,2026-08-10T11:45:00-04:00
 ESD-20260810-0743,Western Suffolk,Ronkonkoma,FDR-WS-22,medium,unassigned,629,false,tree limb,vegetation,84,40.80439,-73.12424,2026-08-10T22:15:00-04:00
 ESD-20260810-0744,Central-Nassau,Merrick,FDR-CN-26,medium,unassigned,15,false,partial outage,general,171,40.65447,-73.56299,2026-08-10T22:45:00-04:00
 ESD-20260810-0745,Eastern Suffolk,Riverhead,FDR-ES-09,medium,unassigned,374,false,partial outage,general,65,40.91045,-72.65343,2026-08-10T20:30:00-04:00
 ESD-20260810-0746,Western Suffolk,Babylon,FDR-WS-26,high,unassigned,1299,false,broken crossarm,line,76,40.68555,-73.3233,2026-08-10T22:15:00-04:00
-ESD-20260810-0747,Western Suffolk,Babylon,FDR-WS-03,high,unassigned,1025,true,underground cable fault,underground,16,40.70243,-73.32248,2026-08-10T15:45:00-04:00
+ESD-20260810-0747,Western Suffolk,Babylon,FDR-WS-03,high,unassigned,1025,false,underground cable fault,underground,16,40.70243,-73.32248,2026-08-10T15:45:00-04:00
 ESD-20260810-0748,Eastern Suffolk,Wading River,FDR-ES-09,low,unassigned,77,false,none,general,168,40.94846,-72.84519,2026-08-10T10:45:00-04:00
 ESD-20260810-0749,Queens-Nassau,Arverne,FDR-QN-14,critical,unassigned,1556,false,transformer fire,line,100,40.59748,-73.79571,2026-08-10T13:00:00-04:00
 ESD-20260810-0750,Central-Nassau,Freeport,FDR-CN-08,high,unassigned,421,false,broken crossarm,line,73,40.65374,-73.58757,2026-08-10T18:00:00-04:00
@@ -763,13 +763,13 @@ ESD-20260810-0761,Central-Nassau,Merrick,FDR-CN-17,critical,assigned,2528,false,
 ESD-20260810-0762,Western Suffolk,Islip,FDR-WS-03,low,unassigned,1,false,damaged service drop,low_voltage,113,40.7183,-73.21311,2026-08-10T20:15:00-04:00
 ESD-20260810-0763,Queens-Nassau,Elmont,FDR-QN-32,low,unassigned,63,false,none,general,111,40.7005,-73.71456,2026-08-10T13:45:00-04:00
 ESD-20260810-0764,Eastern Suffolk,Manorville,FDR-ES-06,medium,unassigned,139,false,tree limb,vegetation,76,40.87018,-72.81539,2026-08-10T16:30:00-04:00
-ESD-20260810-0765,Western Suffolk,Commack,FDR-WS-20,critical,unassigned,2306,false,transformer fire,line,109,40.8335,-73.29179,2026-08-10T14:30:00-04:00
+ESD-20260810-0765,Western Suffolk,Commack,FDR-WS-20,critical,unassigned,2306,true,transformer fire,line,109,40.8335,-73.29179,2026-08-10T14:30:00-04:00
 ESD-20260810-0766,Queens-Nassau,Far Rockaway,FDR-QN-28,high,unassigned,1380,false,tree on primary,vegetation,167,40.60993,-73.74498,2026-08-10T18:15:00-04:00
 ESD-20260810-0767,Queens-Nassau,Valley Stream,FDR-QN-13,high,unassigned,3,false,downed wire,general,23,40.67376,-73.70056,2026-08-10T10:15:00-04:00
 ESD-20260810-0768,Eastern Suffolk,Westhampton Beach,FDR-ES-29,high,assigned,894,false,tree on primary,vegetation,108,40.80784,-72.64541,2026-08-10T19:15:00-04:00
 ESD-20260810-0769,Western Suffolk,Huntington,FDR-WS-26,medium,unassigned,21,false,partial outage,general,139,40.87642,-73.4171,2026-08-10T22:45:00-04:00
 ESD-20260810-0770,Eastern Suffolk,Riverhead,FDR-ES-23,high,unassigned,443,false,downed wire,general,146,40.91758,-72.67351,2026-08-10T12:30:00-04:00
-ESD-20260810-0771,Eastern Suffolk,Greenport,FDR-ES-12,high,unassigned,435,true,underground cable fault,underground,87,41.09928,-72.36862,2026-08-10T20:15:00-04:00
+ESD-20260810-0771,Eastern Suffolk,Greenport,FDR-ES-12,high,unassigned,435,false,underground cable fault,underground,87,41.09928,-72.36862,2026-08-10T20:15:00-04:00
 ESD-20260810-0772,Western Suffolk,Copiague,FDR-WS-38,low,unassigned,152,false,none,general,92,40.67015,-73.38937,2026-08-10T11:30:00-04:00
 ESD-20260810-0773,Eastern Suffolk,Calverton,FDR-ES-26,high,unassigned,204,false,downed wire,general,66,40.90905,-72.73871,2026-08-10T18:00:00-04:00
 ESD-20260810-0774,Eastern Suffolk,Westhampton Beach,FDR-ES-36,high,unassigned,317,false,underground cable fault,underground,129,40.80866,-72.64025,2026-08-10T11:15:00-04:00
@@ -792,7 +792,7 @@ ESD-20260810-0790,Queens-Nassau,Inwood,FDR-QN-22,high,unassigned,214,false,burni
 ESD-20260810-0791,Central-Nassau,Garden City,FDR-CN-07,medium,unassigned,365,false,partial outage,general,125,40.71991,-73.62509,2026-08-10T12:45:00-04:00
 ESD-20260810-0792,Queens-Nassau,Valley Stream,FDR-QN-08,high,unassigned,62,false,burning wire,general,105,40.66563,-73.71395,2026-08-10T13:15:00-04:00
 ESD-20260810-0793,Queens-Nassau,Inwood,FDR-QN-08,high,unassigned,338,false,tree on primary,vegetation,26,40.62872,-73.73937,2026-08-10T20:45:00-04:00
-ESD-20260810-0794,Central-Nassau,Wantagh,FDR-CN-33,high,unassigned,227,true,downed wire,general,144,40.67401,-73.51191,2026-08-10T10:30:00-04:00
+ESD-20260810-0794,Central-Nassau,Wantagh,FDR-CN-33,high,unassigned,227,false,downed wire,general,144,40.67401,-73.51191,2026-08-10T10:30:00-04:00
 ESD-20260810-0795,Eastern Suffolk,Center Moriches,FDR-ES-18,high,unassigned,604,false,underground cable fault,underground,82,40.79911,-72.78272,2026-08-10T20:30:00-04:00
 ESD-20260810-0796,Eastern Suffolk,East Hampton,FDR-ES-02,low,unassigned,1,false,damaged service drop,low_voltage,114,40.95166,-72.18528,2026-08-10T12:00:00-04:00
 ESD-20260810-0797,Western Suffolk,Deer Park,FDR-WS-39,medium,unassigned,310,false,partial outage,general,127,40.76877,-73.33154,2026-08-10T11:45:00-04:00
@@ -800,7 +800,7 @@ ESD-20260810-0798,Queens-Nassau,Elmont,FDR-QN-24,high,unassigned,220,false,burni
 ESD-20260810-0799,Eastern Suffolk,Montauk,FDR-ES-14,critical,unassigned,212,false,transformer fire,line,141,41.03962,-71.95466,2026-08-10T17:45:00-04:00
 ESD-20260810-0800,Eastern Suffolk,Yaphank,FDR-ES-17,medium,unassigned,893,false,tree limb,vegetation,118,40.82955,-72.90671,2026-08-10T19:30:00-04:00
 ESD-20260810-0801,Western Suffolk,Islip,FDR-WS-22,high,unassigned,324,false,downed wire,general,102,40.71973,-73.20717,2026-08-10T20:00:00-04:00
-ESD-20260810-0802,Eastern Suffolk,Manorville,FDR-ES-03,high,unassigned,25,true,underground cable fault,underground,178,40.86754,-72.80886,2026-08-10T22:30:00-04:00
+ESD-20260810-0802,Eastern Suffolk,Manorville,FDR-ES-03,high,unassigned,25,false,underground cable fault,underground,178,40.86754,-72.80886,2026-08-10T22:30:00-04:00
 ESD-20260810-0803,Eastern Suffolk,Manorville,FDR-ES-04,low,unassigned,1,false,damaged service drop,low_voltage,109,40.87385,-72.80369,2026-08-10T11:45:00-04:00
 ESD-20260810-0804,Queens-Nassau,Far Rockaway,FDR-QN-36,high,unassigned,1451,false,broken crossarm,line,113,40.59695,-73.76586,2026-08-10T17:30:00-04:00
 ESD-20260810-0805,Eastern Suffolk,Westhampton Beach,FDR-ES-15,low,unassigned,141,false,none,general,89,40.80703,-72.64937,2026-08-10T11:15:00-04:00
@@ -847,9 +847,9 @@ ESD-20260810-0845,Western Suffolk,Ronkonkoma,FDR-WS-20,low,unassigned,1,false,da
 ESD-20260810-0846,Queens-Nassau,Far Rockaway,FDR-QN-37,critical,unassigned,706,false,transformer fire,line,103,40.60422,-73.76082,2026-08-10T13:30:00-04:00
 ESD-20260810-0847,Queens-Nassau,Hewlett,FDR-QN-34,medium,unassigned,227,false,partial outage,general,120,40.64745,-73.69015,2026-08-10T22:45:00-04:00
 ESD-20260810-0848,Western Suffolk,Bay Shore,FDR-WS-38,high,assigned,33,false,blocked access,general,175,40.7212,-73.23839,2026-08-10T11:00:00-04:00
-ESD-20260810-0849,Central-Nassau,Garden City,FDR-CN-07,high,unassigned,1405,false,broken crossarm,line,106,40.716,-73.6395,2026-08-10T20:45:00-04:00
+ESD-20260810-0849,Central-Nassau,Garden City,FDR-CN-07,high,unassigned,1405,true,broken crossarm,line,106,40.716,-73.6395,2026-08-10T20:45:00-04:00
 ESD-20260810-0850,Central-Nassau,Massapequa,FDR-CN-16,medium,unassigned,58,false,partial outage,general,114,40.69268,-73.46618,2026-08-10T10:45:00-04:00
-ESD-20260810-0851,Eastern Suffolk,Wading River,FDR-ES-02,high,unassigned,752,true,underground cable fault,underground,85,40.94959,-72.84698,2026-08-10T14:30:00-04:00
+ESD-20260810-0851,Eastern Suffolk,Wading River,FDR-ES-02,high,unassigned,752,false,underground cable fault,underground,85,40.94959,-72.84698,2026-08-10T14:30:00-04:00
 ESD-20260810-0852,Eastern Suffolk,Wading River,FDR-ES-07,high,unassigned,70,false,downed wire,general,163,40.95737,-72.8444,2026-08-10T20:45:00-04:00
 ESD-20260810-0853,Queens-Nassau,Rockaway Park,FDR-QN-15,medium,unassigned,281,false,partial outage,general,17,40.5726,-73.84796,2026-08-10T16:45:00-04:00
 ESD-20260810-0854,Queens-Nassau,Lawrence,FDR-QN-12,high,unassigned,176,false,downed wire,general,93,40.60619,-73.73125,2026-08-10T13:45:00-04:00
@@ -864,7 +864,7 @@ ESD-20260810-0862,Central-Nassau,Garden City,FDR-CN-04,high,unassigned,1147,fals
 ESD-20260810-0863,Queens-Nassau,Edgemere,FDR-QN-24,high,unassigned,548,false,underground cable fault,underground,25,40.59343,-73.76361,2026-08-10T21:45:00-04:00
 ESD-20260810-0864,Eastern Suffolk,Center Moriches,FDR-ES-01,high,unassigned,258,false,burning wire,general,5,40.78901,-72.78584,2026-08-10T11:45:00-04:00
 ESD-20260810-0865,Central-Nassau,Freeport,FDR-CN-19,high,unassigned,44,false,downed wire,general,85,40.66889,-73.59054,2026-08-10T16:45:00-04:00
-ESD-20260810-0866,Eastern Suffolk,Riverhead,FDR-ES-13,critical,assigned,2480,false,broken crossarm,line,91,40.91666,-72.6691,2026-08-10T18:45:00-04:00
+ESD-20260810-0866,Eastern Suffolk,Riverhead,FDR-ES-13,critical,assigned,2480,true,broken crossarm,line,91,40.91666,-72.6691,2026-08-10T18:45:00-04:00
 ESD-20260810-0867,Queens-Nassau,Woodmere,FDR-QN-24,high,unassigned,967,false,tree on primary,vegetation,55,40.62432,-73.72391,2026-08-10T10:15:00-04:00
 ESD-20260810-0868,Western Suffolk,Lindenhurst,FDR-WS-05,low,unassigned,122,false,none,general,119,40.69879,-73.36354,2026-08-10T18:15:00-04:00
 ESD-20260810-0869,Central-Nassau,East Meadow,FDR-CN-29,medium,unassigned,15,false,tree limb,vegetation,118,40.70915,-73.55638,2026-08-10T13:15:00-04:00
@@ -883,7 +883,7 @@ ESD-20260810-0881,Eastern Suffolk,Montauk,FDR-ES-33,high,unassigned,248,false,tr
 ESD-20260810-0882,Western Suffolk,Smithtown,FDR-WS-07,high,unassigned,1091,false,tree on primary,vegetation,95,40.8467,-73.19326,2026-08-10T22:45:00-04:00
 ESD-20260810-0883,Queens-Nassau,Rockaway Park,FDR-QN-39,medium,unassigned,151,false,tree limb,vegetation,57,40.58193,-73.84839,2026-08-10T19:00:00-04:00
 ESD-20260810-0884,Central-Nassau,Garden City,FDR-CN-31,medium,unassigned,421,false,partial outage,general,122,40.71669,-73.62449,2026-08-10T21:45:00-04:00
-ESD-20260810-0885,Western Suffolk,Brentwood,FDR-WS-10,high,assigned,1344,false,tree on primary,vegetation,21,40.77504,-73.25299,2026-08-10T22:30:00-04:00
+ESD-20260810-0885,Western Suffolk,Brentwood,FDR-WS-10,high,assigned,1344,true,tree on primary,vegetation,21,40.77504,-73.25299,2026-08-10T22:30:00-04:00
 ESD-20260810-0886,Central-Nassau,Merrick,FDR-CN-01,high,unassigned,974,false,underground cable fault,underground,89,40.67472,-73.55331,2026-08-10T12:00:00-04:00
 ESD-20260810-0887,Queens-Nassau,Inwood,FDR-QN-17,medium,unassigned,616,false,tree limb,vegetation,157,40.62111,-73.74315,2026-08-10T13:15:00-04:00
 ESD-20260810-0888,Central-Nassau,Levittown,FDR-CN-15,low,unassigned,1,false,damaged service drop,low_voltage,20,40.72028,-73.50335,2026-08-10T21:15:00-04:00
@@ -922,7 +922,7 @@ ESD-20260810-0920,Western Suffolk,Islip,FDR-WS-29,high,unassigned,354,false,tree
 ESD-20260810-0921,Eastern Suffolk,Wading River,FDR-ES-09,low,unassigned,1,false,damaged service drop,low_voltage,166,40.94662,-72.85148,2026-08-10T10:30:00-04:00
 ESD-20260810-0922,Central-Nassau,Garden City,FDR-CN-17,high,assigned,1611,false,feeder lockout,line,172,40.72352,-73.63342,2026-08-10T20:15:00-04:00
 ESD-20260810-0923,Central-Nassau,Hempstead,FDR-CN-09,high,unassigned,169,false,downed wire,general,95,40.71327,-73.62396,2026-08-10T14:00:00-04:00
-ESD-20260810-0924,Queens-Nassau,Edgemere,FDR-QN-14,high,unassigned,473,false,downed wire,general,126,40.60689,-73.77931,2026-08-10T22:30:00-04:00
+ESD-20260810-0924,Queens-Nassau,Edgemere,FDR-QN-14,high,unassigned,473,true,downed wire,general,126,40.60689,-73.77931,2026-08-10T22:30:00-04:00
 ESD-20260810-0925,Western Suffolk,Lindenhurst,FDR-WS-14,medium,unassigned,426,false,partial outage,general,132,40.67707,-73.37667,2026-08-10T17:45:00-04:00
 ESD-20260810-0926,Central-Nassau,Freeport,FDR-CN-15,high,unassigned,643,false,tree on primary,vegetation,46,40.65557,-73.58002,2026-08-10T18:15:00-04:00
 ESD-20260810-0927,Eastern Suffolk,Yaphank,FDR-ES-09,critical,unassigned,1855,false,transformer fire,line,69,40.82638,-72.92763,2026-08-10T16:30:00-04:00
@@ -933,7 +933,7 @@ ESD-20260810-0931,Central-Nassau,Mineola,FDR-CN-08,medium,unassigned,113,false,p
 ESD-20260810-0932,Eastern Suffolk,Southampton,FDR-ES-08,high,unassigned,1239,false,broken crossarm,line,113,40.8847,-72.3892,2026-08-10T18:00:00-04:00
 ESD-20260810-0933,Central-Nassau,Wantagh,FDR-CN-26,high,unassigned,1481,false,broken crossarm,line,131,40.67703,-73.52013,2026-08-10T11:00:00-04:00
 ESD-20260810-0934,Western Suffolk,Bay Shore,FDR-WS-02,low,unassigned,1,false,damaged service drop,low_voltage,23,40.73381,-73.2414,2026-08-10T22:30:00-04:00
-ESD-20260810-0935,Eastern Suffolk,Westhampton Beach,FDR-ES-01,high,unassigned,1562,false,tree on primary,vegetation,70,40.82138,-72.64967,2026-08-10T16:00:00-04:00
+ESD-20260810-0935,Eastern Suffolk,Westhampton Beach,FDR-ES-01,high,unassigned,1562,true,tree on primary,vegetation,70,40.82138,-72.64967,2026-08-10T16:00:00-04:00
 ESD-20260810-0936,Central-Nassau,East Meadow,FDR-CN-27,critical,unassigned,505,false,transformer fire,line,32,40.70774,-73.55435,2026-08-10T13:15:00-04:00
 ESD-20260810-0937,Eastern Suffolk,Greenport,FDR-ES-35,critical,assigned,1295,false,broken crossarm,line,169,41.11051,-72.35571,2026-08-10T13:15:00-04:00
 ESD-20260810-0938,Queens-Nassau,Valley Stream,FDR-QN-29,high,unassigned,513,false,underground cable fault,underground,35,40.66403,-73.69885,2026-08-10T20:15:00-04:00
@@ -950,7 +950,7 @@ ESD-20260810-0948,Central-Nassau,Westbury,FDR-CN-28,low,unassigned,163,false,non
 ESD-20260810-0949,Queens-Nassau,Arverne,FDR-QN-22,low,unassigned,1,false,damaged service drop,low_voltage,118,40.58048,-73.79254,2026-08-10T15:00:00-04:00
 ESD-20260810-0950,Queens-Nassau,Arverne,FDR-QN-01,low,unassigned,87,false,none,general,56,40.59485,-73.795,2026-08-10T21:30:00-04:00
 ESD-20260810-0951,Western Suffolk,Amityville,FDR-WS-08,medium,unassigned,147,false,tree limb,vegetation,75,40.68837,-73.41553,2026-08-10T22:30:00-04:00
-ESD-20260810-0952,Eastern Suffolk,Southampton,FDR-ES-14,high,unassigned,787,true,tree on primary,vegetation,173,40.87752,-72.38709,2026-08-10T13:45:00-04:00
+ESD-20260810-0952,Eastern Suffolk,Southampton,FDR-ES-14,high,unassigned,787,false,tree on primary,vegetation,173,40.87752,-72.38709,2026-08-10T13:45:00-04:00
 ESD-20260810-0953,Eastern Suffolk,Greenport,FDR-ES-29,high,unassigned,213,false,burning wire,general,117,41.1089,-72.35818,2026-08-10T22:00:00-04:00
 ESD-20260810-0954,Western Suffolk,Amityville,FDR-WS-32,critical,unassigned,1816,false,transformer fire,line,77,40.68765,-73.41216,2026-08-10T16:45:00-04:00
 ESD-20260810-0955,Eastern Suffolk,Southampton,FDR-ES-28,critical,unassigned,785,false,transformer fire,line,97,40.87422,-72.38054,2026-08-10T17:45:00-04:00
@@ -982,7 +982,7 @@ ESD-20260810-0980,Eastern Suffolk,Hampton Bays,FDR-ES-06,high,unassigned,1341,fa
 ESD-20260810-0981,Eastern Suffolk,Wading River,FDR-ES-07,high,unassigned,1493,false,tree on primary,vegetation,117,40.95531,-72.83188,2026-08-10T16:15:00-04:00
 ESD-20260810-0982,Queens-Nassau,Cedarhurst,FDR-QN-04,critical,assigned,1581,false,equipment failure,general,59,40.63033,-73.71946,2026-08-10T18:15:00-04:00
 ESD-20260810-0983,Queens-Nassau,Woodmere,FDR-QN-32,high,unassigned,221,false,downed wire,general,179,40.62094,-73.71455,2026-08-10T13:15:00-04:00
-ESD-20260810-0984,Queens-Nassau,Arverne,FDR-QN-05,high,unassigned,254,false,burning wire,general,62,40.59591,-73.79439,2026-08-10T19:45:00-04:00
+ESD-20260810-0984,Queens-Nassau,Arverne,FDR-QN-05,high,unassigned,254,true,burning wire,general,62,40.59591,-73.79439,2026-08-10T19:45:00-04:00
 ESD-20260810-0985,Queens-Nassau,Woodmere,FDR-QN-24,medium,unassigned,752,false,tree limb,vegetation,26,40.63988,-73.70855,2026-08-10T17:45:00-04:00
 ESD-20260810-0986,Central-Nassau,Massapequa,FDR-CN-28,high,unassigned,845,false,broken crossarm,line,148,40.66928,-73.481,2026-08-10T22:30:00-04:00
 ESD-20260810-0987,Queens-Nassau,Rockaway Park,FDR-QN-38,high,unassigned,1574,false,tree on primary,vegetation,9,40.57748,-73.831,2026-08-10T13:45:00-04:00
@@ -990,24 +990,24 @@ ESD-20260810-0988,Queens-Nassau,Far Rockaway,FDR-QN-31,low,unassigned,20,false,n
 ESD-20260810-0989,Eastern Suffolk,Yaphank,FDR-ES-22,medium,unassigned,271,false,partial outage,general,176,40.83249,-72.91354,2026-08-10T14:30:00-04:00
 ESD-20260810-0990,Central-Nassau,Garden City,FDR-CN-02,high,unassigned,475,false,downed wire,general,75,40.73011,-73.62972,2026-08-10T11:00:00-04:00
 ESD-20260810-0991,Eastern Suffolk,Southampton,FDR-ES-03,low,unassigned,1,false,damaged service drop,low_voltage,145,40.87645,-72.39517,2026-08-10T14:45:00-04:00
-ESD-20260810-0992,Queens-Nassau,Edgemere,FDR-QN-17,critical,unassigned,1027,false,transformer fire,line,29,40.59542,-73.76153,2026-08-10T22:15:00-04:00
+ESD-20260810-0992,Queens-Nassau,Edgemere,FDR-QN-17,critical,unassigned,1027,true,transformer fire,line,29,40.59542,-73.76153,2026-08-10T22:15:00-04:00
 ESD-20260810-0993,Queens-Nassau,Valley Stream,FDR-QN-35,high,unassigned,757,false,tree on primary,vegetation,73,40.65501,-73.70679,2026-08-10T16:15:00-04:00
 ESD-20260810-0994,Western Suffolk,Islip,FDR-WS-36,low,unassigned,165,false,none,general,163,40.72842,-73.22129,2026-08-10T15:15:00-04:00
 ESD-20260810-0995,Queens-Nassau,Lawrence,FDR-QN-04,high,unassigned,905,false,underground cable fault,underground,30,40.61172,-73.73489,2026-08-10T18:45:00-04:00
 ESD-20260810-0996,Eastern Suffolk,Westhampton Beach,FDR-ES-17,high,unassigned,160,false,broken crossarm,line,6,40.8018,-72.64051,2026-08-10T12:30:00-04:00
 ESD-20260810-0997,Queens-Nassau,Inwood,FDR-QN-30,high,unassigned,2,false,burning wire,general,103,40.61359,-73.75524,2026-08-10T20:45:00-04:00
-ESD-20260810-0998,Central-Nassau,Freeport,FDR-CN-19,high,unassigned,1249,true,broken crossarm,line,133,40.66855,-73.57637,2026-08-10T22:15:00-04:00
+ESD-20260810-0998,Central-Nassau,Freeport,FDR-CN-19,high,unassigned,1249,false,broken crossarm,line,133,40.66855,-73.57637,2026-08-10T22:15:00-04:00
 ESD-20260810-0999,Western Suffolk,Babylon,FDR-WS-38,low,unassigned,95,false,none,general,107,40.70333,-73.33526,2026-08-10T11:15:00-04:00
 ESD-20260810-1000,Western Suffolk,Amityville,FDR-WS-05,low,unassigned,1,false,damaged service drop,low_voltage,83,40.67302,-73.41473,2026-08-10T17:45:00-04:00
 ESD-20260810-1001,Western Suffolk,Commack,FDR-WS-01,medium,unassigned,139,false,partial outage,general,26,40.84597,-73.3041,2026-08-10T20:15:00-04:00
-ESD-20260810-1002,Queens-Nassau,Rockaway Park,FDR-QN-37,high,unassigned,237,true,burning wire,general,35,40.57077,-73.83505,2026-08-10T21:45:00-04:00
+ESD-20260810-1002,Queens-Nassau,Rockaway Park,FDR-QN-37,high,unassigned,237,false,burning wire,general,35,40.57077,-73.83505,2026-08-10T21:45:00-04:00
 ESD-20260810-1003,Queens-Nassau,Rockaway Park,FDR-QN-28,high,unassigned,766,false,tree on primary,vegetation,30,40.58628,-73.84423,2026-08-10T20:15:00-04:00
 ESD-20260810-1004,Eastern Suffolk,Wading River,FDR-ES-04,high,assigned,1391,false,tree on primary,vegetation,142,40.94329,-72.83614,2026-08-10T20:45:00-04:00
-ESD-20260810-1005,Eastern Suffolk,Southampton,FDR-ES-29,critical,unassigned,74,true,transformer fire,line,68,40.89323,-72.38996,2026-08-10T21:45:00-04:00
+ESD-20260810-1005,Eastern Suffolk,Southampton,FDR-ES-29,critical,unassigned,74,false,transformer fire,line,68,40.89323,-72.38996,2026-08-10T21:45:00-04:00
 ESD-20260810-1006,Queens-Nassau,Lawrence,FDR-QN-14,medium,unassigned,160,false,partial outage,general,165,40.62401,-73.73292,2026-08-10T17:15:00-04:00
-ESD-20260810-1007,Queens-Nassau,Hewlett,FDR-QN-05,high,unassigned,291,true,burning wire,general,68,40.64189,-73.68577,2026-08-10T16:45:00-04:00
+ESD-20260810-1007,Queens-Nassau,Hewlett,FDR-QN-05,high,unassigned,291,false,burning wire,general,68,40.64189,-73.68577,2026-08-10T16:45:00-04:00
 ESD-20260810-1008,Central-Nassau,Westbury,FDR-CN-29,high,unassigned,123,false,broken crossarm,line,160,40.74468,-73.59359,2026-08-10T22:15:00-04:00
-ESD-20260810-1009,Western Suffolk,Lindenhurst,FDR-WS-13,high,unassigned,274,false,broken crossarm,line,48,40.6866,-73.37719,2026-08-10T10:45:00-04:00
+ESD-20260810-1009,Western Suffolk,Lindenhurst,FDR-WS-13,high,unassigned,274,true,broken crossarm,line,48,40.6866,-73.37719,2026-08-10T10:45:00-04:00
 ESD-20260810-1010,Central-Nassau,Levittown,FDR-CN-21,high,unassigned,183,false,burning wire,general,65,40.73632,-73.52363,2026-08-10T22:45:00-04:00
 ESD-20260810-1011,Western Suffolk,Huntington,FDR-WS-05,medium,unassigned,366,false,partial outage,general,151,40.86221,-73.43705,2026-08-10T14:00:00-04:00
 ESD-20260810-1012,Eastern Suffolk,Southampton,FDR-ES-09,low,unassigned,1,false,damaged service drop,low_voltage,62,40.89141,-72.37792,2026-08-10T15:15:00-04:00
@@ -1023,7 +1023,7 @@ ESD-20260810-1021,Western Suffolk,Ronkonkoma,FDR-WS-08,high,unassigned,809,false
 ESD-20260810-1022,Queens-Nassau,Rockaway Park,FDR-QN-16,medium,unassigned,133,false,tree limb,vegetation,158,40.58775,-73.84818,2026-08-10T10:45:00-04:00
 ESD-20260810-1023,Queens-Nassau,Floral Park,FDR-QN-38,critical,unassigned,1802,false,transformer fire,line,21,40.71336,-73.70853,2026-08-10T14:45:00-04:00
 ESD-20260810-1024,Queens-Nassau,Edgemere,FDR-QN-18,medium,unassigned,771,false,tree limb,vegetation,35,40.60669,-73.77438,2026-08-10T15:30:00-04:00
-ESD-20260810-1025,Queens-Nassau,Inwood,FDR-QN-09,high,unassigned,483,true,underground cable fault,underground,109,40.62314,-73.74493,2026-08-10T17:00:00-04:00
+ESD-20260810-1025,Queens-Nassau,Inwood,FDR-QN-09,high,unassigned,483,false,underground cable fault,underground,109,40.62314,-73.74493,2026-08-10T17:00:00-04:00
 ESD-20260810-1026,Queens-Nassau,Far Rockaway,FDR-QN-22,high,unassigned,305,false,broken crossarm,line,130,40.60964,-73.75551,2026-08-10T22:45:00-04:00
 ESD-20260810-1027,Western Suffolk,Bay Shore,FDR-WS-37,high,unassigned,288,false,burning wire,general,149,40.73657,-73.24587,2026-08-10T17:15:00-04:00
 ESD-20260810-1028,Queens-Nassau,Rockaway Park,FDR-QN-12,critical,unassigned,804,false,transformer fire,line,23,40.58124,-73.84775,2026-08-10T17:15:00-04:00
@@ -1037,7 +1037,7 @@ ESD-20260810-1035,Queens-Nassau,Cedarhurst,FDR-QN-27,medium,unassigned,18,false,
 ESD-20260810-1036,Queens-Nassau,Floral Park,FDR-QN-07,low,unassigned,44,false,none,general,21,40.71201,-73.70391,2026-08-10T14:45:00-04:00
 ESD-20260810-1037,Central-Nassau,East Meadow,FDR-CN-31,critical,unassigned,176,false,transformer fire,line,7,40.71651,-73.56205,2026-08-10T17:15:00-04:00
 ESD-20260810-1038,Central-Nassau,Hicksville,FDR-CN-27,high,unassigned,310,false,burning wire,general,45,40.76218,-73.52632,2026-08-10T22:45:00-04:00
-ESD-20260810-1039,Eastern Suffolk,Greenport,FDR-ES-28,high,unassigned,128,true,downed wire,general,38,41.09248,-72.34862,2026-08-10T20:45:00-04:00
+ESD-20260810-1039,Eastern Suffolk,Greenport,FDR-ES-28,high,unassigned,128,false,downed wire,general,38,41.09248,-72.34862,2026-08-10T20:45:00-04:00
 ESD-20260810-1040,Central-Nassau,Wantagh,FDR-CN-37,medium,unassigned,341,false,partial outage,general,25,40.69436,-73.51946,2026-08-10T22:15:00-04:00
 ESD-20260810-1041,Queens-Nassau,Floral Park,FDR-QN-38,medium,unassigned,658,false,tree limb,vegetation,131,40.73458,-73.69766,2026-08-10T19:15:00-04:00
 ESD-20260810-1042,Eastern Suffolk,Montauk,FDR-ES-14,medium,unassigned,131,false,tree limb,vegetation,140,41.02463,-71.94271,2026-08-10T11:30:00-04:00
@@ -1066,7 +1066,7 @@ ESD-20260810-1064,Queens-Nassau,Hewlett,FDR-QN-05,high,unassigned,318,false,unde
 ESD-20260810-1065,Eastern Suffolk,Wading River,FDR-ES-17,high,unassigned,255,false,downed wire,general,98,40.95109,-72.83265,2026-08-10T11:00:00-04:00
 ESD-20260810-1066,Eastern Suffolk,Manorville,FDR-ES-33,medium,unassigned,53,false,partial outage,general,130,40.88014,-72.80015,2026-08-10T20:15:00-04:00
 ESD-20260810-1067,Central-Nassau,East Meadow,FDR-CN-07,high,unassigned,168,false,downed wire,general,29,40.72527,-73.55731,2026-08-10T17:30:00-04:00
-ESD-20260810-1068,Central-Nassau,East Meadow,FDR-CN-16,high,unassigned,169,true,broken crossarm,line,66,40.70706,-73.55038,2026-08-10T16:15:00-04:00
+ESD-20260810-1068,Central-Nassau,East Meadow,FDR-CN-16,high,unassigned,169,false,broken crossarm,line,66,40.70706,-73.55038,2026-08-10T16:15:00-04:00
 ESD-20260810-1069,Western Suffolk,Brentwood,FDR-WS-05,high,unassigned,1077,false,underground cable fault,underground,107,40.77107,-73.23602,2026-08-10T21:45:00-04:00
 ESD-20260810-1070,Queens-Nassau,Arverne,FDR-QN-30,medium,unassigned,76,false,tree limb,vegetation,91,40.59679,-73.80645,2026-08-10T13:30:00-04:00
 ESD-20260810-1071,Queens-Nassau,Cedarhurst,FDR-QN-01,critical,unassigned,2064,false,transformer fire,line,87,40.62786,-73.71432,2026-08-10T22:15:00-04:00
@@ -1076,23 +1076,23 @@ ESD-20260810-1074,Queens-Nassau,Far Rockaway,FDR-QN-06,high,unassigned,680,false
 ESD-20260810-1075,Central-Nassau,East Meadow,FDR-CN-40,high,unassigned,780,false,broken crossarm,line,80,40.71999,-73.55768,2026-08-10T18:00:00-04:00
 ESD-20260810-1076,Central-Nassau,Mineola,FDR-CN-15,medium,unassigned,420,false,partial outage,general,70,40.74905,-73.64768,2026-08-10T20:15:00-04:00
 ESD-20260810-1077,Eastern Suffolk,Hampton Bays,FDR-ES-06,high,unassigned,282,false,downed wire,general,156,40.86491,-72.50694,2026-08-10T11:00:00-04:00
-ESD-20260810-1078,Queens-Nassau,Valley Stream,FDR-QN-25,high,unassigned,58,true,downed wire,general,29,40.66408,-73.71458,2026-08-10T11:30:00-04:00
+ESD-20260810-1078,Queens-Nassau,Valley Stream,FDR-QN-25,high,unassigned,58,false,downed wire,general,29,40.66408,-73.71458,2026-08-10T11:30:00-04:00
 ESD-20260810-1079,Eastern Suffolk,Greenport,FDR-ES-27,critical,unassigned,1270,false,transformer fire,line,129,41.0991,-72.36379,2026-08-10T11:45:00-04:00
 ESD-20260810-1080,Western Suffolk,Islip,FDR-WS-08,medium,unassigned,161,false,partial outage,general,108,40.72887,-73.21669,2026-08-10T17:00:00-04:00
 ESD-20260810-1081,Eastern Suffolk,Greenport,FDR-ES-33,high,unassigned,433,false,underground cable fault,underground,100,41.1029,-72.35416,2026-08-10T17:15:00-04:00
 ESD-20260810-1082,Western Suffolk,Babylon,FDR-WS-36,low,unassigned,23,false,none,general,114,40.70199,-73.32759,2026-08-10T14:15:00-04:00
 ESD-20260810-1083,Queens-Nassau,Lawrence,FDR-QN-24,high,unassigned,521,false,underground cable fault,underground,44,40.61471,-73.72063,2026-08-10T21:15:00-04:00
-ESD-20260810-1084,Central-Nassau,Hicksville,FDR-CN-20,high,unassigned,1154,false,underground cable fault,underground,52,40.7724,-73.51338,2026-08-10T17:45:00-04:00
+ESD-20260810-1084,Central-Nassau,Hicksville,FDR-CN-20,high,unassigned,1154,true,underground cable fault,underground,52,40.7724,-73.51338,2026-08-10T17:45:00-04:00
 ESD-20260810-1085,Central-Nassau,Massapequa,FDR-CN-20,high,unassigned,1399,false,broken crossarm,line,116,40.69104,-73.48379,2026-08-10T18:15:00-04:00
 ESD-20260810-1086,Queens-Nassau,Edgemere,FDR-QN-07,low,unassigned,1,false,damaged service drop,low_voltage,56,40.60744,-73.77956,2026-08-10T22:15:00-04:00
 ESD-20260810-1087,Queens-Nassau,Valley Stream,FDR-QN-25,high,unassigned,223,false,burning wire,general,167,40.66795,-73.71825,2026-08-10T16:30:00-04:00
 ESD-20260810-1088,Queens-Nassau,Rockaway Park,FDR-QN-08,medium,unassigned,226,false,partial outage,general,111,40.59055,-73.83816,2026-08-10T21:30:00-04:00
-ESD-20260810-1089,Queens-Nassau,Elmont,FDR-QN-27,high,unassigned,270,true,burning wire,general,25,40.70515,-73.71309,2026-08-10T14:00:00-04:00
+ESD-20260810-1089,Queens-Nassau,Elmont,FDR-QN-27,high,unassigned,270,false,burning wire,general,25,40.70515,-73.71309,2026-08-10T14:00:00-04:00
 ESD-20260810-1090,Western Suffolk,Commack,FDR-WS-23,high,unassigned,942,false,broken crossarm,line,112,40.84059,-73.29929,2026-08-10T15:00:00-04:00
 ESD-20260810-1091,Western Suffolk,Bay Shore,FDR-WS-16,high,unassigned,1264,false,tree on primary,vegetation,149,40.71656,-73.25355,2026-08-10T16:30:00-04:00
 ESD-20260810-1092,Eastern Suffolk,Montauk,FDR-ES-37,critical,unassigned,2134,false,transformer fire,line,47,41.0426,-71.96156,2026-08-10T13:45:00-04:00
 ESD-20260810-1093,Western Suffolk,Commack,FDR-WS-10,low,unassigned,116,false,none,general,122,40.84993,-73.28293,2026-08-10T11:45:00-04:00
-ESD-20260810-1094,Eastern Suffolk,Westhampton Beach,FDR-ES-34,high,unassigned,1394,true,tree on primary,vegetation,80,40.79964,-72.63646,2026-08-10T20:45:00-04:00
+ESD-20260810-1094,Eastern Suffolk,Westhampton Beach,FDR-ES-34,high,unassigned,1394,false,tree on primary,vegetation,80,40.79964,-72.63646,2026-08-10T20:45:00-04:00
 ESD-20260810-1095,Queens-Nassau,Woodmere,FDR-QN-31,high,unassigned,1083,false,underground cable fault,underground,96,40.63642,-73.70919,2026-08-10T18:45:00-04:00
 ESD-20260810-1096,Western Suffolk,Smithtown,FDR-WS-10,high,unassigned,472,false,downed wire,general,112,40.85316,-73.19012,2026-08-10T19:00:00-04:00
 ESD-20260810-1097,Eastern Suffolk,Southampton,FDR-ES-11,high,unassigned,512,false,broken crossarm,line,51,40.89398,-72.39914,2026-08-10T12:45:00-04:00
@@ -1104,8 +1104,8 @@ ESD-20260810-1102,Western Suffolk,Ronkonkoma,FDR-WS-02,high,unassigned,304,false
 ESD-20260810-1103,Queens-Nassau,Hewlett,FDR-QN-23,high,unassigned,173,false,burning wire,general,109,40.64499,-73.69925,2026-08-10T20:00:00-04:00
 ESD-20260810-1104,Eastern Suffolk,Westhampton Beach,FDR-ES-24,medium,unassigned,11,false,partial outage,general,177,40.80565,-72.65185,2026-08-10T10:30:00-04:00
 ESD-20260810-1105,Central-Nassau,Hicksville,FDR-CN-28,high,unassigned,1098,false,underground cable fault,underground,33,40.76091,-73.52813,2026-08-10T14:30:00-04:00
-ESD-20260810-1106,Central-Nassau,Garden City,FDR-CN-17,high,unassigned,1111,true,underground cable fault,underground,125,40.72355,-73.63566,2026-08-10T13:45:00-04:00
-ESD-20260810-1107,Western Suffolk,Smithtown,FDR-WS-07,high,unassigned,1045,false,tree on primary,vegetation,55,40.84407,-73.19969,2026-08-10T22:00:00-04:00
+ESD-20260810-1106,Central-Nassau,Garden City,FDR-CN-17,high,unassigned,1111,false,underground cable fault,underground,125,40.72355,-73.63566,2026-08-10T13:45:00-04:00
+ESD-20260810-1107,Western Suffolk,Smithtown,FDR-WS-07,high,unassigned,1045,true,tree on primary,vegetation,55,40.84407,-73.19969,2026-08-10T22:00:00-04:00
 ESD-20260810-1108,Central-Nassau,Freeport,FDR-CN-13,medium,unassigned,602,false,tree limb,vegetation,107,40.64644,-73.57668,2026-08-10T13:30:00-04:00
 ESD-20260810-1109,Queens-Nassau,Inwood,FDR-QN-35,high,unassigned,625,false,underground cable fault,underground,49,40.61126,-73.74219,2026-08-10T22:30:00-04:00
 ESD-20260810-1110,Eastern Suffolk,Greenport,FDR-ES-27,high,unassigned,121,false,burning wire,general,72,41.10434,-72.36987,2026-08-10T12:15:00-04:00
@@ -1115,7 +1115,7 @@ ESD-20260810-1113,Eastern Suffolk,Southampton,FDR-ES-03,medium,unassigned,339,fa
 ESD-20260810-1114,Queens-Nassau,Floral Park,FDR-QN-13,critical,unassigned,230,false,transformer fire,line,155,40.72914,-73.69593,2026-08-10T18:15:00-04:00
 ESD-20260810-1115,Central-Nassau,Uniondale,FDR-CN-07,low,unassigned,1,false,damaged service drop,low_voltage,156,40.70881,-73.5882,2026-08-10T20:30:00-04:00
 ESD-20260810-1116,Western Suffolk,Bay Shore,FDR-WS-12,high,unassigned,930,false,underground cable fault,underground,56,40.72072,-73.25551,2026-08-10T11:30:00-04:00
-ESD-20260810-1117,Queens-Nassau,Inwood,FDR-QN-10,high,unassigned,310,false,downed wire,general,144,40.62142,-73.74912,2026-08-10T17:00:00-04:00
+ESD-20260810-1117,Queens-Nassau,Inwood,FDR-QN-10,high,unassigned,310,true,downed wire,general,144,40.62142,-73.74912,2026-08-10T17:00:00-04:00
 ESD-20260810-1118,Queens-Nassau,Lawrence,FDR-QN-04,medium,unassigned,11,false,partial outage,general,40,40.60939,-73.71827,2026-08-10T16:00:00-04:00
 ESD-20260810-1119,Queens-Nassau,Lawrence,FDR-QN-17,critical,unassigned,1415,false,transformer fire,line,157,40.61122,-73.72018,2026-08-10T10:30:00-04:00
 ESD-20260810-1120,Central-Nassau,Garden City,FDR-CN-20,low,unassigned,1,false,damaged service drop,low_voltage,167,40.72715,-73.63507,2026-08-10T11:30:00-04:00
@@ -1151,9 +1151,9 @@ ESD-20260810-1149,Western Suffolk,Brentwood,FDR-WS-06,high,unassigned,98,false,b
 ESD-20260810-1150,Queens-Nassau,Edgemere,FDR-QN-10,high,unassigned,1017,false,tree on primary,vegetation,152,40.60008,-73.75925,2026-08-10T22:45:00-04:00
 ESD-20260810-1151,Central-Nassau,Levittown,FDR-CN-30,low,unassigned,47,false,none,general,25,40.71617,-73.50408,2026-08-10T14:00:00-04:00
 ESD-20260810-1152,Central-Nassau,Wantagh,FDR-CN-10,high,unassigned,109,false,tree on primary,vegetation,72,40.69065,-73.5182,2026-08-10T16:30:00-04:00
-ESD-20260810-1153,Western Suffolk,Huntington,FDR-WS-18,high,unassigned,350,false,burning wire,general,23,40.86325,-73.4268,2026-08-10T12:45:00-04:00
+ESD-20260810-1153,Western Suffolk,Huntington,FDR-WS-18,high,unassigned,350,true,burning wire,general,23,40.86325,-73.4268,2026-08-10T12:45:00-04:00
 ESD-20260810-1154,Central-Nassau,Uniondale,FDR-CN-05,high,unassigned,1272,true,tree on primary,vegetation,64,40.69752,-73.58254,2026-08-10T11:00:00-04:00
-ESD-20260810-1155,Central-Nassau,Levittown,FDR-CN-09,high,unassigned,968,false,broken crossarm,line,159,40.72073,-73.50624,2026-08-10T14:00:00-04:00
+ESD-20260810-1155,Central-Nassau,Levittown,FDR-CN-09,high,unassigned,968,true,broken crossarm,line,159,40.72073,-73.50624,2026-08-10T14:00:00-04:00
 ESD-20260810-1156,Central-Nassau,Garden City,FDR-CN-10,low,unassigned,1,false,damaged service drop,low_voltage,88,40.7157,-73.62706,2026-08-10T21:45:00-04:00
 ESD-20260810-1157,Western Suffolk,Bay Shore,FDR-WS-38,high,unassigned,90,false,tree on primary,vegetation,115,40.73161,-73.23413,2026-08-10T15:30:00-04:00
 ESD-20260810-1158,Eastern Suffolk,Westhampton Beach,FDR-ES-34,high,assigned,293,false,feeder lockout,line,81,40.80249,-72.64785,2026-08-10T15:00:00-04:00
@@ -1175,7 +1175,7 @@ ESD-20260810-1173,Eastern Suffolk,Westhampton Beach,FDR-ES-39,medium,unassigned,
 ESD-20260810-1174,Western Suffolk,Ronkonkoma,FDR-WS-34,low,unassigned,1,false,damaged service drop,low_voltage,145,40.81421,-73.12047,2026-08-10T18:15:00-04:00
 ESD-20260810-1175,Central-Nassau,East Meadow,FDR-CN-06,medium,unassigned,329,false,tree limb,vegetation,169,40.7068,-73.5693,2026-08-10T21:30:00-04:00
 ESD-20260810-1176,Western Suffolk,Huntington,FDR-WS-03,high,unassigned,1520,false,tree on primary,vegetation,66,40.87876,-73.43225,2026-08-10T19:15:00-04:00
-ESD-20260810-1177,Central-Nassau,East Meadow,FDR-CN-23,critical,unassigned,1508,true,transformer fire,line,43,40.71101,-73.56329,2026-08-10T12:00:00-04:00
+ESD-20260810-1177,Central-Nassau,East Meadow,FDR-CN-23,critical,unassigned,1508,false,transformer fire,line,43,40.71101,-73.56329,2026-08-10T12:00:00-04:00
 ESD-20260810-1178,Western Suffolk,Brentwood,FDR-WS-37,low,unassigned,108,false,none,general,160,40.78924,-73.25271,2026-08-10T16:15:00-04:00
 ESD-20260810-1179,Queens-Nassau,Lawrence,FDR-QN-38,high,assigned,357,false,burning wire,general,16,40.6113,-73.72662,2026-08-10T21:45:00-04:00
 ESD-20260810-1180,Western Suffolk,Brentwood,FDR-WS-21,high,assigned,1813,false,broken crossarm,line,168,40.78686,-73.2498,2026-08-10T22:00:00-04:00
@@ -1196,16 +1196,16 @@ ESD-20260810-1194,Western Suffolk,Commack,FDR-WS-11,critical,unassigned,952,fals
 ESD-20260810-1195,Central-Nassau,Wantagh,FDR-CN-13,low,unassigned,1,false,damaged service drop,low_voltage,27,40.67738,-73.50962,2026-08-10T10:15:00-04:00
 ESD-20260810-1196,Eastern Suffolk,Greenport,FDR-ES-03,low,unassigned,1,false,damaged service drop,low_voltage,82,41.11124,-72.36979,2026-08-10T21:15:00-04:00
 ESD-20260810-1197,Queens-Nassau,Cedarhurst,FDR-QN-08,critical,unassigned,2033,false,transformer fire,line,18,40.61986,-73.73205,2026-08-10T14:15:00-04:00
-ESD-20260810-1198,Queens-Nassau,Arverne,FDR-QN-23,critical,unassigned,481,true,transformer fire,line,163,40.57923,-73.80582,2026-08-10T19:00:00-04:00
+ESD-20260810-1198,Queens-Nassau,Arverne,FDR-QN-23,critical,unassigned,481,false,transformer fire,line,163,40.57923,-73.80582,2026-08-10T19:00:00-04:00
 ESD-20260810-1199,Central-Nassau,Massapequa,FDR-CN-35,medium,unassigned,568,false,tree limb,vegetation,142,40.6925,-73.48262,2026-08-10T22:45:00-04:00
-ESD-20260810-1200,Queens-Nassau,Rockaway Park,FDR-QN-17,high,unassigned,137,true,burning wire,general,52,40.5862,-73.82704,2026-08-10T12:00:00-04:00
-ESD-20260810-1201,Eastern Suffolk,Westhampton Beach,FDR-ES-07,high,unassigned,719,false,broken crossarm,line,101,40.81839,-72.6437,2026-08-10T12:30:00-04:00
+ESD-20260810-1200,Queens-Nassau,Rockaway Park,FDR-QN-17,high,unassigned,137,false,burning wire,general,52,40.5862,-73.82704,2026-08-10T12:00:00-04:00
+ESD-20260810-1201,Eastern Suffolk,Westhampton Beach,FDR-ES-07,high,unassigned,719,true,broken crossarm,line,101,40.81839,-72.6437,2026-08-10T12:30:00-04:00
 ESD-20260810-1202,Central-Nassau,Merrick,FDR-CN-05,high,unassigned,252,false,underground cable fault,underground,26,40.65111,-73.54252,2026-08-10T12:15:00-04:00
 ESD-20260810-1203,Western Suffolk,Babylon,FDR-WS-29,high,unassigned,101,false,burning wire,general,72,40.70237,-73.32111,2026-08-10T20:30:00-04:00
 ESD-20260810-1204,Queens-Nassau,Lawrence,FDR-QN-16,medium,unassigned,866,false,tree limb,vegetation,154,40.61196,-73.71799,2026-08-10T11:30:00-04:00
 ESD-20260810-1205,Central-Nassau,Garden City,FDR-CN-39,high,unassigned,204,false,burning wire,general,53,40.72538,-73.62889,2026-08-10T13:00:00-04:00
 ESD-20260810-1206,Eastern Suffolk,Southampton,FDR-ES-21,high,unassigned,470,false,downed wire,general,113,40.88352,-72.38528,2026-08-10T15:00:00-04:00
-ESD-20260810-1207,Western Suffolk,Smithtown,FDR-WS-39,critical,unassigned,1758,true,transformer fire,line,163,40.86497,-73.20173,2026-08-10T16:15:00-04:00
+ESD-20260810-1207,Western Suffolk,Smithtown,FDR-WS-39,critical,unassigned,1758,false,transformer fire,line,163,40.86497,-73.20173,2026-08-10T16:15:00-04:00
 ESD-20260810-1208,Western Suffolk,Ronkonkoma,FDR-WS-05,critical,assigned,2282,false,broken crossarm,line,57,40.81126,-73.11669,2026-08-10T20:30:00-04:00
 ESD-20260810-1209,Eastern Suffolk,Yaphank,FDR-ES-19,high,unassigned,150,false,burning wire,general,117,40.82658,-72.90842,2026-08-10T11:30:00-04:00
 ESD-20260810-1210,Queens-Nassau,Valley Stream,FDR-QN-29,high,unassigned,804,false,tree on primary,vegetation,166,40.65541,-73.71412,2026-08-10T16:00:00-04:00
@@ -1234,9 +1234,9 @@ ESD-20260810-1232,Queens-Nassau,Arverne,FDR-QN-09,high,unassigned,1054,false,und
 ESD-20260810-1233,Queens-Nassau,Far Rockaway,FDR-QN-26,critical,unassigned,1547,false,transformer fire,line,77,40.61506,-73.76377,2026-08-10T12:15:00-04:00
 ESD-20260810-1234,Central-Nassau,Hicksville,FDR-CN-08,medium,unassigned,416,false,partial outage,general,88,40.75835,-73.53149,2026-08-10T15:45:00-04:00
 ESD-20260810-1235,Queens-Nassau,Inwood,FDR-QN-13,low,unassigned,1,false,damaged service drop,low_voltage,74,40.62637,-73.74865,2026-08-10T21:15:00-04:00
-ESD-20260810-1236,Eastern Suffolk,Westhampton Beach,FDR-ES-21,high,unassigned,336,true,burning wire,general,65,40.80284,-72.65468,2026-08-10T21:45:00-04:00
+ESD-20260810-1236,Eastern Suffolk,Westhampton Beach,FDR-ES-21,high,unassigned,336,false,burning wire,general,65,40.80284,-72.65468,2026-08-10T21:45:00-04:00
 ESD-20260810-1237,Western Suffolk,Copiague,FDR-WS-09,high,unassigned,45,false,downed wire,general,102,40.68935,-73.40526,2026-08-10T12:00:00-04:00
-ESD-20260810-1238,Queens-Nassau,Elmont,FDR-QN-15,high,unassigned,307,false,burning wire,general,27,40.69269,-73.7188,2026-08-10T14:45:00-04:00
+ESD-20260810-1238,Queens-Nassau,Elmont,FDR-QN-15,high,unassigned,307,true,burning wire,general,27,40.69269,-73.7188,2026-08-10T14:45:00-04:00
 ESD-20260810-1239,Queens-Nassau,Edgemere,FDR-QN-05,high,unassigned,176,false,burning wire,general,25,40.58698,-73.78004,2026-08-10T19:30:00-04:00
 ESD-20260810-1240,Central-Nassau,Mineola,FDR-CN-10,low,unassigned,150,false,none,general,148,40.75319,-73.64205,2026-08-10T20:00:00-04:00
 ESD-20260810-1241,Queens-Nassau,Edgemere,FDR-QN-22,high,unassigned,924,false,tree on primary,vegetation,130,40.60337,-73.75909,2026-08-10T14:15:00-04:00
@@ -1250,13 +1250,13 @@ ESD-20260810-1248,Queens-Nassau,Edgemere,FDR-QN-36,low,unassigned,131,false,none
 ESD-20260810-1249,Central-Nassau,Westbury,FDR-CN-37,low,unassigned,1,false,damaged service drop,low_voltage,31,40.76665,-73.58733,2026-08-10T22:45:00-04:00
 ESD-20260810-1250,Eastern Suffolk,Center Moriches,FDR-ES-03,low,unassigned,1,false,damaged service drop,low_voltage,107,40.79474,-72.77974,2026-08-10T10:45:00-04:00
 ESD-20260810-1251,Eastern Suffolk,Riverhead,FDR-ES-20,critical,unassigned,896,false,transformer fire,line,104,40.91946,-72.65518,2026-08-10T16:00:00-04:00
-ESD-20260810-1252,Eastern Suffolk,Center Moriches,FDR-ES-33,high,unassigned,121,true,tree on primary,vegetation,52,40.79341,-72.7957,2026-08-10T17:45:00-04:00
+ESD-20260810-1252,Eastern Suffolk,Center Moriches,FDR-ES-33,high,unassigned,121,false,tree on primary,vegetation,52,40.79341,-72.7957,2026-08-10T17:45:00-04:00
 ESD-20260810-1253,Queens-Nassau,Inwood,FDR-QN-39,high,unassigned,82,false,burning wire,general,153,40.62504,-73.7584,2026-08-10T19:15:00-04:00
 ESD-20260810-1254,Queens-Nassau,Lawrence,FDR-QN-26,low,unassigned,1,false,damaged service drop,low_voltage,163,40.60819,-73.72023,2026-08-10T17:45:00-04:00
 ESD-20260810-1255,Central-Nassau,Massapequa,FDR-CN-09,high,unassigned,893,false,tree on primary,vegetation,113,40.67622,-73.48132,2026-08-10T13:30:00-04:00
 ESD-20260810-1256,Queens-Nassau,Valley Stream,FDR-QN-17,high,unassigned,1657,false,broken crossarm,line,37,40.65241,-73.70135,2026-08-10T11:00:00-04:00
 ESD-20260810-1257,Eastern Suffolk,Calverton,FDR-ES-28,critical,unassigned,2168,false,transformer fire,line,58,40.90597,-72.75225,2026-08-10T10:45:00-04:00
-ESD-20260810-1258,Central-Nassau,Mineola,FDR-CN-05,high,unassigned,1015,true,underground cable fault,underground,126,40.74216,-73.63972,2026-08-10T13:30:00-04:00
+ESD-20260810-1258,Central-Nassau,Mineola,FDR-CN-05,high,unassigned,1015,false,underground cable fault,underground,126,40.74216,-73.63972,2026-08-10T13:30:00-04:00
 ESD-20260810-1259,Central-Nassau,East Meadow,FDR-CN-34,high,unassigned,271,false,downed wire,general,158,40.71086,-73.54986,2026-08-10T17:00:00-04:00
 ESD-20260810-1260,Eastern Suffolk,Riverhead,FDR-ES-30,medium,unassigned,286,false,tree limb,vegetation,125,40.92306,-72.66367,2026-08-10T18:15:00-04:00
 ESD-20260810-1261,Queens-Nassau,Lawrence,FDR-QN-13,critical,unassigned,1763,false,transformer fire,line,91,40.62702,-73.72206,2026-08-10T14:15:00-04:00
@@ -1278,7 +1278,7 @@ ESD-20260810-1276,Central-Nassau,Mineola,FDR-CN-01,critical,assigned,631,false,p
 ESD-20260810-1277,Western Suffolk,Amityville,FDR-WS-29,medium,unassigned,269,false,partial outage,general,169,40.67323,-73.4196,2026-08-10T17:15:00-04:00
 ESD-20260810-1278,Western Suffolk,Islip,FDR-WS-29,high,unassigned,307,false,broken crossarm,line,84,40.71952,-73.20406,2026-08-10T10:00:00-04:00
 ESD-20260810-1279,Eastern Suffolk,Westhampton Beach,FDR-ES-02,low,unassigned,1,false,damaged service drop,low_voltage,144,40.82024,-72.63926,2026-08-10T17:15:00-04:00
-ESD-20260810-1280,Central-Nassau,Wantagh,FDR-CN-33,high,unassigned,695,true,underground cable fault,underground,152,40.68243,-73.50727,2026-08-10T16:30:00-04:00
+ESD-20260810-1280,Central-Nassau,Wantagh,FDR-CN-33,high,unassigned,695,false,underground cable fault,underground,152,40.68243,-73.50727,2026-08-10T16:30:00-04:00
 ESD-20260810-1281,Western Suffolk,Lindenhurst,FDR-WS-35,critical,unassigned,434,false,transformer fire,line,139,40.69507,-73.37279,2026-08-10T11:00:00-04:00
 ESD-20260810-1282,Queens-Nassau,Inwood,FDR-QN-23,medium,unassigned,260,false,partial outage,general,170,40.61041,-73.73946,2026-08-10T20:00:00-04:00
 ESD-20260810-1283,Western Suffolk,Bay Shore,FDR-WS-30,medium,unassigned,342,false,tree limb,vegetation,44,40.71522,-73.2361,2026-08-10T16:15:00-04:00
@@ -1296,25 +1296,25 @@ ESD-20260810-1294,Central-Nassau,Westbury,FDR-CN-21,high,unassigned,584,false,tr
 ESD-20260810-1295,Queens-Nassau,Edgemere,FDR-QN-06,high,unassigned,525,false,broken crossarm,line,153,40.59884,-73.75919,2026-08-10T11:00:00-04:00
 ESD-20260810-1296,Queens-Nassau,Floral Park,FDR-QN-15,high,unassigned,550,false,broken crossarm,line,113,40.71528,-73.70623,2026-08-10T15:30:00-04:00
 ESD-20260810-1297,Eastern Suffolk,Yaphank,FDR-ES-19,high,unassigned,351,false,underground cable fault,underground,113,40.82638,-72.9254,2026-08-10T20:45:00-04:00
-ESD-20260810-1298,Queens-Nassau,Rockaway Park,FDR-QN-17,high,unassigned,770,false,underground cable fault,underground,161,40.58746,-73.84487,2026-08-10T21:30:00-04:00
+ESD-20260810-1298,Queens-Nassau,Rockaway Park,FDR-QN-17,high,unassigned,770,true,underground cable fault,underground,161,40.58746,-73.84487,2026-08-10T21:30:00-04:00
 ESD-20260810-1299,Western Suffolk,Huntington,FDR-WS-34,medium,unassigned,121,false,partial outage,general,159,40.8591,-73.42134,2026-08-10T12:00:00-04:00
 ESD-20260810-1300,Central-Nassau,Merrick,FDR-CN-31,low,unassigned,1,false,damaged service drop,low_voltage,6,40.67466,-73.55526,2026-08-10T22:45:00-04:00
 ESD-20260810-1301,Eastern Suffolk,East Hampton,FDR-ES-21,high,unassigned,230,false,burning wire,general,109,40.95392,-72.19177,2026-08-10T13:15:00-04:00
-ESD-20260810-1302,Queens-Nassau,Floral Park,FDR-QN-05,critical,unassigned,2281,false,transformer fire,line,50,40.72533,-73.71372,2026-08-10T22:15:00-04:00
+ESD-20260810-1302,Queens-Nassau,Floral Park,FDR-QN-05,critical,unassigned,2281,true,transformer fire,line,50,40.72533,-73.71372,2026-08-10T22:15:00-04:00
 ESD-20260810-1303,Queens-Nassau,Elmont,FDR-QN-37,medium,unassigned,33,false,partial outage,general,68,40.70552,-73.7128,2026-08-10T19:15:00-04:00
-ESD-20260810-1304,Eastern Suffolk,Montauk,FDR-ES-15,high,unassigned,981,false,tree on primary,vegetation,111,41.03834,-71.953,2026-08-10T17:30:00-04:00
+ESD-20260810-1304,Eastern Suffolk,Montauk,FDR-ES-15,high,unassigned,981,true,tree on primary,vegetation,111,41.03834,-71.953,2026-08-10T17:30:00-04:00
 ESD-20260810-1305,Western Suffolk,Brentwood,FDR-WS-33,low,unassigned,122,false,none,general,118,40.78566,-73.23492,2026-08-10T19:45:00-04:00
 ESD-20260810-1306,Western Suffolk,Ronkonkoma,FDR-WS-06,high,unassigned,203,false,burning wire,general,129,40.80467,-73.10858,2026-08-10T11:45:00-04:00
 ESD-20260810-1307,Western Suffolk,Ronkonkoma,FDR-WS-07,high,unassigned,1081,false,tree on primary,vegetation,100,40.80747,-73.11978,2026-08-10T14:00:00-04:00
 ESD-20260810-1308,Eastern Suffolk,Westhampton Beach,FDR-ES-24,low,unassigned,128,false,none,general,52,40.80303,-72.64803,2026-08-10T11:00:00-04:00
 ESD-20260810-1309,Central-Nassau,Hempstead,FDR-CN-24,high,unassigned,499,false,tree on primary,vegetation,133,40.69669,-73.62608,2026-08-10T18:30:00-04:00
 ESD-20260810-1310,Central-Nassau,East Meadow,FDR-CN-16,low,unassigned,81,false,none,general,80,40.72216,-73.56727,2026-08-10T16:45:00-04:00
-ESD-20260810-1311,Queens-Nassau,Floral Park,FDR-QN-39,high,unassigned,91,true,underground cable fault,underground,106,40.71463,-73.70281,2026-08-10T22:15:00-04:00
+ESD-20260810-1311,Queens-Nassau,Floral Park,FDR-QN-39,high,unassigned,91,false,underground cable fault,underground,106,40.71463,-73.70281,2026-08-10T22:15:00-04:00
 ESD-20260810-1312,Central-Nassau,Uniondale,FDR-CN-17,low,unassigned,1,false,damaged service drop,low_voltage,109,40.70558,-73.58456,2026-08-10T19:00:00-04:00
 ESD-20260810-1313,Western Suffolk,Lindenhurst,FDR-WS-26,high,unassigned,215,false,burning wire,general,152,40.69346,-73.38328,2026-08-10T18:30:00-04:00
 ESD-20260810-1314,Western Suffolk,Amityville,FDR-WS-02,medium,unassigned,613,false,tree limb,vegetation,17,40.68605,-73.42494,2026-08-10T12:00:00-04:00
-ESD-20260810-1315,Queens-Nassau,Lawrence,FDR-QN-28,high,unassigned,204,true,burning wire,general,117,40.60475,-73.71769,2026-08-10T10:30:00-04:00
-ESD-20260810-1316,Queens-Nassau,Rockaway Park,FDR-QN-03,high,unassigned,69,false,burning wire,general,75,40.58578,-73.83262,2026-08-10T10:00:00-04:00
+ESD-20260810-1315,Queens-Nassau,Lawrence,FDR-QN-28,high,unassigned,204,false,burning wire,general,117,40.60475,-73.71769,2026-08-10T10:30:00-04:00
+ESD-20260810-1316,Queens-Nassau,Rockaway Park,FDR-QN-03,high,unassigned,69,true,burning wire,general,75,40.58578,-73.83262,2026-08-10T10:00:00-04:00
 ESD-20260810-1317,Queens-Nassau,Elmont,FDR-QN-35,low,unassigned,1,false,damaged service drop,low_voltage,106,40.69257,-73.72425,2026-08-10T10:00:00-04:00
 ESD-20260810-1318,Queens-Nassau,Woodmere,FDR-QN-40,low,unassigned,1,false,damaged service drop,low_voltage,96,40.63452,-73.71636,2026-08-10T21:15:00-04:00
 ESD-20260810-1319,Western Suffolk,Brentwood,FDR-WS-10,high,unassigned,875,false,underground cable fault,underground,77,40.79153,-73.24779,2026-08-10T17:15:00-04:00
@@ -1322,9 +1322,9 @@ ESD-20260810-1320,Western Suffolk,Islip,FDR-WS-08,high,unassigned,284,false,tree
 ESD-20260810-1321,Central-Nassau,Merrick,FDR-CN-23,high,unassigned,1763,false,broken crossarm,line,88,40.65776,-73.55458,2026-08-10T12:15:00-04:00
 ESD-20260810-1322,Central-Nassau,Garden City,FDR-CN-22,low,unassigned,56,false,none,general,77,40.73799,-73.62853,2026-08-10T20:15:00-04:00
 ESD-20260810-1323,Central-Nassau,Uniondale,FDR-CN-03,medium,unassigned,110,false,tree limb,vegetation,16,40.7019,-73.60301,2026-08-10T20:30:00-04:00
-ESD-20260810-1324,Eastern Suffolk,Wading River,FDR-ES-28,high,unassigned,1427,true,tree on primary,vegetation,76,40.93878,-72.84198,2026-08-10T17:30:00-04:00
+ESD-20260810-1324,Eastern Suffolk,Wading River,FDR-ES-28,high,unassigned,1427,false,tree on primary,vegetation,76,40.93878,-72.84198,2026-08-10T17:30:00-04:00
 ESD-20260810-1325,Queens-Nassau,Cedarhurst,FDR-QN-17,high,unassigned,108,false,downed wire,general,128,40.62761,-73.72562,2026-08-10T19:45:00-04:00
-ESD-20260810-1326,Eastern Suffolk,Yaphank,FDR-ES-04,critical,unassigned,2561,true,transformer fire,line,6,40.83591,-72.90513,2026-08-10T14:15:00-04:00
+ESD-20260810-1326,Eastern Suffolk,Yaphank,FDR-ES-04,critical,unassigned,2561,false,transformer fire,line,6,40.83591,-72.90513,2026-08-10T14:15:00-04:00
 ESD-20260810-1327,Central-Nassau,Hempstead,FDR-CN-26,medium,unassigned,149,false,partial outage,general,24,40.70582,-73.61991,2026-08-10T15:00:00-04:00
 ESD-20260810-1328,Western Suffolk,Lindenhurst,FDR-WS-11,high,unassigned,115,false,burning wire,general,141,40.68276,-73.37565,2026-08-10T16:00:00-04:00
 ESD-20260810-1329,Western Suffolk,Amityville,FDR-WS-22,high,unassigned,2,false,burning wire,general,104,40.69049,-73.40764,2026-08-10T17:30:00-04:00
@@ -1333,7 +1333,7 @@ ESD-20260810-1331,Queens-Nassau,Arverne,FDR-QN-34,high,unassigned,406,false,unde
 ESD-20260810-1332,Queens-Nassau,Rockaway Park,FDR-QN-30,critical,unassigned,1340,false,transformer fire,line,18,40.57835,-73.83886,2026-08-10T19:00:00-04:00
 ESD-20260810-1333,Queens-Nassau,Arverne,FDR-QN-11,high,unassigned,140,false,burning wire,general,112,40.58489,-73.79179,2026-08-10T18:30:00-04:00
 ESD-20260810-1334,Queens-Nassau,Arverne,FDR-QN-09,high,unassigned,369,false,downed wire,general,131,40.59165,-73.80383,2026-08-10T12:00:00-04:00
-ESD-20260810-1335,Central-Nassau,Westbury,FDR-CN-08,high,unassigned,71,true,burning wire,general,113,40.76256,-73.57724,2026-08-10T19:00:00-04:00
+ESD-20260810-1335,Central-Nassau,Westbury,FDR-CN-08,high,unassigned,71,false,burning wire,general,113,40.76256,-73.57724,2026-08-10T19:00:00-04:00
 ESD-20260810-1336,Western Suffolk,Smithtown,FDR-WS-39,medium,unassigned,690,false,tree limb,vegetation,116,40.85534,-73.2059,2026-08-10T17:00:00-04:00
 ESD-20260810-1337,Eastern Suffolk,Manorville,FDR-ES-31,high,unassigned,1388,false,tree on primary,vegetation,78,40.87093,-72.80515,2026-08-10T10:15:00-04:00
 ESD-20260810-1338,Eastern Suffolk,Riverhead,FDR-ES-36,high,unassigned,319,false,downed wire,general,103,40.91736,-72.65606,2026-08-10T15:00:00-04:00
@@ -1379,7 +1379,7 @@ ESD-20260810-1377,Western Suffolk,Copiague,FDR-WS-38,critical,unassigned,538,fal
 ESD-20260810-1378,Queens-Nassau,Hewlett,FDR-QN-19,high,unassigned,669,false,tree on primary,vegetation,114,40.65338,-73.69892,2026-08-10T16:00:00-04:00
 ESD-20260810-1379,Eastern Suffolk,Calverton,FDR-ES-25,high,unassigned,343,false,burning wire,general,160,40.90259,-72.73197,2026-08-10T14:45:00-04:00
 ESD-20260810-1380,Central-Nassau,Garden City,FDR-CN-01,high,unassigned,1086,false,underground cable fault,underground,114,40.73866,-73.64566,2026-08-10T18:45:00-04:00
-ESD-20260810-1381,Eastern Suffolk,Montauk,FDR-ES-17,high,unassigned,406,false,broken crossarm,line,34,41.03612,-71.94757,2026-08-10T19:15:00-04:00
+ESD-20260810-1381,Eastern Suffolk,Montauk,FDR-ES-17,high,unassigned,406,true,broken crossarm,line,34,41.03612,-71.94757,2026-08-10T19:15:00-04:00
 ESD-20260810-1382,Central-Nassau,Merrick,FDR-CN-23,critical,unassigned,1085,false,transformer fire,line,150,40.6596,-73.55055,2026-08-10T20:00:00-04:00
 ESD-20260810-1383,Western Suffolk,Bay Shore,FDR-WS-27,critical,unassigned,2202,false,transformer fire,line,116,40.71924,-73.25129,2026-08-10T17:45:00-04:00
 ESD-20260810-1384,Central-Nassau,Garden City,FDR-CN-15,high,unassigned,306,false,broken crossarm,line,121,40.73551,-73.63912,2026-08-10T14:00:00-04:00
@@ -1400,10 +1400,10 @@ ESD-20260810-1398,Queens-Nassau,Rockaway Park,FDR-QN-11,high,unassigned,1696,fal
 ESD-20260810-1399,Western Suffolk,Smithtown,FDR-WS-38,high,unassigned,1700,false,broken crossarm,line,70,40.8627,-73.19847,2026-08-10T18:15:00-04:00
 ESD-20260810-1400,Queens-Nassau,Edgemere,FDR-QN-38,critical,assigned,1597,false,feeder lockout,line,156,40.60422,-73.76453,2026-08-10T12:30:00-04:00
 ESD-20260810-1401,Western Suffolk,Smithtown,FDR-WS-28,high,unassigned,1076,false,tree on primary,vegetation,151,40.84457,-73.19165,2026-08-10T15:00:00-04:00
-ESD-20260810-1402,Eastern Suffolk,Greenport,FDR-ES-02,high,unassigned,1746,false,broken crossarm,line,27,41.09941,-72.35673,2026-08-10T19:15:00-04:00
-ESD-20260810-1403,Central-Nassau,Massapequa,FDR-CN-28,high,unassigned,923,true,underground cable fault,underground,56,40.67649,-73.48513,2026-08-10T16:00:00-04:00
+ESD-20260810-1402,Eastern Suffolk,Greenport,FDR-ES-02,high,unassigned,1746,true,broken crossarm,line,27,41.09941,-72.35673,2026-08-10T19:15:00-04:00
+ESD-20260810-1403,Central-Nassau,Massapequa,FDR-CN-28,high,unassigned,923,false,underground cable fault,underground,56,40.67649,-73.48513,2026-08-10T16:00:00-04:00
 ESD-20260810-1404,Central-Nassau,Merrick,FDR-CN-10,medium,unassigned,650,false,tree limb,vegetation,30,40.65933,-73.55493,2026-08-10T22:00:00-04:00
-ESD-20260810-1405,Central-Nassau,Hicksville,FDR-CN-15,critical,unassigned,210,true,transformer fire,line,53,40.7605,-73.51367,2026-08-10T22:00:00-04:00
+ESD-20260810-1405,Central-Nassau,Hicksville,FDR-CN-15,critical,unassigned,210,false,transformer fire,line,53,40.7605,-73.51367,2026-08-10T22:00:00-04:00
 ESD-20260810-1406,Western Suffolk,Smithtown,FDR-WS-32,high,unassigned,206,false,burning wire,general,167,40.85722,-73.20864,2026-08-10T17:30:00-04:00
 ESD-20260810-1407,Western Suffolk,Brentwood,FDR-WS-07,low,unassigned,1,false,damaged service drop,low_voltage,122,40.77706,-73.24071,2026-08-10T17:15:00-04:00
 ESD-20260810-1408,Central-Nassau,Hempstead,FDR-CN-23,medium,unassigned,434,false,partial outage,general,115,40.7047,-73.62648,2026-08-10T17:30:00-04:00
@@ -1437,7 +1437,7 @@ ESD-20260810-1435,Western Suffolk,Ronkonkoma,FDR-WS-06,critical,unassigned,1452,
 ESD-20260810-1436,Central-Nassau,Mineola,FDR-CN-18,high,assigned,348,false,arcing wire,general,130,40.75452,-73.64316,2026-08-10T18:15:00-04:00
 ESD-20260810-1437,Queens-Nassau,Rockaway Park,FDR-QN-33,high,unassigned,1407,false,tree on primary,vegetation,21,40.57649,-73.84619,2026-08-10T12:45:00-04:00
 ESD-20260810-1438,Eastern Suffolk,Wading River,FDR-ES-37,high,unassigned,281,false,downed wire,general,136,40.94291,-72.83724,2026-08-10T16:45:00-04:00
-ESD-20260810-1439,Western Suffolk,Huntington,FDR-WS-34,high,unassigned,196,true,burning wire,general,45,40.86491,-73.42132,2026-08-10T12:15:00-04:00
+ESD-20260810-1439,Western Suffolk,Huntington,FDR-WS-34,high,unassigned,196,false,burning wire,general,45,40.86491,-73.42132,2026-08-10T12:15:00-04:00
 ESD-20260810-1440,Central-Nassau,Hempstead,FDR-CN-05,medium,unassigned,299,false,tree limb,vegetation,97,40.70779,-73.62638,2026-08-10T22:30:00-04:00
 ESD-20260810-1441,Western Suffolk,Commack,FDR-WS-18,critical,unassigned,1994,false,transformer fire,line,80,40.8506,-73.29215,2026-08-10T12:45:00-04:00
 ESD-20260810-1442,Eastern Suffolk,Hampton Bays,FDR-ES-14,low,unassigned,172,false,none,general,158,40.85964,-72.52515,2026-08-10T10:15:00-04:00
@@ -1465,7 +1465,7 @@ ESD-20260810-1463,Eastern Suffolk,Greenport,FDR-ES-04,low,unassigned,111,false,n
 ESD-20260810-1464,Queens-Nassau,Woodmere,FDR-QN-16,high,unassigned,398,false,downed wire,general,99,40.62994,-73.72339,2026-08-10T21:00:00-04:00
 ESD-20260810-1465,Eastern Suffolk,Montauk,FDR-ES-03,high,assigned,812,false,transformer fire,line,169,41.02832,-71.96108,2026-08-10T17:30:00-04:00
 ESD-20260810-1466,Central-Nassau,Wantagh,FDR-CN-15,medium,unassigned,130,false,partial outage,general,115,40.67937,-73.49905,2026-08-10T15:00:00-04:00
-ESD-20260810-1467,Queens-Nassau,Lawrence,FDR-QN-25,high,unassigned,244,true,burning wire,general,40,40.61914,-73.7346,2026-08-10T13:45:00-04:00
+ESD-20260810-1467,Queens-Nassau,Lawrence,FDR-QN-25,high,unassigned,244,false,burning wire,general,40,40.61914,-73.7346,2026-08-10T13:45:00-04:00
 ESD-20260810-1468,Western Suffolk,Amityville,FDR-WS-18,high,unassigned,1189,false,tree on primary,vegetation,108,40.6754,-73.42023,2026-08-10T13:15:00-04:00
 ESD-20260810-1469,Queens-Nassau,Far Rockaway,FDR-QN-37,low,assigned,1,false,damaged service drop,low_voltage,46,40.61125,-73.76263,2026-08-10T20:30:00-04:00
 ESD-20260810-1470,Eastern Suffolk,Riverhead,FDR-ES-11,high,unassigned,126,false,burning wire,general,137,40.91923,-72.65615,2026-08-10T20:30:00-04:00
@@ -1476,9 +1476,9 @@ ESD-20260810-1474,Queens-Nassau,Floral Park,FDR-QN-05,high,unassigned,1492,false
 ESD-20260810-1475,Western Suffolk,Deer Park,FDR-WS-32,low,unassigned,1,false,damaged service drop,low_voltage,167,40.75404,-73.32098,2026-08-10T14:00:00-04:00
 ESD-20260810-1476,Eastern Suffolk,Wading River,FDR-ES-27,medium,unassigned,483,false,tree limb,vegetation,151,40.95915,-72.84089,2026-08-10T20:45:00-04:00
 ESD-20260810-1477,Western Suffolk,Lindenhurst,FDR-WS-18,high,unassigned,244,false,burning wire,general,39,40.68566,-73.37734,2026-08-10T18:15:00-04:00
-ESD-20260810-1478,Central-Nassau,Levittown,FDR-CN-04,high,unassigned,1321,true,tree on primary,vegetation,45,40.71692,-73.51773,2026-08-10T22:45:00-04:00
+ESD-20260810-1478,Central-Nassau,Levittown,FDR-CN-04,high,unassigned,1321,false,tree on primary,vegetation,45,40.71692,-73.51773,2026-08-10T22:45:00-04:00
 ESD-20260810-1479,Eastern Suffolk,Manorville,FDR-ES-33,low,unassigned,1,false,damaged service drop,low_voltage,105,40.88262,-72.803,2026-08-10T20:15:00-04:00
-ESD-20260810-1480,Central-Nassau,Freeport,FDR-CN-20,high,unassigned,521,true,tree on primary,vegetation,100,40.65122,-73.5927,2026-08-10T18:00:00-04:00
+ESD-20260810-1480,Central-Nassau,Freeport,FDR-CN-20,high,unassigned,521,false,tree on primary,vegetation,100,40.65122,-73.5927,2026-08-10T18:00:00-04:00
 ESD-20260810-1481,Eastern Suffolk,Wading River,FDR-ES-15,medium,unassigned,531,false,tree limb,vegetation,24,40.94253,-72.84752,2026-08-10T10:00:00-04:00
 ESD-20260810-1482,Central-Nassau,Garden City,FDR-CN-07,medium,unassigned,578,false,tree limb,vegetation,116,40.73626,-73.62409,2026-08-10T17:15:00-04:00
 ESD-20260810-1483,Eastern Suffolk,Yaphank,FDR-ES-24,high,unassigned,1432,false,broken crossarm,line,63,40.82492,-72.91619,2026-08-10T19:00:00-04:00
@@ -1508,7 +1508,7 @@ ESD-20260810-1506,Eastern Suffolk,Calverton,FDR-ES-34,high,unassigned,1731,false
 ESD-20260810-1507,Western Suffolk,Commack,FDR-WS-39,high,unassigned,107,false,downed wire,general,114,40.83872,-73.29358,2026-08-10T13:15:00-04:00
 ESD-20260810-1508,Eastern Suffolk,East Hampton,FDR-ES-38,medium,assigned,617,false,blocked access,general,151,40.95748,-72.18191,2026-08-10T18:15:00-04:00
 ESD-20260810-1509,Western Suffolk,Brentwood,FDR-WS-32,high,unassigned,395,false,broken crossarm,line,129,40.77246,-73.24906,2026-08-10T22:15:00-04:00
-ESD-20260810-1510,Queens-Nassau,Lawrence,FDR-QN-12,critical,unassigned,1252,false,transformer fire,line,62,40.62671,-73.74141,2026-08-10T11:00:00-04:00
+ESD-20260810-1510,Queens-Nassau,Lawrence,FDR-QN-12,critical,unassigned,1252,true,transformer fire,line,62,40.62671,-73.74141,2026-08-10T11:00:00-04:00
 ESD-20260810-1511,Eastern Suffolk,Southampton,FDR-ES-23,high,unassigned,109,false,underground cable fault,underground,80,40.8933,-72.38151,2026-08-10T19:15:00-04:00
 ESD-20260810-1512,Western Suffolk,Babylon,FDR-WS-31,high,unassigned,207,false,burning wire,general,104,40.68947,-73.3325,2026-08-10T22:30:00-04:00
 ESD-20260810-1513,Queens-Nassau,Lawrence,FDR-QN-27,medium,unassigned,339,false,partial outage,general,176,40.60891,-73.72616,2026-08-10T11:45:00-04:00
@@ -1524,7 +1524,7 @@ ESD-20260810-1522,Western Suffolk,Brentwood,FDR-WS-17,high,unassigned,100,false,
 ESD-20260810-1523,Eastern Suffolk,Greenport,FDR-ES-01,medium,unassigned,382,false,partial outage,general,5,41.10728,-72.34929,2026-08-10T20:45:00-04:00
 ESD-20260810-1524,Queens-Nassau,Arverne,FDR-QN-21,low,unassigned,6,false,none,general,64,40.58833,-73.80293,2026-08-10T20:15:00-04:00
 ESD-20260810-1525,Eastern Suffolk,Montauk,FDR-ES-32,high,unassigned,618,false,underground cable fault,underground,69,41.04496,-71.94359,2026-08-10T10:45:00-04:00
-ESD-20260810-1526,Central-Nassau,Massapequa,FDR-CN-20,high,unassigned,54,false,downed wire,general,152,40.67857,-73.467,2026-08-10T22:45:00-04:00
+ESD-20260810-1526,Central-Nassau,Massapequa,FDR-CN-20,high,unassigned,54,true,downed wire,general,152,40.67857,-73.467,2026-08-10T22:45:00-04:00
 ESD-20260810-1527,Queens-Nassau,Hewlett,FDR-QN-15,medium,unassigned,432,false,partial outage,general,20,40.65412,-73.69473,2026-08-10T20:30:00-04:00
 ESD-20260810-1528,Western Suffolk,Deer Park,FDR-WS-18,medium,unassigned,20,false,partial outage,general,41,40.7638,-73.32954,2026-08-10T15:15:00-04:00
 ESD-20260810-1529,Western Suffolk,Babylon,FDR-WS-24,high,unassigned,780,false,underground cable fault,underground,121,40.6971,-73.31883,2026-08-10T19:30:00-04:00
@@ -1533,7 +1533,7 @@ ESD-20260810-1531,Central-Nassau,Levittown,FDR-CN-02,critical,unassigned,2288,fa
 ESD-20260810-1532,Western Suffolk,Ronkonkoma,FDR-WS-13,high,unassigned,469,false,underground cable fault,underground,121,40.81017,-73.11779,2026-08-10T15:30:00-04:00
 ESD-20260810-1533,Western Suffolk,Deer Park,FDR-WS-24,high,unassigned,23,false,burning wire,general,89,40.7715,-73.33705,2026-08-10T17:00:00-04:00
 ESD-20260810-1534,Eastern Suffolk,East Hampton,FDR-ES-35,medium,unassigned,362,false,partial outage,general,69,40.97107,-72.18199,2026-08-10T18:45:00-04:00
-ESD-20260810-1535,Central-Nassau,East Meadow,FDR-CN-26,high,unassigned,238,true,downed wire,general,30,40.71795,-73.56564,2026-08-10T19:00:00-04:00
+ESD-20260810-1535,Central-Nassau,East Meadow,FDR-CN-26,high,unassigned,238,false,downed wire,general,30,40.71795,-73.56564,2026-08-10T19:00:00-04:00
 ESD-20260810-1536,Queens-Nassau,Edgemere,FDR-QN-14,high,unassigned,201,false,downed wire,general,12,40.60784,-73.77143,2026-08-10T11:00:00-04:00
 ESD-20260810-1537,Western Suffolk,Amityville,FDR-WS-05,high,unassigned,31,false,burning wire,general,154,40.68686,-73.42312,2026-08-10T19:00:00-04:00
 ESD-20260810-1538,Eastern Suffolk,Greenport,FDR-ES-08,high,unassigned,769,false,underground cable fault,underground,87,41.10251,-72.35531,2026-08-10T13:45:00-04:00
@@ -1550,18 +1550,18 @@ ESD-20260810-1548,Central-Nassau,Hicksville,FDR-CN-03,medium,unassigned,208,fals
 ESD-20260810-1549,Eastern Suffolk,East Hampton,FDR-ES-18,high,unassigned,1249,false,broken crossarm,line,30,40.96545,-72.19062,2026-08-10T20:30:00-04:00
 ESD-20260810-1550,Queens-Nassau,Lawrence,FDR-QN-34,high,unassigned,778,false,underground cable fault,underground,12,40.62322,-73.73019,2026-08-10T11:00:00-04:00
 ESD-20260810-1551,Western Suffolk,Copiague,FDR-WS-04,high,unassigned,1196,false,underground cable fault,underground,95,40.685,-73.40935,2026-08-10T15:30:00-04:00
-ESD-20260810-1552,Eastern Suffolk,Hampton Bays,FDR-ES-20,high,unassigned,375,false,downed wire,general,55,40.86369,-72.51665,2026-08-10T21:45:00-04:00
+ESD-20260810-1552,Eastern Suffolk,Hampton Bays,FDR-ES-20,high,unassigned,375,true,downed wire,general,55,40.86369,-72.51665,2026-08-10T21:45:00-04:00
 ESD-20260810-1553,Eastern Suffolk,Yaphank,FDR-ES-31,critical,unassigned,1598,false,transformer fire,line,6,40.84773,-72.91891,2026-08-10T18:15:00-04:00
 ESD-20260810-1554,Western Suffolk,Huntington,FDR-WS-06,high,unassigned,727,false,broken crossarm,line,86,40.87994,-73.42818,2026-08-10T15:45:00-04:00
 ESD-20260810-1555,Central-Nassau,Massapequa,FDR-CN-35,high,unassigned,76,false,burning wire,general,126,40.67258,-73.47729,2026-08-10T18:15:00-04:00
 ESD-20260810-1556,Central-Nassau,East Meadow,FDR-CN-30,medium,unassigned,526,false,tree limb,vegetation,54,40.71461,-73.56305,2026-08-10T15:15:00-04:00
-ESD-20260810-1557,Queens-Nassau,Woodmere,FDR-QN-10,high,unassigned,1317,false,broken crossarm,line,54,40.62694,-73.70611,2026-08-10T15:30:00-04:00
+ESD-20260810-1557,Queens-Nassau,Woodmere,FDR-QN-10,high,unassigned,1317,true,broken crossarm,line,54,40.62694,-73.70611,2026-08-10T15:30:00-04:00
 ESD-20260810-1558,Central-Nassau,Uniondale,FDR-CN-38,low,unassigned,1,false,damaged service drop,low_voltage,23,40.71024,-73.58375,2026-08-10T21:45:00-04:00
 ESD-20260810-1559,Central-Nassau,East Meadow,FDR-CN-36,low,unassigned,1,false,damaged service drop,low_voltage,15,40.70694,-73.56983,2026-08-10T20:15:00-04:00
 ESD-20260810-1560,Eastern Suffolk,Calverton,FDR-ES-29,high,unassigned,1438,false,broken crossarm,line,100,40.90565,-72.75202,2026-08-10T11:15:00-04:00
 ESD-20260810-1561,Queens-Nassau,Far Rockaway,FDR-QN-17,medium,unassigned,798,false,tree limb,vegetation,66,40.61107,-73.76067,2026-08-10T13:00:00-04:00
 ESD-20260810-1562,Eastern Suffolk,Hampton Bays,FDR-ES-23,medium,unassigned,623,false,tree limb,vegetation,135,40.87073,-72.50711,2026-08-10T18:15:00-04:00
-ESD-20260810-1563,Queens-Nassau,Floral Park,FDR-QN-17,high,unassigned,35,true,underground cable fault,underground,147,40.71484,-73.70198,2026-08-10T18:45:00-04:00
+ESD-20260810-1563,Queens-Nassau,Floral Park,FDR-QN-17,high,unassigned,35,false,underground cable fault,underground,147,40.71484,-73.70198,2026-08-10T18:45:00-04:00
 ESD-20260810-1564,Central-Nassau,East Meadow,FDR-CN-24,critical,unassigned,1827,false,transformer fire,line,124,40.70268,-73.55021,2026-08-10T11:45:00-04:00
 ESD-20260810-1565,Eastern Suffolk,Montauk,FDR-ES-04,high,unassigned,1102,false,broken crossarm,line,103,41.02516,-71.95767,2026-08-10T11:45:00-04:00
 ESD-20260810-1566,Central-Nassau,Uniondale,FDR-CN-33,medium,unassigned,30,false,partial outage,general,145,40.7104,-73.58265,2026-08-10T18:30:00-04:00
@@ -1587,7 +1587,7 @@ ESD-20260810-1585,Central-Nassau,Hicksville,FDR-CN-29,medium,unassigned,90,false
 ESD-20260810-1586,Western Suffolk,Lindenhurst,FDR-WS-27,low,unassigned,1,false,damaged service drop,low_voltage,10,40.67985,-73.36151,2026-08-10T18:15:00-04:00
 ESD-20260810-1587,Western Suffolk,Amityville,FDR-WS-36,high,unassigned,1030,false,broken crossarm,line,111,40.67759,-73.42065,2026-08-10T12:30:00-04:00
 ESD-20260810-1588,Central-Nassau,Westbury,FDR-CN-29,critical,unassigned,539,false,transformer fire,line,169,40.7598,-73.57617,2026-08-10T16:45:00-04:00
-ESD-20260810-1589,Central-Nassau,Levittown,FDR-CN-21,high,unassigned,179,true,downed wire,general,149,40.7357,-73.52414,2026-08-10T15:15:00-04:00
+ESD-20260810-1589,Central-Nassau,Levittown,FDR-CN-21,high,unassigned,179,false,downed wire,general,149,40.7357,-73.52414,2026-08-10T15:15:00-04:00
 ESD-20260810-1590,Central-Nassau,Uniondale,FDR-CN-32,critical,unassigned,727,false,transformer fire,line,17,40.69976,-73.60219,2026-08-10T18:30:00-04:00
 ESD-20260810-1591,Western Suffolk,Deer Park,FDR-WS-20,high,unassigned,442,false,downed wire,general,68,40.7511,-73.33268,2026-08-10T11:45:00-04:00
 ESD-20260810-1592,Western Suffolk,Huntington,FDR-WS-11,medium,unassigned,133,false,partial outage,general,124,40.86298,-73.43125,2026-08-10T14:30:00-04:00
@@ -1631,14 +1631,14 @@ ESD-20260810-1629,Queens-Nassau,Cedarhurst,FDR-QN-37,medium,unassigned,277,false
 ESD-20260810-1630,Queens-Nassau,Hewlett,FDR-QN-38,critical,unassigned,290,false,transformer fire,line,96,40.63509,-73.70098,2026-08-10T18:15:00-04:00
 ESD-20260810-1631,Eastern Suffolk,Wading River,FDR-ES-05,high,unassigned,439,false,broken crossarm,line,107,40.95413,-72.83305,2026-08-10T22:15:00-04:00
 ESD-20260810-1632,Queens-Nassau,Floral Park,FDR-QN-27,high,unassigned,88,false,downed wire,general,127,40.71799,-73.6966,2026-08-10T22:45:00-04:00
-ESD-20260810-1633,Queens-Nassau,Lawrence,FDR-QN-38,high,unassigned,78,true,downed wire,general,12,40.62066,-73.73239,2026-08-10T15:30:00-04:00
+ESD-20260810-1633,Queens-Nassau,Lawrence,FDR-QN-38,high,unassigned,78,false,downed wire,general,12,40.62066,-73.73239,2026-08-10T15:30:00-04:00
 ESD-20260810-1634,Queens-Nassau,Elmont,FDR-QN-05,high,unassigned,988,false,broken crossarm,line,133,40.69523,-73.70747,2026-08-10T16:00:00-04:00
-ESD-20260810-1635,Western Suffolk,Bay Shore,FDR-WS-18,critical,unassigned,915,true,transformer fire,line,38,40.7251,-73.24547,2026-08-10T17:45:00-04:00
+ESD-20260810-1635,Western Suffolk,Bay Shore,FDR-WS-18,critical,unassigned,915,false,transformer fire,line,38,40.7251,-73.24547,2026-08-10T17:45:00-04:00
 ESD-20260810-1636,Queens-Nassau,Hewlett,FDR-QN-09,high,unassigned,668,false,broken crossarm,line,132,40.64782,-73.68378,2026-08-10T21:45:00-04:00
 ESD-20260810-1637,Queens-Nassau,Woodmere,FDR-QN-22,low,unassigned,67,false,none,general,91,40.63604,-73.7202,2026-08-10T12:15:00-04:00
 ESD-20260810-1638,Queens-Nassau,Hewlett,FDR-QN-37,high,unassigned,945,false,underground cable fault,underground,15,40.64528,-73.68581,2026-08-10T20:30:00-04:00
-ESD-20260810-1639,Queens-Nassau,Woodmere,FDR-QN-03,high,unassigned,348,true,burning wire,general,6,40.63528,-73.7048,2026-08-10T19:30:00-04:00
-ESD-20260810-1640,Queens-Nassau,Floral Park,FDR-QN-28,high,unassigned,25,true,burning wire,general,49,40.72672,-73.70206,2026-08-10T12:45:00-04:00
+ESD-20260810-1639,Queens-Nassau,Woodmere,FDR-QN-03,high,unassigned,348,false,burning wire,general,6,40.63528,-73.7048,2026-08-10T19:30:00-04:00
+ESD-20260810-1640,Queens-Nassau,Floral Park,FDR-QN-28,high,unassigned,25,false,burning wire,general,49,40.72672,-73.70206,2026-08-10T12:45:00-04:00
 ESD-20260810-1641,Western Suffolk,Commack,FDR-WS-36,low,unassigned,75,false,none,general,78,40.83164,-73.29223,2026-08-10T15:00:00-04:00
 ESD-20260810-1642,Queens-Nassau,Rockaway Park,FDR-QN-31,medium,unassigned,593,false,tree limb,vegetation,21,40.57452,-73.83682,2026-08-10T21:00:00-04:00
 ESD-20260810-1643,Central-Nassau,Hicksville,FDR-CN-26,medium,unassigned,383,false,tree limb,vegetation,20,40.77768,-73.53525,2026-08-10T19:45:00-04:00
@@ -1652,11 +1652,11 @@ ESD-20260810-1650,Central-Nassau,Merrick,FDR-CN-08,high,unassigned,912,false,und
 ESD-20260810-1651,Queens-Nassau,Woodmere,FDR-QN-40,high,unassigned,355,false,downed wire,general,94,40.64202,-73.70459,2026-08-10T14:15:00-04:00
 ESD-20260810-1652,Western Suffolk,Amityville,FDR-WS-30,low,unassigned,1,false,damaged service drop,low_voltage,64,40.6725,-73.4145,2026-08-10T16:15:00-04:00
 ESD-20260810-1653,Eastern Suffolk,Yaphank,FDR-ES-40,low,unassigned,1,false,damaged service drop,low_voltage,143,40.8467,-72.9097,2026-08-10T14:30:00-04:00
-ESD-20260810-1654,Queens-Nassau,Edgemere,FDR-QN-15,high,unassigned,954,true,underground cable fault,underground,29,40.59684,-73.77461,2026-08-10T19:30:00-04:00
+ESD-20260810-1654,Queens-Nassau,Edgemere,FDR-QN-15,high,unassigned,954,false,underground cable fault,underground,29,40.59684,-73.77461,2026-08-10T19:30:00-04:00
 ESD-20260810-1655,Central-Nassau,Merrick,FDR-CN-14,high,unassigned,23,false,downed wire,general,55,40.65825,-73.55329,2026-08-10T12:30:00-04:00
 ESD-20260810-1656,Queens-Nassau,Hewlett,FDR-QN-02,high,unassigned,118,false,burning wire,general,32,40.64677,-73.69507,2026-08-10T14:15:00-04:00
 ESD-20260810-1657,Western Suffolk,Ronkonkoma,FDR-WS-12,high,unassigned,224,false,tree on primary,vegetation,129,40.81706,-73.10244,2026-08-10T21:00:00-04:00
-ESD-20260810-1658,Queens-Nassau,Hewlett,FDR-QN-03,high,unassigned,1039,true,underground cable fault,underground,84,40.64359,-73.70541,2026-08-10T22:45:00-04:00
+ESD-20260810-1658,Queens-Nassau,Hewlett,FDR-QN-03,high,unassigned,1039,false,underground cable fault,underground,84,40.64359,-73.70541,2026-08-10T22:45:00-04:00
 ESD-20260810-1659,Queens-Nassau,Edgemere,FDR-QN-25,medium,unassigned,427,false,partial outage,general,24,40.59328,-73.76787,2026-08-10T14:30:00-04:00
 ESD-20260810-1660,Queens-Nassau,Cedarhurst,FDR-QN-11,high,assigned,799,false,feeder lockout,line,115,40.61946,-73.7208,2026-08-10T13:00:00-04:00
 ESD-20260810-1661,Queens-Nassau,Floral Park,FDR-QN-18,high,unassigned,304,false,burning wire,general,74,40.71408,-73.71302,2026-08-10T17:30:00-04:00
@@ -1683,7 +1683,7 @@ ESD-20260810-1681,Eastern Suffolk,Riverhead,FDR-ES-32,low,unassigned,22,false,no
 ESD-20260810-1682,Queens-Nassau,Edgemere,FDR-QN-04,high,unassigned,248,false,downed wire,general,114,40.59566,-73.77242,2026-08-10T15:15:00-04:00
 ESD-20260810-1683,Central-Nassau,Massapequa,FDR-CN-18,critical,assigned,2170,false,transformer fire,line,59,40.68334,-73.47666,2026-08-10T16:00:00-04:00
 ESD-20260810-1684,Central-Nassau,Garden City,FDR-CN-18,medium,unassigned,260,false,partial outage,general,112,40.73326,-73.63342,2026-08-10T15:45:00-04:00
-ESD-20260810-1685,Central-Nassau,Uniondale,FDR-CN-03,high,unassigned,106,false,burning wire,general,169,40.69909,-73.59252,2026-08-10T19:30:00-04:00
+ESD-20260810-1685,Central-Nassau,Uniondale,FDR-CN-03,high,unassigned,106,true,burning wire,general,169,40.69909,-73.59252,2026-08-10T19:30:00-04:00
 ESD-20260810-1686,Central-Nassau,Wantagh,FDR-CN-11,medium,unassigned,221,false,tree limb,vegetation,120,40.68976,-73.50498,2026-08-10T17:15:00-04:00
 ESD-20260810-1687,Queens-Nassau,Rockaway Park,FDR-QN-12,low,unassigned,11,false,none,general,142,40.57894,-73.82527,2026-08-10T20:15:00-04:00
 ESD-20260810-1688,Western Suffolk,Copiague,FDR-WS-33,high,unassigned,92,false,underground cable fault,underground,107,40.68977,-73.38851,2026-08-10T21:30:00-04:00
@@ -1692,7 +1692,7 @@ ESD-20260810-1690,Western Suffolk,Huntington,FDR-WS-16,low,unassigned,2,false,no
 ESD-20260810-1691,Eastern Suffolk,East Hampton,FDR-ES-16,high,unassigned,379,false,downed wire,general,77,40.96773,-72.19081,2026-08-10T10:15:00-04:00
 ESD-20260810-1692,Central-Nassau,Uniondale,FDR-CN-20,high,unassigned,420,false,downed wire,general,125,40.69526,-73.58577,2026-08-10T16:45:00-04:00
 ESD-20260810-1693,Western Suffolk,Copiague,FDR-WS-08,critical,unassigned,1798,false,transformer fire,line,111,40.67743,-73.40188,2026-08-10T12:15:00-04:00
-ESD-20260810-1694,Eastern Suffolk,Calverton,FDR-ES-03,high,unassigned,183,true,burning wire,general,119,40.90203,-72.7433,2026-08-10T15:30:00-04:00
+ESD-20260810-1694,Eastern Suffolk,Calverton,FDR-ES-03,high,unassigned,183,false,burning wire,general,119,40.90203,-72.7433,2026-08-10T15:30:00-04:00
 ESD-20260810-1695,Central-Nassau,Freeport,FDR-CN-32,low,unassigned,1,false,damaged service drop,low_voltage,155,40.65768,-73.57123,2026-08-10T12:45:00-04:00
 ESD-20260810-1696,Central-Nassau,Hicksville,FDR-CN-17,critical,unassigned,505,false,transformer fire,line,151,40.77699,-73.52966,2026-08-10T10:15:00-04:00
 ESD-20260810-1697,Western Suffolk,Deer Park,FDR-WS-20,medium,unassigned,647,false,tree limb,vegetation,21,40.76291,-73.33507,2026-08-10T16:15:00-04:00
@@ -1709,7 +1709,7 @@ ESD-20260810-1707,Western Suffolk,Lindenhurst,FDR-WS-37,high,unassigned,295,fals
 ESD-20260810-1708,Western Suffolk,Ronkonkoma,FDR-WS-35,medium,unassigned,208,false,partial outage,general,128,40.8271,-73.10117,2026-08-10T15:15:00-04:00
 ESD-20260810-1709,Western Suffolk,Copiague,FDR-WS-30,low,unassigned,158,false,none,general,140,40.67869,-73.40869,2026-08-10T14:45:00-04:00
 ESD-20260810-1710,Queens-Nassau,Rockaway Park,FDR-QN-16,medium,unassigned,677,false,tree limb,vegetation,16,40.58777,-73.83881,2026-08-10T13:15:00-04:00
-ESD-20260810-1711,Western Suffolk,Deer Park,FDR-WS-36,high,unassigned,167,true,burning wire,general,18,40.75157,-73.31789,2026-08-10T20:30:00-04:00
+ESD-20260810-1711,Western Suffolk,Deer Park,FDR-WS-36,high,unassigned,167,false,burning wire,general,18,40.75157,-73.31789,2026-08-10T20:30:00-04:00
 ESD-20260810-1712,Eastern Suffolk,Manorville,FDR-ES-33,high,unassigned,1040,false,tree on primary,vegetation,26,40.88522,-72.81502,2026-08-10T18:30:00-04:00
 ESD-20260810-1713,Western Suffolk,Islip,FDR-WS-22,medium,unassigned,439,false,partial outage,general,101,40.72334,-73.21878,2026-08-10T11:30:00-04:00
 ESD-20260810-1714,Queens-Nassau,Edgemere,FDR-QN-12,high,unassigned,688,false,broken crossarm,line,126,40.60221,-73.77397,2026-08-10T19:00:00-04:00
@@ -1718,7 +1718,7 @@ ESD-20260810-1716,Queens-Nassau,Rockaway Park,FDR-QN-09,high,unassigned,113,fals
 ESD-20260810-1717,Western Suffolk,Amityville,FDR-WS-11,high,unassigned,176,false,burning wire,general,28,40.67277,-73.40736,2026-08-10T14:00:00-04:00
 ESD-20260810-1718,Western Suffolk,Ronkonkoma,FDR-WS-36,high,unassigned,156,false,burning wire,general,160,40.81777,-73.1129,2026-08-10T16:15:00-04:00
 ESD-20260810-1719,Eastern Suffolk,Riverhead,FDR-ES-18,medium,unassigned,808,false,tree limb,vegetation,22,40.92824,-72.65394,2026-08-10T21:00:00-04:00
-ESD-20260810-1720,Central-Nassau,Westbury,FDR-CN-35,high,unassigned,84,true,broken crossarm,line,116,40.75514,-73.59684,2026-08-10T17:30:00-04:00
+ESD-20260810-1720,Central-Nassau,Westbury,FDR-CN-35,high,unassigned,84,false,broken crossarm,line,116,40.75514,-73.59684,2026-08-10T17:30:00-04:00
 ESD-20260810-1721,Western Suffolk,Brentwood,FDR-WS-23,medium,unassigned,83,false,tree limb,vegetation,133,40.7871,-73.25419,2026-08-10T17:45:00-04:00
 ESD-20260810-1722,Queens-Nassau,Elmont,FDR-QN-32,medium,unassigned,51,false,tree limb,vegetation,46,40.70088,-73.71974,2026-08-10T17:30:00-04:00
 ESD-20260810-1723,Central-Nassau,Westbury,FDR-CN-20,low,unassigned,113,false,none,general,10,40.75317,-73.59489,2026-08-10T16:45:00-04:00
@@ -1739,7 +1739,7 @@ ESD-20260810-1737,Western Suffolk,Islip,FDR-WS-27,medium,unassigned,301,false,pa
 ESD-20260810-1738,Eastern Suffolk,East Hampton,FDR-ES-08,high,assigned,1466,false,broken crossarm,line,57,40.95545,-72.18193,2026-08-10T14:15:00-04:00
 ESD-20260810-1739,Eastern Suffolk,East Hampton,FDR-ES-37,critical,unassigned,821,false,transformer fire,line,49,40.9693,-72.18883,2026-08-10T14:15:00-04:00
 ESD-20260810-1740,Eastern Suffolk,Calverton,FDR-ES-17,high,unassigned,425,false,tree on primary,vegetation,72,40.89572,-72.73742,2026-08-10T14:30:00-04:00
-ESD-20260810-1741,Western Suffolk,Commack,FDR-WS-13,high,unassigned,271,true,burning wire,general,10,40.83874,-73.30214,2026-08-10T21:45:00-04:00
+ESD-20260810-1741,Western Suffolk,Commack,FDR-WS-13,high,unassigned,271,false,burning wire,general,10,40.83874,-73.30214,2026-08-10T21:45:00-04:00
 ESD-20260810-1742,Eastern Suffolk,Wading River,FDR-ES-04,medium,unassigned,702,false,tree limb,vegetation,7,40.9427,-72.83627,2026-08-10T17:30:00-04:00
 ESD-20260810-1743,Western Suffolk,Lindenhurst,FDR-WS-05,low,unassigned,1,false,damaged service drop,low_voltage,81,40.69292,-73.37228,2026-08-10T14:30:00-04:00
 ESD-20260810-1744,Central-Nassau,Mineola,FDR-CN-05,high,unassigned,100,false,tree on primary,vegetation,88,40.74129,-73.6466,2026-08-10T16:45:00-04:00
@@ -1757,7 +1757,7 @@ ESD-20260810-1755,Western Suffolk,Babylon,FDR-WS-12,high,unassigned,208,false,do
 ESD-20260810-1756,Central-Nassau,Mineola,FDR-CN-01,medium,unassigned,444,false,partial outage,general,62,40.74606,-73.6341,2026-08-10T13:30:00-04:00
 ESD-20260810-1757,Western Suffolk,Babylon,FDR-WS-04,high,unassigned,299,false,underground cable fault,underground,122,40.70009,-73.32568,2026-08-10T11:45:00-04:00
 ESD-20260810-1758,Eastern Suffolk,Westhampton Beach,FDR-ES-08,medium,unassigned,510,false,tree limb,vegetation,160,40.80195,-72.64852,2026-08-10T18:30:00-04:00
-ESD-20260810-1759,Central-Nassau,Mineola,FDR-CN-15,critical,unassigned,866,true,transformer fire,line,16,40.75921,-73.65175,2026-08-10T16:30:00-04:00
+ESD-20260810-1759,Central-Nassau,Mineola,FDR-CN-15,critical,unassigned,866,false,transformer fire,line,16,40.75921,-73.65175,2026-08-10T16:30:00-04:00
 ESD-20260810-1760,Western Suffolk,Commack,FDR-WS-31,low,unassigned,105,false,none,general,65,40.84232,-73.30156,2026-08-10T18:45:00-04:00
 ESD-20260810-1761,Western Suffolk,Copiague,FDR-WS-33,critical,unassigned,1138,false,transformer fire,line,80,40.68763,-73.38967,2026-08-10T13:45:00-04:00
 ESD-20260810-1762,Western Suffolk,Smithtown,FDR-WS-36,high,unassigned,119,false,underground cable fault,underground,99,40.86639,-73.18909,2026-08-10T21:45:00-04:00
@@ -1777,7 +1777,7 @@ ESD-20260810-1775,Eastern Suffolk,Center Moriches,FDR-ES-27,high,unassigned,105,
 ESD-20260810-1776,Western Suffolk,Islip,FDR-WS-31,low,unassigned,132,false,none,general,163,40.73873,-73.21823,2026-08-10T10:30:00-04:00
 ESD-20260810-1777,Queens-Nassau,Lawrence,FDR-QN-40,high,assigned,982,false,partial outage,general,125,40.62241,-73.72932,2026-08-10T19:30:00-04:00
 ESD-20260810-1778,Central-Nassau,Wantagh,FDR-CN-17,critical,unassigned,762,false,transformer fire,line,65,40.67367,-73.50708,2026-08-10T10:00:00-04:00
-ESD-20260810-1779,Central-Nassau,Massapequa,FDR-CN-30,high,unassigned,470,true,tree on primary,vegetation,113,40.68561,-73.47327,2026-08-10T21:30:00-04:00
+ESD-20260810-1779,Central-Nassau,Massapequa,FDR-CN-30,high,unassigned,470,false,tree on primary,vegetation,113,40.68561,-73.47327,2026-08-10T21:30:00-04:00
 ESD-20260810-1780,Central-Nassau,Garden City,FDR-CN-30,high,unassigned,1533,false,tree on primary,vegetation,163,40.73603,-73.63711,2026-08-10T21:30:00-04:00
 ESD-20260810-1781,Eastern Suffolk,Southampton,FDR-ES-14,medium,unassigned,12,false,partial outage,general,34,40.87978,-72.39465,2026-08-10T22:30:00-04:00
 ESD-20260810-1782,Central-Nassau,Wantagh,FDR-CN-14,high,unassigned,1471,false,tree on primary,vegetation,40,40.68202,-73.51775,2026-08-10T17:00:00-04:00
@@ -1815,7 +1815,7 @@ ESD-20260810-1813,Eastern Suffolk,Hampton Bays,FDR-ES-32,high,unassigned,1103,fa
 ESD-20260810-1814,Queens-Nassau,Lawrence,FDR-QN-01,low,unassigned,73,false,none,general,108,40.61992,-73.72711,2026-08-10T16:45:00-04:00
 ESD-20260810-1815,Eastern Suffolk,Hampton Bays,FDR-ES-04,high,unassigned,78,false,broken crossarm,line,85,40.86742,-72.52533,2026-08-10T11:15:00-04:00
 ESD-20260810-1816,Central-Nassau,Hicksville,FDR-CN-34,high,assigned,954,false,tree on primary,vegetation,20,40.7654,-73.52783,2026-08-10T22:30:00-04:00
-ESD-20260810-1817,Eastern Suffolk,Westhampton Beach,FDR-ES-12,high,unassigned,1103,true,underground cable fault,underground,131,40.80258,-72.64192,2026-08-10T22:45:00-04:00
+ESD-20260810-1817,Eastern Suffolk,Westhampton Beach,FDR-ES-12,high,unassigned,1103,false,underground cable fault,underground,131,40.80258,-72.64192,2026-08-10T22:45:00-04:00
 ESD-20260810-1818,Central-Nassau,Levittown,FDR-CN-35,high,unassigned,1260,false,broken crossarm,line,69,40.7272,-73.5165,2026-08-10T21:45:00-04:00
 ESD-20260810-1819,Central-Nassau,Westbury,FDR-CN-01,high,unassigned,33,false,downed wire,general,134,40.74514,-73.59718,2026-08-10T13:00:00-04:00
 ESD-20260810-1820,Western Suffolk,Islip,FDR-WS-29,low,unassigned,1,false,damaged service drop,low_voltage,79,40.73402,-73.21736,2026-08-10T20:30:00-04:00
@@ -1842,8 +1842,8 @@ ESD-20260810-1840,Eastern Suffolk,Calverton,FDR-ES-31,low,unassigned,10,false,no
 ESD-20260810-1841,Eastern Suffolk,Montauk,FDR-ES-32,medium,assigned,668,false,blocked access,general,150,41.02867,-71.94786,2026-08-10T22:00:00-04:00
 ESD-20260810-1842,Eastern Suffolk,Southampton,FDR-ES-29,critical,unassigned,2075,false,transformer fire,line,62,40.88644,-72.3948,2026-08-10T13:00:00-04:00
 ESD-20260810-1843,Eastern Suffolk,Westhampton Beach,FDR-ES-20,critical,unassigned,1473,false,transformer fire,line,42,40.79999,-72.63552,2026-08-10T21:15:00-04:00
-ESD-20260810-1844,Western Suffolk,Ronkonkoma,FDR-WS-28,critical,unassigned,1353,true,transformer fire,line,83,40.81475,-73.11445,2026-08-10T19:00:00-04:00
-ESD-20260810-1845,Western Suffolk,Huntington,FDR-WS-06,high,unassigned,182,true,broken crossarm,line,60,40.87203,-73.41812,2026-08-10T10:00:00-04:00
+ESD-20260810-1844,Western Suffolk,Ronkonkoma,FDR-WS-28,critical,unassigned,1353,false,transformer fire,line,83,40.81475,-73.11445,2026-08-10T19:00:00-04:00
+ESD-20260810-1845,Western Suffolk,Huntington,FDR-WS-06,high,unassigned,182,false,broken crossarm,line,60,40.87203,-73.41812,2026-08-10T10:00:00-04:00
 ESD-20260810-1846,Central-Nassau,Westbury,FDR-CN-08,medium,unassigned,235,false,tree limb,vegetation,132,40.7573,-73.58474,2026-08-10T21:00:00-04:00
 ESD-20260810-1847,Western Suffolk,Commack,FDR-WS-17,low,unassigned,120,false,none,general,92,40.84577,-73.2834,2026-08-10T11:30:00-04:00
 ESD-20260810-1848,Central-Nassau,Garden City,FDR-CN-14,low,unassigned,18,false,none,general,80,40.7289,-73.62571,2026-08-10T22:45:00-04:00
@@ -1855,9 +1855,9 @@ ESD-20260810-1853,Western Suffolk,Lindenhurst,FDR-WS-22,high,unassigned,94,false
 ESD-20260810-1854,Eastern Suffolk,Montauk,FDR-ES-13,high,unassigned,739,false,tree on primary,vegetation,172,41.02738,-71.94624,2026-08-10T18:00:00-04:00
 ESD-20260810-1855,Central-Nassau,Uniondale,FDR-CN-11,critical,unassigned,333,false,transformer fire,line,108,40.69711,-73.58224,2026-08-10T16:45:00-04:00
 ESD-20260810-1856,Central-Nassau,Merrick,FDR-CN-02,high,unassigned,61,false,tree on primary,vegetation,5,40.65651,-73.54782,2026-08-10T10:00:00-04:00
-ESD-20260810-1857,Western Suffolk,Smithtown,FDR-WS-05,high,unassigned,494,true,downed wire,general,175,40.86355,-73.20079,2026-08-10T18:00:00-04:00
+ESD-20260810-1857,Western Suffolk,Smithtown,FDR-WS-05,high,unassigned,494,false,downed wire,general,175,40.86355,-73.20079,2026-08-10T18:00:00-04:00
 ESD-20260810-1858,Eastern Suffolk,Manorville,FDR-ES-34,critical,unassigned,2543,false,transformer fire,line,81,40.87703,-72.81851,2026-08-10T13:15:00-04:00
-ESD-20260810-1859,Eastern Suffolk,East Hampton,FDR-ES-27,critical,unassigned,153,true,transformer fire,line,125,40.96999,-72.19601,2026-08-10T17:00:00-04:00
+ESD-20260810-1859,Eastern Suffolk,East Hampton,FDR-ES-27,critical,unassigned,153,false,transformer fire,line,125,40.96999,-72.19601,2026-08-10T17:00:00-04:00
 ESD-20260810-1860,Eastern Suffolk,Center Moriches,FDR-ES-38,critical,unassigned,247,false,transformer fire,line,145,40.80737,-72.80048,2026-08-10T21:15:00-04:00
 ESD-20260810-1861,Central-Nassau,Levittown,FDR-CN-13,critical,unassigned,1655,false,transformer fire,line,158,40.73753,-73.5046,2026-08-10T14:15:00-04:00
 ESD-20260810-1862,Western Suffolk,Copiague,FDR-WS-34,critical,unassigned,2519,false,transformer fire,line,120,40.69207,-73.40532,2026-08-10T21:30:00-04:00
@@ -1888,7 +1888,7 @@ ESD-20260810-1886,Queens-Nassau,Hewlett,FDR-QN-03,medium,unassigned,56,false,par
 ESD-20260810-1887,Central-Nassau,Uniondale,FDR-CN-07,medium,unassigned,98,false,partial outage,general,117,40.70451,-73.59666,2026-08-10T18:00:00-04:00
 ESD-20260810-1888,Central-Nassau,Wantagh,FDR-CN-15,high,unassigned,239,false,downed wire,general,73,40.69024,-73.511,2026-08-10T14:15:00-04:00
 ESD-20260810-1889,Eastern Suffolk,Montauk,FDR-ES-22,high,unassigned,389,false,downed wire,general,128,41.02962,-71.94806,2026-08-10T22:00:00-04:00
-ESD-20260810-1890,Western Suffolk,Islip,FDR-WS-07,critical,unassigned,626,false,transformer fire,line,112,40.72083,-73.2136,2026-08-10T22:30:00-04:00
+ESD-20260810-1890,Western Suffolk,Islip,FDR-WS-07,critical,unassigned,626,true,transformer fire,line,112,40.72083,-73.2136,2026-08-10T22:30:00-04:00
 ESD-20260810-1891,Central-Nassau,Massapequa,FDR-CN-02,low,unassigned,165,false,none,general,93,40.67926,-73.48141,2026-08-10T11:45:00-04:00
 ESD-20260810-1892,Central-Nassau,Mineola,FDR-CN-25,medium,unassigned,423,false,partial outage,general,73,40.74912,-73.64252,2026-08-10T14:45:00-04:00
 ESD-20260810-1893,Central-Nassau,Freeport,FDR-CN-09,high,unassigned,953,false,tree on primary,vegetation,156,40.64774,-73.58559,2026-08-10T17:00:00-04:00
@@ -1903,7 +1903,7 @@ ESD-20260810-1901,Queens-Nassau,Arverne,FDR-QN-36,high,unassigned,607,false,tree
 ESD-20260810-1902,Central-Nassau,Merrick,FDR-CN-37,high,unassigned,694,false,tree on primary,vegetation,19,40.66373,-73.5558,2026-08-10T16:15:00-04:00
 ESD-20260810-1903,Eastern Suffolk,Calverton,FDR-ES-29,high,unassigned,248,false,burning wire,general,57,40.89832,-72.73751,2026-08-10T12:00:00-04:00
 ESD-20260810-1904,Central-Nassau,Wantagh,FDR-CN-10,high,unassigned,485,false,downed wire,general,67,40.67758,-73.50953,2026-08-10T21:30:00-04:00
-ESD-20260810-1905,Eastern Suffolk,Hampton Bays,FDR-ES-35,high,unassigned,44,true,downed wire,general,26,40.87432,-72.5244,2026-08-10T12:30:00-04:00
+ESD-20260810-1905,Eastern Suffolk,Hampton Bays,FDR-ES-35,high,unassigned,44,false,downed wire,general,26,40.87432,-72.5244,2026-08-10T12:30:00-04:00
 ESD-20260810-1906,Queens-Nassau,Valley Stream,FDR-QN-13,high,unassigned,1014,false,underground cable fault,underground,171,40.66788,-73.69955,2026-08-10T17:15:00-04:00
 ESD-20260810-1907,Eastern Suffolk,Greenport,FDR-ES-14,medium,unassigned,398,false,tree limb,vegetation,91,41.09822,-72.3477,2026-08-10T19:45:00-04:00
 ESD-20260810-1908,Central-Nassau,Wantagh,FDR-CN-32,medium,unassigned,19,false,partial outage,general,23,40.6832,-73.50829,2026-08-10T19:00:00-04:00
@@ -1944,7 +1944,7 @@ ESD-20260810-1942,Western Suffolk,Amityville,FDR-WS-12,critical,unassigned,480,f
 ESD-20260810-1943,Central-Nassau,Hicksville,FDR-CN-33,high,unassigned,131,false,broken crossarm,line,12,40.759,-73.53354,2026-08-10T18:45:00-04:00
 ESD-20260810-1944,Central-Nassau,Westbury,FDR-CN-23,high,unassigned,1234,false,tree on primary,vegetation,110,40.76701,-73.59737,2026-08-10T14:30:00-04:00
 ESD-20260810-1945,Western Suffolk,Commack,FDR-WS-38,low,unassigned,1,false,damaged service drop,low_voltage,33,40.84524,-73.29085,2026-08-10T18:45:00-04:00
-ESD-20260810-1946,Eastern Suffolk,Hampton Bays,FDR-ES-03,high,unassigned,1146,false,tree on primary,vegetation,110,40.88003,-72.50941,2026-08-10T15:00:00-04:00
+ESD-20260810-1946,Eastern Suffolk,Hampton Bays,FDR-ES-03,high,unassigned,1146,true,tree on primary,vegetation,110,40.88003,-72.50941,2026-08-10T15:00:00-04:00
 ESD-20260810-1947,Western Suffolk,Commack,FDR-WS-35,medium,unassigned,67,false,partial outage,general,179,40.84984,-73.30225,2026-08-10T17:15:00-04:00
 ESD-20260810-1948,Central-Nassau,East Meadow,FDR-CN-12,low,unassigned,1,false,damaged service drop,low_voltage,23,40.71635,-73.56593,2026-08-10T15:00:00-04:00
 ESD-20260810-1949,Queens-Nassau,Edgemere,FDR-QN-30,high,unassigned,993,false,tree on primary,vegetation,172,40.58577,-73.775,2026-08-10T18:45:00-04:00
@@ -1954,13 +1954,13 @@ ESD-20260810-1952,Queens-Nassau,Elmont,FDR-QN-10,high,unassigned,888,false,under
 ESD-20260810-1953,Western Suffolk,Bay Shore,FDR-WS-08,medium,unassigned,194,false,partial outage,general,43,40.72811,-73.24268,2026-08-10T20:00:00-04:00
 ESD-20260810-1954,Western Suffolk,Deer Park,FDR-WS-21,low,unassigned,1,false,damaged service drop,low_voltage,14,40.76003,-73.31806,2026-08-10T13:00:00-04:00
 ESD-20260810-1955,Western Suffolk,Lindenhurst,FDR-WS-25,high,unassigned,498,false,downed wire,general,87,40.68836,-73.38062,2026-08-10T18:45:00-04:00
-ESD-20260810-1956,Queens-Nassau,Arverne,FDR-QN-10,high,unassigned,249,false,burning wire,general,81,40.59944,-73.80129,2026-08-10T22:30:00-04:00
+ESD-20260810-1956,Queens-Nassau,Arverne,FDR-QN-10,high,unassigned,249,true,burning wire,general,81,40.59944,-73.80129,2026-08-10T22:30:00-04:00
 ESD-20260810-1957,Central-Nassau,East Meadow,FDR-CN-37,low,unassigned,166,false,none,general,180,40.71449,-73.55347,2026-08-10T14:00:00-04:00
 ESD-20260810-1958,Queens-Nassau,Elmont,FDR-QN-09,medium,unassigned,276,false,partial outage,general,162,40.69733,-73.7217,2026-08-10T14:00:00-04:00
 ESD-20260810-1959,Eastern Suffolk,Hampton Bays,FDR-ES-15,critical,unassigned,983,false,transformer fire,line,27,40.86948,-72.51249,2026-08-10T16:45:00-04:00
 ESD-20260810-1960,Queens-Nassau,Lawrence,FDR-QN-32,high,unassigned,1101,false,broken crossarm,line,45,40.60616,-73.72742,2026-08-10T11:45:00-04:00
 ESD-20260810-1961,Queens-Nassau,Inwood,FDR-QN-37,high,unassigned,673,false,underground cable fault,underground,78,40.61627,-73.73945,2026-08-10T13:45:00-04:00
-ESD-20260810-1962,Eastern Suffolk,Hampton Bays,FDR-ES-16,high,unassigned,1090,true,underground cable fault,underground,143,40.86069,-72.50812,2026-08-10T10:30:00-04:00
+ESD-20260810-1962,Eastern Suffolk,Hampton Bays,FDR-ES-16,high,unassigned,1090,false,underground cable fault,underground,143,40.86069,-72.50812,2026-08-10T10:30:00-04:00
 ESD-20260810-1963,Western Suffolk,Brentwood,FDR-WS-38,high,unassigned,1538,false,tree on primary,vegetation,79,40.78839,-73.24717,2026-08-10T14:45:00-04:00
 ESD-20260810-1964,Queens-Nassau,Lawrence,FDR-QN-28,high,unassigned,260,false,underground cable fault,underground,172,40.62692,-73.72969,2026-08-10T14:45:00-04:00
 ESD-20260810-1965,Central-Nassau,Hicksville,FDR-CN-09,medium,unassigned,232,false,tree limb,vegetation,158,40.76496,-73.52651,2026-08-10T16:00:00-04:00
@@ -1976,9 +1976,9 @@ ESD-20260810-1974,Central-Nassau,Mineola,FDR-CN-29,high,unassigned,590,false,tre
 ESD-20260810-1975,Central-Nassau,Uniondale,FDR-CN-23,medium,unassigned,78,false,partial outage,general,60,40.70885,-73.58999,2026-08-10T18:15:00-04:00
 ESD-20260810-1976,Eastern Suffolk,Center Moriches,FDR-ES-08,medium,unassigned,212,false,tree limb,vegetation,135,40.80151,-72.80024,2026-08-10T18:00:00-04:00
 ESD-20260810-1977,Central-Nassau,Levittown,FDR-CN-06,low,unassigned,81,false,none,general,130,40.7225,-73.5113,2026-08-10T22:00:00-04:00
-ESD-20260810-1978,Central-Nassau,Wantagh,FDR-CN-16,high,unassigned,31,true,downed wire,general,117,40.68274,-73.51234,2026-08-10T19:45:00-04:00
+ESD-20260810-1978,Central-Nassau,Wantagh,FDR-CN-16,high,unassigned,31,false,downed wire,general,117,40.68274,-73.51234,2026-08-10T19:45:00-04:00
 ESD-20260810-1979,Central-Nassau,Garden City,FDR-CN-36,low,unassigned,67,false,none,general,127,40.73597,-73.64307,2026-08-10T10:15:00-04:00
-ESD-20260810-1980,Western Suffolk,Babylon,FDR-WS-14,high,unassigned,23,true,burning wire,general,65,40.70099,-73.31472,2026-08-10T21:45:00-04:00
+ESD-20260810-1980,Western Suffolk,Babylon,FDR-WS-14,high,unassigned,23,false,burning wire,general,65,40.70099,-73.31472,2026-08-10T21:45:00-04:00
 ESD-20260810-1981,Western Suffolk,Brentwood,FDR-WS-26,high,unassigned,987,false,underground cable fault,underground,155,40.78701,-73.24008,2026-08-10T14:00:00-04:00
 ESD-20260810-1982,Central-Nassau,Levittown,FDR-CN-27,medium,unassigned,422,false,partial outage,general,88,40.7272,-73.51867,2026-08-10T10:15:00-04:00
 ESD-20260810-1983,Eastern Suffolk,Wading River,FDR-ES-32,critical,unassigned,1533,false,transformer fire,line,118,40.95151,-72.84151,2026-08-10T21:15:00-04:00
@@ -1990,7 +1990,7 @@ ESD-20260810-1988,Central-Nassau,Garden City,FDR-CN-25,medium,unassigned,696,fal
 ESD-20260810-1989,Western Suffolk,Huntington,FDR-WS-11,medium,assigned,989,false,partial outage,general,91,40.87388,-73.42022,2026-08-10T15:15:00-04:00
 ESD-20260810-1990,Western Suffolk,Babylon,FDR-WS-07,low,unassigned,1,false,damaged service drop,low_voltage,42,40.70306,-73.33538,2026-08-10T19:00:00-04:00
 ESD-20260810-1991,Western Suffolk,Huntington,FDR-WS-31,critical,unassigned,1527,false,transformer fire,line,145,40.86821,-73.41697,2026-08-10T21:30:00-04:00
-ESD-20260810-1992,Queens-Nassau,Inwood,FDR-QN-28,high,unassigned,15,true,downed wire,general,70,40.61647,-73.74596,2026-08-10T22:45:00-04:00
+ESD-20260810-1992,Queens-Nassau,Inwood,FDR-QN-28,high,unassigned,15,false,downed wire,general,70,40.61647,-73.74596,2026-08-10T22:45:00-04:00
 ESD-20260810-1993,Queens-Nassau,Arverne,FDR-QN-26,high,unassigned,940,false,tree on primary,vegetation,112,40.5982,-73.79007,2026-08-10T13:45:00-04:00
 ESD-20260810-1994,Eastern Suffolk,Riverhead,FDR-ES-36,medium,unassigned,251,false,partial outage,general,49,40.92329,-72.65514,2026-08-10T16:15:00-04:00
 ESD-20260810-1995,Central-Nassau,Westbury,FDR-CN-07,medium,unassigned,305,false,tree limb,vegetation,142,40.74455,-73.5931,2026-08-10T14:30:00-04:00
@@ -1998,4 +1998,4 @@ ESD-20260810-1996,Eastern Suffolk,Yaphank,FDR-ES-09,low,unassigned,1,false,damag
 ESD-20260810-1997,Queens-Nassau,Elmont,FDR-QN-09,critical,unassigned,567,false,transformer fire,line,143,40.69883,-73.71992,2026-08-10T18:30:00-04:00
 ESD-20260810-1998,Western Suffolk,Commack,FDR-WS-23,high,unassigned,1016,false,underground cable fault,underground,5,40.83441,-73.28624,2026-08-10T20:00:00-04:00
 ESD-20260810-1999,Central-Nassau,Uniondale,FDR-CN-27,low,unassigned,1,false,damaged service drop,low_voltage,34,40.69393,-73.5881,2026-08-10T22:30:00-04:00
-ESD-20260810-2000,Queens-Nassau,Edgemere,FDR-QN-33,critical,unassigned,282,true,transformer fire,line,143,40.60184,-73.78117,2026-08-10T10:45:00-04:00
+ESD-20260810-2000,Queens-Nassau,Edgemere,FDR-QN-33,critical,unassigned,282,false,transformer fire,line,143,40.60184,-73.78117,2026-08-10T10:45:00-04:00

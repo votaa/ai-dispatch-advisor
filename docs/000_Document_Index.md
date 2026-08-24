@@ -157,6 +157,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/906_Phase_6_Closeout.md` | Committed | Phase 6 completion evidence, carry-forward items, and feedback gate |
 | `docs/900_Delivery/907_Phase_7_Implementation_Plan.md` | Drafted | Paused enterprise integration adapter plan and required owner inputs |
 | `docs/900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md` | Drafted | Approval-ready hybrid Copilot POC scope, acceptance suite, sequencing, and safety boundary |
+| `docs/900_Delivery/909_Scenario_Data_Integrity_Implementation_Plan.md` | Drafted | Cross-scenario facility linkage, generator validation, timeline consistency, and Copilot evidence correction |
 
 ## Planned Documentation Structure
 

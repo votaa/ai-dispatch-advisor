@@ -19,10 +19,13 @@ from .scenario_generator import (
     REGIONS,
     GeneratedScenario,
     _base_incident,
+    _facility_keys,
     _feeders_by_region,
+    _set_linked_criticality,
     _suffix_region,
     generate_scenario,
     load_municipalities,
+    validate_critical_facility_linkage,
     write_scenario,
 )
 from .scenario_service import ScenarioService
@@ -576,6 +579,7 @@ def generate_timeline(
         )
 
     rng = random.Random(seed + 1_000_003)
+    criticality_rng = random.Random(seed + 3_000_003)
     municipalities = load_municipalities(lookup_path)
     incidents = {row["incident_id"]: copy.deepcopy(row) for row in base.incidents}
     crews = {row["crew_id"]: copy.deepcopy(row) for row in base.crews}
@@ -608,6 +612,7 @@ def generate_timeline(
         offsets[assignment["crew_id"]] = 0
 
     feeders = _feeders_by_region(base.incidents)
+    facility_keys = _facility_keys(base.critical_facilities)
     results: list[TimelineSnapshot] = []
     previous_timestamp = start
     for snapshot_index in range(snapshots):
@@ -636,6 +641,7 @@ def generate_timeline(
                 incident = _base_incident(timestamp.date(), sequence, municipalities, rng)
                 incident["incident_id"] = arrival_id
                 incident["feeder"] = rng.choice(feeders[incident["region"]])
+                _set_linked_criticality(incident, facility_keys, criticality_rng)
                 incident["age_minutes"] = rng.randint(1, max(1, elapsed_minutes))
                 incident["etr"] = (timestamp + timedelta(minutes=_repair_duration(
                     incident, base.historical_repairs, repair_duration_variation, rng
@@ -733,6 +739,10 @@ def validate_timeline_snapshot(scenario: GeneratedScenario) -> None:
         raise ValueError("An assigned timeline crew has no active assignment")
     if {row["region"] for row in scenario.weather} != set(REGIONS):
         raise ValueError("Timeline weather must cover all regions")
+    validate_critical_facility_linkage(
+        scenario.incidents,
+        scenario.critical_facilities,
+    )
     topology_feeders = {(row["region"], row["feeder"]) for row in scenario.topology}
     if not {(row["region"], row["feeder"]) for row in scenario.incidents}.issubset(topology_feeders):
         raise ValueError("Timeline topology does not cover every pending incident feeder")

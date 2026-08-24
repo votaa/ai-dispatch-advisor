@@ -92,6 +92,23 @@ def test_deterministic_acceptance_questions_use_local_evidence(
     assert "road miles" in responses["crew_travel"].answer
     assert "not live routing" in responses["crew_travel"].answer
 
+    critical_count = sum(
+        incident.critical_facility for incident in services.incidents.list_ranked()
+    )
+    critical_response = services.copilot.respond(
+        "How many incidents have critical facilities on them?"
+    )
+    assert critical_response.execution_mode == "local_query"
+    assert critical_response.intent == "critical_facilities"
+    assert critical_response.answer.startswith(
+        f"{critical_count} incident(s) are marked with critical-facility impact:"
+    )
+    assert "Matched facility records:" in critical_response.answer
+    assert {item.source_type for item in critical_response.evidence} == {
+        "incident",
+        "critical_facility",
+    }
+
     synthesis = services.copilot.respond(
         "Summarize the most important operational concerns.",
         arverne.incident_id,

@@ -380,4 +380,51 @@ class ScenarioService:
                             "message": f"Crew '{crew_id}' is assigned but has no active assignment",
                         }
                     )
+
+        linkage_files = {"PendingIncidents.csv", "CriticalFacilities.csv"}
+        if linkage_files.issubset(rows_by_file):
+            incidents = rows_by_file["PendingIncidents.csv"]
+            facilities = rows_by_file["CriticalFacilities.csv"]
+            facility_keys = {
+                (row["region"].strip(), row["feeder"].strip())
+                for row in facilities
+            }
+            facilities_by_region: dict[str, list[str]] = {}
+            for facility in facilities:
+                facilities_by_region.setdefault(facility["region"].strip(), []).append(
+                    f"{facility['facility_id'].strip()}:{facility['feeder'].strip()}"
+                )
+
+            for row_number, incident in enumerate(incidents, start=2):
+                critical_value = incident["critical_facility"].strip().lower()
+                if critical_value not in {"true", "false"}:
+                    issues.append(
+                        {
+                            "location": f"PendingIncidents.csv:{row_number}.critical_facility",
+                            "message": "Value must be 'true' or 'false'",
+                            "value": incident["critical_facility"],
+                        }
+                    )
+                    continue
+                key = (incident["region"].strip(), incident["feeder"].strip())
+                if critical_value == "true" and key not in facility_keys:
+                    issues.append(
+                        {
+                            "location": f"PendingIncidents.csv:{row_number}.critical_facility",
+                            "message": (
+                                f"Critical incident '{incident['incident_id'].strip()}' has no "
+                                "matching facility for its region and feeder"
+                            ),
+                            "incident_id": incident["incident_id"].strip(),
+                            "region": key[0],
+                            "feeder": key[1],
+                            "available_region_facilities": sorted(
+                                facilities_by_region.get(key[0], [])
+                            ),
+                        }
+                    )
+
+        # Topology coverage remains a generator contract for now. Several documented
+        # legacy fixtures use fictional or incomplete topology, so runtime activation
+        # deliberately does not impose a new geography/topology compatibility gate.
         return issues

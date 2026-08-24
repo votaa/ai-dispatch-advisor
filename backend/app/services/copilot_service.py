@@ -532,23 +532,58 @@ class CopilotService:
             for row in self._context.critical_facilities()
             if (str(row.get("region")), str(row.get("feeder"))) in affected_keys
         ]
-        if not facilities:
+        if not critical_incidents:
             return self._response(
-                answer="No affected critical facility is identified in the local scenario data for that scope.",
+                answer="No incidents are marked with critical-facility impact in the local scenario data for that scope.",
                 intent="critical_facilities",
-                evidence=[
-                    self._evidence("incident", incident.incident_id, incident.municipality)
-                    for incident in critical_incidents
-                ],
+                evidence=[],
             )
-        names = "; ".join(
+        incident_summary = "; ".join(
+            f"{incident.incident_id} ({incident.municipality})"
+            for incident in critical_incidents
+        )
+        facility_summary = "; ".join(
             f"{row['facility_name']} ({row['facility_type']}, {row['municipality']})"
             for row in facilities
         )
+        matched_keys = {
+            (str(row.get("region")), str(row.get("feeder"))) for row in facilities
+        }
+        unmatched = [
+            incident
+            for incident in critical_incidents
+            if (incident.region, incident.feeder) not in matched_keys
+        ]
+        answer_parts = [
+            f"{len(critical_incidents)} incident(s) are marked with critical-facility impact: "
+            f"{incident_summary}.",
+            (
+                f"Matched facility records: {facility_summary}."
+                if facilities
+                else "Matched facility records: none."
+            ),
+        ]
+        if unmatched:
+            answer_parts.append(
+                "Data limitation: no matching facility record was found for "
+                + "; ".join(
+                    f"{incident.incident_id} ({incident.region}, {incident.feeder})"
+                    for incident in unmatched
+                )
+                + "."
+            )
         return self._response(
-            answer=f"Affected critical facilities in the local scenario: {names}.",
+            answer=" ".join(answer_parts),
             intent="critical_facilities",
             evidence=[
+                self._evidence(
+                    "incident",
+                    incident.incident_id,
+                    incident.municipality,
+                )
+                for incident in critical_incidents
+            ]
+            + [
                 self._evidence(
                     "critical_facility",
                     str(row["facility_id"]),

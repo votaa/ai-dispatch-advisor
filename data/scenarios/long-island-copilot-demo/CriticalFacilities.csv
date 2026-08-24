@@ -1,9 +1,9 @@
 facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
 FAC-QN-01,Arverne Emergency Services Center,emergency_services,Queens-Nassau,Arverne,FDR-QN-01,critical
-FAC-QN-02,Far Rockaway Water Treatment Facility,water,Queens-Nassau,Far Rockaway,FDR-QN-04,critical
-FAC-CN-01,Hempstead Regional Medical Center,hospital,Central-Nassau,Hempstead,FDR-CN-02,critical
-FAC-CN-02,Westbury Water Treatment Facility,water,Central-Nassau,Westbury,FDR-CN-07,critical
+FAC-QN-02,Far Rockaway Emergency Services Center,emergency_services,Queens-Nassau,Far Rockaway,FDR-QN-04,critical
+FAC-CN-01,East Meadow Fire Department,emergency_services,Central-Nassau,East Meadow,FDR-CN-35,critical
+FAC-CN-02,Westbury Emergency Services Center,emergency_services,Central-Nassau,Westbury,FDR-CN-07,critical
 FAC-WS-01,Smithtown Regional Medical Center,hospital,Western Suffolk,Smithtown,FDR-WS-03,critical
-FAC-WS-02,Melville Water Treatment Facility,water,Western Suffolk,Melville,FDR-WS-31,critical
+FAC-WS-02,Melville Emergency Services Center,emergency_services,Western Suffolk,Melville,FDR-WS-31,critical
 FAC-ES-01,Montauk Regional Medical Center,hospital,Eastern Suffolk,Montauk,FDR-ES-04,critical
-FAC-ES-02,Southampton Water Treatment Facility,water,Eastern Suffolk,Southampton,FDR-ES-08,critical
+FAC-ES-02,Southampton Emergency Services Center,emergency_services,Eastern Suffolk,Southampton,FDR-ES-08,critical

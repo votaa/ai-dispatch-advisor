@@ -78,6 +78,20 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - Keep dense operational data readable at expected dispatcher workstation sizes.
 - Provide visible focus and confirmation states for user actions.
 
+## Open POC TODOs
+
+- **POC-020 — Deterministic local-response readability:** Format non-LLM `local_query`
+  answers as concise, semantic Markdown rather than dense inline text. Show totals first,
+  organize facts into short sections, bound large visible result lists with an explicit
+  shown-versus-total count, and retain complete evidence in the expandable Evidence section.
+  For the critical-facility count query, display each incident ESD ID, village/municipality,
+  and feeder together with its matched facility ID/name, type, and priority; preserve
+  one-to-many matches and identify unmatched incidents explicitly rather than showing two
+  disconnected lists.
+  This must remain deterministic, provider-free, grounded in the active scenario, advisory
+  only, and compatible with the existing API envelope and safe Markdown renderer. See the
+  [POC Feedback Log](../../004_POC_Feedback_Log.md).
+
 ## Acceptance Criteria
 
 - Prompt examples are visible

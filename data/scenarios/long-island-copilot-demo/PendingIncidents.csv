@@ -9,7 +9,7 @@ ESD-20260821-0007,Western Suffolk,Babylon,FDR-WS-31,high,unassigned,244,false,do
 ESD-20260821-0008,Central-Nassau,Hicksville,FDR-CN-12,critical,unassigned,421,false,transformer fire,line,107,40.76293,-73.53286,2026-08-21T13:45:00-04:00
 ESD-20260821-0009,Central-Nassau,Mineola,FDR-CN-39,high,unassigned,64,false,burning wire,general,138,40.75897,-73.65042,2026-08-21T18:30:00-04:00
 ESD-20260821-0010,Central-Nassau,Massapequa,FDR-CN-33,low,unassigned,43,false,none,general,167,40.68809,-73.48471,2026-08-21T12:00:00-04:00
-ESD-20260821-0011,Central-Nassau,East Meadow,FDR-CN-35,high,unassigned,307,true,burning wire,general,113,40.70665,-73.56644,2026-08-21T12:00:00-04:00
+ESD-20260821-0011,Central-Nassau,East Meadow,FDR-CN-35,critical,unassigned,2100,true,blocked access,line,110,40.7139,-73.559,2026-08-21T12:00:00-04:00
 ESD-20260821-0012,Central-Nassau,Mineola,FDR-CN-08,medium,unassigned,59,false,partial outage,general,38,40.74965,-73.64489,2026-08-21T19:45:00-04:00
 ESD-20260821-0013,Central-Nassau,Westbury,FDR-CN-09,high,unassigned,955,false,underground cable fault,underground,46,40.75003,-73.59029,2026-08-21T15:45:00-04:00
 ESD-20260821-0014,Central-Nassau,Hempstead,FDR-CN-07,high,unassigned,310,false,burning wire,general,8,40.71319,-73.62012,2026-08-21T16:45:00-04:00

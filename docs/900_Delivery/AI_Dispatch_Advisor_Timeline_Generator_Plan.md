@@ -22,8 +22,58 @@ Each folder contains `scenario.json` and all seven required CSVs. Deliver the wo
 - Add `scripts/generate_scenario_timeline.py` as the user-facing entry point.
 - Add `backend/app/scenario_timeline_generator.py` for simulation state, lifecycle progression, and validation.
 - Reuse the existing scenario generator for snapshot 1 and shared crew, incident, geographic, ID, facility, topology, and repair-history rules.
-- Leave the existing single-snapshot generator unchanged.
+- Apply the scenario-integrity correction described below to the shared generator before producing timeline snapshots; a timeline must not preserve or amplify an invalid facility linkage.
+- Preserve the existing single-snapshot generator interface and dispatch behavior except
+  for the approved linked critical-facility integrity contract.
 - Save this approved plan in `docs/900_Delivery/AI_Dispatch_Advisor_Timeline_Generator_Plan.md` before implementation begins.
+
+### Critical-facility domain and linkage contract
+
+The generator currently synthesizes critical-facility records from a fixed profile list, but it independently assigns `critical_facility=true` to incidents. That can create an incident whose region and feeder have no corresponding facility row. The implementation must make facility selection and incident impact assignment linked and deterministic for a given seed.
+
+The current profile list is:
+
+| Name suffix | `facility_type` | Current `priority_level` |
+| --- | --- | --- |
+| Regional Medical Center | `hospital` | `critical` |
+| Water Treatment Facility | `water` | `critical` |
+| Emergency Services Center | `emergency_services` | `critical` |
+| Senior Care Center | `healthcare` | `high` |
+| Public Safety Communications Center | `communications` | `critical` |
+| Fire District Headquarters | `emergency_services` | `high` |
+| Police Precinct | `emergency_services` | `high` |
+| Emergency Shelter | `shelter` | `high` |
+| Wastewater Pump Station | `water` | `high` |
+| Transit Operations Center | `transportation` | `high` |
+
+The approved POC domain catalog should be reviewed before implementation and may include the following explicit domains:
+
+- Hospital or medical center.
+- Fire department, EMS, or emergency-services station.
+- Police department or precinct.
+- Public-safety communications or 911 center.
+- Water treatment plant or water pumping station.
+- Wastewater or sewage treatment plant and wastewater pumping station.
+- Emergency shelter.
+- Senior-care or assisted-living facility.
+- Transit or transportation operations center.
+- High-rise or residential tower only if the owner approves it as a critical-facility domain and the scenario model defines the required facility attributes.
+
+The approved POC DPS Level 1–3 working taxonomy and its mapping to `critical`, `high`, and
+`medium` are defined in
+`909_Scenario_Data_Integrity_Implementation_Plan.md`. Production source provenance and final
+terminology remain an owner-review item.
+
+The generator must:
+
+- Generate facility records from the approved seeded catalog, with valid municipality, region, and feeder references.
+- Select critical-impact incidents only from feeders with at least one linked facility record.
+- Set `critical_facility=false` for incidents on feeders without an eligible linked facility.
+- Treat approved Level 1, Level 2, and Level 3 rows as eligible for incident linkage while
+  preserving the current flat critical-facility scoring contribution.
+- Require every incident with `critical_facility=true` to match one or more facility rows by region and feeder.
+- Preserve facility IDs and facility rows across timeline snapshots.
+- Report facility linkage failures as validation errors rather than silently producing partial Copilot evidence.
 
 ### 2. Add interactive and command-line configuration
 
@@ -82,6 +132,8 @@ unassigned → assigned → en_route → onsite → energized → cleared/comple
 - Update weather timestamps and gradually reduce storm intensity with the arrival curve.
 - Keep critical facilities and historical repair reference data stable.
 - Keep topology stable by assigning later incidents to the sequence’s existing regional feeder inventory.
+- When creating new incidents, derive `critical_facility` from the stable facility-to-feeder index; do not call the independent random incident flag for timeline arrivals.
+- Validate every snapshot against the stable facility linkage contract, including newly arrived incidents.
 
 Because AIDA changes are excluded, cleared/completed jobs do not remain in later `PendingIncidents.csv` files. Earlier snapshots preserve their previous existence. Raw CSVs retain operational phases, although the current API may display incidents with active assignments simply as `assigned`.
 
@@ -105,6 +157,11 @@ Add coverage for:
 - One-snapshot and ten-snapshot boundaries.
 - Zero-padded chronological folder ordering.
 - Every snapshot passing existing `ScenarioService` validation.
+- Every generated critical-facility incident resolves to at least one facility record by region and feeder.
+- The approved facility domain catalog is used with seeded, reproducible selection and valid priority classification.
+- No generated snapshot contains an orphan `critical_facility=true` incident.
+- Facility IDs, rows, region/feeder associations, and classifications remain unchanged across snapshots.
+- Timeline arrivals never introduce a critical-facility flag on an unlinked feeder.
 - Deterministic output for identical seeds.
 - Queue conservation: previous pending + arrivals − clearances = current pending.
 - Stable IDs for surviving incidents and active assignments.

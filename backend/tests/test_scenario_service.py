@@ -98,6 +98,48 @@ def test_service_reports_invalid_csv_headers(tmp_path: Path) -> None:
         raise AssertionError("Expected invalid CSV headers to fail")
 
 
+def test_service_rejects_orphan_critical_facility_linkage(tmp_path: Path) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    incident_path = scenario_directory / "PendingIncidents.csv"
+    incident_path.write_text(
+        incident_path.read_text(encoding="utf-8").replace("FDR-12", "FDR-ORPHAN", 1),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ScenarioServiceError) as error:
+        ScenarioService(tmp_path, "base").active_scenario()
+
+    issue = next(
+        detail
+        for detail in error.value.details
+        if detail.get("incident_id") == "INC-1001"
+    )
+    assert issue["location"] == "PendingIncidents.csv:2.critical_facility"
+    assert issue["region"] == "North"
+    assert issue["feeder"] == "FDR-ORPHAN"
+    assert "FAC-01:FDR-12" in issue["available_region_facilities"]
+
+
+def test_service_rejects_non_boolean_critical_facility_value(tmp_path: Path) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    incident_path = scenario_directory / "PendingIncidents.csv"
+    incident_path.write_text(
+        incident_path.read_text(encoding="utf-8").replace(",true,", ",unknown,", 1),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ScenarioServiceError) as error:
+        ScenarioService(tmp_path, "base").active_scenario()
+
+    assert {
+        "location": "PendingIncidents.csv:2.critical_facility",
+        "message": "Value must be 'true' or 'false'",
+        "value": "unknown",
+    } in error.value.details
+
+
 @pytest.mark.parametrize(
     ("filename", "id_field"),
     [

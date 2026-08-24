@@ -320,6 +320,15 @@ def test_supporting_reference_data_and_topology_remain_stable() -> None:
         assert {
             (row["region"], row["feeder"]) for row in snapshot.scenario.incidents
         }.issubset(topology_feeders)
+        facility_keys = {
+            (row["region"], row["feeder"])
+            for row in snapshot.scenario.critical_facilities
+        }
+        assert all(
+            row["critical_facility"] == "false"
+            or (row["region"], row["feeder"]) in facility_keys
+            for row in snapshot.scenario.incidents
+        )
 
 
 def test_snapshot_ages_etrs_shift_hours_and_travel_are_recalculated() -> None:

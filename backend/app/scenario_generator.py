@@ -61,6 +61,7 @@ MUA_CONTRACTOR_LOCATIONS = {
 }
 DEFAULT_START_DAY_LOCATION_RATE = 0.35
 DEFAULT_CRITICAL_FACILITY_RATE = 0.04
+DEFAULT_CRITICAL_IMPACT_RATE = 0.08
 COPILOT_DEMO_SCENARIO_ID = "long-island-copilot-demo"
 COPILOT_DEMO_INCIDENT_COUNT = 24
 COPILOT_DEMO_CREW_COUNT = 32
@@ -149,6 +150,38 @@ class CrewSpec:
     capability: str
     number_ranges: tuple[tuple[int, int], ...]
     region_encoded: bool
+
+
+@dataclass(frozen=True)
+class FacilityProfile:
+    """Approved synthetic facility classification used by seeded generation."""
+
+    name_suffix: str
+    facility_type: str
+    dps_level: int
+    priority_level: str
+
+
+FACILITY_CATALOG = (
+    FacilityProfile("Regional Medical Center", "hospital", 1, "critical"),
+    FacilityProfile("Emergency Services Center", "emergency_services", 1, "critical"),
+    FacilityProfile("Emergency Shelter", "shelter", 1, "critical"),
+    FacilityProfile("Fire District Headquarters", "emergency_services", 1, "critical"),
+    FacilityProfile("Police Precinct", "emergency_services", 1, "critical"),
+    FacilityProfile("Water Treatment Facility", "water", 1, "critical"),
+    FacilityProfile("Water Pumping Station", "water", 1, "critical"),
+    FacilityProfile("Wastewater Treatment Facility", "water", 1, "critical"),
+    FacilityProfile("Wastewater Pump Station", "water", 1, "critical"),
+    FacilityProfile("Transit Operations Center", "transportation", 1, "critical"),
+    FacilityProfile("Public Safety Communications Center", "communications", 1, "critical"),
+    FacilityProfile("Nursing Home", "healthcare", 2, "high"),
+    FacilityProfile("Dialysis Center", "healthcare", 2, "high"),
+    FacilityProfile("Correctional Facility", "public_services", 2, "high"),
+    FacilityProfile("Broadcast Communications Facility", "communications", 2, "high"),
+    FacilityProfile("Senior Care Center", "healthcare", 3, "medium"),
+    FacilityProfile("Health Related Facility", "healthcare", 3, "medium"),
+    FacilityProfile("Private Health Device (LSE)", "healthcare", 3, "medium"),
+)
 
 
 CREW_SPECS = (
@@ -345,21 +378,37 @@ def _base_incident(
         ("damaged service drop", "low_voltage", "low", 1, 1),
     )
     hazard, required_skill, severity, minimum, maximum = rng.choice(templates)
+    feeder = f"FDR-{REGION_CODES[region]}-{rng.randint(1, 40):02d}"
+    customers_out = rng.randint(minimum, maximum)
+    if severity in {"high", "critical"}:
+        # Preserve the established seeded stream while linked generation ignores
+        # the former independent critical-impact roll.
+        rng.random()
+    age_minutes = rng.randint(5, 180)
+    latitude = round(locality["latitude"] + rng.uniform(-0.012, 0.012), 5)
+    longitude = round(locality["longitude"] + rng.uniform(-0.012, 0.012), 5)
+    etr = _iso_at(
+        incident_date,
+        rng.randint(10, 22),
+        rng.choice((0, 15, 30, 45)),
+    )
     return {
         "incident_id": f"ESD-{incident_date:%Y%m%d}-{sequence:04d}",
         "region": region,
         "municipality": locality["municipality"],
-        "feeder": f"FDR-{REGION_CODES[region]}-{rng.randint(1, 40):02d}",
+        "feeder": feeder,
         "severity": severity,
         "status": "unassigned",
-        "customers_out": rng.randint(minimum, maximum),
-        "critical_facility": "true" if severity in {"high", "critical"} and rng.random() < 0.08 else "false",
+        "customers_out": customers_out,
+        # Linked generation finalizes this flag only after the stable facility
+        # catalog exists. Keeping the base row false prevents orphan impacts.
+        "critical_facility": "false",
         "hazard": hazard,
         "required_skill": required_skill,
-        "age_minutes": rng.randint(5, 180),
-        "latitude": round(locality["latitude"] + rng.uniform(-0.012, 0.012), 5),
-        "longitude": round(locality["longitude"] + rng.uniform(-0.012, 0.012), 5),
-        "etr": _iso_at(incident_date, rng.randint(10, 22), rng.choice((0, 15, 30, 45))),
+        "age_minutes": age_minutes,
+        "latitude": latitude,
+        "longitude": longitude,
+        "etr": etr,
     }
 
 
@@ -460,18 +509,6 @@ def _generate_critical_facilities(
     rng: random.Random,
     facilities_per_region: int | None,
 ) -> list[dict[str, Any]]:
-    facility_profiles = (
-        ("Regional Medical Center", "hospital", "critical"),
-        ("Water Treatment Facility", "water", "critical"),
-        ("Emergency Services Center", "emergency_services", "critical"),
-        ("Senior Care Center", "healthcare", "high"),
-        ("Public Safety Communications Center", "communications", "critical"),
-        ("Fire District Headquarters", "emergency_services", "high"),
-        ("Police Precinct", "emergency_services", "high"),
-        ("Emergency Shelter", "shelter", "high"),
-        ("Wastewater Pump Station", "water", "high"),
-        ("Transit Operations Center", "transportation", "high"),
-    )
     feeders = _feeders_by_region(incidents)
     incident_counts = Counter(row["region"] for row in incidents)
     rows: list[dict[str, Any]] = []
@@ -483,22 +520,78 @@ def _generate_critical_facilities(
         localities = list(municipalities[region])
         rng.shuffle(localities)
         for index in range(1, facility_count + 1):
-            name_suffix, facility_type, priority = facility_profiles[(index - 1) % len(facility_profiles)]
+            profile = FACILITY_CATALOG[(index - 1) % len(FACILITY_CATALOG)]
             locality = localities[(index - 1) % len(localities)]
             region_feeders = feeders[region]
             feeder = region_feeders[(index - 1) % len(region_feeders)]
             rows.append(
                 {
                     "facility_id": f"FAC-{REGION_CODES[region]}-{index:02d}",
-                    "facility_name": f"{locality['municipality']} {name_suffix}",
-                    "facility_type": facility_type,
+                    "facility_name": f"{locality['municipality']} {profile.name_suffix}",
+                    "facility_type": profile.facility_type,
                     "region": region,
                     "municipality": locality["municipality"],
                     "feeder": feeder,
-                    "priority_level": priority,
+                    "priority_level": profile.priority_level,
                 }
             )
     return rows
+
+
+def _facility_keys(facilities: Iterable[dict[str, Any]]) -> set[tuple[str, str]]:
+    return {(str(row["region"]), str(row["feeder"])) for row in facilities}
+
+
+def _set_linked_criticality(
+    incident: dict[str, Any],
+    facility_keys: set[tuple[str, str]],
+    rng: random.Random,
+) -> None:
+    eligible = (str(incident["region"]), str(incident["feeder"])) in facility_keys
+    incident["critical_facility"] = (
+        "true"
+        if eligible
+        and incident["severity"] in {"high", "critical"}
+        and rng.random() < DEFAULT_CRITICAL_IMPACT_RATE
+        else "false"
+    )
+
+
+def _apply_linked_criticality(
+    incidents: Iterable[dict[str, Any]],
+    facilities: Iterable[dict[str, Any]],
+    rng: random.Random,
+) -> None:
+    keys = _facility_keys(facilities)
+    for incident in incidents:
+        _set_linked_criticality(incident, keys, rng)
+
+
+def validate_critical_facility_linkage(
+    incidents: Iterable[dict[str, Any]],
+    facilities: Iterable[dict[str, Any]],
+) -> None:
+    facility_rows = list(facilities)
+    facility_keys = _facility_keys(facility_rows)
+    for incident in incidents:
+        value = str(incident["critical_facility"]).strip().lower()
+        if value not in {"true", "false"}:
+            raise ValueError(
+                f"Incident {incident['incident_id']} has invalid critical_facility value "
+                f"'{incident['critical_facility']}'"
+            )
+        key = (str(incident["region"]), str(incident["feeder"]))
+        if value == "true" and key not in facility_keys:
+            region_facilities = [
+                f"{row['facility_id']}:{row['feeder']}"
+                for row in facility_rows
+                if str(row["region"]) == key[0]
+            ]
+            context = ", ".join(region_facilities) or "none"
+            raise ValueError(
+                f"Critical-facility incident {incident['incident_id']} in {key[0]} on {key[1]} "
+                f"has no matching facility; available region facilities: {context}"
+            )
 
 
 def _generate_topology(incidents: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -668,6 +761,11 @@ def generate_scenario(
         rng,
         critical_facilities_per_region,
     )
+    _apply_linked_criticality(
+        incidents,
+        critical_facilities,
+        random.Random(seed + 2_000_003),
+    )
     topology = _generate_topology(incidents)
     historical_repairs = _generate_historical_repairs(rng)
     result = GeneratedScenario(
@@ -790,6 +888,27 @@ def generate_copilot_demo_scenario(
         )
         incident.update(profile)
 
+    east_meadow_incident = next(
+        incident
+        for incident in scenario.incidents
+        if incident["incident_id"] == f"ESD-{start_date:%Y%m%d}-0011"
+    )
+    if east_meadow_incident["status"] != "unassigned":
+        raise ValueError("Copilot demo East Meadow incident must remain unassigned")
+    _apply_demo_location(
+        east_meadow_incident,
+        locality_by_name["East Meadow"],
+        feeder_number=35,
+    )
+    east_meadow_incident.update(
+        severity="critical",
+        customers_out=2100,
+        critical_facility="true",
+        hazard="blocked access",
+        required_skill="line",
+        age_minutes=110,
+    )
+
     anchor_incident = unassigned[0]
     available_general = next(
         crew
@@ -845,6 +964,28 @@ def generate_copilot_demo_scenario(
         feeder=anchor_incident["feeder"],
         priority_level="critical",
     )
+    east_meadow_facility = next(
+        facility
+        for facility in scenario.critical_facilities
+        if facility["facility_id"] == "FAC-CN-01"
+    )
+    east_meadow_facility.update(
+        facility_name="East Meadow Fire Department",
+        facility_type="emergency_services",
+        region=east_meadow_incident["region"],
+        municipality=east_meadow_incident["municipality"],
+        feeder=east_meadow_incident["feeder"],
+        priority_level="critical",
+    )
+    _apply_linked_criticality(
+        scenario.incidents,
+        scenario.critical_facilities,
+        random.Random(seed + 2_000_003),
+    )
+    for incident in scenario.incidents:
+        incident["critical_facility"] = "false"
+    anchor_incident["critical_facility"] = "true"
+    east_meadow_incident["critical_facility"] = "true"
     scenario.topology = _generate_topology(scenario.incidents)
     validate_generated_scenario(
         scenario,
@@ -878,6 +1019,26 @@ def validate_copilot_demo_scenario(
         raise ValueError("Copilot demo must include multiple hazard types")
     if not any(incident["critical_facility"] == "true" for incident in scenario.incidents):
         raise ValueError("Copilot demo must include a critical-facility incident")
+    east_meadow = next(
+        incident
+        for incident in scenario.incidents
+        if incident["incident_id"].endswith("-0011")
+    )
+    if not (
+        east_meadow["municipality"] == "East Meadow"
+        and east_meadow["feeder"] == "FDR-CN-35"
+        and east_meadow["critical_facility"] == "true"
+    ):
+        raise ValueError("Copilot demo must include the linked East Meadow incident")
+    if not any(
+        facility["facility_name"] == "East Meadow Fire Department"
+        and facility["facility_type"] == "emergency_services"
+        and facility["region"] == east_meadow["region"]
+        and facility["feeder"] == east_meadow["feeder"]
+        and facility["priority_level"] == "critical"
+        for facility in scenario.critical_facilities
+    ):
+        raise ValueError("Copilot demo must include the approved East Meadow facility")
     statuses = {crew["status"] for crew in scenario.crews}
     if not {"available", "assigned"}.issubset(statuses):
         raise ValueError("Copilot demo must include available and assigned crews")
@@ -965,6 +1126,14 @@ def validate_generated_scenario(
         raise ValueError("Weather observations must cover all configured regions")
     if {row["region"] for row in scenario.critical_facilities} != set(REGIONS):
         raise ValueError("Critical facilities must cover all configured regions")
+    if len({row["facility_id"] for row in scenario.critical_facilities}) != len(
+        scenario.critical_facilities
+    ):
+        raise ValueError("Generated critical-facility IDs are not unique")
+    validate_critical_facility_linkage(
+        scenario.incidents,
+        scenario.critical_facilities,
+    )
     if {row["region"] for row in scenario.historical_repairs} != set(REGIONS):
         raise ValueError("Historical repairs must cover all configured regions")
     topology_by_id = {row["asset_id"]: row for row in scenario.topology}

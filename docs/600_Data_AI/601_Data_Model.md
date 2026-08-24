@@ -82,6 +82,33 @@ The data model should:
 | Critical Facilities | `CriticalFacilities.csv` | Priority facilities affected by outages |
 | Topology | `Topology.csv` | Simplified feeder and asset connectivity |
 
+### Scenario integrity contract
+
+Scenario incident impact and facility detail are separate records joined by the composite
+key `region + feeder`. `critical_facility=true` is valid only when at least one row in
+`CriticalFacilities.csv` has the same region and feeder. The runtime scenario service
+validates the flag as a boolean and rejects orphan critical-impact incidents before
+activation. Copilot counts come from incident records; matching facility rows provide
+separate descriptive evidence and are not used as a substitute incident count.
+
+The approved POC synthetic facility catalog uses the following classification mapping:
+
+| Working DPS level | `priority_level` | Incident may set `critical_facility=true` |
+| --- | --- | --- |
+| Level 1 | `critical` | Yes |
+| Level 2 | `high` | Yes |
+| Level 3 | `medium` | Yes |
+
+Generated facility names combine a municipality with an approved generic catalog suffix;
+they do not assert a real operational facility identity. Facility rows are seeded and
+stable within a generated scenario or timeline. Timeline arrivals derive critical impact
+from the snapshot-1 facility index, and every snapshot is validated against that index.
+
+Topology coverage remains a strict generated-scenario contract. It is not yet a runtime
+activation requirement for all legacy fixtures because their fictional topology coverage
+is documented as incomplete. Tightening that compatibility rule requires a separate fixture
+normalization and owner-review step.
+
 ## Core Target Entities
 
 ### Incident
