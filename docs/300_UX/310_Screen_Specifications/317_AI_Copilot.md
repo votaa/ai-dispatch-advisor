@@ -92,6 +92,13 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   only, and compatible with the existing API envelope and safe Markdown renderer. See the
   [POC Feedback Log](../../004_POC_Feedback_Log.md).
 
+- **POC-021 — Deterministic incident severity counts:** Route severity-count questions to
+  the complete active incident collection rather than grounded AI's bounded context. Support
+  `critical`, `high`, `medium`, and `low`, return the exact total in `local_query` mode,
+  bypass the provider, and use bounded examples with incident evidence when detail is useful.
+  Coordinate this with the deterministic crew count/filter scope in `POC-014` as one shared
+  aggregate-query work package while preserving separate incident and crew acceptance tests.
+
 ## Acceptance Criteria
 
 - Prompt examples are visible
