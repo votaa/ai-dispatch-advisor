@@ -185,6 +185,20 @@ AIDA_COPILOT_MAX_CONTEXT_RECORDS=<bounded value>
 
 ## Grounded Context and Model Behavior
 
+The grounded Ollama system prompt includes a POC-specific RACE instruction section
+(Role, Actions, Context, and Expectations). It frames the model as an experienced
+distribution-system operator for outage restoration and major-storm response, while
+requiring it to explain supplied deterministic recommendations, prioritize life safety
+and critical facilities, distinguish facts from assessment, remain advisory-only, and
+refuse unsupported claims. The section is added only to grounded provider calls; local
+deterministic queries and the existing rule-based fallback are unchanged. The separate
+grounding and Markdown-formatting sections remain in the final prompt in that order.
+
+These instructions are explicitly POC-specific and use synthetic scenario data. They
+must be reviewed and revised before production use with real operational data, including
+review of approved restoration priorities, terminology, provenance, security, privacy,
+retention, provider-use requirements, and representative real-data acceptance scenarios.
+
 The context builder may include only records relevant to the question from:
 
 - Active scenario metadata.

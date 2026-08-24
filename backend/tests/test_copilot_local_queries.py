@@ -2,8 +2,22 @@ from datetime import date
 from pathlib import Path
 
 from app import data_loader
+from app.copilot_provider import CopilotGenerationRequest, CopilotGenerationResult
 from app.scenario_generator import generate_copilot_demo_scenario, write_scenario
 from app.services import build_services
+
+
+class RecordingProvider:
+    def __init__(self) -> None:
+        self.requests: list[CopilotGenerationRequest] = []
+
+    def generate(self, request: CopilotGenerationRequest) -> CopilotGenerationResult:
+        self.requests.append(request)
+        return CopilotGenerationResult(
+            answer="Grounded provider summary.",
+            provider="fake",
+            model="fake-v1",
+        )
 
 
 def _copilot_services(tmp_path: Path, monkeypatch):
@@ -135,3 +149,29 @@ def test_action_oriented_question_does_not_execute_a_dispatch_action(
     assert response.safety_note == (
         "This copilot response is advisory and does not execute dispatch actions."
     )
+
+
+def test_deterministic_queries_bypass_provider_and_grounded_queries_receive_race_prompt(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    provider = RecordingProvider()
+    scenario = generate_copilot_demo_scenario(start_date=date(2026, 8, 21))
+    write_scenario(scenario, tmp_path)
+    monkeypatch.setattr(data_loader, "DATA_ROOT", tmp_path)
+    data_loader.set_active_scenario(scenario.scenario_id)
+    services = build_services(copilot_provider=provider)
+    incident = services.incidents.list_ranked()[0]
+
+    local_response = services.copilot.respond(
+        "Which crew should handle this incident?", incident.incident_id
+    )
+    assert local_response.execution_mode == "local_query"
+    assert provider.requests == []
+
+    grounded_response = services.copilot.respond(
+        "Summarize the operational concerns for this storm.", incident.incident_id
+    )
+    assert grounded_response.execution_mode == "llm_grounded"
+    assert len(provider.requests) == 1
+    assert "POC-specific RACE instructions" in provider.requests[0].system_prompt
