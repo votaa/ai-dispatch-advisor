@@ -276,6 +276,29 @@ describe("application states and scenario switching", () => {
     ]);
   });
 
+  it("preserves backend priority order in the dashboard queue", async () => {
+    const lowerPriorityIncident = {
+      ...baseIncident,
+      incident_id: "INC-2002",
+      municipality: "Southport",
+      severity: "low",
+      customers_out: 1
+    };
+    const rankedIncidents = [lowerPriorityIncident, baseIncident];
+    apiMocks.incidents.mockResolvedValue(rankedIncidents);
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 8,
+      top_incidents: rankedIncidents
+    });
+    render(<App />);
+
+    const queue = await screen.findByRole("table");
+    const queueText = queue.textContent ?? "";
+    expect(queueText.indexOf("Southport")).toBeGreaterThanOrEqual(0);
+    expect(queueText.indexOf("Southport")).toBeLessThan(queueText.indexOf("Millbrook"));
+  });
+
   it("shows a bounded dashboard priority limit and updates the label", async () => {
     const dashboardIncidents = Array.from({ length: 25 }, (_, index) => ({
       ...baseIncident,

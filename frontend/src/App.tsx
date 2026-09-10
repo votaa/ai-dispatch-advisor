@@ -508,6 +508,8 @@ function App() {
                   key={`dashboard-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                   selectedIncidentId={selectedIncidentId}
                   searchLabel={`Search Top ${dashboardIncidentLimit} Incidents Shown`}
+                  preserveOrder
+                  syncSelectionToFirst
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
                 />
@@ -550,6 +552,7 @@ function App() {
                 incidents={incidents}
                 key={`dispatch-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
+                syncSelectionToFirst
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
               />
@@ -1211,15 +1214,19 @@ function CrewBoard({
 function IncidentTable({
   emptyMessage,
   incidents,
+  preserveOrder = false,
   searchLabel,
   selectedIncidentId,
+  syncSelectionToFirst = false,
   tableLabel,
   onSelect
 }: {
   emptyMessage: string;
   incidents: Incident[];
+  preserveOrder?: boolean;
   searchLabel?: string;
   selectedIncidentId?: string;
+  syncSelectionToFirst?: boolean;
   tableLabel: string;
   onSelect: (incidentId: string, trigger?: HTMLButtonElement) => void;
 }) {
@@ -1228,6 +1235,7 @@ function IncidentTable({
   const [region, setRegion] = useState("all");
   const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
   const [page, setPage] = useState(0);
+  const lastSyncedFirstIncidentRef = useRef<string | undefined>(undefined);
 
   const regions = useMemo(
     () => Array.from(new Set([...incidents.map((incident) => incident.region), ...(region !== "all" ? [region] : [])])).sort(),
@@ -1276,6 +1284,7 @@ function IncidentTable({
         if (sort.key === "etr") comparison = left.etr.localeCompare(right.etr, undefined, { numeric: true });
         return comparison * direction || left.incident_id.localeCompare(right.incident_id);
       }
+      if (preserveOrder) return 0;
       return (
         (severityRank[right.severity.toLowerCase()] ?? 0) - (severityRank[left.severity.toLowerCase()] ?? 0) ||
         right.customers_out - left.customers_out ||
@@ -1289,7 +1298,16 @@ function IncidentTable({
         region: facetCountsFor(regionEligible, (incident) => incident.region)
       }
     };
-  }, [incidents, query, region, severity, sort]);
+  }, [incidents, preserveOrder, query, region, severity, sort]);
+
+  useEffect(() => {
+    const firstVisibleIncident = filteredIncidents[0];
+    if (syncSelectionToFirst && firstVisibleIncident && lastSyncedFirstIncidentRef.current !== firstVisibleIncident.incident_id) {
+      lastSyncedFirstIncidentRef.current = firstVisibleIncident.incident_id;
+      onSelect(firstVisibleIncident.incident_id);
+    }
+  }, [filteredIncidents, onSelect, syncSelectionToFirst]);
+
   const { containerRef, pageSize } = useFittedPageSize({
     fallbackPageSize: 50,
     itemCount: filteredIncidents.length,
