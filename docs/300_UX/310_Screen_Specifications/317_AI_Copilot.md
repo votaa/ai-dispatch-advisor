@@ -78,26 +78,19 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - Keep dense operational data readable at expected dispatcher workstation sizes.
 - Provide visible focus and confirmation states for user actions.
 
+## Completed POC Enhancements
+
+- **POC-014 — Deterministic Crew Board queries:** Crew ID/name, status, capability, region,
+  location, shift hours, storm readiness, assigned incidents, counts, combined filters, and
+  bounded evidence-backed results are handled locally without provider calls.
+- **POC-020 — Deterministic local-response readability:** Local answers now use concise semantic
+  Markdown with totals first, bounded shown-versus-total results, expandable evidence, and
+  incident-to-facility correlation for critical-facility questions.
+- **POC-021 — Deterministic incident severity counts:** Critical, high, medium, and low severity
+  counts are calculated from the complete active scenario in `local_query` mode, with bounded
+  examples and incident evidence.
+
 ## Open POC TODOs
-
-- **POC-020 — Deterministic local-response readability:** Format non-LLM `local_query`
-  answers as concise, semantic Markdown rather than dense inline text. Show totals first,
-  organize facts into short sections, bound large visible result lists with an explicit
-  shown-versus-total count, and retain complete evidence in the expandable Evidence section.
-  For the critical-facility count query, display each incident ESD ID, village/municipality,
-  and feeder together with its matched facility ID/name, type, and priority; preserve
-  one-to-many matches and identify unmatched incidents explicitly rather than showing two
-  disconnected lists.
-  This must remain deterministic, provider-free, grounded in the active scenario, advisory
-  only, and compatible with the existing API envelope and safe Markdown renderer. See the
-  [POC Feedback Log](../../004_POC_Feedback_Log.md).
-
-- **POC-021 — Deterministic incident severity counts:** Route severity-count questions to
-  the complete active incident collection rather than grounded AI's bounded context. Support
-  `critical`, `high`, `medium`, and `low`, return the exact total in `local_query` mode,
-  bypass the provider, and use bounded examples with incident evidence when detail is useful.
-  Coordinate this with the deterministic crew count/filter scope in `POC-014` as one shared
-  aggregate-query work package while preserving separate incident and crew acceptance tests.
 
 ## Acceptance Criteria
 
