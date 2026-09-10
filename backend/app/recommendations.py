@@ -108,7 +108,9 @@ def dashboard_summary(
             for row in ranked_incidents
             if str(row.get("severity")).lower() in {"critical", "high"}
         ),
-        "top_incidents": ranked_incidents[:5],
+        # The dashboard supports a bounded client-side display limit up to 50.
+        # Keep the API payload bounded while allowing the UI to choose 5/10/25/50.
+        "top_incidents": ranked_incidents[:50],
         "scenario": scenario_id,
         "data_freshness": "Synthetic demo data loaded at backend startup",
     }

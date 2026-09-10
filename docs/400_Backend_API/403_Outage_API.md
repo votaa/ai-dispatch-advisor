@@ -144,7 +144,7 @@ Returns outage operations summary metrics for the dashboard.
 | `assigned_crews` | Count of assigned crews |
 | `critical_facility_incidents` | Count of incidents affecting critical facilities |
 | `high_priority_incidents` | Count of high and critical incidents |
-| `top_incidents` | Ranked incident subset |
+| `top_incidents` | Up to 50 ranked incidents for the dashboard display-limit selector |
 | `scenario` | Demo scenario label |
 | `data_freshness` | Current demo freshness note |
 

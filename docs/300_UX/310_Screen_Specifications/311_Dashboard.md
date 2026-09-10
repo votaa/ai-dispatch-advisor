@@ -28,7 +28,7 @@ Distribution Dispatcher, Dispatch Supervisor
 - Available crews metric
 - Critical facility event metric
 - Top incidents table with a visible shown-versus-total count
-- Labeled `Incidents shown` selector with options 5, 10, 25, and 50
+- Labeled `Incidents shown` selector with options 25%, 50%, 75%, and 100%
 - Recommendation summary panel
 
 ## User Actions
@@ -68,26 +68,26 @@ No dashboard-only audit required for the POC. Future audit may record recommenda
 - Provide visible focus and confirmation states for user actions.
 - Use a native or equivalently accessible select control for the incident display limit; disabled options must remain visibly distinguishable and programmatically unavailable.
 
-## Open POC TODOs
+## POC-022 Implementation Notes
 
-- **POC-022 — Dashboard priority incident display limit:** Rename the current fixed panel
-  from `Priority Dispatch Queue` to `Top 5 Priority Incidents` so the five-record subset is
-  explicit. As a follow-on enhancement, add a compact labeled `Incidents shown` dropdown
-  with 5, 10, 25, and 50 options and update the panel label to match the selected limit.
-- Disable and visually gray out limits greater than the active scenario's total incident
-  count. Show all incidents and disable the selector when the total is below 5. When a
-  scenario switch invalidates the selected limit, reset it to the largest enabled option.
-- Keep the rows in deterministic priority order and show `Showing <displayed> of <total>`
-  so the subset is never mistaken for the complete active-incident collection.
+- **POC-022 — Dashboard priority incident display limit:** Implemented with an accessible
+  `Incidents shown` dropdown (25%, 50%, 75%, 100%). The selected percentage is converted
+  to a bounded incident count, and both the panel and search labels reflect that count,
+  for example `Top 500 Priority Incidents` and `Search Top 500 Incidents Shown` for 2,000
+  active incidents. The Dashboard uses the full active incident collection already loaded
+  by the application, preserves deterministic order and pagination, and shows
+  `Showing <displayed> of <total>` so the subset is never mistaken for the full collection.
+- Empty scenarios show `All 0 Priority Incidents` and disable the selector. Percentage
+  choices naturally remain bounded by the active total, including small scenarios.
 
 ## Acceptance Criteria
 
 - Metrics load from backend data
-- The fixed implementation is labeled `Top 5 Priority Incidents`
+- The default implementation is labeled `Top 5 Priority Incidents`
 - Top incidents display in deterministic priority order
-- The enhanced selector offers 5, 10, 25, and 50 and disables limits above the active-incident total
-- The enhanced panel label and shown-versus-total text update with the effective display limit
-- Small, empty, and scenario-switch states never leave the selector on an invalid value
+- The enhanced selector offers 25%, 50%, 75%, and 100% and computes a count from the active-incident total
+- The enhanced panel and search labels update with the effective display count
+- Empty and small scenarios remain bounded and never display more records than exist
 - Selecting an incident updates recommendation context
 - Dashboard is usable as first screen
 

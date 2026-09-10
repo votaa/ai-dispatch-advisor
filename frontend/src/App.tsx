@@ -69,6 +69,7 @@ const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
 ];
 
 const SIDEBAR_STORAGE_KEY = "aida.ui.sidebar-width.v1";
+const DASHBOARD_DISPLAY_PERCENTAGES = [25, 50, 75, 100] as const;
 
 function initialSidebarWidth() {
   try {
@@ -104,6 +105,7 @@ function App() {
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const [incidentDetailOpen, setIncidentDetailOpen] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+  const [dashboardDisplayPercentage, setDashboardDisplayPercentage] = useState<number>(25);
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [crews, setCrews] = useState<Crew[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -187,6 +189,18 @@ function App() {
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
   const operationalDataUnavailable = Boolean(error && !dashboard && incidents.length === 0 && crews.length === 0);
+  const dashboardIncidentLimit = dashboard
+    ? dashboard.active_incidents === 0
+      ? 0
+      : Math.min(
+          dashboard.active_incidents,
+          Math.max(1, Math.ceil((dashboard.active_incidents * dashboardDisplayPercentage) / 100)),
+          incidents.length || dashboard.top_incidents.length
+        )
+    : 0;
+  const dashboardIncidentLabel = dashboard && dashboard.active_incidents === 0
+    ? `All ${dashboard.active_incidents} Priority Incidents`
+    : `Top ${dashboardIncidentLimit} Priority Incidents`;
 
   useEffect(() => {
     if (incidentDetailOpen && !incidentDetail) {
@@ -442,7 +456,7 @@ function App() {
         ) : (
           <section className="dashboard-view">
             <div className="metric-grid">
-              <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
+              <Metric className="metric-customers-out" label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
               <Metric label="Active Incidents" value={dashboard.active_incidents} />
               <Metric label="Available Crews" value={dashboard.available_crews} />
               <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
@@ -453,26 +467,47 @@ function App() {
               <section className="panel">
                 <PanelTitle
                   action={(
-                    <button
-                      aria-controls="recommendations-sheet"
-                      aria-expanded={recommendationsOpen}
-                      aria-label="Open recommendations"
-                      className="panel-title-action"
-                      onClick={() => setRecommendationsOpen(true)}
-                      ref={recommendationTriggerRef}
-                      type="button"
-                    >
-                      Recommendations
-                    </button>
+                    <div className="dashboard-panel-actions">
+                      <label>
+                        Search Top {dashboardIncidentLimit} Incidents Shown
+                        <select
+                          aria-label="Dashboard incidents shown"
+                          disabled={dashboard.active_incidents === 0}
+                          onChange={(event) => setDashboardDisplayPercentage(Number(event.target.value))}
+                          value={dashboardDisplayPercentage}
+                        >
+                          {DASHBOARD_DISPLAY_PERCENTAGES.map((percentage) => (
+                            <option key={percentage} value={percentage}>
+                              {percentage}%
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        aria-controls="recommendations-sheet"
+                        aria-expanded={recommendationsOpen}
+                        aria-label="Open recommendations"
+                        className="panel-title-action"
+                        onClick={() => setRecommendationsOpen(true)}
+                        ref={recommendationTriggerRef}
+                        type="button"
+                      >
+                        Recommendations
+                      </button>
+                    </div>
                   )}
                   icon={AlertTriangle}
-                  title="Priority Dispatch Queue"
+                  title={dashboardIncidentLabel}
                 />
+                <p className="dashboard-incident-summary" aria-live="polite">
+                  Showing {dashboardIncidentLimit} of {dashboard.active_incidents} active incidents
+                </p>
                 <IncidentTable
                   emptyMessage="No priority incidents are active in this scenario."
-                  incidents={dashboard.top_incidents}
+                  incidents={(incidents.length ? incidents : dashboard.top_incidents).slice(0, dashboardIncidentLimit)}
                   key={`dashboard-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                   selectedIncidentId={selectedIncidentId}
+                  searchLabel={`Search Top ${dashboardIncidentLimit} Incidents Shown`}
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
                 />
@@ -757,9 +792,9 @@ function App() {
   );
 }
 
-function Metric({ label, value }: { label: string; value: string | number }) {
+function Metric({ className, label, value }: { className?: string; label: string; value: string | number }) {
   return (
-    <section className="metric">
+    <section className={`metric${className ? ` ${className}` : ""}`}>
       <span>{label}</span>
       <strong>{value}</strong>
     </section>
@@ -1176,12 +1211,14 @@ function CrewBoard({
 function IncidentTable({
   emptyMessage,
   incidents,
+  searchLabel,
   selectedIncidentId,
   tableLabel,
   onSelect
 }: {
   emptyMessage: string;
   incidents: Incident[];
+  searchLabel?: string;
   selectedIncidentId?: string;
   tableLabel: string;
   onSelect: (incidentId: string, trigger?: HTMLButtonElement) => void;
@@ -1291,9 +1328,9 @@ function IncidentTable({
     <div className="incident-table" ref={containerRef}>
       <div className="incident-table-controls" aria-label={`${tableLabel} filters`} role="group">
         <label>
-          Search
+          {searchLabel ?? "Search"}
           <input
-            aria-label={`${tableLabel} search`}
+            aria-label={searchLabel ?? `${tableLabel} search`}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="ID, municipality, feeder, or hazard"
             type="search"

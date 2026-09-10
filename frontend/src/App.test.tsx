@@ -232,7 +232,7 @@ describe("application states and scenario switching", () => {
       severity: "high"
     };
     apiMocks.incidents.mockResolvedValue([baseIncident, secondIncident]);
-    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), top_incidents: [baseIncident, secondIncident] });
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), active_incidents: 8, top_incidents: [baseIncident, secondIncident] });
     apiMocks.optimize.mockImplementation(async (incidentId: string) => ({
       ...recommendation,
       incident_id: incidentId,
@@ -260,7 +260,8 @@ describe("application states and scenario switching", () => {
       municipality: "Southport",
       customers_out: 250
     };
-    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), top_incidents: [baseIncident, secondIncident] });
+    apiMocks.incidents.mockResolvedValue([baseIncident, secondIncident]);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), active_incidents: 8, top_incidents: [baseIncident, secondIncident] });
     const { container } = render(<App />);
 
     const compactSort = await screen.findByLabelText("Priority dispatch queue compact sort") as HTMLSelectElement;
@@ -273,6 +274,48 @@ describe("application states and scenario switching", () => {
       "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR",
       "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR"
     ]);
+  });
+
+  it("shows a bounded dashboard priority limit and updates the label", async () => {
+    const dashboardIncidents = Array.from({ length: 25 }, (_, index) => ({
+      ...baseIncident,
+      incident_id: `INC-${String(index + 1).padStart(4, "0")}`
+    }));
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 25,
+      top_incidents: dashboardIncidents
+    });
+    apiMocks.incidents.mockResolvedValue(dashboardIncidents);
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Top 7 Priority Incidents" })).toBeTruthy();
+    const limit = screen.getByLabelText("Dashboard incidents shown") as HTMLSelectElement;
+    expect(selectOption(limit, "100")?.disabled).toBe(false);
+    expect(screen.getByRole("searchbox", { name: "Search Top 7 Incidents Shown" })).toBeTruthy();
+
+    fireEvent.change(limit, { target: { value: "100" } });
+    expect(await screen.findByRole("heading", { name: "Top 25 Priority Incidents" })).toBeTruthy();
+    expect(screen.getByText("Showing 25 of 25 active incidents")).toBeTruthy();
+  });
+
+  it("gives the Customers Out metric room for comma-formatted totals", async () => {
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), customers_out: 1_000_000 });
+    render(<App />);
+
+    const customersLabel = await screen.findByText("Customers Out");
+    expect(customersLabel.closest(".metric")?.classList.contains("metric-customers-out")).toBe(true);
+    expect(screen.getByText("1,000,000")).toBeTruthy();
+  });
+
+  it("shows all incidents and disables the dashboard limit for small scenarios", async () => {
+    apiMocks.dashboard.mockResolvedValue(emptyDashboard("base"));
+    apiMocks.incidents.mockResolvedValue([]);
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "All 0 Priority Incidents" })).toBeTruthy();
+    expect(screen.getByLabelText("Dashboard incidents shown")).toHaveProperty("disabled", true);
+    expect(screen.getByText("Showing 0 of 0 active incidents")).toBeTruthy();
   });
 
   it("filters and sorts Crew Board cards while showing crew IDs", async () => {
@@ -374,7 +417,7 @@ describe("application states and scenario switching", () => {
     apiMocks.incidents.mockResolvedValue(facetedIncidents);
     apiMocks.dashboard.mockResolvedValue({
       ...dashboard("base"),
-      active_incidents: facetedIncidents.length,
+      active_incidents: 16,
       top_incidents: facetedIncidents
     });
     render(<App />);
