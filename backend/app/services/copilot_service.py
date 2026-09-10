@@ -103,6 +103,9 @@ class CopilotService:
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
 
+        severity = self._resolve_severity(normalized)
+        if severity is not None and self._is_severity_count_query(normalized):
+            return self._incident_severity_count(severity, incidents)
         if self._is_area_incident_query(normalized):
             return self._area_incidents(message, incidents)
         if self._has_any(normalized, "county", "township", "village", "geography", "located"):
@@ -131,6 +134,10 @@ class CopilotService:
             return self._critical_facilities(message, selected, incidents)
         if self._has_any(normalized, "what incident", "focus first", "priority", "prioritize", "next"):
             return self._priority_focus(incidents)
+        if self._is_crew_query(normalized):
+            if self._has_any(normalized, "how many crews", "crews available", "crew status", "resources available") and not self._has_crew_filters(normalized):
+                return self._crew_status()
+            return self._crew_query(message, normalized)
         if self._has_any(normalized, "how many crews", "crews available", "crew status", "resources available"):
             return self._crew_status()
         if self._has_any(
@@ -318,14 +325,157 @@ class CopilotService:
         )
 
     def _crew_status(self) -> ChatResponse:
-        summary = self._recommendations.dashboard()
+        crews = self._crews.list()
+        available = [crew for crew in crews if crew.status.casefold() == "available"]
+        assigned = [crew for crew in crews if crew.assigned_incidents]
         return self._response(
             answer=(
-                f"{summary.available_crews} crews are available and "
-                f"{summary.assigned_crews} are assigned in scenario {summary.scenario}."
+                f"## Crew availability\n\n"
+                f"{len(available)} crews are available and {len(assigned)} are assigned "
+                f"in scenario {self._active_scenario_id()}."
             ),
             intent="crew_status",
-            evidence=[self._evidence("dashboard", summary.scenario, "Crew availability summary")],
+            evidence=[
+                self._evidence("dashboard", self._active_scenario_id(), "Crew availability summary"),
+                *[
+                    self._evidence("crew", crew.crew_id, crew.crew_name)
+                    for crew in crews
+                ],
+            ],
+        )
+
+    @staticmethod
+    def _resolve_severity(normalized: str) -> str | None:
+        for severity in ("critical", "high", "medium", "low"):
+            if re.search(rf"\b{severity}\b", normalized):
+                return severity
+        return None
+
+    @classmethod
+    def _is_severity_count_query(cls, normalized: str) -> bool:
+        return (
+            ("incident" in normalized or "outage" in normalized)
+            and any(term in normalized for term in ("how many", "count", "number of", "total"))
+            and ("severity" in normalized or cls._resolve_severity(normalized) is not None)
+            and "critical facilit" not in normalized
+        )
+
+    def _incident_severity_count(self, severity: str, incidents: list[Incident]) -> ChatResponse:
+        matches = [incident for incident in incidents if incident.severity.casefold() == severity]
+        shown = matches[:10]
+        if matches:
+            answer = (
+                f"{len(matches)} active incident(s) have **{severity}** severity.\n\n"
+                f"### Examples (showing {len(shown)} of {len(matches)})\n\n"
+                "| ESD ID | Village | Feeder | Customers out | Status |\n"
+                "| --- | --- | --- | ---: | --- |\n"
+                + "\n".join(
+                    f"| {incident.incident_id} | {incident.municipality} | {incident.feeder} | "
+                    f"{incident.customers_out:,} | {incident.status} |"
+                    for incident in shown
+                )
+            )
+        else:
+            answer = f"0 active incident(s) have **{severity}** severity in the current scenario."
+        return self._response(
+            answer=answer,
+            intent="incident_severity_counts",
+            evidence=[
+                self._evidence("incident", incident.incident_id, incident.municipality)
+                for incident in matches
+            ],
+        )
+
+    @staticmethod
+    def _is_crew_query(normalized: str) -> bool:
+        return "crew" in normalized and any(
+            term in normalized
+            for term in (
+                "how many", "which", "what", "who", "list", "show", "available",
+                "assigned", "storm ready", "storm-ready", "capability", "region",
+                "location", "shift", "status", "not ready",
+            )
+        )
+
+    @staticmethod
+    def _has_crew_filters(normalized: str) -> bool:
+        return any(
+            term in normalized
+            for term in (
+                "assigned", "storm ready", "storm-ready", "not ready", "capability",
+                "region", "location", "shift", "line", "vegetation", "low voltage",
+            )
+        )
+
+    def _crew_query(self, message: str, normalized: str) -> ChatResponse:
+        crews = self._crews.list()
+        filtered = crews
+        filters: list[str] = []
+        for crew in crews:
+            if _contains_phrase(message, crew.crew_id) or _contains_phrase(message, crew.crew_name):
+                filtered = [row for row in filtered if row.crew_id == crew.crew_id]
+                filters.append(crew.crew_id)
+                break
+        if "not storm ready" in normalized or "not storm-ready" in normalized or "not ready" in normalized:
+            filtered = [crew for crew in filtered if not crew.storm_ready]
+            filters.append("not storm-ready")
+        elif "storm ready" in normalized or "storm-ready" in normalized:
+            filtered = [crew for crew in filtered if crew.storm_ready]
+            filters.append("storm-ready")
+        status = next((value for value in ("available", "assigned") if value in normalized), None)
+        if status:
+            filtered = [crew for crew in filtered if crew.status.casefold() == status]
+            filters.append(status)
+        incident_ids = re.findall(r"\b(?:esd|inc)-[a-z0-9-]+\b", normalized, flags=re.IGNORECASE)
+        if incident_ids:
+            incident_id = incident_ids[0].upper()
+            filtered = [
+                crew
+                for crew in filtered
+                if any(row.incident_id.casefold() == incident_id.casefold() for row in crew.assigned_incidents)
+            ]
+            filters.append(f"assigned to {incident_id}")
+        shift_match = re.search(
+            r"\b(under|less than|below|fewer than|over|more than|above)\s+(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|hr)\b",
+            normalized,
+        )
+        if shift_match:
+            operator, value_text = shift_match.groups()
+            threshold = float(value_text)
+            if operator in {"under", "less than", "below", "fewer than"}:
+                filtered = [crew for crew in filtered if crew.shift_remaining_hours < threshold]
+                filters.append(f"shift < {value_text} hr")
+            else:
+                filtered = [crew for crew in filtered if crew.shift_remaining_hours > threshold]
+                filters.append(f"shift > {value_text} hr")
+        for crew in crews:
+            for value in (crew.capability, crew.home_region, crew.current_location):
+                if _contains_phrase(message, value):
+                    filtered = [row for row in filtered if value.casefold() in {
+                        row.capability.casefold(), row.home_region.casefold(), row.current_location.casefold()
+                    }]
+                    filters.append(value)
+                    break
+        shown = filtered[:10]
+        qualifier = ", ".join(filters) if filters else "all"
+        if not filtered:
+            answer = f"## Crew query\n\n0 crews match ({qualifier})."
+        else:
+            answer = (
+                f"## Crew query\n\n{len(filtered)} crew(s) match ({qualifier}).\n\n"
+                f"### Results (showing {len(shown)} of {len(filtered)})\n\n"
+                "| Crew | Status | Capability | Region | Storm-ready | Assigned |\n"
+                "| --- | --- | --- | --- | --- | ---: |\n"
+                + "\n".join(
+                    f"| {crew.crew_name} ({crew.crew_id}) | {crew.status} | {crew.capability} | "
+                    f"{crew.home_region} | {'Yes' if crew.storm_ready else 'No'} | {len(crew.assigned_incidents)} |"
+                    for crew in shown
+                )
+            )
+        return self._response(
+            answer=answer,
+            intent="crew_query",
+            evidence=[self._evidence("crew", crew.crew_id, crew.crew_name) for crew in filtered],
         )
 
     def _recommended_crew(self, incident: Incident | None) -> ChatResponse:
@@ -538,14 +688,6 @@ class CopilotService:
                 intent="critical_facilities",
                 evidence=[],
             )
-        incident_summary = "; ".join(
-            f"{incident.incident_id} ({incident.municipality})"
-            for incident in critical_incidents
-        )
-        facility_summary = "; ".join(
-            f"{row['facility_name']} ({row['facility_type']}, {row['municipality']})"
-            for row in facilities
-        )
         matched_keys = {
             (str(row.get("region")), str(row.get("feeder"))) for row in facilities
         }
@@ -556,14 +698,37 @@ class CopilotService:
         ]
         answer_parts = [
             f"{len(critical_incidents)} incident(s) are marked with critical-facility impact: "
-            f"{incident_summary}.",
-            (
-                f"Matched facility records: {facility_summary}."
-                if facilities
-                else "Matched facility records: none."
-            ),
+            + "; ".join(
+                f"{incident.incident_id} ({incident.municipality})"
+                for incident in critical_incidents[:10]
+            )
+            + (f" (showing 10 of {len(critical_incidents)})" if len(critical_incidents) > 10 else "")
+            + ".",
+            "",
+            f"### Matched facility records: ({len(facilities)})",
+            "",
+            "| ESD ID | Village | Feeder | Facility ID / name | Type | Priority |",
+            "| --- | --- | --- | --- | --- | --- |",
         ]
+        facilities_by_key: dict[tuple[str, str], list[dict[str, object]]] = {}
+        for row in facilities:
+            facilities_by_key.setdefault(
+                (str(row.get("region")), str(row.get("feeder"))), []
+            ).append(row)
+        for incident in critical_incidents:
+            rows = facilities_by_key.get((incident.region, incident.feeder), [])
+            if not rows:
+                continue
+            for row in rows:
+                answer_parts.append(
+                    f"| {incident.incident_id} | {incident.municipality} | {incident.feeder} | "
+                    f"{row.get('facility_id', 'Unknown')} / {row.get('facility_name', 'Unknown')} | "
+                    f"{row.get('facility_type', 'Unknown')} | {row.get('priority_level', 'Unknown')} |"
+                )
+        if not facilities:
+            answer_parts.append("| None | — | — | No matching facility record | — | — |")
         if unmatched:
+            answer_parts.extend(["", "### Unmatched incidents", ""])
             answer_parts.append(
                 "Data limitation: no matching facility record was found for "
                 + "; ".join(
@@ -573,7 +738,7 @@ class CopilotService:
                 + "."
             )
         return self._response(
-            answer=" ".join(answer_parts),
+            answer="\n".join(answer_parts),
             intent="critical_facilities",
             evidence=[
                 self._evidence(

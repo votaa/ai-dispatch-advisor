@@ -151,6 +151,64 @@ def test_geography_and_external_fact_gaps_are_not_inferred(
     assert geography.warning == "No geographic hierarchy was inferred from model knowledge."
 
 
+def test_severity_counts_use_complete_scenario_and_markdown_examples(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    incidents = services.incidents.list_ranked()
+    expected = sum(incident.severity.casefold() == "low" for incident in incidents)
+
+    response = services.copilot.respond("How many severity Low incidents?")
+
+    assert response.intent == "incident_severity_counts"
+    assert response.execution_mode == "local_query"
+    assert response.provider is None
+    assert response.answer.startswith(f"{expected} active incident(s) have **low** severity.")
+    assert "### Examples" in response.answer
+    assert len(response.evidence) == expected
+
+
+def test_crew_queries_support_combined_filters_and_bound_visible_results(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    crews = services.crews.list()
+    expected = [
+        crew
+        for crew in crews
+        if crew.status.casefold() == "available"
+        and not crew.storm_ready
+        and crew.home_region == "Central-Nassau"
+    ]
+
+    response = services.copilot.respond(
+        "How many available crews are not storm ready in Central-Nassau?"
+    )
+
+    assert response.intent == "crew_query"
+    assert response.execution_mode == "local_query"
+    assert response.answer.startswith(f"## Crew query\n\n{len(expected)} crew(s) match")
+    assert "Results (showing" in response.answer
+    assert len(response.evidence) == len(expected)
+
+
+def test_crew_query_can_target_id_and_shift_hours(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    crew = services.crews.list()[0]
+    response = services.copilot.respond(
+        f"Show crew {crew.crew_id} with more than 1 hour shift remaining"
+    )
+
+    assert response.intent == "crew_query"
+    assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
+    assert crew.crew_id in response.answer
+
+
 def test_action_oriented_question_does_not_execute_a_dispatch_action(
     tmp_path: Path,
     monkeypatch,
