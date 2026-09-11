@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi.testclient import TestClient
@@ -91,6 +92,7 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
         "execution_mode",
         "scenario_id",
         "generated_at",
+        "request_time",
         "evidence",
     }.issubset(schema["components"]["schemas"]["ChatResponse"]["properties"])
 
@@ -220,6 +222,15 @@ def test_chat_preserves_existing_fields_and_adds_local_evidence_metadata() -> No
     assert payload["execution_mode"] == "local_query"
     assert payload["scenario_id"] == "base"
     assert payload["generated_at"]
+    request_time = payload["request_time"]
+    parsed_request_time = datetime.fromisoformat(request_time["received_at"].replace("Z", "+00:00"))
+    assert parsed_request_time.utcoffset() is not None
+    assert request_time == {
+        "received_at": request_time["received_at"],
+        "timezone": "UTC",
+        "source": "backend_server_clock",
+        "clock_skew": "not_measured",
+    }
     assert payload["evidence"][0]["source_type"] == "dashboard"
 
 

@@ -51,6 +51,7 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 - County, Township, and Village registry
 - Deterministic crew-to-incident distance and estimated travel time
 - Scenario and data-snapshot timestamps
+- Server-authoritative request time with clock provenance and explicit skew status
 - Bounded evidence references and response execution mode
 
 ## Backend and API Dependencies
@@ -82,13 +83,19 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 
 - **POC-014 — Deterministic Crew Board queries:** Crew ID/name, status, capability, region,
   location, shift hours, storm readiness, assigned incidents, counts, combined filters, and
-  bounded evidence-backed results are handled locally without provider calls.
+  bounded evidence-backed results are handled locally without provider calls. Explicit incident
+  IDs and “this/selected incident” assignment questions return every currently assigned crew for
+  that incident and remain distinct from available-crew recommendation questions.
 - **POC-020 — Deterministic local-response readability:** Local answers now use concise semantic
   Markdown with totals first, bounded shown-versus-total results, expandable evidence, and
   incident-to-facility correlation for critical-facility questions.
 - **POC-021 — Deterministic incident severity counts:** Critical, high, medium, and low severity
   counts are calculated from the complete active scenario in `local_query` mode, with bounded
   examples and incident evidence.
+- **POC-017 — Temporal Copilot context:** Every new response and grounded provider context carries
+  the server-received request time in UTC with `backend_server_clock` provenance and clock skew
+  explicitly marked as `not_measured`. The response header displays the value in 24-hour UTC;
+  older responses without the optional field remain readable.
 
 ## Open POC TODOs
 
@@ -104,6 +111,7 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - County, Township, and Village answers resolve through the geographic registry
 - Distance and travel-time answers use the same deterministic values as recommendations
 - Response mode, evidence, data freshness, and advisory safety note are visible
+- Server-received request time is visible on each new response and absent from the editable composer
 - Provider failure produces an explicit unavailable warning and rule-based fallback when supported
 - Conversation history is readable
 - Copilot cannot execute or mutate a dispatch decision or assignment

@@ -741,7 +741,14 @@ function App() {
               ) : (
                 chatTurns.map((turn, index) => (
                   <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>
-                    <strong className="copilot-question">{turn.question}</strong>
+                    <header className="copilot-response-header">
+                      <strong className="copilot-question">{turn.question}</strong>
+                      {turn.metadata?.request_time && (
+                        <time dateTime={turn.metadata.request_time.received_at}>
+                          Request Received {formatUtcDateTime(turn.metadata.request_time.received_at)}
+                        </time>
+                      )}
+                    </header>
                     {turn.error ? <p>{turn.answer}</p> : <CopilotMarkdown>{turn.answer}</CopilotMarkdown>}
                     {turn.metadata && (
                       <div className="copilot-metadata">
@@ -886,8 +893,13 @@ function ScenarioFreshnessLabel({ scenario }: { scenario: ScenarioDescriptor | n
 
 function formatScenarioFreshness(updatedAt?: string) {
   if (!updatedAt) return "Scenario Last Updated Unavailable";
-  const timestamp = new Date(updatedAt);
-  if (Number.isNaN(timestamp.getTime())) return "Scenario Last Updated Unavailable";
+  const formatted = formatUtcDateTime(updatedAt);
+  return formatted ? `Scenario Last Updated ${formatted}` : "Scenario Last Updated Unavailable";
+}
+
+function formatUtcDateTime(value: string) {
+  const timestamp = new Date(value);
+  if (Number.isNaN(timestamp.getTime())) return null;
   const parts = new Intl.DateTimeFormat("en-US", {
     day: "2-digit",
     hour: "2-digit",
@@ -897,8 +909,8 @@ function formatScenarioFreshness(updatedAt?: string) {
     timeZone: "UTC",
     year: "numeric"
   }).formatToParts(timestamp);
-  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
-  return `Scenario Last Updated ${value("month")}/${value("day")}/${value("year")} ${value("hour")}:${value("minute")} UTC`;
+  const partValue = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `${partValue("month")}/${partValue("day")}/${partValue("year")} ${partValue("hour")}:${partValue("minute")} UTC`;
 }
 
 function formatScenarioFreshnessSource(source: NonNullable<ScenarioDescriptor["freshness"]>["source"]) {

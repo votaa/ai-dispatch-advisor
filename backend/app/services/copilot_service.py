@@ -5,7 +5,7 @@ from collections import Counter
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
 
-from ..api_models import ChatResponse, CopilotEvidence
+from ..api_models import ChatResponse, CopilotEvidence, CopilotRequestTime
 from ..copilot_config import CopilotConfig
 from ..copilot_provider import (
     CopilotGenerationRequest,
@@ -86,6 +86,7 @@ class CopilotService:
         config: CopilotConfig,
         context_builder: CopilotContextBuilder,
         provider: CopilotProvider | None = None,
+        clock: Callable[[], datetime] | None = None,
     ) -> None:
         self._active_scenario_id = active_scenario_id
         self._incidents = incidents
@@ -97,8 +98,20 @@ class CopilotService:
         self._config = config
         self._context_builder = context_builder
         self._provider = provider
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
 
     def respond(self, message: str, incident_id: str | None = None, crew_id: str | None = None) -> ChatResponse:
+        request_time = CopilotRequestTime(received_at=self._server_time())
+        response = self._respond(message, incident_id, crew_id, request_time)
+        return response.model_copy(update={"request_time": request_time})
+
+    def _respond(
+        self,
+        message: str,
+        incident_id: str | None,
+        crew_id: str | None,
+        request_time: CopilotRequestTime,
+    ) -> ChatResponse:
         normalized = _normalized_text(message)
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
@@ -117,6 +130,8 @@ class CopilotService:
             return self._closest_feasible_crew(selected)
         if self._has_any(normalized, "how far", "distance", "travel time", "minutes away"):
             return self._travel_answer(message, selected)
+        if self._is_incident_assignment_query(message, normalized, selected):
+            return self._incident_assignments(selected)
         if self._has_any(normalized, "why not", "not selected", "not recommended", "another crew"):
             return self._crew_exclusion_answer(message, selected)
         if self._has_any(normalized, "why was", "why is", "why recommended", "recommendation rationale"):
@@ -161,14 +176,20 @@ class CopilotService:
             "briefing",
             "dispatch tradeoff",
         ):
-            return self._grounded_or_fallback(message, selected, incidents, selected_crew)
+            return self._grounded_or_fallback(message, selected, incidents, selected_crew, request_time)
         if self._has_any(normalized, "selected incident", "this incident", "incident status", "outage status"):
             return self._selected_incident(selected)
         if "storm" in normalized:
-            return self._grounded_or_fallback(message, selected, incidents, selected_crew)
+            return self._grounded_or_fallback(message, selected, incidents, selected_crew, request_time)
         if self._has_any(normalized, "summary", "scenario"):
             return self._scenario_summary(incidents)
-        return self._grounded_or_fallback(message, selected, incidents, selected_crew)
+        return self._grounded_or_fallback(message, selected, incidents, selected_crew, request_time)
+
+    def _server_time(self) -> datetime:
+        value = self._clock()
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("Copilot server clock must return a timezone-aware datetime")
+        return value.astimezone(timezone.utc)
 
     @staticmethod
     def _has_any(message: str, *terms: str) -> bool:
@@ -205,7 +226,7 @@ class CopilotService:
             safety_note=SAFETY_NOTE,
             execution_mode=execution_mode,
             scenario_id=self._active_scenario_id(),
-            generated_at=datetime.now(timezone.utc).isoformat(),
+            generated_at=self._server_time().isoformat(),
             data_snapshot_at=max(weather_timestamps) if weather_timestamps else None,
             evidence=unique_evidence,
             warning=warning,
@@ -219,8 +240,14 @@ class CopilotService:
         selected_incident: Incident | None,
         incidents: list[Incident],
         selected_crew: Crew | None = None,
+        request_time: CopilotRequestTime | None = None,
     ) -> ChatResponse:
-        grounded_context = self._context_builder.build(question, selected_incident, selected_crew)
+        grounded_context = self._context_builder.build(
+            question,
+            selected_incident,
+            selected_crew,
+            request_time,
+        )
         unavailable_reason = "AI provider is disabled or not configured"
         if self._provider is not None:
             request = CopilotGenerationRequest(
@@ -346,6 +373,63 @@ class CopilotService:
                 *[
                     self._evidence("crew", crew.crew_id, crew.crew_name)
                     for crew in crews
+                ],
+            ],
+        )
+
+    def _is_incident_assignment_query(
+        self,
+        message: str,
+        normalized: str,
+        incident: Incident | None,
+    ) -> bool:
+        if incident is None or "crew" not in normalized:
+            return False
+        if "assigned" not in normalized and "assignment" not in normalized:
+            return False
+        return self._targets_selected_record(message) or _contains_phrase(
+            message,
+            incident.incident_id,
+        )
+
+    def _incident_assignments(self, incident: Incident | None) -> ChatResponse:
+        if incident is None:
+            return self._unavailable_incident()
+        assignments = [
+            (crew, assignment)
+            for crew in self._crews.list()
+            for assignment in crew.assigned_incidents
+            if assignment.incident_id.casefold() == incident.incident_id.casefold()
+        ]
+        if not assignments:
+            answer = (
+                "## Currently assigned crews\n\n"
+                f"0 crews are currently assigned to {incident.incident_id} "
+                f"in {incident.municipality}."
+            )
+        else:
+            answer = (
+                "## Currently assigned crews\n\n"
+                f"{len(assignments)} crew(s) are currently assigned to "
+                f"{incident.incident_id} in {incident.municipality}.\n\n"
+                f"### Assignments (showing {len(assignments)} of {len(assignments)})\n\n"
+                "| Crew | Status | Capability | Assignment | Assigned at |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                + "\n".join(
+                    f"| {crew.crew_name} ({crew.crew_id}) | {crew.status} | "
+                    f"{crew.capability} | {assignment.assignment_id} | "
+                    f"{assignment.assigned_at} |"
+                    for crew, assignment in assignments
+                )
+            )
+        return self._response(
+            answer=answer,
+            intent="incident_assignments",
+            evidence=[
+                self._evidence("incident", incident.incident_id, incident.municipality),
+                *[
+                    self._evidence("crew", crew.crew_id, crew.crew_name)
+                    for crew, _assignment in assignments
                 ],
             ],
         )

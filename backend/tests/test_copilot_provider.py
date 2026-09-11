@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -41,6 +41,7 @@ def _configured_services(
     provider: RecordingProvider,
     *,
     max_records: int = 30,
+    clock=None,
 ):
     scenario = generate_copilot_demo_scenario(start_date=date(2026, 8, 21))
     write_scenario(scenario, tmp_path)
@@ -54,7 +55,11 @@ def _configured_services(
         api_key="server-secret",
         max_context_records=max_records,
     )
-    return build_services(copilot_config=config, copilot_provider=provider)
+    return build_services(
+        copilot_config=config,
+        copilot_provider=provider,
+        copilot_clock=clock,
+    )
 
 
 def test_config_is_parameterized_and_validated() -> None:
@@ -197,11 +202,13 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     monkeypatch,
 ) -> None:
     provider = RecordingProvider()
+    received_at = datetime(2026, 8, 24, 17, 42, tzinfo=timezone.utc)
     services = _configured_services(
         tmp_path,
         monkeypatch,
         provider,
         max_records=5,
+        clock=lambda: received_at,
     )
     arverne = next(
         incident
@@ -225,6 +232,8 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     assert synthesis.answer == "Grounded provider summary from supplied scenario facts."
     assert synthesis.provider == "fake"
     assert synthesis.model == "fake-grounded-v1"
+    assert synthesis.request_time is not None
+    assert synthesis.request_time.received_at == received_at
     assert len(provider.requests) == 1
     payload = json.loads(provider.requests[0].user_prompt)
     record_count = 1 if payload["selected_incident"] else 0
@@ -240,6 +249,12 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     record_count += 1 if payload["recommendation"] else 0
     assert record_count <= 5
     assert payload["synthetic_data"] is True
+    assert payload["request_time"] == {
+        "clock_skew": "not_measured",
+        "received_at": "2026-08-24T17:42:00Z",
+        "source": "backend_server_clock",
+        "timezone": "UTC",
+    }
     assert "server-secret" not in provider.requests[0].user_prompt
     system_prompt = provider.requests[0].system_prompt
     assert system_prompt.index("Answer only from supplied facts") < system_prompt.index(

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Literal, Optional
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from .domain.models import (
     DomainModel,
@@ -66,6 +67,20 @@ class CopilotEvidence(DomainModel):
     label: str
 
 
+class CopilotRequestTime(DomainModel):
+    received_at: datetime
+    timezone: Literal["UTC"] = "UTC"
+    source: Literal["backend_server_clock"] = "backend_server_clock"
+    clock_skew: Literal["not_measured"] = "not_measured"
+
+    @field_validator("received_at")
+    @classmethod
+    def require_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("must include a timezone offset")
+        return value
+
+
 class ChatResponse(DomainModel):
     answer: str
     intent: str
@@ -74,6 +89,7 @@ class ChatResponse(DomainModel):
     execution_mode: Literal["local_query", "llm_grounded", "rule_based_fallback"]
     scenario_id: str
     generated_at: str
+    request_time: Optional[CopilotRequestTime] = None
     data_snapshot_at: Optional[str] = None
     provider: Optional[str] = None
     model: Optional[str] = None

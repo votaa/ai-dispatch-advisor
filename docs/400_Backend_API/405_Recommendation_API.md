@@ -179,9 +179,27 @@ Returns advisory Copilot text based on operational demo context.
   "answer": "Focus first on INC-1001 in Millbrook...",
   "intent": "priority_focus",
   "source": "synthetic-demo-data",
+  "execution_mode": "local_query",
+  "scenario_id": "base",
+  "generated_at": "2026-08-24T17:42:00+00:00",
+  "request_time": {
+    "received_at": "2026-08-24T17:42:00Z",
+    "timezone": "UTC",
+    "source": "backend_server_clock",
+    "clock_skew": "not_measured"
+  },
+  "data_snapshot_at": "2026-08-24T17:30:00-04:00",
+  "provider": null,
+  "model": null,
+  "warning": null,
+  "evidence": [],
   "safety_note": "This copilot response is advisory and does not execute dispatch actions."
 }
 ```
+
+`request_time` is captured once when the backend Copilot service receives the request and is carried through local-query, grounded-AI, and rule-based fallback responses. It is also included in the bounded JSON context sent to a configured grounded provider. The backend clock is authoritative for this POC, all request times are normalized to UTC, and clock skew relative to external operational systems is not measured. The value provides temporal context only; it does not currently determine whether an ETR is expired or recalculate incident age.
+
+The object is optional in the response schema so older stored or mocked responses remain readable. New server responses always include it. The UI displays the value as `Request Received MM/DD/YYYY HH:MM UTC` in 24-hour time and does not place it in the question composer.
 
 ## Copilot Safety Boundary
 

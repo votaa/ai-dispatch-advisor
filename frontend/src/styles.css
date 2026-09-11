@@ -1796,7 +1796,22 @@ textarea {
 
 .copilot-question {
   display: block;
+  margin: 0;
+}
+
+.copilot-response-header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  justify-content: space-between;
   margin-bottom: 8px;
+}
+
+.copilot-response-header time {
+  color: #526474;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .copilot-markdown {

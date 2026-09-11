@@ -71,6 +71,10 @@ def test_deterministic_acceptance_questions_use_local_evidence(
         assert response.execution_mode == "local_query"
         assert response.scenario_id == "long-island-copilot-demo"
         assert response.generated_at
+        assert response.request_time is not None
+        assert response.request_time.timezone == "UTC"
+        assert response.request_time.source == "backend_server_clock"
+        assert response.request_time.clock_skew == "not_measured"
         assert response.data_snapshot_at
         assert response.evidence, intent
         assert response.provider is None
@@ -223,6 +227,72 @@ def test_crew_query_can_target_selected_crew_context(
     assert response.intent == "crew_query"
     assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
     assert crew.crew_id in response.answer
+
+
+def test_incident_assignment_queries_use_explicit_and_selected_incident_scope(
+    monkeypatch,
+) -> None:
+    base_root = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+    monkeypatch.setattr(data_loader, "DATA_ROOT", base_root)
+    data_loader.set_active_scenario("base")
+    services = build_services()
+
+    responses = [
+        services.copilot.respond("Which crews are assigned to INC-1002?"),
+        services.copilot.respond(
+            "Summarize this incident and assigned crew(s) for this incident only.",
+            incident_id="INC-1002",
+            crew_id="CR-02",
+        ),
+    ]
+
+    for response in responses:
+        assert response.intent == "incident_assignments"
+        assert response.execution_mode == "local_query"
+        assert response.answer.startswith("## Currently assigned crews\n\n1 crew(s)")
+        assert "Central Veg Beta (CR-02)" in response.answer
+        assert "South Veg India (CR-08)" not in response.answer
+        assert {item.record_id for item in response.evidence} == {"INC-1002", "CR-02"}
+
+
+def test_incident_assignment_query_supports_zero_and_multiple_crews(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    crews_by_incident: dict[str, list[str]] = {}
+    for crew in services.crews.list():
+        for assignment in crew.assigned_incidents:
+            crews_by_incident.setdefault(assignment.incident_id, []).append(crew.crew_id)
+
+    multiple_incident_id, expected_crew_ids = next(
+        (incident_id, crew_ids)
+        for incident_id, crew_ids in crews_by_incident.items()
+        if len(crew_ids) > 1
+    )
+    multiple = services.copilot.respond(
+        f"Which crews are assigned to {multiple_incident_id}?"
+    )
+
+    assert multiple.intent == "incident_assignments"
+    assert multiple.answer.startswith(
+        f"## Currently assigned crews\n\n{len(expected_crew_ids)} crew(s)"
+    )
+    assert all(crew_id in multiple.answer for crew_id in expected_crew_ids)
+
+    unassigned = next(
+        incident
+        for incident in services.incidents.list_ranked()
+        if incident.incident_id not in crews_by_incident
+    )
+    none = services.copilot.respond(
+        "Which crews are assigned to this incident?",
+        incident_id=unassigned.incident_id,
+    )
+
+    assert none.intent == "incident_assignments"
+    assert f"0 crews are currently assigned to {unassigned.incident_id}" in none.answer
+    assert {item.record_id for item in none.evidence} == {unassigned.incident_id}
 
 
 def test_action_oriented_question_does_not_execute_a_dispatch_action(

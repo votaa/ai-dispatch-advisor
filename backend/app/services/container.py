@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 
 from .. import data_loader, decision_store
 from ..copilot_config import CopilotConfig
@@ -38,6 +40,7 @@ def build_services(
     *,
     copilot_config: CopilotConfig | None = None,
     copilot_provider: CopilotProvider | None = None,
+    copilot_clock: Callable[[], datetime] | None = None,
 ) -> ApplicationServices:
     optimization_engine = optimization_engine or DeterministicOptimizationEngine()
     copilot_config = copilot_config or CopilotConfig.from_env()
@@ -107,6 +110,7 @@ def build_services(
         config=copilot_config,
         context_builder=copilot_context,
         provider=copilot_provider,
+        clock=copilot_clock,
     )
     return ApplicationServices(
         assignments=assignments,

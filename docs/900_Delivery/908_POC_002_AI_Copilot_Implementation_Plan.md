@@ -243,12 +243,13 @@ The response should add typed metadata such as:
 - `execution_mode`: `local_query`, `llm_grounded`, or `rule_based_fallback`.
 - `scenario_id`.
 - `generated_at`.
+- Optional `request_time` containing the server-received UTC datetime, `backend_server_clock` provenance, and `not_measured` clock-skew status. New backend responses populate it in every execution mode and grounded provider context.
 - `data_snapshot_at`.
 - Optional `provider` and `model` for model-generated responses.
 - Optional visible `warning` for fallback, stale, partial, or unavailable context.
 - Bounded evidence/source references that identify the local records or reference datasets used.
 
-The frontend must display the answer, response mode, freshness/snapshot time, source/evidence summary, fallback warning, and existing advisory safety notice without exposing credentials or sensitive diagnostics.
+The frontend must display the answer, server-received request time, response mode, freshness/snapshot time, source/evidence summary, fallback warning, and existing advisory safety notice without exposing credentials or sensitive diagnostics. Request time is context only; ETR-expiration and incident-age calculations remain out of scope until their source-time and skew rules are separately approved.
 
 ## Requirements
 

@@ -199,6 +199,8 @@ Validation should include:
 - Phase 6.4.1 frontend and API tests verify alternative selection, required rationale, ranked-membership and live-availability validation, modified assignment overlays, and preservation of original recommendation evidence beside the actual selected crew.
 - Phase 6.5 frontend tests verify cascading facet counts and disabled zero-result choices across Crew Board and every incident-queue view, current-page navigation and focus movement, skip navigation, labeled Copilot input, semantic incident selection, accessible reason validation, and keyboard-focused Defer and Override workflows.
 - POC-015 frontend tests verify exact Copilot helper copy, clearing the default and typed composer values, whitespace-only disabled state, preservation of conversation history, local execution metadata, and safe multi-block grounded-AI Markdown rendering.
+- POC-014 regression tests verify that explicit-ID and selected-incident assignment questions route ahead of recommendation intent and return zero, one, or multiple crews scoped only to that incident.
+- POC-017 backend and frontend tests verify one server-authoritative UTC request time per Copilot response, backend-clock provenance, explicit unmeasured clock skew, propagation into bounded grounded-provider context, 24-hour response-header formatting, and compatibility with responses that omit the optional field.
 - Phase 6.6 closeout verification passed 92 backend tests, 17 frontend tests, and the frontend production build on 2026-08-16; the detailed evaluation is recorded in `docs/900_Delivery/906_Phase_6_Closeout.md`.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.

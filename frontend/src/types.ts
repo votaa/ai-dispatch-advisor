@@ -91,6 +91,12 @@ export type CopilotResponse = {
   execution_mode: "local_query" | "llm_grounded" | "rule_based_fallback";
   scenario_id: string;
   generated_at: string;
+  request_time?: {
+    received_at: string;
+    timezone: "UTC";
+    source: "backend_server_clock";
+    clock_skew: "not_measured";
+  } | null;
   data_snapshot_at: string | null;
   provider: string | null;
   model: string | null;

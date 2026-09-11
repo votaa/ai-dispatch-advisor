@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from collections.abc import Callable
 from typing import Any
 
-from ..api_models import CopilotEvidence
+from ..api_models import CopilotEvidence, CopilotRequestTime
 from ..domain.models import Crew, Incident
 from ..geography import TravelEstimateService
 from .context_service import OperationalContextService
@@ -45,6 +45,7 @@ class CopilotContextBuilder:
         question: str,
         selected_incident: Incident | None,
         selected_crew: Crew | None = None,
+        request_time: CopilotRequestTime | None = None,
     ) -> GroundedCopilotContext:
         remaining = self._max_records
         evidence: list[CopilotEvidence] = []
@@ -52,6 +53,7 @@ class CopilotContextBuilder:
             "scenario_id": self._active_scenario_id(),
             "synthetic_data": True,
             "question": question,
+            "request_time": request_time.model_dump(mode="json") if request_time else None,
             "selected_incident": None,
             "selected_crew": None,
             "ranked_incidents": [],

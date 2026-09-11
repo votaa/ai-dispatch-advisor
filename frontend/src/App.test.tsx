@@ -855,6 +855,12 @@ describe("application states and scenario switching", () => {
       execution_mode: "local_query",
       scenario_id: "base",
       generated_at: "2026-08-21T12:00:00Z",
+      request_time: {
+        received_at: "2026-08-21T12:00:00Z",
+        timezone: "UTC",
+        source: "backend_server_clock",
+        clock_skew: "not_measured"
+      },
       data_snapshot_at: "2026-08-21T11:45:00Z",
       provider: null,
       model: null,
@@ -900,6 +906,12 @@ describe("application states and scenario switching", () => {
       execution_mode: "local_query",
       scenario_id: "base",
       generated_at: "2026-08-21T12:00:00Z",
+      request_time: {
+        received_at: "2026-08-21T12:00:00Z",
+        timezone: "UTC",
+        source: "backend_server_clock",
+        clock_skew: "not_measured"
+      },
       data_snapshot_at: "2026-08-21T11:45:00Z",
       provider: null,
       model: null,
@@ -915,6 +927,9 @@ describe("application states and scenario switching", () => {
     fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
 
     expect(await screen.findByText("INC-1001 is the local top priority.")).toBeTruthy();
+    const requestTime = screen.getByText("Request Received 08/21/2026 12:00 UTC");
+    expect(requestTime.tagName).toBe("TIME");
+    expect(requestTime.getAttribute("datetime")).toBe("2026-08-21T12:00:00Z");
     expect(screen.getByText("Local scenario query")).toBeTruthy();
     expect(screen.getByText("Scenario: base")).toBeTruthy();
     expect(screen.getByText("Snapshot: 2026-08-21T11:45:00Z")).toBeTruthy();
