@@ -187,6 +187,7 @@ function App() {
     () => crews.find((crew) => crew.crew_id === selectedCrewId),
     [crews, selectedCrewId]
   );
+  const selectedCrewContext = selectedCrew ?? selectedIncident?.assigned_crews[0];
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
   const operationalDataUnavailable = Boolean(error && !dashboard && incidents.length === 0 && crews.length === 0);
@@ -250,7 +251,7 @@ function App() {
     if (!question) return;
     setChatLoading(true);
     try {
-      const response = await api.chat(question, selectedIncidentId);
+      const response = await api.chat(question, selectedIncidentId, selectedCrewContext?.crew_id);
       const { answer, ...metadata } = response;
       setChatTurns((turns) => [{ question, answer, metadata }, ...turns]);
     } catch (err) {
@@ -690,6 +691,10 @@ function App() {
         {view === "copilot" && (
           <section className="panel copilot">
             <PanelTitle icon={Bot} title="AI Copilot" />
+            <div aria-label="Copilot context" className="copilot-context" role="status">
+              <span><strong>Selected incident:</strong> {selectedIncident ? `${selectedIncident.incident_id} · ${selectedIncident.municipality}` : "None"}</span>
+              <span><strong>Selected crew:</strong> {selectedCrewContext ? `${selectedCrewContext.crew_id} · ${selectedCrewContext.crew_name}` : "None"}</span>
+            </div>
             <div className="prompt-row">
               {[
                 "What should I focus on first?",

@@ -24,6 +24,7 @@ class OptimizeRequest(DomainModel):
 class ChatRequest(DomainModel):
     message: str = Field(min_length=1)
     incident_id: Optional[str] = None
+    crew_id: Optional[str] = None
 
 
 class RecommendationActionRequest(DomainModel):

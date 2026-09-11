@@ -804,6 +804,9 @@ describe("application states and scenario switching", () => {
 
     await screen.findByLabelText("Active synthetic scenario");
     fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    const copilotContext = screen.getByRole("status", { name: "Copilot context" });
+    expect(copilotContext.textContent).toContain("Selected incident: INC-1001 · Millbrook");
+    expect(copilotContext.textContent).toContain("Selected crew: None");
     expect(screen.getByText("Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));

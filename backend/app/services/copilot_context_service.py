@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import Any
 
 from ..api_models import CopilotEvidence
-from ..domain.models import Incident
+from ..domain.models import Crew, Incident
 from ..geography import TravelEstimateService
 from .context_service import OperationalContextService
 from .crew_service import CrewService
@@ -44,6 +44,7 @@ class CopilotContextBuilder:
         self,
         question: str,
         selected_incident: Incident | None,
+        selected_crew: Crew | None = None,
     ) -> GroundedCopilotContext:
         remaining = self._max_records
         evidence: list[CopilotEvidence] = []
@@ -52,6 +53,7 @@ class CopilotContextBuilder:
             "synthetic_data": True,
             "question": question,
             "selected_incident": None,
+            "selected_crew": None,
             "ranked_incidents": [],
             "recommendation": None,
             "crews": [],
@@ -66,6 +68,17 @@ class CopilotContextBuilder:
                     source_type="incident",
                     record_id=selected_incident.incident_id,
                     label=selected_incident.municipality,
+                )
+            )
+            remaining -= 1
+
+        if selected_crew is not None and remaining:
+            payload["selected_crew"] = selected_crew.model_dump(mode="json")
+            evidence.append(
+                CopilotEvidence(
+                    source_type="crew",
+                    record_id=selected_crew.crew_id,
+                    label=selected_crew.crew_name,
                 )
             )
             remaining -= 1

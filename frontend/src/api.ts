@@ -78,9 +78,10 @@ export const api = {
       selected_crew_id: selectedCrewId,
       reason: note
     }),
-  chat: (message: string, incidentId?: string) =>
+  chat: (message: string, incidentId?: string, crewId?: string) =>
     postJson<CopilotResponse>("/api/chat", {
       message,
-      incident_id: incidentId
+      incident_id: incidentId,
+      crew_id: crewId
     })
 };

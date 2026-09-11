@@ -98,10 +98,11 @@ class CopilotService:
         self._context_builder = context_builder
         self._provider = provider
 
-    def respond(self, message: str, incident_id: str | None = None) -> ChatResponse:
+    def respond(self, message: str, incident_id: str | None = None, crew_id: str | None = None) -> ChatResponse:
         normalized = _normalized_text(message)
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
+        selected_crew = self._resolve_crew(message, self._crews.list(), crew_id)
 
         severity = self._resolve_severity(normalized)
         if severity is not None and self._is_severity_count_query(normalized):
@@ -137,7 +138,7 @@ class CopilotService:
         if self._is_crew_query(normalized):
             if self._has_any(normalized, "how many crews", "crews available", "crew status", "resources available") and not self._has_crew_filters(normalized):
                 return self._crew_status()
-            return self._crew_query(message, normalized)
+            return self._crew_query(message, normalized, selected_crew)
         if self._has_any(normalized, "how many crews", "crews available", "crew status", "resources available"):
             return self._crew_status()
         if self._has_any(
@@ -160,14 +161,14 @@ class CopilotService:
             "briefing",
             "dispatch tradeoff",
         ):
-            return self._grounded_or_fallback(message, selected, incidents)
+            return self._grounded_or_fallback(message, selected, incidents, selected_crew)
         if self._has_any(normalized, "selected incident", "this incident", "incident status", "outage status"):
             return self._selected_incident(selected)
         if "storm" in normalized:
-            return self._grounded_or_fallback(message, selected, incidents)
+            return self._grounded_or_fallback(message, selected, incidents, selected_crew)
         if self._has_any(normalized, "summary", "scenario"):
             return self._scenario_summary(incidents)
-        return self._grounded_or_fallback(message, selected, incidents)
+        return self._grounded_or_fallback(message, selected, incidents, selected_crew)
 
     @staticmethod
     def _has_any(message: str, *terms: str) -> bool:
@@ -217,8 +218,9 @@ class CopilotService:
         question: str,
         selected_incident: Incident | None,
         incidents: list[Incident],
+        selected_crew: Crew | None = None,
     ) -> ChatResponse:
-        grounded_context = self._context_builder.build(question, selected_incident)
+        grounded_context = self._context_builder.build(question, selected_incident, selected_crew)
         unavailable_reason = "AI provider is disabled or not configured"
         if self._provider is not None:
             request = CopilotGenerationRequest(
@@ -289,7 +291,11 @@ class CopilotService:
         return incidents[0] if incidents else None
 
     @staticmethod
-    def _resolve_crew(message: str, crews: list[Crew]) -> Crew | None:
+    def _resolve_crew(message: str, crews: list[Crew], crew_id: str | None = None) -> Crew | None:
+        if crew_id:
+            selected = next((crew for crew in crews if crew.crew_id.casefold() == crew_id.casefold()), None)
+            if selected is not None:
+                return selected
         return next(
             (
                 crew
@@ -407,10 +413,13 @@ class CopilotService:
             )
         )
 
-    def _crew_query(self, message: str, normalized: str) -> ChatResponse:
+    def _crew_query(self, message: str, normalized: str, selected_crew: Crew | None = None) -> ChatResponse:
         crews = self._crews.list()
         filtered = crews
         filters: list[str] = []
+        if selected_crew is not None and self._targets_selected_crew(normalized):
+            filtered = [selected_crew]
+            filters.append(f"selected crew {selected_crew.crew_id}")
         for crew in crews:
             if _contains_phrase(message, crew.crew_id) or _contains_phrase(message, crew.crew_name):
                 filtered = [row for row in filtered if row.crew_id == crew.crew_id]
@@ -477,6 +486,10 @@ class CopilotService:
             intent="crew_query",
             evidence=[self._evidence("crew", crew.crew_id, crew.crew_name) for crew in filtered],
         )
+
+    @staticmethod
+    def _targets_selected_crew(normalized: str) -> bool:
+        return any(term in normalized for term in ("this crew", "selected crew", "the selected crew"))
 
     def _recommended_crew(self, incident: Incident | None) -> ChatResponse:
         if incident is None:

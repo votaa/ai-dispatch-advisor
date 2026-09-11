@@ -209,6 +209,22 @@ def test_crew_query_can_target_id_and_shift_hours(
     assert crew.crew_id in response.answer
 
 
+def test_crew_query_can_target_selected_crew_context(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    crew = services.crews.list()[0]
+    response = services.copilot.respond(
+        "What is the status of this crew?",
+        crew_id=crew.crew_id,
+    )
+
+    assert response.intent == "crew_query"
+    assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
+    assert crew.crew_id in response.answer
+
+
 def test_action_oriented_question_does_not_execute_a_dispatch_action(
     tmp_path: Path,
     monkeypatch,
