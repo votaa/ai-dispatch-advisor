@@ -43,7 +43,7 @@ type ChatTurn = {
   error?: boolean;
   metadata?: Omit<CopilotResponse, "answer">;
 };
-type IncidentSortKey = "id" | "region" | "customers" | "severity" | "hazard" | "assigned" | "decision" | "etr";
+type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
 
@@ -52,6 +52,7 @@ const incidentSortOptions: Array<[IncidentSortKey, string]> = [
   ["region", "Region"],
   ["customers", "Customers"],
   ["severity", "Severity"],
+  ["criticalFacility", "Critical Facility"],
   ["hazard", "Hazard"],
   ["assigned", "Assigned Crews"],
   ["decision", "Decision"],
@@ -1233,6 +1234,7 @@ function IncidentTable({
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState("all");
   const [region, setRegion] = useState("all");
+  const [criticalFacility, setCriticalFacility] = useState("all");
   const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
   const [page, setPage] = useState(0);
   const lastSyncedFirstIncidentRef = useRef<string | undefined>(undefined);
@@ -1253,19 +1255,21 @@ function IncidentTable({
   );
   const { filteredIncidents, facetCounts } = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const matches = (incident: Incident, excludedFacet?: "severity" | "region") => {
+    const matches = (incident: Incident, excludedFacet?: "severity" | "region" | "criticalFacility") => {
       const searchable = [incident.incident_id, incident.municipality, incident.feeder, incident.hazard]
         .join(" ")
         .toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
         (excludedFacet === "severity" || severity === "all" || incident.severity.toLowerCase() === severity) &&
-        (excludedFacet === "region" || region === "all" || incident.region === region)
+        (excludedFacet === "region" || region === "all" || incident.region === region) &&
+        (excludedFacet === "criticalFacility" || criticalFacility === "all" || (criticalFacility === "yes" ? incident.critical_facility : !incident.critical_facility))
       );
     };
     const matching = incidents.filter((incident) => matches(incident));
     const severityEligible = incidents.filter((incident) => matches(incident, "severity"));
     const regionEligible = incidents.filter((incident) => matches(incident, "region"));
+    const criticalFacilityEligible = incidents.filter((incident) => matches(incident, "criticalFacility"));
     const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
     const sorted = matching.sort((left, right) => {
       if (sort) {
@@ -1273,6 +1277,7 @@ function IncidentTable({
         let comparison = 0;
         if (sort.key === "customers") comparison = left.customers_out - right.customers_out;
         if (sort.key === "severity") comparison = (severityRank[left.severity.toLowerCase()] ?? 0) - (severityRank[right.severity.toLowerCase()] ?? 0);
+        if (sort.key === "criticalFacility") comparison = Number(left.critical_facility) - Number(right.critical_facility);
         if (sort.key === "region") comparison = left.region.localeCompare(right.region);
         if (sort.key === "id") comparison = left.incident_id.localeCompare(right.incident_id);
         if (sort.key === "hazard") comparison = left.hazard.localeCompare(right.hazard);
@@ -1295,10 +1300,11 @@ function IncidentTable({
       filteredIncidents: sorted,
       facetCounts: {
         severity: facetCountsFor(severityEligible, (incident) => incident.severity.toLowerCase()),
-        region: facetCountsFor(regionEligible, (incident) => incident.region)
+        region: facetCountsFor(regionEligible, (incident) => incident.region),
+        criticalFacility: facetCountsFor(criticalFacilityEligible, (incident) => incident.critical_facility ? "yes" : "no")
       }
     };
-  }, [incidents, preserveOrder, query, region, severity, sort]);
+  }, [criticalFacility, incidents, preserveOrder, query, region, severity, sort]);
 
   useEffect(() => {
     const firstVisibleIncident = filteredIncidents[0];
@@ -1321,7 +1327,7 @@ function IncidentTable({
 
   useEffect(() => {
     setPage(0);
-  }, [query, region, severity, sort, incidents.length]);
+    }, [criticalFacility, query, region, severity, sort, incidents.length]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1367,6 +1373,14 @@ function IncidentTable({
           <select aria-label={`${tableLabel} region`} onChange={(event) => setRegion(event.target.value)} value={region}>
             <option value="all">All regions ({facetCounts.region.all})</option>
             {regions.map((item) => <option disabled={(facetCounts.region[item] ?? 0) === 0 && region !== item} key={`region-${item}`} value={item}>{item} ({facetCounts.region[item] ?? 0})</option>)}
+          </select>
+        </label>
+        <label>
+          Critical Facility
+          <select aria-label={`${tableLabel} critical facility`} onChange={(event) => setCriticalFacility(event.target.value)} value={criticalFacility}>
+            <option value="all">All facilities ({facetCounts.criticalFacility.all})</option>
+            <option disabled={(facetCounts.criticalFacility.yes ?? 0) === 0 && criticalFacility !== "yes"} value="yes">Critical facility ({facetCounts.criticalFacility.yes ?? 0})</option>
+            <option disabled={(facetCounts.criticalFacility.no ?? 0) === 0 && criticalFacility !== "no"} value="no">No critical facility ({facetCounts.criticalFacility.no ?? 0})</option>
           </select>
         </label>
       </div>
@@ -1446,6 +1460,12 @@ function IncidentTable({
               <td><span className="compact-cell-label">Region</span>{incident.region}</td>
               <td><span className="compact-cell-label">Customers</span>{incident.customers_out.toLocaleString()}</td>
               <td><span className="compact-cell-label">Severity</span><span className={severityClass(incident.severity)}>{incident.severity}</span></td>
+              <td>
+                <span className="compact-cell-label">Critical Facility</span>
+                <span className={incident.critical_facility ? "critical-facility-badge is-critical" : "critical-facility-badge"}>
+                  {incident.critical_facility ? "Yes" : "No"}
+                </span>
+              </td>
               <td><span className="compact-cell-label">Hazard</span>{incident.hazard}</td>
               <td>
                 <span className="compact-cell-label">Assigned Crews</span>

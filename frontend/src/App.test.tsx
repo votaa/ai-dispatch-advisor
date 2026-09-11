@@ -271,8 +271,8 @@ describe("application states and scenario switching", () => {
 
     const compactLabels = Array.from(container.querySelectorAll(".compact-cell-label")).map((label) => label.textContent);
     expect(compactLabels).toEqual([
-      "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR",
-      "Incident", "Region", "Customers", "Severity", "Hazard", "Assigned Crews", "Decision", "ETR"
+      "Incident", "Region", "Customers", "Severity", "Critical Facility", "Hazard", "Assigned Crews", "Decision", "ETR",
+      "Incident", "Region", "Customers", "Severity", "Critical Facility", "Hazard", "Assigned Crews", "Decision", "ETR"
     ]);
   });
 
@@ -447,6 +447,9 @@ describe("application states and scenario switching", () => {
 
     const verifyFacets = async (label: string) => {
       const regionFilter = await screen.findByLabelText(`${label} region`) as HTMLSelectElement;
+      const criticalFacilityFilter = screen.getByLabelText(`${label} critical facility`) as HTMLSelectElement;
+      expect(selectOption(criticalFacilityFilter, "yes")?.textContent).toBe("Critical facility (4)");
+      expect(selectOption(criticalFacilityFilter, "no")?.textContent).toMatch(/^No critical facility \(/);
       fireEvent.change(regionFilter, { target: { value: "North" } });
       const severityFilter = screen.getByLabelText(`${label} severity`) as HTMLSelectElement;
       expect(selectOption(severityFilter, "critical")?.textContent).toBe("Critical (1)");
@@ -457,6 +460,8 @@ describe("application states and scenario switching", () => {
       expect(selectOption(regionFilter, "North")?.textContent).toBe("North (1)");
       expect(selectOption(regionFilter, "South")?.textContent).toBe("South (1)");
       expect(selectOption(regionFilter, "East")?.disabled).toBe(true);
+      expect(selectOption(criticalFacilityFilter, "yes")?.textContent).toBe("Critical facility (1)");
+      expect(selectOption(criticalFacilityFilter, "no")?.disabled).toBe(true);
     };
 
     await verifyFacets("Priority dispatch queue");
@@ -739,7 +744,7 @@ describe("application states and scenario switching", () => {
     fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
 
     expect(await screen.findByText("Showing 1–50 of 55 matching incidents (55 total)")).toBeTruthy();
-    expect(screen.getAllByRole("columnheader")).toHaveLength(8);
+    expect(screen.getAllByRole("columnheader")).toHaveLength(9);
     expect((screen.getByRole("button", { name: "Next Active incidents page" }) as HTMLButtonElement).disabled).toBe(false);
     const customersHeader = screen.getByRole("button", { name: /Active incidents Sort by Customers ascending/ });
     fireEvent.click(customersHeader);

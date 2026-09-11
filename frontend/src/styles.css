@@ -601,7 +601,7 @@ h1 {
   border-radius: 8px;
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(220px, 1.6fr) repeat(2, minmax(175px, 1fr));
+  grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(160px, 1fr));
   min-width: 0;
   padding: 10px;
   width: 100%;
@@ -897,6 +897,21 @@ tbody tr:focus-visible {
 
 .severity-low {
   background: #ddf7e5;
+}
+
+.critical-facility-badge {
+  background: #eef2f6;
+  border-radius: 999px;
+  color: #526170;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 9px;
+}
+
+.critical-facility-badge.is-critical {
+  background: #f7d7d7;
+  color: #8a2020;
 }
 
 .recommendation-panel {
