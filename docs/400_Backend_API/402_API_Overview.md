@@ -75,6 +75,20 @@ The API should not:
 | Recommendations | `/api/optimize` | Dispatch recommendation generation |
 | Copilot | `/api/chat` | Advisory demo response |
 
+Scenario discovery and activation responses include optional `freshness` metadata:
+
+```json
+{
+  "freshness": {
+    "updated_at": "2026-08-09T10:41:03-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit 001559d"
+  }
+}
+```
+
+`updated_at` is authoritative only when supplied by the scenario publication workflow and must include a timezone offset. Legacy manifests remain valid and return `freshness: null`; clients must identify that state as unavailable rather than infer freshness from file modification times. See [Scenario Manifest](../600_Data_AI/606_Scenario_Manifest.md) for the complete contract and controlled source values.
+
 ## Target API Groups
 
 Target API groups should include:

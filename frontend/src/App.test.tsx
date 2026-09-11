@@ -25,6 +25,11 @@ const baseScenario = {
   name: "Base Operations",
   description: "Standard operations",
   event_type: "blue_sky",
+  freshness: {
+    updated_at: "2026-08-09T10:41:03-04:00",
+    source: "repository_publish",
+    provenance: "Git commit 001559d"
+  },
   expected_conditions: ["Normal staffing"],
   files: {
     incidents: "PendingIncidents.csv",
@@ -45,6 +50,11 @@ const stormScenario = {
   name: "Major Storm",
   description: "Major storm operations",
   event_type: "storm",
+  freshness: {
+    updated_at: "2026-08-09T09:24:27-04:00",
+    source: "repository_publish",
+    provenance: "Git commit a306ec1"
+  },
   expected_conditions: ["High outage volume"],
   is_active: false
 };
@@ -166,6 +176,25 @@ describe("application states and scenario switching", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Scenario" }));
     expect(screen.getByText("Loading scenario metadata...")).toBeTruthy();
+  });
+
+  it("shows authoritative scenario freshness in UTC and updates it when scenarios switch", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.dashboard.mockResolvedValueOnce(dashboard("base")).mockResolvedValueOnce(dashboard("storm"));
+    render(<App />);
+
+    expect(await screen.findByText("Scenario Last Updated 08/09/2026 14:41 UTC")).toBeTruthy();
+    const selector = screen.getByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    expect(await screen.findByText("Scenario Last Updated 08/09/2026 13:24 UTC")).toBeTruthy();
+  });
+
+  it("shows an explicit unavailable state when freshness metadata is absent", async () => {
+    apiMocks.activeScenario.mockResolvedValue({ ...baseScenario, freshness: null });
+    render(<App />);
+
+    expect(await screen.findByText("Scenario Last Updated Unavailable")).toBeTruthy();
   });
 
   it("shows useful empty states instead of blank tables and panels", async () => {

@@ -4,6 +4,11 @@
   "name": "Major Storm Operations",
   "description": "Severe thunderstorm operations with widespread outages, access hazards, and elevated crew utilization.",
   "event_type": "storm",
+  "freshness": {
+    "updated_at": "2026-08-09T09:24:27-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit a306ec1"
+  },
   "expected_conditions": [
     "High outage volume across all operating regions",
     "Strong winds, heavy precipitation, and lightning hazards",

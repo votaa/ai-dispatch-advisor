@@ -123,7 +123,7 @@ The base, storm, crew-shortage, and critical-facility scenarios are the four can
 
 When running with Docker Compose, `data/scenarios/` is mounted read-only into the backend container. Complete scenario folders added under that directory become discoverable without rebuilding the backend image. Refresh the frontend to reload the scenario selector. The backend can read scenario data but cannot modify or delete the host scenario files through this mount.
 
-The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend validates a manifest and its complete CSV inventory before activating it. Runtime activation is process-local and affects every user of that POC backend instance.
+The manifest format and authoring rules are defined in `docs/600_Data_AI/606_Scenario_Manifest.md`. The backend validates a manifest and its complete CSV inventory before activating it. Optional authoritative freshness metadata is preserved by the API and shown in the UI in 24-hour UTC; a missing value is shown as unavailable rather than inferred. Runtime activation is process-local and affects every user of that POC backend instance.
 
 ### Generate synthetic Long Island scenarios
 

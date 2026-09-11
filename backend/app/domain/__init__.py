@@ -8,6 +8,7 @@ from .models import (
     Incident,
     Recommendation,
     RecommendationDecision,
+    ScenarioFreshness,
     ScenarioMetadata,
 )
 
@@ -19,5 +20,6 @@ __all__ = [
     "Incident",
     "Recommendation",
     "RecommendationDecision",
+    "ScenarioFreshness",
     "ScenarioMetadata",
 ]

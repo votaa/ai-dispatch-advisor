@@ -33,6 +33,42 @@ def test_scenario_endpoints_list_and_identify_active_scenario() -> None:
     assert active_response.status_code == 200
     assert active_response.json()["scenario_id"] == data_loader.get_active_scenario()
     assert active_response.json()["is_active"] is True
+    assert active_response.json()["freshness"] == {
+        "updated_at": "2026-08-09T10:41:03-04:00",
+        "source": "repository_publish",
+        "provenance": "Git commit 001559d",
+    }
+
+
+def test_service_supports_legacy_manifest_without_freshness_metadata(tmp_path: Path) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    manifest_path = scenario_directory / "scenario.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest.pop("freshness")
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    descriptor = ScenarioService(tmp_path, "base").active_scenario()
+
+    assert descriptor.freshness is None
+
+
+def test_service_rejects_freshness_timestamp_without_timezone(tmp_path: Path) -> None:
+    scenario_directory = tmp_path / "base"
+    shutil.copytree(data_loader.DATA_ROOT / "base", scenario_directory)
+    manifest_path = scenario_directory / "scenario.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["freshness"]["updated_at"] = "2026-08-09T10:41:03"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ScenarioServiceError) as error:
+        ScenarioService(tmp_path, "base").active_scenario()
+
+    assert error.value.code == "scenario_manifest_invalid"
+    assert any(
+        detail["location"] == "freshness.updated_at" and "timezone offset" in detail["message"]
+        for detail in error.value.details
+    )
 
 
 def test_service_reports_missing_required_csv(tmp_path: Path) -> None:

@@ -33,6 +33,11 @@ The directory name and `scenario_id` value must match.
   "name": "Base Operations",
   "description": "Standard blue-sky outage and crew dispatch demonstration.",
   "event_type": "blue_sky",
+  "freshness": {
+    "updated_at": "2026-08-09T10:41:03-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit 001559d"
+  },
   "expected_conditions": [
     "Normal staffing levels",
     "Multiple active outages",
@@ -59,10 +64,23 @@ The directory name and `scenario_id` value must match.
 | `name` | String | Yes | Short user-facing scenario name. |
 | `description` | String | Yes | Concise explanation of the scenario's purpose and operating context. |
 | `event_type` | String | Yes | Controlled event category used to group and select scenarios. |
+| `freshness` | Object or null | No | Authoritative datetime and provenance for the most recent scenario publication or update. Omit it when no authoritative value is available. |
 | `expected_conditions` | Array of strings | Yes | Observable operating assumptions or conditions represented by the scenario data. |
 | `files` | Object | Yes | Logical data-domain keys mapped to CSV filenames in the same scenario directory. |
 
-No optional fields are defined in manifest schema version `1.0`. New fields may be added in a later schema version after their ownership and validation behavior are documented.
+The optional `freshness` object is a backward-compatible version `1.0` addition. A missing object is returned through the API as `null` and displayed as `Scenario Last Updated Unavailable`; the service never substitutes filesystem modification time or another inferred timestamp.
+
+### Freshness Metadata
+
+When `freshness` is present, all three fields are required:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `freshness.updated_at` | RFC 3339 datetime | Authoritative time of the represented generation, upload, repository publication, or scenario update. A timezone offset is required. |
+| `freshness.source` | String | Controlled provenance category: `scenario_generation`, `file_upload`, `repository_publish`, or `scenario_update`. |
+| `freshness.provenance` | String | Non-blank identifier for the responsible generator, upload workflow, repository revision, or update process. |
+
+The API preserves the original offset. The operator UI converts valid timestamps to UTC and uses a fixed 24-hour display: `Scenario Last Updated MM/DD/YYYY HH:MM UTC`. UTC makes scenario switching and review output deterministic across browsers and operator locations.
 
 ## Event Types
 
@@ -101,6 +119,7 @@ A conforming version `1.0` manifest must meet these rules:
 - `scenario_id` is unique, uses lowercase letters, numbers, hyphens, or underscores, and matches its directory name.
 - `name` and `description` are not blank.
 - `event_type` is one of the documented version `1.0` values.
+- When supplied, `freshness.updated_at` includes a timezone offset, `freshness.source` is a supported value, and `freshness.provenance` is not blank.
 - `expected_conditions` contains at least one non-blank entry.
 - `files` contains every required logical key exactly once.
 - Each file value is a CSV filename relative to the scenario directory; absolute paths and parent-directory traversal are not allowed.
@@ -114,6 +133,7 @@ The backend scenario service automatically enforces these rules when serving `GE
 ## Change Management
 
 - Preserve `scenario_id` after a scenario is used in tests, demos, or audit records.
+- Update `freshness` only from the workflow that authoritatively generated, uploaded, published, or updated the complete scenario; do not infer it from runtime filesystem timestamps.
 - Increment `schema_version` when a manifest contract change is not backward compatible.
 - Update this document before introducing new required fields, logical file keys, or event types.
 - Keep scenario data synthetic and free of customer personal information, operationally sensitive network details, and live credentials.

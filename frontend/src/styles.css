@@ -261,6 +261,36 @@ h1 {
   padding: 7px 8px 7px 12px;
 }
 
+.scenario-control {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.scenario-freshness {
+  color: #526170;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.scenario-freshness-detail {
+  background: #f7f9fb;
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  margin: 14px 0 18px;
+  padding: 10px 12px;
+}
+
+.scenario-freshness-detail > span:not(.scenario-freshness) {
+  color: #526170;
+  font-size: 12px;
+}
+
 .scenario-selector label {
   align-items: center;
   display: flex;
@@ -1660,6 +1690,10 @@ tbody tr:focus-visible {
   .scenario-selector {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .scenario-control {
+    align-items: stretch;
   }
 }
 

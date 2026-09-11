@@ -4,6 +4,11 @@
   "name": "Critical Facility Outages",
   "description": "Priority restoration operations involving hospital, water, emergency-services, and communications facilities.",
   "event_type": "critical_facility",
+  "freshness": {
+    "updated_at": "2026-08-09T09:24:27-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit a306ec1"
+  },
   "expected_conditions": [
     "Multiple critical facilities are affected simultaneously",
     "Public-safety impact outweighs raw customer-count ordering",

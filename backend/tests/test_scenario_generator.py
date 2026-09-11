@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -209,6 +210,11 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
 
     descriptor = ScenarioService(tmp_path, "generated-test").active_scenario()
     assert descriptor.validation_status == "valid"
+    manifest = json.loads((target / "scenario.json").read_text(encoding="utf-8"))
+    assert manifest["freshness"]["source"] == "scenario_generation"
+    assert manifest["freshness"]["provenance"] == "AI Dispatch Advisor synthetic scenario generator"
+    assert descriptor.freshness is not None
+    assert descriptor.freshness.updated_at.utcoffset() is not None
     with (target / "PendingIncidents.csv").open(newline="", encoding="utf-8") as handle:
         assert len(list(csv.DictReader(handle))) == 80
     with (target / "Weather.csv").open(newline="", encoding="utf-8") as handle:

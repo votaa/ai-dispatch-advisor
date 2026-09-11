@@ -4,6 +4,11 @@
   "name": "Generated Scenario long-island-copilot-demo",
   "description": "Synthetic Long Island outage dispatch scenario generated from approved seed rules.",
   "event_type": "storm",
+  "freshness": {
+    "updated_at": "2026-08-24T17:13:51-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit 3970647"
+  },
   "expected_conditions": [
     "Synthetic Long Island incidents",
     "Region-coded crews",

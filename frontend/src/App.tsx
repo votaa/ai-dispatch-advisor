@@ -395,25 +395,28 @@ function App() {
             <p className="eyebrow">Developer Bootstrap MVP</p>
             <h1 id="page-heading" ref={pageHeadingRef} tabIndex={-1}>{navItems.find((item) => item.key === view)?.label}</h1>
           </div>
-          <div className="scenario-selector">
-            <label htmlFor="active-scenario">
-              <span className="pulse" />
-              Synthetic scenario
-            </label>
-            <select
-              aria-label="Active synthetic scenario"
-              disabled={scenarioLoading || scenarios.length === 0}
-              id="active-scenario"
-              onChange={(event) => activateScenario(event.target.value)}
-              value={activeScenario?.scenario_id ?? ""}
-            >
-              {!activeScenario ? <option value="">Loading scenarios...</option> : null}
-              {scenarios.map((scenario) => (
-                <option key={scenario.scenario_id} value={scenario.scenario_id}>
-                  {scenario.name}
-                </option>
-              ))}
-            </select>
+          <div className="scenario-control">
+            <div className="scenario-selector">
+              <label htmlFor="active-scenario">
+                <span className="pulse" />
+                Synthetic scenario
+              </label>
+              <select
+                aria-label="Active synthetic scenario"
+                disabled={scenarioLoading || scenarios.length === 0}
+                id="active-scenario"
+                onChange={(event) => activateScenario(event.target.value)}
+                value={activeScenario?.scenario_id ?? ""}
+              >
+                {!activeScenario ? <option value="">Loading scenarios...</option> : null}
+                {scenarios.map((scenario) => (
+                  <option key={scenario.scenario_id} value={scenario.scenario_id}>
+                    {scenario.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <ScenarioFreshnessLabel scenario={activeScenario} />
           </div>
         </header>
 
@@ -658,6 +661,15 @@ function App() {
                     <span className="validation-badge">Validated</span>
                   </div>
                   <p>{activeScenario.description}</p>
+                  <div className="scenario-freshness-detail">
+                    <ScenarioFreshnessLabel scenario={activeScenario} />
+                    <span>
+                      <strong>Freshness source:</strong>{" "}
+                      {activeScenario.freshness
+                        ? `${formatScenarioFreshnessSource(activeScenario.freshness.source)} · ${activeScenario.freshness.provenance}`
+                        : "Unavailable"}
+                    </span>
+                  </div>
                   <h3>Expected conditions</h3>
                   <ul className="condition-list">
                     {activeScenario.expected_conditions.map((condition) => (
@@ -858,6 +870,45 @@ function formatAction(action: RecommendationActionType) {
 
 function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
   return eventType.replace(/_/g, " ");
+}
+
+function ScenarioFreshnessLabel({ scenario }: { scenario: ScenarioDescriptor | null }) {
+  const freshness = scenario?.freshness;
+  const provenance = freshness
+    ? `${formatScenarioFreshnessSource(freshness.source)}: ${freshness.provenance}`
+    : "No authoritative scenario freshness metadata is available.";
+  return (
+    <span className="scenario-freshness" title={provenance}>
+      {formatScenarioFreshness(freshness?.updated_at)}
+    </span>
+  );
+}
+
+function formatScenarioFreshness(updatedAt?: string) {
+  if (!updatedAt) return "Scenario Last Updated Unavailable";
+  const timestamp = new Date(updatedAt);
+  if (Number.isNaN(timestamp.getTime())) return "Scenario Last Updated Unavailable";
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    hour: "2-digit",
+    hourCycle: "h23",
+    minute: "2-digit",
+    month: "2-digit",
+    timeZone: "UTC",
+    year: "numeric"
+  }).formatToParts(timestamp);
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "";
+  return `Scenario Last Updated ${value("month")}/${value("day")}/${value("year")} ${value("hour")}:${value("minute")} UTC`;
+}
+
+function formatScenarioFreshnessSource(source: NonNullable<ScenarioDescriptor["freshness"]>["source"]) {
+  const labels = {
+    scenario_generation: "Scenario generation",
+    file_upload: "File upload",
+    repository_publish: "Repository publish",
+    scenario_update: "Scenario update"
+  } as const;
+  return labels[source];
 }
 
 function formatConfidence(confidence: string) {

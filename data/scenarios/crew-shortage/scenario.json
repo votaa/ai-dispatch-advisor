@@ -4,6 +4,11 @@
   "name": "Crew Shortage",
   "description": "Resource-constrained operations with most qualified crews already assigned and limited remaining coverage.",
   "event_type": "crew_shortage",
+  "freshness": {
+    "updated_at": "2026-08-09T09:24:27-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit a306ec1"
+  },
   "expected_conditions": [
     "Most line and vegetation crews are already assigned",
     "At least one high-priority incident has no immediately suitable crew",

@@ -4,6 +4,11 @@
   "name": "Base Operations",
   "description": "Standard blue-sky outage and crew dispatch demonstration.",
   "event_type": "blue_sky",
+  "freshness": {
+    "updated_at": "2026-08-09T10:41:03-04:00",
+    "source": "repository_publish",
+    "provenance": "Git commit 001559d"
+  },
   "expected_conditions": [
     "Normal staffing levels",
     "Multiple active outages",

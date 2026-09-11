@@ -100,12 +100,19 @@ export type CopilotResponse = {
 
 export type ScenarioEventType = "blue_sky" | "storm" | "crew_shortage" | "critical_facility";
 
+export type ScenarioFreshness = {
+  updated_at: string;
+  source: "scenario_generation" | "file_upload" | "repository_publish" | "scenario_update";
+  provenance: string;
+};
+
 export type ScenarioDescriptor = {
   schema_version: "1.0";
   scenario_id: string;
   name: string;
   description: string;
   event_type: ScenarioEventType;
+  freshness: ScenarioFreshness | null;
   expected_conditions: string[];
   files: {
     incidents: string;

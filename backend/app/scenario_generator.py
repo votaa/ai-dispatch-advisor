@@ -1182,6 +1182,11 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
             "name": f"Generated Scenario {scenario.scenario_id}",
             "description": "Synthetic Long Island outage dispatch scenario generated from approved seed rules.",
             "event_type": "storm",
+            "freshness": {
+                "updated_at": datetime.now(LOCAL_TIMEZONE).isoformat(),
+                "source": "scenario_generation",
+                "provenance": "AI Dispatch Advisor synthetic scenario generator",
+            },
             "expected_conditions": [
                 "Synthetic Long Island incidents",
                 "Region-coded crews",

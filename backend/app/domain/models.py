@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 RecommendationAction = Literal["accepted", "modified", "deferred", "overridden"]
 ScenarioEventType = Literal["blue_sky", "storm", "crew_shortage", "critical_facility"]
+ScenarioFreshnessSource = Literal["scenario_generation", "file_upload", "repository_publish", "scenario_update"]
 
 
 class DomainModel(BaseModel):
@@ -156,6 +158,27 @@ class AuditEvent(DomainModel):
     correlation_id: Optional[str] = None
 
 
+class ScenarioFreshness(DomainModel):
+    updated_at: datetime
+    source: ScenarioFreshnessSource
+    provenance: str = Field(min_length=1)
+
+    @field_validator("updated_at")
+    @classmethod
+    def require_timezone(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("must include a timezone offset")
+        return value
+
+    @field_validator("provenance")
+    @classmethod
+    def normalize_provenance(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("must not be blank")
+        return value
+
+
 class ScenarioMetadata(DomainModel):
     schema_version: Literal["1.0"]
     scenario_id: str
@@ -163,3 +186,4 @@ class ScenarioMetadata(DomainModel):
     description: str
     event_type: ScenarioEventType
     expected_conditions: list[str]
+    freshness: Optional[ScenarioFreshness] = None
