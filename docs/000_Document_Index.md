@@ -158,6 +158,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/907_Phase_7_Implementation_Plan.md` | Drafted | Paused enterprise integration adapter plan and required owner inputs |
 | `docs/900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md` | Drafted | Approval-ready hybrid Copilot POC scope, acceptance suite, sequencing, and safety boundary |
 | `docs/900_Delivery/909_Scenario_Data_Integrity_Implementation_Plan.md` | Drafted | Cross-scenario facility linkage, generator validation, timeline consistency, and Copilot evidence correction |
+| `docs/900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md` | Drafted | Deferred reusable expand/restore behavior for data-heavy tab workspaces |
 
 ## Planned Documentation Structure
 
@@ -303,3 +304,4 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Implementation Plan](900_Delivery/902_Implementation_Plan.md)
 - [Release Management](900_Delivery/903_Release_Management.md)
 - [Runbook](900_Delivery/904_Runbook.md)
+- [POC-024 Expandable Operational Workspaces Implementation Plan](900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md)
