@@ -16,6 +16,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
+import { AutocompleteSearch, buildAutocompleteSuggestions } from "./components/AutocompleteSearch";
+import type { AutocompleteField } from "./components/AutocompleteSearch";
 import {
   ResizableSidebar,
   SIDEBAR_DEFAULT_WIDTH,
@@ -57,6 +59,22 @@ const incidentSortOptions: Array<[IncidentSortKey, string]> = [
   ["assigned", "Assigned Crews"],
   ["decision", "Decision"],
   ["etr", "ETR"]
+];
+
+const incidentAutocompleteFields: AutocompleteField<Incident>[] = [
+  { group: "Incident ID", values: (incident) => incident.incident_id },
+  { group: "Feeder", values: (incident) => incident.feeder },
+  { group: "Municipality", values: (incident) => incident.municipality },
+  { group: "Hazard", values: (incident) => incident.hazard }
+];
+
+const crewAutocompleteFields: AutocompleteField<Crew>[] = [
+  { group: "Crew ID", values: (crew) => crew.crew_id },
+  { group: "Crew Name", values: (crew) => crew.crew_name },
+  { group: "Location", values: (crew) => crew.current_location },
+  { group: "Capability", values: (crew) => crew.capability },
+  { group: "Region", values: (crew) => crew.home_region },
+  { group: "Assigned Incident", values: (crew) => crew.assigned_incidents.map((assignment) => assignment.incident_id) }
 ];
 
 const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
@@ -1114,8 +1132,14 @@ function CrewBoard({
     () => Array.from(new Set([...crews.map((crew) => crew.home_region), ...(region !== "all" ? [region] : [])])).sort(),
     [crews, region]
   );
-  const { filteredCrews, facetCounts } = useMemo(() => {
+  const { filteredCrews, facetCounts, suggestionCrews } = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
+    const matchesFacets = (crew: Crew, excludedFacet?: "status" | "capability" | "region" | "stormReady") => (
+      (excludedFacet === "status" || status === "all" || crew.status === status) &&
+      (excludedFacet === "capability" || capability === "all" || crew.capability === capability) &&
+      (excludedFacet === "region" || region === "all" || crew.home_region === region) &&
+      (excludedFacet === "stormReady" || stormReady === "all" || (stormReady === "ready" ? crew.storm_ready : !crew.storm_ready))
+    );
     const matches = (crew: Crew, excludedFacet?: "status" | "capability" | "region" | "stormReady") => {
       const searchable = [
         crew.crew_id,
@@ -1127,10 +1151,7 @@ function CrewBoard({
       ].join(" ").toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
-        (excludedFacet === "status" || status === "all" || crew.status === status) &&
-        (excludedFacet === "capability" || capability === "all" || crew.capability === capability) &&
-        (excludedFacet === "region" || region === "all" || crew.home_region === region) &&
-        (excludedFacet === "stormReady" || stormReady === "all" || (stormReady === "ready" ? crew.storm_ready : !crew.storm_ready))
+        matchesFacets(crew, excludedFacet)
       );
     };
     const matching = crews.filter((crew) => matches(crew));
@@ -1151,6 +1172,7 @@ function CrewBoard({
     });
     return {
       filteredCrews: sorted,
+      suggestionCrews: crews.filter((crew) => matchesFacets(crew)),
       facetCounts: {
         status: facetCountsFor(statusEligible, (crew) => crew.status),
         capability: facetCountsFor(capabilityEligible, (crew) => crew.capability),
@@ -1159,6 +1181,10 @@ function CrewBoard({
       }
     };
   }, [capability, crews, query, region, sort, status, stormReady]);
+  const autocompleteSuggestions = useMemo(
+    () => buildAutocompleteSuggestions(suggestionCrews, crewAutocompleteFields, query),
+    [query, suggestionCrews]
+  );
   const { containerRef, pageSize } = useFittedPageSize({
     fallbackPageSize: 24,
     itemCount: filteredCrews.length,
@@ -1185,10 +1211,17 @@ function CrewBoard({
   return (
     <div className="crew-board" ref={containerRef}>
       <div className="crew-board-controls" aria-label="Crew Board filters" role="group">
-        <label>
-          Search
-          <input aria-label="Crew Board search" onChange={(event) => setQuery(event.target.value)} placeholder="Crew, capability, region, or incident" type="search" value={query} />
-        </label>
+        <AutocompleteSearch
+          accessibleLabel="Crew Board search"
+          label="Search"
+          onChange={(value) => {
+            setQuery(value);
+            setPage(0);
+          }}
+          placeholder="Crew, capability, region, or incident"
+          suggestions={autocompleteSuggestions}
+          value={query}
+        />
         <label>
           Status
           <select aria-label="Crew Board status" onChange={(event) => setStatus(event.target.value)} value={status}>
@@ -1321,17 +1354,20 @@ function IncidentTable({
     },
     [incidents, severity]
   );
-  const { filteredIncidents, facetCounts } = useMemo(() => {
+  const { filteredIncidents, facetCounts, suggestionIncidents } = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
+    const matchesFacets = (incident: Incident, excludedFacet?: "severity" | "region" | "criticalFacility") => (
+      (excludedFacet === "severity" || severity === "all" || incident.severity.toLowerCase() === severity) &&
+      (excludedFacet === "region" || region === "all" || incident.region === region) &&
+      (excludedFacet === "criticalFacility" || criticalFacility === "all" || (criticalFacility === "yes" ? incident.critical_facility : !incident.critical_facility))
+    );
     const matches = (incident: Incident, excludedFacet?: "severity" | "region" | "criticalFacility") => {
       const searchable = [incident.incident_id, incident.municipality, incident.feeder, incident.hazard]
         .join(" ")
         .toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
-        (excludedFacet === "severity" || severity === "all" || incident.severity.toLowerCase() === severity) &&
-        (excludedFacet === "region" || region === "all" || incident.region === region) &&
-        (excludedFacet === "criticalFacility" || criticalFacility === "all" || (criticalFacility === "yes" ? incident.critical_facility : !incident.critical_facility))
+        matchesFacets(incident, excludedFacet)
       );
     };
     const matching = incidents.filter((incident) => matches(incident));
@@ -1366,6 +1402,7 @@ function IncidentTable({
     });
     return {
       filteredIncidents: sorted,
+      suggestionIncidents: incidents.filter((incident) => matchesFacets(incident)),
       facetCounts: {
         severity: facetCountsFor(severityEligible, (incident) => incident.severity.toLowerCase()),
         region: facetCountsFor(regionEligible, (incident) => incident.region),
@@ -1373,6 +1410,10 @@ function IncidentTable({
       }
     };
   }, [criticalFacility, incidents, preserveOrder, query, region, severity, sort]);
+  const autocompleteSuggestions = useMemo(
+    () => buildAutocompleteSuggestions(suggestionIncidents, incidentAutocompleteFields, query),
+    [query, suggestionIncidents]
+  );
 
   useEffect(() => {
     const firstVisibleIncident = filteredIncidents[0];
@@ -1419,16 +1460,17 @@ function IncidentTable({
   return (
     <div className="incident-table" ref={containerRef}>
       <div className="incident-table-controls" aria-label={`${tableLabel} filters`} role="group">
-        <label>
-          {searchLabel ?? "Search"}
-          <input
-            aria-label={searchLabel ?? `${tableLabel} search`}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="ID, municipality, feeder, or hazard"
-            type="search"
-            value={query}
-          />
-        </label>
+        <AutocompleteSearch
+          accessibleLabel={searchLabel ?? `${tableLabel} search`}
+          label={searchLabel ?? "Search"}
+          onChange={(value) => {
+            setQuery(value);
+            setPage(0);
+          }}
+          placeholder="ID, municipality, feeder, or hazard"
+          suggestions={autocompleteSuggestions}
+          value={query}
+        />
         <label>
           Severity
           <select aria-label={`${tableLabel} severity`} onChange={(event) => setSeverity(event.target.value)} value={severity}>

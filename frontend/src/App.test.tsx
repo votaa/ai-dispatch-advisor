@@ -344,11 +344,87 @@ describe("application states and scenario switching", () => {
     expect(await screen.findByRole("heading", { name: "Top 7 Priority Incidents" })).toBeTruthy();
     const limit = screen.getByLabelText("Dashboard incidents shown") as HTMLSelectElement;
     expect(selectOption(limit, "100")?.disabled).toBe(false);
-    expect(screen.getByRole("searchbox", { name: "Search Top 7 Incidents Shown" })).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "Search Top 7 Incidents Shown" })).toBeTruthy();
 
     fireEvent.change(limit, { target: { value: "100" } });
     expect(await screen.findByRole("heading", { name: "Top 25 Priority Incidents" })).toBeTruthy();
     expect(screen.getByText("Showing 25 of 25 active incidents")).toBeTruthy();
+  });
+
+  it("provides scoped grouped autocomplete suggestions on all five search surfaces", async () => {
+    const autocompleteIncidents = Array.from({ length: 8 }, (_, index) => ({
+      ...baseIncident,
+      incident_id: `INC-ES-${index + 1}`,
+      feeder: index < 2 ? "FDR-ES-13" : "FDR-ES-03",
+      municipality: index % 2 === 0 ? "East Meadow" : "East Hampton",
+      region: index < 2 ? "Central-Nassau" : "Eastern-Suffolk"
+    }));
+    const autocompleteCrews = [
+      {
+        crew_id: "CR-01",
+        crew_name: "East Line Alpha",
+        home_region: "Central-Nassau",
+        status: "available",
+        capability: "line",
+        current_location: "Riverhead",
+        shift_remaining_hours: 8,
+        storm_ready: true,
+        travel_minutes_to_selected_incident: 12,
+        assigned_incidents: []
+      },
+      {
+        crew_id: "CR-02",
+        crew_name: "West Tree Beta",
+        home_region: "Eastern-Suffolk",
+        status: "available",
+        capability: "vegetation",
+        current_location: "East Meadow",
+        shift_remaining_hours: 6,
+        storm_ready: true,
+        travel_minutes_to_selected_incident: 18,
+        assigned_incidents: []
+      }
+    ];
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 8,
+      top_incidents: autocompleteIncidents
+    });
+    apiMocks.incidents.mockResolvedValue(autocompleteIncidents);
+    apiMocks.crews.mockResolvedValue(autocompleteCrews);
+    render(<App />);
+
+    const dashboardSearch = await screen.findByRole("combobox", { name: "Search Top 2 Incidents Shown" });
+    fireEvent.change(dashboardSearch, { target: { value: "FDR-ES" } });
+    expect(await screen.findByRole("option", { name: "FDR-ES-13, Feeder, 2 matches" })).toBeTruthy();
+    expect(screen.queryByRole("option", { name: /FDR-ES-03/ })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    const dispatchSearch = screen.getByRole("combobox", { name: "Dispatch incident queue search" });
+    fireEvent.change(dispatchSearch, { target: { value: "FDR-ES" } });
+    expect(await screen.findByRole("option", { name: "FDR-ES-03, Feeder, 6 matches" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    const activeRegion = screen.getByLabelText("Active incidents region");
+    fireEvent.change(activeRegion, { target: { value: "Central-Nassau" } });
+    const activeSearch = screen.getByRole("combobox", { name: "Active incidents search" });
+    fireEvent.change(activeSearch, { target: { value: "FDR-ES" } });
+    expect(await screen.findByRole("option", { name: "FDR-ES-13, Feeder, 2 matches" })).toBeTruthy();
+    expect(screen.queryByRole("option", { name: /FDR-ES-03/ })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Storm Mode" }));
+    const stormSearch = screen.getByRole("combobox", { name: "Storm exceptions search" });
+    fireEvent.change(stormSearch, { target: { value: "East" } });
+    expect(await screen.findByRole("group", { name: "Municipality" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "East Meadow, Municipality, 4 matches" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    const crewSearch = screen.getByRole("combobox", { name: "Crew Board search" });
+    fireEvent.change(crewSearch, { target: { value: "East" } });
+    expect(await screen.findByRole("group", { name: "Crew Name" })).toBeTruthy();
+    expect(screen.getByRole("group", { name: "Location" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "East Line Alpha, Crew Name, 1 match" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "East Meadow, Location, 1 match" })).toBeTruthy();
   });
 
   it("gives the Customers Out metric room for comma-formatted totals", async () => {
@@ -450,12 +526,17 @@ describe("application states and scenario switching", () => {
     expect(await screen.findByText("Showing 1–2 of 2 matching crews (2 total)")).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Crew Board status"), { target: { value: "available" } });
     expect(await screen.findByText("Showing 1–1 of 1 matching crews (2 total)")).toBeTruthy();
+    const crewSearch = screen.getByRole("combobox", { name: "Crew Board search" });
+    fireEvent.change(crewSearch, { target: { value: "CR" } });
+    expect(await screen.findByRole("listbox")).toBeTruthy();
 
     const selector = screen.getByLabelText("Active synthetic scenario") as HTMLSelectElement;
     fireEvent.change(selector, { target: { value: "storm" } });
 
     await waitFor(() => expect(selector.value).toBe("storm"));
     expect((screen.getByLabelText("Crew Board status") as HTMLSelectElement).value).toBe("all");
+    expect((screen.getByRole("combobox", { name: "Crew Board search" }) as HTMLInputElement).value).toBe("");
+    expect(screen.queryByRole("listbox")).toBeNull();
     expect(screen.getByText("Showing 1–2 of 2 matching crews (2 total)")).toBeTruthy();
   });
 
@@ -786,8 +867,10 @@ describe("application states and scenario switching", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next Active incidents page" }));
     expect(screen.getByText("Page 2 of 2")).toBeTruthy();
 
-    const search = screen.getByLabelText("Active incidents search");
+    const search = screen.getByRole("combobox", { name: "Active incidents search" });
     fireEvent.change(search, { target: { value: "Municipality 55" } });
+    fireEvent.click(await screen.findByRole("option", { name: "Municipality 55, Municipality, 1 match" }));
+    expect((search as HTMLInputElement).value).toBe("Municipality 55");
     expect(await screen.findByText("Showing 1–1 of 1 matching incidents (55 total)")).toBeTruthy();
     expect(screen.getByText("INC-1055")).toBeTruthy();
     fireEvent.change(search, { target: { value: "does-not-exist" } });
