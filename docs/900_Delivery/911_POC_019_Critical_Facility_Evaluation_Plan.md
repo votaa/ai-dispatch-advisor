@@ -103,9 +103,11 @@ and authorized complete evaluation generation. The approved decisions cover:
 2. Completed: wrote a versioned sample package to an isolated review location.
 3. Completed: revised the sample and obtained approval for all controlled cases.
 4. Completed: obtained explicit approval and generated the complete evaluation scenario.
-5. Open: obtain separate approval before proposing a production scoring policy or modifying
-   the engine.
-6. Always: never overwrite `data/scenarios`, `data/scenario-previews`, or a prior evaluation
+5. Completed: drafted the separately gated operational scoring-policy implementation plan in
+   `912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md`.
+6. Open: obtain explicit owner approval of that plan before modifying the engine; default policy
+   activation remains a later approval after implementation verification.
+7. Always: never overwrite `data/scenarios`, `data/scenario-previews`, or a prior evaluation
    package.
 
 ## Verification
