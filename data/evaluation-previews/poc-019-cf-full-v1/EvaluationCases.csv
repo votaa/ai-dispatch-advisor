@@ -1,0 +1,18 @@
+case_id,category,left_incident_id,right_incident_id,variable_under_test,expected_baseline_relation,expected_candidate_relation,review_status,sme_question
+CF-L1-NONE,facility_level,P019-L1,P019-L1-NONE,level_1,>,>,approved_sme,Should Level 1 receive the proposed differentiated bonus?
+CF-L2-NONE,facility_level,P019-L2,P019-L2-NONE,level_2,>,>,approved_sme,Should Level 2 retain the current flat-bonus magnitude?
+CF-L3-NONE,facility_level,P019-L3,P019-L3-NONE,level_3,>,>,approved_sme,Should Level 3 receive a smaller but positive bonus?
+CF-UNKNOWN-NONE,unknown_facility,P019-UNKNOWN,P019-UNKNOWN-NONE,unknown_priority_level,>,review,approved_sme,Should an unknown facility level be withheld from candidate ranking?
+CF-L1-L2,facility_level,P019-L1,P019-L2,level_1_vs_level_2,=,>,approved_sme,Is the proposed Level 1 over Level 2 ordering operationally appropriate?
+CF-L2-L3,facility_level,P019-L2,P019-L3,level_2_vs_level_3,=,>,approved_sme,Is the proposed Level 2 over Level 3 ordering operationally appropriate?
+LSE-1-100,lse_customer_count,P019-LSE-L3-C100,P019-LSE-L3-C001,customers_out,>,>,approved_sme,Should customer count remain independently additive for an LSE-linked incident?
+NOCF-19-20,customer_edge,P019-NOCF-C020,P019-NOCF-C019,customers_out_20_boundary,>,>,approved_sme,Is the one-point change at 20 customers acceptable without a CF?
+LSE-L3-19-20,lse_customer_edge,P019-LSE-L3-C020,P019-LSE-L3-C019,customers_out_20_boundary_with_lse,>,>,approved_sme,Is the same customer boundary appropriate when Level 3 LSE impact is present?
+LSE-L3-C019-NOCF,lse_customer_edge,P019-LSE-L3-C019,P019-NOCF-C019,level_3_at_19_customers,>,>,approved_sme,Is the Level 3 contribution appropriate at 19 customers?
+LSE-L3-C020-NOCF,lse_customer_edge,P019-LSE-L3-C020,P019-NOCF-C020,level_3_at_20_customers,>,>,approved_sme,Is the Level 3 contribution appropriate at 20 customers?
+MULTI-L1-L2,multiple_facilities,P019-MULTI-L1-L3,P019-MULTI-L2-L3,highest_level_once,=,>,approved_sme,Should only the highest facility level apply once on a feeder?
+HAZ-MED-HIGH,hazard_severity,P019-HAZ-MED,P019-NOHAZ-HIGH,hazard_vs_severity,>,>,approved_sme,Should medium severity with a hazard outrank high severity without one?
+HAZ-LOW-HIGH,hazard_precedence,P019-HAZ-LOW,P019-NOHAZ-HIGH,same_band_hazard_precedence,<,>,approved_sme,"Within the same score band, should a hazardous incident rank ahead of a non-hazardous incident regardless of severity or numeric score?"
+SAME-HAZARD-GUARD,hazard_guard,P019-NOHAZ-HIGH,P019-SEV-MED-C600,same_hazard_score_precedence,>,>,approved_sme,"When both incidents are non-hazardous and in the same score band, should the higher score retain priority?"
+SEVERITY-TIE,severity_precedence,P019-NOHAZ-HIGH,P019-SEV-MED-C800,severity_tie_break_with_equal_hazard_status,=,>,approved_sme,"When scores and hazard status tie, should severity remain the next tie-break?"
+CF-BEFORE-AGE,cf_before_age,P019-CF-BEFORE-AGE,P019-OLDER-NOCF,level_2_vs_800_age_minutes,=,>,approved_sme,"When totals and severity tie, should known CF level precede incident age?"

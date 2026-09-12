@@ -1,0 +1,31 @@
+{
+  "application_scenario_included": true,
+  "artifact_sha256": {
+    "Assignments.csv": "77a5437b9e513d6170321eab0f01bdc739f51b1b93199bfe9d09b20092e93380",
+    "Crews.csv": "a77f15627b6fc1b00a69d53c6e0b5b762bfe20e5efe18c3fcacfb49cf2211461",
+    "CriticalFacilities.csv": "99f4c1192b8877bce20de624c9795e2214c0a5f14c994cc45618d8bf079e09b5",
+    "EvaluationCases.csv": "fb48c8b827f4d9bdd65d2bf59e08ddfc2fcfc8b559ba0085bf5c4062e79786ec",
+    "ExpectedResults.json": "1aaf59a24be3b4302dbf00906485b7411fe6fb1d03953453221963d416f30595",
+    "HistoricalRepairs.csv": "e8afdd943d8b65250cac01842e5b38c6703590795f6111dceb96693019e20f44",
+    "OverrideExamples.json": "a8af400546d1ba6adf3e45b0e997ded5fdb5ca302395656b594ec22daa8ca706",
+    "PendingIncidents.csv": "e4423a9af2b846e12d4088ddf4f3dc520a234ceb4cce75cb751997ce445e15f6",
+    "ScoreBands.json": "5c0d1eb5c690b5193fc50dd4f973f7c5349b9a6ca41b7b1626664394f4e8a6a9",
+    "ScoringProfiles.json": "e3c9f73fbc51309d3d3df1a8a3ee95f3a1ccecd0c74847f9316fcea800c4df88",
+    "Topology.csv": "30446533cd118221edc85a38ec586716e06a328be71250955eba080f8fc23c0e",
+    "Weather.csv": "83eb67167e317c91b54c610773702b0440b57a08444c2bd8a34d8cb1fa234a50",
+    "scenario.json": "8548ca536920f0dd5396961d4aca9689ab160a574a2c8046a889af5265fffd8b"
+  },
+  "candidate_policy_is_operational": false,
+  "complete_scenario_generated": true,
+  "controlled_pairs": 17,
+  "dataset_id": "poc-019-cf-full-v1",
+  "dataset_version": "full-v1",
+  "existing_scenarios_modified": false,
+  "facilities": 29,
+  "generation_scope": "complete_application_scenario",
+  "incidents": 2000,
+  "override_examples": 5,
+  "review_status": "approved_sme_for_evaluation",
+  "score_bands": 4,
+  "seed": 20260912
+}

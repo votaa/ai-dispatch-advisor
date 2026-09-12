@@ -1,0 +1,27 @@
+{
+  "description": "Isolated SME-approved evaluation scenario for critical-facility scoring; the candidate policy is not operational.",
+  "event_type": "critical_facility",
+  "expected_conditions": [
+    "SME-approved controlled critical-facility comparisons",
+    "Representative deterministic Long Island incidents and crews",
+    "Candidate scoring remains evaluation-only",
+    "Unknown critical-facility levels remain data-quality exceptions"
+  ],
+  "files": {
+    "assignments": "Assignments.csv",
+    "crews": "Crews.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "incidents": "PendingIncidents.csv",
+    "topology": "Topology.csv",
+    "weather": "Weather.csv"
+  },
+  "freshness": {
+    "provenance": "POC-019 deterministic evaluation generator",
+    "source": "scenario_generation",
+    "updated_at": "2026-09-12T12:00:00-04:00"
+  },
+  "name": "POC-019 Critical Facility Full Evaluation",
+  "scenario_id": "poc-019-cf-full-v1",
+  "schema_version": "1.0"
+}

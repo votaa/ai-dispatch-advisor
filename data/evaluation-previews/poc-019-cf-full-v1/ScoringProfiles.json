@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "algorithm_version": "deterministic-scoring-v2",
+    "critical_facility_weights": {
+      "level_1": 80,
+      "level_2": 80,
+      "level_3": 80
+    },
+    "policy_version": "incident-priority-v1",
+    "status": "implemented_poc_policy"
+  },
+  "candidate": {
+    "critical_facility_weights": {
+      "level_1": 120,
+      "level_2": 80,
+      "level_3": 40
+    },
+    "multiple_facility_behavior": "apply_highest_level_once",
+    "profile_id": "illustrative-level-differentiation-v1",
+    "status": "sme_approved_for_complete_evaluation",
+    "unknown_level_behavior": "withhold_from_candidate_ranking_and_warn"
+  }
+}

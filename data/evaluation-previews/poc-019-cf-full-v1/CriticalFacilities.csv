@@ -1,0 +1,30 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-L1,Synthetic FAC-L1,hospital,Central-Nassau,Hicksville,FDR-CN-L1,critical
+FAC-L2,Synthetic FAC-L2,nursing_home,Central-Nassau,Hicksville,FDR-CN-L2,high
+FAC-L3-LSE,Synthetic Private Health Device LSE Group,healthcare,Central-Nassau,Hicksville,FDR-CN-L3,medium
+FAC-UNKNOWN,Synthetic FAC-UNKNOWN,healthcare,Central-Nassau,Hicksville,FDR-CN-UNKNOWN,unknown
+FAC-MULTI-L1,Synthetic FAC-MULTI-L1,hospital,Central-Nassau,Hicksville,FDR-CN-MULTI-L1,critical
+FAC-MULTI-L3A,Synthetic FAC-MULTI-L3A,healthcare,Central-Nassau,Hicksville,FDR-CN-MULTI-L1,medium
+FAC-MULTI-L2,Synthetic FAC-MULTI-L2,nursing_home,Central-Nassau,Hicksville,FDR-CN-MULTI-L2,high
+FAC-MULTI-L3B,Synthetic FAC-MULTI-L3B,healthcare,Central-Nassau,Hicksville,FDR-CN-MULTI-L2,medium
+FAC-CF-AGE,Synthetic FAC-CF-AGE,nursing_home,Central-Nassau,Hicksville,FDR-CN-CF-AGE,high
+FAC-QN-01,Hewlett Regional Medical Center,hospital,Queens-Nassau,Hewlett,FDR-QN-01,critical
+FAC-QN-02,Elmont Emergency Services Center,emergency_services,Queens-Nassau,Elmont,FDR-QN-02,critical
+FAC-QN-03,Rockaway Park Emergency Shelter,shelter,Queens-Nassau,Rockaway Park,FDR-QN-03,critical
+FAC-QN-04,Valley Stream Fire District Headquarters,emergency_services,Queens-Nassau,Valley Stream,FDR-QN-04,critical
+FAC-QN-05,Arverne Police Precinct,emergency_services,Queens-Nassau,Arverne,FDR-QN-05,critical
+FAC-CN-01,Levittown Regional Medical Center,hospital,Central-Nassau,Levittown,FDR-CN-01,critical
+FAC-CN-02,Garden City Emergency Services Center,emergency_services,Central-Nassau,Garden City,FDR-CN-02,critical
+FAC-CN-03,Hempstead Emergency Shelter,shelter,Central-Nassau,Hempstead,FDR-CN-03,critical
+FAC-CN-04,Mineola Fire District Headquarters,emergency_services,Central-Nassau,Mineola,FDR-CN-04,critical
+FAC-CN-05,Freeport Police Precinct,emergency_services,Central-Nassau,Freeport,FDR-CN-05,critical
+FAC-WS-01,Huntington Regional Medical Center,hospital,Western Suffolk,Huntington,FDR-WS-01,critical
+FAC-WS-02,Babylon Emergency Services Center,emergency_services,Western Suffolk,Babylon,FDR-WS-02,critical
+FAC-WS-03,Commack Emergency Shelter,shelter,Western Suffolk,Commack,FDR-WS-03,critical
+FAC-WS-04,Bay Shore Fire District Headquarters,emergency_services,Western Suffolk,Bay Shore,FDR-WS-04,critical
+FAC-WS-05,Ronkonkoma Police Precinct,emergency_services,Western Suffolk,Ronkonkoma,FDR-WS-05,critical
+FAC-ES-01,Yaphank Regional Medical Center,hospital,Eastern Suffolk,Yaphank,FDR-ES-01,critical
+FAC-ES-02,Center Moriches Emergency Services Center,emergency_services,Eastern Suffolk,Center Moriches,FDR-ES-02,critical
+FAC-ES-03,Hampton Bays Emergency Shelter,shelter,Eastern Suffolk,Hampton Bays,FDR-ES-03,critical
+FAC-ES-04,Wading River Fire District Headquarters,emergency_services,Eastern Suffolk,Wading River,FDR-ES-04,critical
+FAC-ES-05,Manorville Police Precinct,emergency_services,Eastern Suffolk,Manorville,FDR-ES-05,critical

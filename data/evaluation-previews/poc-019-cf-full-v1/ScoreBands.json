@@ -1,0 +1,26 @@
+{
+  "bands": [
+    {
+      "band_id": "evaluation_band_1",
+      "maximum": 99,
+      "minimum": 0
+    },
+    {
+      "band_id": "evaluation_band_2",
+      "maximum": 199,
+      "minimum": 100
+    },
+    {
+      "band_id": "evaluation_band_3",
+      "maximum": 299,
+      "minimum": 200
+    },
+    {
+      "band_id": "evaluation_band_4",
+      "maximum": null,
+      "minimum": 300
+    }
+  ],
+  "evaluation_only": true,
+  "review_status": "approved_sme_for_evaluation"
+}

@@ -159,6 +159,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md` | Drafted | Approval-ready hybrid Copilot POC scope, acceptance suite, sequencing, and safety boundary |
 | `docs/900_Delivery/909_Scenario_Data_Integrity_Implementation_Plan.md` | Drafted | Cross-scenario facility linkage, generator validation, timeline consistency, and Copilot evidence correction |
 | `docs/900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md` | Drafted | Deferred reusable expand/restore behavior for data-heavy tab workspaces |
+| `docs/900_Delivery/911_POC_019_Critical_Facility_Evaluation_Plan.md` | Implemented | Sample-first POC-019 critical-facility evaluation, approved SME decisions, complete isolated dataset, and production-policy gate |
 
 ## Planned Documentation Structure
 

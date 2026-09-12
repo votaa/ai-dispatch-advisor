@@ -1,0 +1,43 @@
+[
+  {
+    "action": "overridden",
+    "example_id": "OVERRIDE-BACKUP-GENERATION",
+    "expected_assignment_created": false,
+    "expected_original_recommendation_preserved": true,
+    "reason": "Critical facility confirmed on backup generation; reassess immediate priority.",
+    "review_status": "approved_sme"
+  },
+  {
+    "action": "overridden",
+    "example_id": "OVERRIDE-FIELD-SAFETY",
+    "expected_assignment_created": false,
+    "expected_original_recommendation_preserved": true,
+    "reason": "Field report identifies an energized-wire safety condition not yet present in source data.",
+    "review_status": "approved_sme"
+  },
+  {
+    "action": "modified",
+    "example_id": "MODIFIED-RANKED-ALTERNATIVE",
+    "expected_assignment_created": true,
+    "expected_original_recommendation_preserved": true,
+    "reason": "Use a ranked alternative crew based on current switching coordination.",
+    "review_status": "approved_sme"
+  },
+  {
+    "action": "overridden",
+    "example_id": "OVERRIDE-MISSING-REASON",
+    "expected_error": "decision_reason_required",
+    "reason": "",
+    "review_status": "contract_regression"
+  },
+  {
+    "action": "overridden",
+    "example_id": "OVERRIDE-ESCALATION",
+    "expected_assignment_created": false,
+    "expected_original_recommendation_preserved": true,
+    "expected_queue_reordered": false,
+    "expected_score_mutated": false,
+    "reason": "Escalation: supervisor directed this incident ahead of the recommended ordering due to operational conditions.",
+    "review_status": "approved_sme"
+  }
+]
