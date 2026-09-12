@@ -2,21 +2,21 @@
 
 ## Status and Approval Gate
 
-Status: Implemented behind an inactive configuration gate; awaiting default-activation approval.
+Status: Implemented, smoke-tested, and approved as the default policy.
 
 Date: 2026-09-12
 
 This plan translated the SME-approved POC-019 evaluation policy into an operational POC
-implementation. The owner approved implementation on 2026-09-12. The new policy is implemented
-but inactive by default; the evaluation scenario was not published and existing scenario data was
-not changed.
+implementation. The owner approved implementation on 2026-09-12. After the focused API/UI smoke
+test passed, the owner approved `incident-priority-cf-level-v1` as the default policy on the same
+date. The evaluation scenario was not published and existing scenario data was not changed.
 
-The implementation approval did not authorize enabling the new policy by default. Default
-activation remains a separate, evidence-backed owner decision after verification.
+Default activation occurred only after the separate, evidence-backed owner approval. The prior
+`incident-priority-v1` policy remains available as the immediate rollback selector.
 
 ## Problem Statement
 
-The active `deterministic-scoring-v2` / `incident-priority-v1` policy gives every incident marked
+The prior `deterministic-scoring-v2` / `incident-priority-v1` policy gives every incident marked
 as affecting a critical facility the same `+80` contribution. It cannot distinguish Level 1,
 Level 2, and Level 3 facilities, cannot use the highest level when multiple facilities match a
 feeder, and does not have an operational response for an unknown facility level.
@@ -171,10 +171,10 @@ version, proposed as:
 - `algorithm_version`: `deterministic-scoring-v3`
 - `policy_version`: `incident-priority-cf-level-v1`
 
-Select the policy from an allow-listed environment setting such as `AIDA_INCIDENT_POLICY_VERSION`.
-During implementation and verification, omission must continue selecting `incident-priority-v1`.
-Unknown configuration values must fail startup with a clear error rather than silently selecting
-another policy.
+Select the policy from the allow-listed `AIDA_INCIDENT_POLICY_VERSION` environment setting.
+Following approval, omission selects `incident-priority-cf-level-v1`; explicitly selecting
+`incident-priority-v1` performs rollback. Unknown configuration values must fail startup with a
+clear error rather than silently selecting another policy.
 
 ### 2. Typed facility-impact resolution
 
@@ -312,25 +312,26 @@ avoid an additive contract.
       compatible.
 - [x] Escalation remains reason text under `overridden` and cannot mutate scoring or queue order.
 - [x] `incident-priority-v1` remains selectable and reproduces its current results.
-- [x] The new policy remains inactive until post-implementation evidence is reviewed and default
-      activation is explicitly approved.
+- [x] The new policy remained inactive until post-implementation evidence and smoke-test results
+      were reviewed and default activation was explicitly approved.
 
 ## Implementation Sequence
 
-1. Completed: added policy schema, policy registry, validation, and inactive configuration selection.
+1. Completed: added policy schema, policy registry, validation, and opt-in configuration selection.
 2. Completed: added the typed facility-impact resolver and focused unit tests.
 3. Completed: implemented new-policy scoring and explicit configured rank precedence.
 4. Completed: wired active scenario facility context through incident and recommendation services.
 5. Completed: added withheld visibility, typed API behavior, and the minimal frontend warning presentation.
 6. Completed: ran the approved POC-019 evaluation as an operational acceptance oracle.
 7. Completed: ran baseline-policy and full application regressions.
-8. Open: review the implementation diff and verification evidence with the owner.
-9. Only after explicit activation approval, select `incident-priority-cf-level-v1` in the target
-   POC configuration and perform a focused API/UI smoke test.
+8. Completed: reviewed the implementation diff and verification evidence with the owner.
+9. Completed: selected `incident-priority-cf-level-v1` for a focused API/UI smoke test; the owner
+   reported that the smoke tests passed and then explicitly approved it as the default.
 
 ## Rollout Safeguards
 
-- Land the implementation with `incident-priority-v1` still selected by default.
+- Landed the initial implementation with `incident-priority-v1` selected until smoke-test and
+  activation approval completed.
 - Refuse unknown policy selectors at startup.
 - Record algorithm and policy versions in every new recommendation explanation and persisted
   decision snapshot.
@@ -342,7 +343,7 @@ avoid an additive contract.
 
 ## Implementation Verification
 
-Verification completed on 2026-09-12 with the new policy still inactive by default:
+Implementation verification completed on 2026-09-12 before default activation:
 
 - Backend suite: `185 passed`.
 - Frontend suite: `43 passed`.
@@ -360,6 +361,8 @@ Verification completed on 2026-09-12 with the new policy still inactive by defau
   leaders were unchanged.
 - An in-process API check with the opt-in selector returned
   `deterministic-scoring-v3` / `incident-priority-cf-level-v1` in recommendation evidence.
+- The owner subsequently reported that the focused API/UI smoke tests passed, restored the prior
+  default, and committed the gated implementation before separately approving default activation.
 
 ## Rollback
 
@@ -384,8 +387,9 @@ not the first rollback action; the versioned policy selector is.
 | Overrides become mistaken for score changes | Preserve decision semantics and assert no score/queue mutation. |
 | Generator severity correlation is mistaken for scoring policy | Keep generator behavior out of scope and test low-severity LSE through the approved fixture. |
 
-## Activation Approval Pending
+## Activation Approval
 
-Implementation is complete with `incident-priority-v1` still selected by default. Enabling
-`incident-priority-cf-level-v1` in a target POC runtime requires explicit owner approval after
-reviewing the implementation and verification evidence.
+The owner explicitly approved `incident-priority-cf-level-v1` as the default on 2026-09-12 after
+the implementation review and focused smoke tests passed. Omission of
+`AIDA_INCIDENT_POLICY_VERSION` now selects it. The prior `incident-priority-v1` policy remains
+allow-listed for immediate rollback.

@@ -288,9 +288,9 @@ Actions:
 - Confirm the scenario data is internally consistent.
 - Review incident priority, crew skills, availability, location, and critical facility flags.
 - Confirm the configured policy. Omission or
-  `AIDA_INCIDENT_POLICY_VERSION=incident-priority-v1` uses the established flat `+80` behavior;
-  `AIDA_INCIDENT_POLICY_VERSION=incident-priority-cf-level-v1` opts into the POC-019 level-aware
-  policy after approval.
+  `AIDA_INCIDENT_POLICY_VERSION=incident-priority-cf-level-v1` uses the approved POC-019
+  level-aware behavior. Set `AIDA_INCIDENT_POLICY_VERSION=incident-priority-v1` only when rolling
+  back to the prior flat `+80` behavior.
 - Restart the backend after changing the policy selector. An unsupported selector intentionally
   fails startup rather than silently falling back.
 - For rollback, restore `AIDA_INCIDENT_POLICY_VERSION=incident-priority-v1`, restart the backend,

@@ -24,8 +24,8 @@ def test_every_manifested_scenario_produces_a_valid_explained_recommendation() -
         assert incidents, scenario_id
         assert recommendation.incident_id == incidents[0].incident_id
         assert recommendation.explanation is not None
-        assert recommendation.explanation.algorithm_version == "deterministic-scoring-v2"
-        assert recommendation.explanation.policy_version == "incident-priority-v1"
+        assert recommendation.explanation.algorithm_version == "deterministic-scoring-v3"
+        assert recommendation.explanation.policy_version == "incident-priority-cf-level-v1"
         assert recommendation.explanation.confidence_rationale.reason
         assert all(
             candidate.crew_id

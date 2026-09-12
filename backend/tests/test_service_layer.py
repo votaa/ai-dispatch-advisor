@@ -18,8 +18,8 @@ def test_services_return_typed_domain_models() -> None:
     recommendation = services.recommendations.recommend()
     assert isinstance(recommendation, Recommendation)
     assert recommendation.explanation is not None
-    assert recommendation.explanation.algorithm_version == "deterministic-scoring-v2"
-    assert recommendation.explanation.policy_version == "incident-priority-v1"
+    assert recommendation.explanation.algorithm_version == "deterministic-scoring-v3"
+    assert recommendation.explanation.policy_version == "incident-priority-cf-level-v1"
     assert recommendation.explanation.confidence_rationale.score == recommendation.recommended_crew.suitability_score
     assert recommendation.explanation.constraints
     assert services.recommendations.dashboard().scenario == "base"

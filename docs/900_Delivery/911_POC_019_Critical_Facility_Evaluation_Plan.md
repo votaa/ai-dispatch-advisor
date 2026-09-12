@@ -12,8 +12,10 @@ scenario. Production scoring remains unchanged and requires a separate approval.
 
 ## Current and Candidate Policies
 
-The baseline is the active `deterministic-scoring-v2` / `incident-priority-v1` policy. All
-critical-facility incidents receive the current flat `+80` contribution.
+The evaluation baseline was the then-active `deterministic-scoring-v2` /
+`incident-priority-v1` policy. All critical-facility incidents received the flat `+80`
+contribution. The approved `incident-priority-cf-level-v1` policy became the runtime default on
+2026-09-12 after implementation and smoke-test approval.
 
 The evaluation candidate uses these SME-approved evaluation values:
 
@@ -114,8 +116,9 @@ and authorized complete evaluation generation. The approved decisions cover:
 5. Completed: drafted the separately gated operational scoring-policy implementation plan in
    `912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md`.
 6. Completed: obtained explicit owner approval and implemented the operational policy behind an
-   inactive configuration gate.
-7. Open: obtain explicit owner approval before selecting the new policy by default.
+   initial opt-in configuration gate.
+7. Completed: focused API/UI smoke tests passed and the owner explicitly approved the new policy
+   as the default on 2026-09-12.
 8. Always: never overwrite `data/scenarios`, `data/scenario-previews`, or a prior evaluation
    package.
 

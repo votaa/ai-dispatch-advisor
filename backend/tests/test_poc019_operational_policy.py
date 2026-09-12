@@ -72,11 +72,15 @@ def test_operational_policy_versions_and_weights_are_explicit() -> None:
     ]
 
 
-def test_policy_selector_defaults_to_existing_policy_and_rejects_unknown(
+def test_policy_selector_defaults_to_operational_policy_and_supports_rollback(
     monkeypatch,
 ) -> None:
     monkeypatch.delenv("AIDA_INCIDENT_POLICY_VERSION", raising=False)
+    assert configured_recommendation_policy() is POC019_OPERATIONAL_RECOMMENDATION_POLICY
+
+    monkeypatch.setenv("AIDA_INCIDENT_POLICY_VERSION", "incident-priority-v1")
     assert configured_recommendation_policy() is DEFAULT_RECOMMENDATION_POLICY
+
     assert (
         recommendation_policy_for_version("incident-priority-cf-level-v1")
         is POC019_OPERATIONAL_RECOMMENDATION_POLICY

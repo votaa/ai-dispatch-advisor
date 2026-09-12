@@ -454,6 +454,8 @@ RECOMMENDATION_POLICIES = {
     ),
 }
 
+DEFAULT_INCIDENT_POLICY_VERSION = POC019_OPERATIONAL_RECOMMENDATION_POLICY.policy_version
+
 
 def recommendation_policy_for_version(version: str) -> RecommendationPolicy:
     try:
@@ -468,6 +470,6 @@ def recommendation_policy_for_version(version: str) -> RecommendationPolicy:
 def configured_recommendation_policy() -> RecommendationPolicy:
     version = os.getenv(
         "AIDA_INCIDENT_POLICY_VERSION",
-        DEFAULT_RECOMMENDATION_POLICY.policy_version,
+        DEFAULT_INCIDENT_POLICY_VERSION,
     )
     return recommendation_policy_for_version(version)
