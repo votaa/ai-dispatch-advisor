@@ -186,14 +186,13 @@ A score of at least `115` contributes to `high` confidence when blocking constra
 
 Tie-break fields and directions are validated configuration. Unsupported, duplicate, or inconsistent source-order rules fail policy validation rather than falling back silently.
 
-### POC-019 Opt-In Critical-Facility Policy
+### POC-019 Critical-Facility Policy
 
-`deterministic-scoring-v3` / `incident-priority-cf-level-v1` is implemented but is not the
-default policy. It is selected at backend startup only when
-`AIDA_INCIDENT_POLICY_VERSION=incident-priority-cf-level-v1` is configured; omission continues to
-select `incident-priority-v1`.
+`deterministic-scoring-v3` / `incident-priority-cf-level-v1` is the approved default policy.
+Omitting `AIDA_INCIDENT_POLICY_VERSION` selects it. Explicitly configure
+`AIDA_INCIDENT_POLICY_VERSION=incident-priority-v1` to roll back to the prior flat `+80` policy.
 
-The opt-in policy resolves facility rows through the existing `region + feeder` linkage and
+The policy resolves facility rows through the existing `region + feeder` linkage and
 applies only the highest matched level once: Level 1 `+120`, Level 2 `+80`, or Level 3 `+40`.
 Scores use inclusive bands `0-99`, `100-199`, `200-299`, and `300+`, followed by the approved
 band, hazard, numeric score, severity, CF-level, age, customers, and stable-ID ordering. An

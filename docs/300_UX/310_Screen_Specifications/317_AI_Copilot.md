@@ -99,6 +99,11 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 
 ## Open POC TODOs
 
+- **POC-025 — Critical Facility Level queries:** Add deterministic answers for Level 1–3
+  breakdowns, individual-level filters, selected-incident level questions, highest-level-once
+  incident counts, separately labeled facility-record counts, and unknown/withheld warnings. See
+  the [deferred implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
+
 ## Acceptance Criteria
 
 - Prompt examples are visible
@@ -123,3 +128,4 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - [Recommendation Experience](../303_Recommendation_Experience.md)
 - [Explainability and Trust](../304_Explainability_and_Trust.md)
 - [POC-002 AI Copilot Implementation Plan](../../900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md)
+- [POC-025 Critical Facility Level Copilot Queries Plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md)
