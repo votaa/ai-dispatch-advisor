@@ -76,10 +76,18 @@ backend/.venv/bin/python scripts/generate_poc019_evaluation.py \
   --write
 ```
 
-The generated `poc-019-cf-full-v1` directory contains 2,000 incidents, 500 available crews,
+The corrected `poc-019-cf-full-v2` directory contains 2,000 incidents, 500 available crews,
 17 approved controlled comparisons, 29 facilities, application scenario files, baseline and
 candidate evidence, score bands, override examples, and a hash manifest. It is intentionally
 outside `data/scenarios` and is not automatically discoverable by the running application.
+
+`poc-019-cf-full-v1` remains preserved as historical review evidence. During operational-engine
+verification, a background-row parsing defect was found in its expected results: CSV text
+`"false"` was treated as truthy when candidate facility levels were resolved. That incorrectly
+withheld 1,750 background incidents and awarded a level contribution to some other non-CF rows.
+The 17 controlled SME cases used actual booleans and were unaffected. `full-v2` correctly contains
+1,999 ranked incidents and one approved unknown-level withheld incident, regenerates the hash
+manifest and complete expected ranking, and does not overwrite `full-v1`.
 
 ## SME Review Record
 
@@ -105,9 +113,10 @@ and authorized complete evaluation generation. The approved decisions cover:
 4. Completed: obtained explicit approval and generated the complete evaluation scenario.
 5. Completed: drafted the separately gated operational scoring-policy implementation plan in
    `912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md`.
-6. Open: obtain explicit owner approval of that plan before modifying the engine; default policy
-   activation remains a later approval after implementation verification.
-7. Always: never overwrite `data/scenarios`, `data/scenario-previews`, or a prior evaluation
+6. Completed: obtained explicit owner approval and implemented the operational policy behind an
+   inactive configuration gate.
+7. Open: obtain explicit owner approval before selecting the new policy by default.
+8. Always: never overwrite `data/scenarios`, `data/scenario-previews`, or a prior evaluation
    package.
 
 ## Verification

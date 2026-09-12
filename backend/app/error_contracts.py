@@ -17,6 +17,7 @@ from .services.errors import (
     DecisionCrewSelectionError,
     DecisionReasonRequiredError,
     EntityNotFoundError,
+    IncidentRankingWithheldError,
 )
 
 
@@ -202,6 +203,28 @@ async def _decision_crew_selection_handler(
     )
 
 
+async def _incident_ranking_withheld_handler(
+    request: Request,
+    exc: IncidentRankingWithheldError,
+) -> JSONResponse:
+    return _error_response(
+        request,
+        status_code=409,
+        code="incident_ranking_withheld",
+        message=str(exc),
+        details=[
+            {
+                "location": "incident.critical_facility",
+                "message": exc.warning,
+                "type": "value_error.incident_ranking_withheld",
+                "matched_facility_ids": exc.matched_facility_ids,
+            }
+        ],
+        entity="Incident",
+        entity_id=exc.incident_id,
+    )
+
+
 async def _scenario_service_error_handler(
     request: Request,
     exc: ScenarioServiceError,
@@ -285,6 +308,7 @@ def install_error_contract(app: FastAPI) -> None:
     app.add_exception_handler(DecisionReasonRequiredError, _decision_reason_required_handler)
     app.add_exception_handler(DecisionConflictError, _decision_conflict_handler)
     app.add_exception_handler(DecisionCrewSelectionError, _decision_crew_selection_handler)
+    app.add_exception_handler(IncidentRankingWithheldError, _incident_ranking_withheld_handler)
     app.add_exception_handler(ScenarioServiceError, _scenario_service_error_handler)
     app.add_exception_handler(RequestValidationError, _request_validation_error_handler)
     app.add_exception_handler(HTTPException, _http_exception_handler)

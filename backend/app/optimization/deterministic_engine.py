@@ -38,7 +38,18 @@ class DeterministicOptimizationEngine:
         ranked = [
             RankedIncident(incident=incident, score=self._score_incident(incident))
             for incident in incidents
+            if self._incident_is_rankable(incident)
         ]
+        if self._policy.incident_scoring.critical_facility_weights is not None:
+            for rule in reversed(self._policy.incident_tie_breakers):
+                ranked.sort(
+                    key=lambda result, field=rule.field: self._operational_rank_value(
+                        result,
+                        field,
+                    ),
+                    reverse=rule.direction == "descending",
+                )
+            return ranked
         for rule in reversed(self._policy.incident_tie_breakers):
             if rule.direction == "source_order":
                 continue
@@ -52,10 +63,38 @@ class DeterministicOptimizationEngine:
         ranked.sort(key=lambda result: result.score.total_score, reverse=True)
         return ranked
 
+    def _incident_is_rankable(self, incident: Incident) -> bool:
+        if self._policy.incident_scoring.critical_facility_weights is None:
+            return True
+        return (
+            incident.ranking_status != "withheld"
+            and (not incident.critical_facility or incident.critical_facility_level is not None)
+        )
+
     def _score_incident(self, incident: Incident) -> IncidentScore:
         scoring = self._policy.incident_scoring
         severity = incident.severity.lower()
         hazard_present = incident.hazard.lower() != "none"
+        facility_weights = scoring.critical_facility_weights
+        if facility_weights is None:
+            facility_raw_value = incident.critical_facility
+            facility_configured_value = scoring.critical_facility_bonus
+            facility_contribution = (
+                scoring.critical_facility_bonus if incident.critical_facility else 0
+            )
+            facility_calculation = "conditional_bonus"
+        else:
+            facility_raw_value = (
+                f"level_{incident.critical_facility_level}"
+                if incident.critical_facility_level is not None
+                else "none"
+            )
+            facility_configured_value = facility_weights.for_level(
+                incident.critical_facility_level
+            )
+            facility_contribution = facility_configured_value
+            facility_calculation = "configured_weight"
+
         contributions = [
             IncidentScoreContribution(
                 factor_id="customers_out",
@@ -66,10 +105,10 @@ class DeterministicOptimizationEngine:
             ),
             IncidentScoreContribution(
                 factor_id="critical_facility",
-                raw_value=incident.critical_facility,
-                configured_value=scoring.critical_facility_bonus,
-                contribution=scoring.critical_facility_bonus if incident.critical_facility else 0,
-                calculation="conditional_bonus",
+                raw_value=facility_raw_value,
+                configured_value=facility_configured_value,
+                contribution=facility_contribution,
+                calculation=facility_calculation,
             ),
             IncidentScoreContribution(
                 factor_id="hazard",
@@ -100,6 +139,32 @@ class DeterministicOptimizationEngine:
             algorithm_version=self._policy.algorithm_version,
             policy_version=self._policy.policy_version,
         )
+
+    def _operational_rank_value(
+        self,
+        result: RankedIncident,
+        field: str,
+    ) -> int | str:
+        incident = result.incident
+        if field == "score_band":
+            return self._score_band_rank(result.score.total_score)
+        if field == "hazard_presence":
+            return int(incident.hazard.strip().lower() != "none")
+        if field == "total_score":
+            return result.score.total_score
+        if field == "critical_facility_level":
+            return (
+                4 - incident.critical_facility_level
+                if incident.critical_facility_level is not None
+                else 0
+            )
+        return self._incident_tie_value(incident, field)
+
+    def _score_band_rank(self, score: int) -> int:
+        for index, band in enumerate(self._policy.score_bands):
+            if score >= band.minimum and (band.maximum is None or score <= band.maximum):
+                return index
+        raise ValueError(f"Score {score} does not belong to a configured operational band")
 
     def _incident_tie_value(self, incident: Incident, field: str) -> int | str:
         if field == "severity":
@@ -230,7 +295,14 @@ class DeterministicOptimizationEngine:
                 factor_id=contribution.factor_id,
                 description=f"Incident {contribution.factor_id.replace('_', ' ')} contribution.",
                 contribution=contribution.contribution,
-                evidence=f"Raw value: {contribution.raw_value}",
+                evidence=(
+                    "Resolved Level "
+                    f"{request.incident.critical_facility_level} from facility IDs: "
+                    + ", ".join(request.incident.matched_critical_facility_ids)
+                    if contribution.factor_id == "critical_facility"
+                    and request.incident.critical_facility_level is not None
+                    else f"Raw value: {contribution.raw_value}"
+                ),
             )
             for contribution in incident_score.contributions
         ]

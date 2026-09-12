@@ -132,6 +132,10 @@ class Incident(DomainModel):
     etr: str
     assigned_crews: list[AssignedCrew] = Field(default_factory=list)
     current_decision: Optional[RecommendationDecision] = None
+    critical_facility_level: Optional[Literal[1, 2, 3]] = None
+    matched_critical_facility_ids: list[str] = Field(default_factory=list)
+    ranking_status: Literal["ranked", "withheld"] = "ranked"
+    ranking_warning: Optional[str] = None
 
 
 class Assignment(DomainModel):

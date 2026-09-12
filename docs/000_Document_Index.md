@@ -160,7 +160,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/909_Scenario_Data_Integrity_Implementation_Plan.md` | Drafted | Cross-scenario facility linkage, generator validation, timeline consistency, and Copilot evidence correction |
 | `docs/900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md` | Drafted | Deferred reusable expand/restore behavior for data-heavy tab workspaces |
 | `docs/900_Delivery/911_POC_019_Critical_Facility_Evaluation_Plan.md` | Implemented | Sample-first POC-019 critical-facility evaluation, approved SME decisions, complete isolated dataset, and production-policy gate |
-| `docs/900_Delivery/912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md` | Drafted | Approval-gated operational implementation of level-specific CF scoring, ranking, warnings, compatibility, activation, and rollback |
+| `docs/900_Delivery/912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md` | Implemented | Inactive-by-default level-specific CF scoring, ranking, warnings, compatibility, activation gate, and rollback |
 
 ## Planned Documentation Structure
 

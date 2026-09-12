@@ -91,21 +91,23 @@ def dashboard_summary(
     crews: list[dict[str, Any]],
     assignments: list[dict[str, Any]],
     scenario_id: str = "base",
+    all_incidents: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    metric_incidents = all_incidents if all_incidents is not None else ranked_incidents
     active_assigned_crews = {row.get("crew_id") for row in assignments if row.get("status") == "active"}
     return {
-        "active_incidents": len(ranked_incidents),
-        "customers_out": sum(int(row.get("customers_out") or 0) for row in ranked_incidents),
+        "active_incidents": len(metric_incidents),
+        "customers_out": sum(int(row.get("customers_out") or 0) for row in metric_incidents),
         "available_crews": sum(
             1 for row in crews if row.get("status") == "available" and row.get("crew_id") not in active_assigned_crews
         ),
         "assigned_crews": len(active_assigned_crews),
         "critical_facility_incidents": sum(
-            1 for row in ranked_incidents if row.get("critical_facility")
+            1 for row in metric_incidents if row.get("critical_facility")
         ),
         "high_priority_incidents": sum(
             1
-            for row in ranked_incidents
+            for row in metric_incidents
             if str(row.get("severity")).lower() in {"critical", "high"}
         ),
         # The dashboard supports a bounded client-side display limit up to 50.

@@ -26,9 +26,9 @@ from .scenario_generator import (
 
 
 POC019_DATASET_ID = "poc-019-cf-sample-v2"
-POC019_COMPLETE_DATASET_ID = "poc-019-cf-full-v1"
+POC019_COMPLETE_DATASET_ID = "poc-019-cf-full-v2"
 POC019_SAMPLE_DATASET_VERSION = "sample-v2"
-POC019_COMPLETE_DATASET_VERSION = "full-v1"
+POC019_COMPLETE_DATASET_VERSION = "full-v2"
 POC019_SEED = 20260912
 POC019_COMPLETE_INCIDENT_COUNT = 2000
 POC019_COMPLETE_CREW_COUNT = 500
@@ -171,7 +171,15 @@ def _facility(
 def resolve_facility_level(
     incident: dict[str, Any], facilities: Iterable[dict[str, Any]]
 ) -> FacilityResolution:
-    if not incident["critical_facility"]:
+    critical_facility = incident["critical_facility"]
+    if isinstance(critical_facility, bool):
+        has_critical_facility = critical_facility
+    else:
+        normalized = str(critical_facility).strip().lower()
+        if normalized not in {"true", "false"}:
+            raise ValueError("critical_facility must be a boolean or true/false text")
+        has_critical_facility = normalized == "true"
+    if not has_critical_facility:
         return FacilityResolution(level=None, matched_facility_ids=())
 
     matches = [

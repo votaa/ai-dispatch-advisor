@@ -9,6 +9,7 @@ from ..copilot_config import CopilotConfig
 from ..copilot_provider import CopilotProvider, configured_provider
 from ..geography import GeographyRegistry, TravelEstimateService
 from ..optimization.deterministic_engine import DeterministicOptimizationEngine
+from ..optimization.policy import configured_recommendation_policy
 from ..optimization.contracts import OptimizationEngine
 from .assignment_service import AssignmentService
 from .copilot_service import CopilotService
@@ -42,7 +43,9 @@ def build_services(
     copilot_provider: CopilotProvider | None = None,
     copilot_clock: Callable[[], datetime] | None = None,
 ) -> ApplicationServices:
-    optimization_engine = optimization_engine or DeterministicOptimizationEngine()
+    optimization_engine = optimization_engine or DeterministicOptimizationEngine(
+        configured_recommendation_policy()
+    )
     copilot_config = copilot_config or CopilotConfig.from_env()
     copilot_provider = copilot_provider or configured_provider(copilot_config)
     geography = GeographyRegistry.from_csv()
@@ -56,6 +59,7 @@ def build_services(
         active_scenario_id=data_loader.get_active_scenario,
         incident_rows=data_loader.incidents,
         crew_rows=data_loader.crews,
+        critical_facility_rows=data_loader.critical_facilities,
         latest_decisions=decision_store.latest_decisions_by_incident,
         assignments=assignments,
         optimization_engine=optimization_engine,

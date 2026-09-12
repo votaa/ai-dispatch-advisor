@@ -79,7 +79,7 @@ def dashboard() -> DashboardResponse:
 
 @app.get("/api/incidents")
 def incidents() -> list[Incident]:
-    return services.incidents.list_ranked()
+    return services.incidents.list_visible()
 
 
 @app.get("/api/incidents/{incident_id}")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Protocol, Union
+from typing import Literal, Optional, Protocol, Union
 
 from pydantic import Field, model_validator
 
@@ -22,6 +22,16 @@ CrewConstraintId = Literal[
     "shift_sufficiency",
 ]
 ScoreCalculation = Literal["integer_division", "conditional_bonus", "configured_weight"]
+CriticalFacilityLevel = Literal[1, 2, 3]
+IncidentRankingStatus = Literal["ranked", "withheld"]
+
+
+class CriticalFacilityImpact(DomainModel):
+    ranking_status: IncidentRankingStatus = "ranked"
+    level: Optional[CriticalFacilityLevel] = None
+    matched_facility_ids: list[str] = Field(default_factory=list)
+    warning_code: Optional[str] = None
+    warning_message: Optional[str] = None
 
 
 class IncidentScoreContribution(DomainModel):

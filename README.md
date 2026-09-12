@@ -95,6 +95,12 @@ To start the backend and frontend together:
 docker compose up
 ```
 
+The backend defaults to the existing `incident-priority-v1` scoring policy. The implemented
+POC-019 policy remains opt-in and can be exercised only by explicitly setting
+`AIDA_INCIDENT_POLICY_VERSION=incident-priority-cf-level-v1` before backend startup. Restart the
+backend after changing the selector. Set it back to `incident-priority-v1` for immediate rollback;
+scenario data and recorded decisions do not need to be rewritten.
+
 ## Demo Data
 
 Synthetic demo data lives under:

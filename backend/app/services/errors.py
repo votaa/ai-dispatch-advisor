@@ -25,3 +25,18 @@ class DecisionCrewSelectionError(ValueError):
     def __init__(self, selected_crew_id: str, message: str) -> None:
         self.selected_crew_id = selected_crew_id
         super().__init__(message)
+
+
+class IncidentRankingWithheldError(ValueError):
+    def __init__(
+        self,
+        incident_id: str,
+        warning: str,
+        matched_facility_ids: list[str],
+    ) -> None:
+        self.incident_id = incident_id
+        self.warning = warning
+        self.matched_facility_ids = matched_facility_ids
+        super().__init__(
+            f"Incident {incident_id} is withheld from automated ranking: {warning}"
+        )

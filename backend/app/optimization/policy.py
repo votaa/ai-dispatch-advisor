@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import Literal
+import os
+from typing import Literal, Optional
 
-from pydantic import ConfigDict, Field, field_validator
+from pydantic import ConfigDict, Field, field_validator, model_validator
 
 from ..domain.models import DomainModel
 
@@ -31,9 +32,35 @@ class SeverityWeights(PolicyModel):
         }.get(severity, 0)
 
 
+class CriticalFacilityWeights(PolicyModel):
+    level_1: int = Field(ge=0)
+    level_2: int = Field(ge=0)
+    level_3: int = Field(ge=0)
+
+    def for_level(self, level: Optional[int]) -> int:
+        return {
+            1: self.level_1,
+            2: self.level_2,
+            3: self.level_3,
+        }.get(level, 0)
+
+
+class ScoreBand(PolicyModel):
+    band_id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
+    minimum: int = Field(ge=0)
+    maximum: Optional[int] = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_range(self) -> "ScoreBand":
+        if self.maximum is not None and self.maximum < self.minimum:
+            raise ValueError("score band maximum must be greater than or equal to minimum")
+        return self
+
+
 class IncidentScoringPolicy(PolicyModel):
     customers_out_divisor: int = Field(default=20, gt=0)
     critical_facility_bonus: int = Field(default=80, ge=0)
+    critical_facility_weights: Optional[CriticalFacilityWeights] = None
     hazard_bonus: int = Field(default=60, ge=0)
     age_minutes_divisor: int = Field(default=10, gt=0)
     severity_weights: SeverityWeights = Field(default_factory=SeverityWeights)
@@ -94,6 +121,7 @@ class RecommendationPolicy(PolicyModel):
     constraints: list[ConstraintDefinition]
     assumptions: list[AssumptionDefinition]
     data_quality_conditions: list[DataQualityDefinition]
+    score_bands: list[ScoreBand] = Field(default_factory=list)
     incident_tie_breakers: list[TieBreakRule]
     crew_tie_breakers: list[TieBreakRule]
 
@@ -119,7 +147,17 @@ class RecommendationPolicy(PolicyModel):
     @field_validator("incident_tie_breakers")
     @classmethod
     def validate_incident_tie_breakers(cls, rules: list[TieBreakRule]) -> list[TieBreakRule]:
-        allowed = {"severity", "age_minutes", "customers_out", "incident_id", "source_order"}
+        allowed = {
+            "score_band",
+            "hazard_presence",
+            "total_score",
+            "severity",
+            "critical_facility_level",
+            "age_minutes",
+            "customers_out",
+            "incident_id",
+            "source_order",
+        }
         fields = [rule.field for rule in rules]
         unsupported = sorted(set(fields) - allowed)
         if unsupported:
@@ -130,6 +168,26 @@ class RecommendationPolicy(PolicyModel):
             if (rule.field == "source_order") != (rule.direction == "source_order"):
                 raise ValueError("source_order field and direction must be used together")
         return rules
+
+    @model_validator(mode="after")
+    def validate_score_bands(self) -> "RecommendationPolicy":
+        if not self.score_bands:
+            if self.incident_scoring.critical_facility_weights is not None:
+                raise ValueError("level-specific critical-facility scoring requires score bands")
+            return self
+        if self.score_bands[0].minimum != 0:
+            raise ValueError("score bands must start at zero")
+        for index, band in enumerate(self.score_bands):
+            is_last = index == len(self.score_bands) - 1
+            if band.maximum is None and not is_last:
+                raise ValueError("only the final score band may have no maximum")
+            if is_last and band.maximum is not None:
+                raise ValueError("the final score band must have no maximum")
+            if index:
+                previous = self.score_bands[index - 1]
+                if previous.maximum is None or band.minimum != previous.maximum + 1:
+                    raise ValueError("score bands must be ordered, contiguous, and non-overlapping")
+        return self
 
 
 POC_BASELINE_RECOMMENDATION_POLICY = RecommendationPolicy(
@@ -305,3 +363,111 @@ DEFAULT_RECOMMENDATION_POLICY = RecommendationPolicy.model_validate(
         ],
     }
 )
+
+
+POC019_OPERATIONAL_RECOMMENDATION_POLICY = RecommendationPolicy.model_validate(
+    {
+        **DEFAULT_RECOMMENDATION_POLICY.model_dump(),
+        "algorithm_version": "deterministic-scoring-v3",
+        "policy_version": "incident-priority-cf-level-v1",
+        "incident_scoring": {
+            **DEFAULT_RECOMMENDATION_POLICY.incident_scoring.model_dump(),
+            "critical_facility_weights": {
+                "level_1": 120,
+                "level_2": 80,
+                "level_3": 40,
+            },
+        },
+        "data_quality_conditions": [
+            *DEFAULT_RECOMMENDATION_POLICY.model_dump()["data_quality_conditions"],
+            {
+                "condition_id": "critical_facility_missing_link",
+                "description": (
+                    "An incident marked for critical-facility impact has no facility match."
+                ),
+                "status": "implemented",
+            },
+            {
+                "condition_id": "unknown_critical_facility_level",
+                "description": (
+                    "A matched critical facility has an unknown or blank priority level."
+                ),
+                "status": "implemented",
+            },
+        ],
+        "score_bands": [
+            {"band_id": "operational_band_1", "minimum": 0, "maximum": 99},
+            {"band_id": "operational_band_2", "minimum": 100, "maximum": 199},
+            {"band_id": "operational_band_3", "minimum": 200, "maximum": 299},
+            {"band_id": "operational_band_4", "minimum": 300, "maximum": None},
+        ],
+        "incident_tie_breakers": [
+            {
+                "field": "score_band",
+                "direction": "descending",
+                "description": "Prefer the higher operational score band.",
+            },
+            {
+                "field": "hazard_presence",
+                "direction": "descending",
+                "description": "Within a band, prefer an incident with a hazard.",
+            },
+            {
+                "field": "total_score",
+                "direction": "descending",
+                "description": "When hazard status matches, prefer the higher numeric score.",
+            },
+            {
+                "field": "severity",
+                "direction": "descending",
+                "description": "Prefer higher severity when band, hazard, and score match.",
+            },
+            {
+                "field": "critical_facility_level",
+                "direction": "descending",
+                "description": "Prefer Level 1, then Level 2, then Level 3, then no CF.",
+            },
+            {
+                "field": "age_minutes",
+                "direction": "descending",
+                "description": "Prefer the older incident when earlier criteria tie.",
+            },
+            {
+                "field": "customers_out",
+                "direction": "descending",
+                "description": "Prefer greater customer impact when earlier criteria tie.",
+            },
+            {
+                "field": "incident_id",
+                "direction": "ascending",
+                "description": "Use stable incident ID as the final tie-breaker.",
+            },
+        ],
+    }
+)
+
+
+RECOMMENDATION_POLICIES = {
+    DEFAULT_RECOMMENDATION_POLICY.policy_version: DEFAULT_RECOMMENDATION_POLICY,
+    POC019_OPERATIONAL_RECOMMENDATION_POLICY.policy_version: (
+        POC019_OPERATIONAL_RECOMMENDATION_POLICY
+    ),
+}
+
+
+def recommendation_policy_for_version(version: str) -> RecommendationPolicy:
+    try:
+        return RECOMMENDATION_POLICIES[version]
+    except KeyError as exc:
+        supported = ", ".join(sorted(RECOMMENDATION_POLICIES))
+        raise ValueError(
+            f"Unsupported AIDA incident policy '{version}'. Supported values: {supported}"
+        ) from exc
+
+
+def configured_recommendation_policy() -> RecommendationPolicy:
+    version = os.getenv(
+        "AIDA_INCIDENT_POLICY_VERSION",
+        DEFAULT_RECOMMENDATION_POLICY.policy_version,
+    )
+    return recommendation_policy_for_version(version)

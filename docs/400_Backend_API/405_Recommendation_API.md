@@ -19,7 +19,8 @@ The current recommendation implementation:
 - Ranks available crews using deterministic sample logic.
 - Returns a recommended crew.
 - Includes confidence, expected impact, explanation factors, constraints, and alternatives.
-- Runs through the `OptimizationEngine` boundary using active policy `incident-priority-v1` and algorithm `deterministic-scoring-v2`.
+- Runs through the `OptimizationEngine` boundary using default policy `incident-priority-v1` and algorithm `deterministic-scoring-v2`.
+- Provides the implemented but opt-in POC-019 policy `incident-priority-cf-level-v1` / `deterministic-scoring-v3`; the backend selects it only through the allow-listed startup configuration.
 
 Phase 5.2 makes incident-priority contributions and domain tie-breakers structured and configurable inside the engine. Public response fields and canonical scenario recommendations remain unchanged. Algorithm and policy versions currently live in the internal policy contract; Phase 5.4 will expose traceability and richer structured explanation fields through the API.
 
@@ -49,6 +50,11 @@ Generates or retrieves a dispatch recommendation for a selected incident.
 ```
 
 `incident_id` is optional in the current POC. When omitted, the backend recommends against the highest-ranked incident.
+
+Under the opt-in POC-019 policy, an incident with missing critical-facility linkage or an unknown
+matched facility level remains available through the incident endpoints but is withheld from
+automated recommendation selection. An explicit request for that incident returns `409` with
+error code `incident_ranking_withheld`, a bounded warning, and matched facility IDs.
 
 ### Current Response Shape
 

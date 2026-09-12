@@ -2,17 +2,17 @@
 
 ## Status and Approval Gate
 
-Status: Proposed; documentation only. Awaiting owner approval before implementation.
+Status: Implemented behind an inactive configuration gate; awaiting default-activation approval.
 
 Date: 2026-09-12
 
-This plan translates the SME-approved POC-019 evaluation policy into an operational POC
-implementation. It does not modify the scoring engine, activate a new policy, publish the
-evaluation scenario, or change existing scenario data.
+This plan translated the SME-approved POC-019 evaluation policy into an operational POC
+implementation. The owner approved implementation on 2026-09-12. The new policy is implemented
+but inactive by default; the evaluation scenario was not published and existing scenario data was
+not changed.
 
-Approval of this plan authorizes implementation behind an inactive configuration gate. It does
-not authorize enabling the new policy by default. Default activation remains a separate,
-evidence-backed owner decision after implementation verification.
+The implementation approval did not authorize enabling the new policy by default. Default
+activation remains a separate, evidence-backed owner decision after verification.
 
 ## Problem Statement
 
@@ -133,7 +133,7 @@ from the incident inventory.
 - Reclassifying facility types or introducing event-specific facility levels.
 - Modifying the standard scenario generator's 4% facility-record sizing or 8% linked-impact
   selection in this change.
-- Publishing `poc-019-cf-full-v1` into `data/scenarios` or overwriting any scenario.
+- Publishing `poc-019-cf-full-v2` into `data/scenarios` or overwriting any scenario.
 - Claiming production readiness for the broader application. This is an operational POC policy.
 
 ## User Stories
@@ -192,9 +192,10 @@ recommendation explanation. It must not load files directly or depend on global 
 
 ### 3. Context-aware scoring and ranking
 
-Extend the internal optimization boundary to accept active-scenario critical-facility context.
-Keep existing method calls source-compatible through optional keyword context or a typed internal
-request object with safe defaults.
+Preserve the existing `OptimizationEngine` method signatures. `IncidentService` resolves the
+active scenario's facility context into typed, optional metadata on each incident before passing
+it through the engine boundary. The engine therefore remains independent of files, loaders, and
+global scenario state, and injected test/future engines remain source-compatible.
 
 Replace chained stable sorts for the new policy with one documented rank-key construction or an
 equivalently testable approach. Keep the `incident-priority-v1` path behavior-identical, including
@@ -239,14 +240,14 @@ an accidental dependency. Confirm that:
 | File | Planned responsibility |
 | --- | --- |
 | `backend/app/optimization/policy.py` | Add validated CF weights, bands, rank precedence, policy registry, and new versions while retaining v1. |
-| `backend/app/optimization/contracts.py` | Add typed facility-resolution and ranking-status contracts; preserve existing factor IDs. |
+| `backend/app/optimization/contracts.py` | Add the typed facility-resolution contract; preserve existing engine signatures and factor IDs. |
 | `backend/app/optimization/critical_facility.py` | New side-effect-free resolver for matching, highest-level-only selection, evidence, and warnings. |
 | `backend/app/optimization/deterministic_engine.py` | Apply level-specific scoring, band-aware ranking, and context-aware explanation for the new policy. |
 | `backend/app/services/incident_service.py` | Supply facility context and separate visible, rankable, and withheld incident handling. |
 | `backend/app/services/recommendation_service.py` | Exclude withheld incidents from automatic selection and reject explicit withheld optimization. |
 | `backend/app/services/container.py` | Inject active scenario facility rows and configured policy without global engine/data coupling. |
-| `backend/app/domain/models.py` | Add optional, backward-compatible incident ranking metadata if selected by implementation review. |
-| `backend/app/api_models.py` and `backend/app/main.py` | Preserve endpoint contracts and expose a typed withheld conflict/warning path. |
+| `backend/app/domain/models.py` | Add optional, backward-compatible incident resolution and ranking metadata. |
+| `backend/app/main.py`, `backend/app/error_contracts.py`, and `backend/app/services/errors.py` | Preserve endpoint contracts and expose the typed withheld conflict path. |
 | `frontend/src/types.ts` and `frontend/src/App.tsx` | Consume optional metadata and show withheld warnings without changing dispatcher actions. |
 | `docker-compose.yml` and runbook documentation | Declare the allow-listed policy selector and activation/rollback procedure. |
 | Optimization, service, API, frontend, and POC-019 tests | Prove policy behavior, compatibility, warnings, and rollback. |
@@ -280,7 +281,7 @@ avoid an additive contract.
 - Verify Level 1/2/3/no-CF precedence before age when the earlier criteria tie.
 - Verify age, customers, and stable ID remain deterministic final criteria.
 - Compare operational results with all 17 approved records in
-  `poc-019-cf-full-v1/EvaluationCases.csv` and `ExpectedResults.json`.
+  `poc-019-cf-full-v2/EvaluationCases.csv` and `ExpectedResults.json`.
 
 ### Compatibility and regression tests
 
@@ -299,31 +300,31 @@ avoid an additive contract.
 
 ## Acceptance Criteria
 
-- [ ] All 17 approved POC-019 controlled cases pass through the operational engine.
-- [ ] Level 1/2/3 contributions are exactly `120/80/40` and no-CF contribution is `0`.
-- [ ] Multiple facilities contribute only the highest level once while retaining all evidence.
-- [ ] Every numeric score maps to exactly one approved band.
-- [ ] Ranking follows band, hazard, score, severity, CF level, age, customers, and stable ID in
+- [x] All 17 approved POC-019 controlled cases pass through the operational engine.
+- [x] Level 1/2/3 contributions are exactly `120/80/40` and no-CF contribution is `0`.
+- [x] Multiple facilities contribute only the highest level once while retaining all evidence.
+- [x] Every numeric score maps to exactly one approved band.
+- [x] Ranking follows band, hazard, score, severity, CF level, age, customers, and stable ID in
       the documented order.
-- [ ] Unknown or missing CF level never receives a guessed contribution or ranked recommendation.
-- [ ] Withheld incidents remain visible with a machine-readable and operator-visible warning.
-- [ ] The existing incident fields, endpoints, dispatcher actions, and audit records remain
+- [x] Unknown or missing CF level never receives a guessed contribution or ranked recommendation.
+- [x] Withheld incidents remain visible with a machine-readable and operator-visible warning.
+- [x] The existing incident fields, endpoints, dispatcher actions, and audit records remain
       compatible.
-- [ ] Escalation remains reason text under `overridden` and cannot mutate scoring or queue order.
-- [ ] `incident-priority-v1` remains selectable and reproduces its current results.
-- [ ] The new policy remains inactive until post-implementation evidence is reviewed and default
+- [x] Escalation remains reason text under `overridden` and cannot mutate scoring or queue order.
+- [x] `incident-priority-v1` remains selectable and reproduces its current results.
+- [x] The new policy remains inactive until post-implementation evidence is reviewed and default
       activation is explicitly approved.
 
 ## Implementation Sequence
 
-1. Add policy schema, policy registry, validation, and inactive configuration selection.
-2. Add the typed facility-impact resolver and focused unit tests.
-3. Extend the internal optimization contract and implement new-policy scoring and rank keys.
-4. Wire active scenario facility context through incident and recommendation services.
-5. Add withheld visibility, typed API behavior, and the minimal frontend warning presentation.
-6. Run the approved POC-019 evaluation as an operational acceptance oracle.
-7. Run baseline-policy and full application regressions.
-8. Review the implementation diff and verification evidence with the owner.
+1. Completed: added policy schema, policy registry, validation, and inactive configuration selection.
+2. Completed: added the typed facility-impact resolver and focused unit tests.
+3. Completed: implemented new-policy scoring and explicit configured rank precedence.
+4. Completed: wired active scenario facility context through incident and recommendation services.
+5. Completed: added withheld visibility, typed API behavior, and the minimal frontend warning presentation.
+6. Completed: ran the approved POC-019 evaluation as an operational acceptance oracle.
+7. Completed: ran baseline-policy and full application regressions.
+8. Open: review the implementation diff and verification evidence with the owner.
 9. Only after explicit activation approval, select `incident-priority-cf-level-v1` in the target
    POC configuration and perform a focused API/UI smoke test.
 
@@ -338,6 +339,27 @@ avoid an additive contract.
 - Capture pre-activation ranked-order snapshots for the selected smoke scenario and document
   expected POC-019 changes.
 - Treat unexpected withheld incidents in existing scenarios as an activation blocker.
+
+## Implementation Verification
+
+Verification completed on 2026-09-12 with the new policy still inactive by default:
+
+- Backend suite: `185 passed`.
+- Frontend suite: `43 passed`.
+- TypeScript check and Vite production build: passed.
+- Docker Compose configuration validation: passed.
+- `git diff --check`: passed.
+- All 17 approved controlled comparisons matched the operational engine results.
+- The corrected `poc-019-cf-full-v2` operational order exactly matched all 1,999 expected ranked
+  incident IDs and retained only the single approved unknown-level incident as withheld. The
+  original `full-v1` package remains preserved and documented as superseded because its evaluator
+  misread CSV text `"false"` values.
+- All six published scenarios returned the same incident count under both policies and produced
+  zero withheld incidents. The opt-in policy changed the top incident only for
+  `august-storm-preview`, from `ESD-20260810-0866` to `ESD-20260810-0765`; the other five scenario
+  leaders were unchanged.
+- An in-process API check with the opt-in selector returned
+  `deterministic-scoring-v3` / `incident-priority-cf-level-v1` in recommendation evidence.
 
 ## Rollback
 
@@ -362,9 +384,8 @@ not the first rollback action; the versioned policy selector is.
 | Overrides become mistaken for score changes | Preserve decision semantics and assert no score/queue mutation. |
 | Generator severity correlation is mistaken for scoring policy | Keep generator behavior out of scope and test low-severity LSE through the approved fixture. |
 
-## Approval Requested
+## Activation Approval Pending
 
-Owner approval of this document authorizes implementation of the new policy behind the inactive
-configuration gate and the tests described above. It does not authorize default activation.
-
-No scoring-engine implementation should begin until that approval is explicit.
+Implementation is complete with `incident-priority-v1` still selected by default. Enabling
+`incident-priority-cf-level-v1` in a target POC runtime requires explicit owner approval after
+reviewing the implementation and verification evidence.

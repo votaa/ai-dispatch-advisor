@@ -334,6 +334,17 @@ h1 {
   padding: 12px 14px;
 }
 
+.ranking-warning-banner {
+  background: #fff8e1;
+  border: 1px solid #e5c35d;
+  border-radius: 8px;
+  color: #694f00;
+  display: grid;
+  gap: 3px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+}
+
 .system-banner {
   align-items: center;
   display: flex;

@@ -208,6 +208,8 @@ function App() {
   const selectedCrewContext = selectedCrew ?? selectedIncident?.assigned_crews[0];
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
+  const withheldIncidents = incidents.filter((incident) => incident.ranking_status === "withheld");
+  const rankableIncidents = incidents.filter((incident) => incident.ranking_status !== "withheld");
   const operationalDataUnavailable = Boolean(error && !dashboard && incidents.length === 0 && crews.length === 0);
   const dashboardIncidentLimit = dashboard
     ? dashboard.active_incidents === 0
@@ -215,7 +217,7 @@ function App() {
       : Math.min(
           dashboard.active_incidents,
           Math.max(1, Math.ceil((dashboard.active_incidents * dashboardDisplayPercentage) / 100)),
-          incidents.length || dashboard.top_incidents.length
+          rankableIncidents.length || dashboard.top_incidents.length
         )
     : 0;
   const dashboardIncidentLabel = dashboard && dashboard.active_incidents === 0
@@ -237,7 +239,9 @@ function App() {
         api.scenarios(),
         api.activeScenario()
       ]);
-      setSelectedIncidentId(incidentData[0]?.incident_id);
+      setSelectedIncidentId(
+        incidentData.find((incident) => incident.ranking_status !== "withheld")?.incident_id
+      );
       setScenarios(scenarioData);
       setActiveScenario(activeScenarioData);
     } catch (err) {
@@ -312,7 +316,9 @@ function App() {
       setChatTurns([]);
 
       const { incidentData } = await refreshOperationalState();
-      setSelectedIncidentId(incidentData[0]?.incident_id);
+      setSelectedIncidentId(
+        incidentData.find((incident) => incident.ranking_status !== "withheld")?.incident_id
+      );
       setScenarioMessage(`${activatedScenario.name} activated.`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Scenario activation failed";
@@ -467,6 +473,15 @@ function App() {
           </div>
         ) : null}
 
+        {withheldIncidents.length ? (
+          <div className="ranking-warning-banner" role="alert">
+            <strong>Ranking data requires review</strong>
+            <span>
+              {withheldIncidents.length} incident{withheldIncidents.length === 1 ? " is" : "s are"} visible but withheld from automated ranking because critical-facility data is incomplete or unknown.
+            </span>
+          </div>
+        ) : null}
+
         {view === "dashboard" && (initialLoading ? (
           <ViewState title="Loading dashboard..." message="Retrieving outage, crew, and recommendation data." />
         ) : operationalDataUnavailable || !dashboard ? (
@@ -527,7 +542,7 @@ function App() {
                 </p>
                 <IncidentTable
                   emptyMessage="No priority incidents are active in this scenario."
-                  incidents={(incidents.length ? incidents : dashboard.top_incidents).slice(0, dashboardIncidentLimit)}
+                  incidents={(incidents.length ? rankableIncidents : dashboard.top_incidents).slice(0, dashboardIncidentLimit)}
                   key={`dashboard-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                   selectedIncidentId={selectedIncidentId}
                   searchLabel={`Search Top ${dashboardIncidentLimit} Incidents Shown`}
@@ -1037,6 +1052,8 @@ function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCr
         <div><dt>Status</dt><dd>{formatCrewStatus(incident.status)}</dd></div>
         <div><dt>Hazard</dt><dd>{incident.hazard}</dd></div>
         <div><dt>Critical facility</dt><dd>{incident.critical_facility ? "Yes" : "No"}</dd></div>
+        {incident.critical_facility_level ? <div><dt>CF level</dt><dd>Level {incident.critical_facility_level}</dd></div> : null}
+        {incident.ranking_status === "withheld" ? <div><dt>Ranking</dt><dd>Withheld — {incident.ranking_warning}</dd></div> : null}
         <div><dt>Incident age</dt><dd>{incident.age_minutes} min</dd></div>
         <div><dt>ETR</dt><dd>{incident.etr}</dd></div>
       </dl>
@@ -1376,6 +1393,8 @@ function IncidentTable({
     const criticalFacilityEligible = incidents.filter((incident) => matches(incident, "criticalFacility"));
     const severityRank: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
     const sorted = matching.sort((left, right) => {
+      const rankingComparison = Number(left.ranking_status === "withheld") - Number(right.ranking_status === "withheld");
+      if (rankingComparison) return rankingComparison;
       if (sort) {
         const direction = sort.direction === "asc" ? 1 : -1;
         let comparison = 0;
@@ -1416,7 +1435,9 @@ function IncidentTable({
   );
 
   useEffect(() => {
-    const firstVisibleIncident = filteredIncidents[0];
+    const firstVisibleIncident = filteredIncidents.find(
+      (incident) => incident.ranking_status !== "withheld"
+    );
     if (syncSelectionToFirst && firstVisibleIncident && lastSyncedFirstIncidentRef.current !== firstVisibleIncident.incident_id) {
       lastSyncedFirstIncidentRef.current = firstVisibleIncident.incident_id;
       onSelect(firstVisibleIncident.incident_id);

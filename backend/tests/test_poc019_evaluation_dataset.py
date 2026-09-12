@@ -230,3 +230,21 @@ def test_invalid_candidate_weights_are_rejected_without_changing_policy() -> Non
 
     assert DEFAULT_RECOMMENDATION_POLICY.model_dump() == policy_before
     assert DEFAULT_CANDIDATE_WEIGHTS == {"level_1": 120, "level_2": 80, "level_3": 40}
+
+
+def test_complete_evaluation_treats_csv_false_as_no_critical_facility() -> None:
+    package = build_complete_evaluation(incident_count=80, crew_count=40)
+    incident = next(
+        row
+        for row in package.incidents
+        if row["critical_facility"] == "false"
+        and any(
+            facility["region"] == row["region"] and facility["feeder"] == row["feeder"]
+            for facility in package.facilities
+        )
+    )
+
+    result = package.expected_results["candidate"]["incidents"][incident["incident_id"]]
+
+    assert result["facility_level"] is None
+    assert result["contributions"]["critical_facility"] == 0

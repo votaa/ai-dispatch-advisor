@@ -15,6 +15,10 @@ export type Incident = {
   etr: string;
   assigned_crews: AssignedCrew[];
   current_decision: RecommendationAction | null;
+  critical_facility_level?: 1 | 2 | 3 | null;
+  matched_critical_facility_ids?: string[];
+  ranking_status?: "ranked" | "withheld";
+  ranking_warning?: string | null;
 };
 
 export type Crew = {

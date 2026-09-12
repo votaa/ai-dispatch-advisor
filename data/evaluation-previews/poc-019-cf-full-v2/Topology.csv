@@ -1,0 +1,189 @@
+asset_id,asset_type,feeder,parent_asset_id,region,normal_status
+POC019-FEEDER-0001,feeder,FDR-CN-01,,Central-Nassau,energized
+POC019-FEEDER-0002,feeder,FDR-CN-02,,Central-Nassau,energized
+POC019-FEEDER-0003,feeder,FDR-CN-03,,Central-Nassau,energized
+POC019-FEEDER-0004,feeder,FDR-CN-04,,Central-Nassau,energized
+POC019-FEEDER-0005,feeder,FDR-CN-05,,Central-Nassau,energized
+POC019-FEEDER-0006,feeder,FDR-CN-06,,Central-Nassau,energized
+POC019-FEEDER-0007,feeder,FDR-CN-07,,Central-Nassau,energized
+POC019-FEEDER-0008,feeder,FDR-CN-08,,Central-Nassau,energized
+POC019-FEEDER-0009,feeder,FDR-CN-09,,Central-Nassau,energized
+POC019-FEEDER-0010,feeder,FDR-CN-10,,Central-Nassau,energized
+POC019-FEEDER-0011,feeder,FDR-CN-11,,Central-Nassau,energized
+POC019-FEEDER-0012,feeder,FDR-CN-12,,Central-Nassau,energized
+POC019-FEEDER-0013,feeder,FDR-CN-13,,Central-Nassau,energized
+POC019-FEEDER-0014,feeder,FDR-CN-14,,Central-Nassau,energized
+POC019-FEEDER-0015,feeder,FDR-CN-15,,Central-Nassau,energized
+POC019-FEEDER-0016,feeder,FDR-CN-16,,Central-Nassau,energized
+POC019-FEEDER-0017,feeder,FDR-CN-17,,Central-Nassau,energized
+POC019-FEEDER-0018,feeder,FDR-CN-18,,Central-Nassau,energized
+POC019-FEEDER-0019,feeder,FDR-CN-19,,Central-Nassau,energized
+POC019-FEEDER-0020,feeder,FDR-CN-20,,Central-Nassau,energized
+POC019-FEEDER-0021,feeder,FDR-CN-21,,Central-Nassau,energized
+POC019-FEEDER-0022,feeder,FDR-CN-22,,Central-Nassau,energized
+POC019-FEEDER-0023,feeder,FDR-CN-23,,Central-Nassau,energized
+POC019-FEEDER-0024,feeder,FDR-CN-24,,Central-Nassau,energized
+POC019-FEEDER-0025,feeder,FDR-CN-25,,Central-Nassau,energized
+POC019-FEEDER-0026,feeder,FDR-CN-26,,Central-Nassau,energized
+POC019-FEEDER-0027,feeder,FDR-CN-27,,Central-Nassau,energized
+POC019-FEEDER-0028,feeder,FDR-CN-28,,Central-Nassau,energized
+POC019-FEEDER-0029,feeder,FDR-CN-29,,Central-Nassau,energized
+POC019-FEEDER-0030,feeder,FDR-CN-30,,Central-Nassau,energized
+POC019-FEEDER-0031,feeder,FDR-CN-31,,Central-Nassau,energized
+POC019-FEEDER-0032,feeder,FDR-CN-32,,Central-Nassau,energized
+POC019-FEEDER-0033,feeder,FDR-CN-33,,Central-Nassau,energized
+POC019-FEEDER-0034,feeder,FDR-CN-34,,Central-Nassau,energized
+POC019-FEEDER-0035,feeder,FDR-CN-35,,Central-Nassau,energized
+POC019-FEEDER-0036,feeder,FDR-CN-36,,Central-Nassau,energized
+POC019-FEEDER-0037,feeder,FDR-CN-37,,Central-Nassau,energized
+POC019-FEEDER-0038,feeder,FDR-CN-38,,Central-Nassau,energized
+POC019-FEEDER-0039,feeder,FDR-CN-39,,Central-Nassau,energized
+POC019-FEEDER-0040,feeder,FDR-CN-40,,Central-Nassau,energized
+POC019-FEEDER-0041,feeder,FDR-CN-BAND-100-ABOVE,,Central-Nassau,energized
+POC019-FEEDER-0042,feeder,FDR-CN-BAND-100-AT,,Central-Nassau,energized
+POC019-FEEDER-0043,feeder,FDR-CN-BAND-100-BELOW,,Central-Nassau,energized
+POC019-FEEDER-0044,feeder,FDR-CN-BAND-200-ABOVE,,Central-Nassau,energized
+POC019-FEEDER-0045,feeder,FDR-CN-BAND-200-AT,,Central-Nassau,energized
+POC019-FEEDER-0046,feeder,FDR-CN-BAND-200-BELOW,,Central-Nassau,energized
+POC019-FEEDER-0047,feeder,FDR-CN-BAND-300-ABOVE,,Central-Nassau,energized
+POC019-FEEDER-0048,feeder,FDR-CN-BAND-300-AT,,Central-Nassau,energized
+POC019-FEEDER-0049,feeder,FDR-CN-BAND-300-BELOW,,Central-Nassau,energized
+POC019-FEEDER-0050,feeder,FDR-CN-CF-AGE,,Central-Nassau,energized
+POC019-FEEDER-0051,feeder,FDR-CN-HAZ-LOW,,Central-Nassau,energized
+POC019-FEEDER-0052,feeder,FDR-CN-HAZ-MED,,Central-Nassau,energized
+POC019-FEEDER-0053,feeder,FDR-CN-L1,,Central-Nassau,energized
+POC019-FEEDER-0054,feeder,FDR-CN-L1-NONE,,Central-Nassau,energized
+POC019-FEEDER-0055,feeder,FDR-CN-L2,,Central-Nassau,energized
+POC019-FEEDER-0056,feeder,FDR-CN-L2-NONE,,Central-Nassau,energized
+POC019-FEEDER-0057,feeder,FDR-CN-L3,,Central-Nassau,energized
+POC019-FEEDER-0058,feeder,FDR-CN-L3-NONE,,Central-Nassau,energized
+POC019-FEEDER-0059,feeder,FDR-CN-MULTI-L1,,Central-Nassau,energized
+POC019-FEEDER-0060,feeder,FDR-CN-MULTI-L2,,Central-Nassau,energized
+POC019-FEEDER-0061,feeder,FDR-CN-NOCF-C019,,Central-Nassau,energized
+POC019-FEEDER-0062,feeder,FDR-CN-NOCF-C020,,Central-Nassau,energized
+POC019-FEEDER-0063,feeder,FDR-CN-NOHAZ-HIGH,,Central-Nassau,energized
+POC019-FEEDER-0064,feeder,FDR-CN-OLDER,,Central-Nassau,energized
+POC019-FEEDER-0065,feeder,FDR-CN-SEV-MED-C600,,Central-Nassau,energized
+POC019-FEEDER-0066,feeder,FDR-CN-SEV-MED-C800,,Central-Nassau,energized
+POC019-FEEDER-0067,feeder,FDR-CN-UNKNOWN,,Central-Nassau,energized
+POC019-FEEDER-0068,feeder,FDR-CN-UNKNOWN-NONE,,Central-Nassau,energized
+POC019-FEEDER-0069,feeder,FDR-ES-01,,Eastern Suffolk,energized
+POC019-FEEDER-0070,feeder,FDR-ES-02,,Eastern Suffolk,energized
+POC019-FEEDER-0071,feeder,FDR-ES-03,,Eastern Suffolk,energized
+POC019-FEEDER-0072,feeder,FDR-ES-04,,Eastern Suffolk,energized
+POC019-FEEDER-0073,feeder,FDR-ES-05,,Eastern Suffolk,energized
+POC019-FEEDER-0074,feeder,FDR-ES-06,,Eastern Suffolk,energized
+POC019-FEEDER-0075,feeder,FDR-ES-07,,Eastern Suffolk,energized
+POC019-FEEDER-0076,feeder,FDR-ES-08,,Eastern Suffolk,energized
+POC019-FEEDER-0077,feeder,FDR-ES-09,,Eastern Suffolk,energized
+POC019-FEEDER-0078,feeder,FDR-ES-10,,Eastern Suffolk,energized
+POC019-FEEDER-0079,feeder,FDR-ES-11,,Eastern Suffolk,energized
+POC019-FEEDER-0080,feeder,FDR-ES-12,,Eastern Suffolk,energized
+POC019-FEEDER-0081,feeder,FDR-ES-13,,Eastern Suffolk,energized
+POC019-FEEDER-0082,feeder,FDR-ES-14,,Eastern Suffolk,energized
+POC019-FEEDER-0083,feeder,FDR-ES-15,,Eastern Suffolk,energized
+POC019-FEEDER-0084,feeder,FDR-ES-16,,Eastern Suffolk,energized
+POC019-FEEDER-0085,feeder,FDR-ES-17,,Eastern Suffolk,energized
+POC019-FEEDER-0086,feeder,FDR-ES-18,,Eastern Suffolk,energized
+POC019-FEEDER-0087,feeder,FDR-ES-19,,Eastern Suffolk,energized
+POC019-FEEDER-0088,feeder,FDR-ES-20,,Eastern Suffolk,energized
+POC019-FEEDER-0089,feeder,FDR-ES-21,,Eastern Suffolk,energized
+POC019-FEEDER-0090,feeder,FDR-ES-22,,Eastern Suffolk,energized
+POC019-FEEDER-0091,feeder,FDR-ES-23,,Eastern Suffolk,energized
+POC019-FEEDER-0092,feeder,FDR-ES-24,,Eastern Suffolk,energized
+POC019-FEEDER-0093,feeder,FDR-ES-25,,Eastern Suffolk,energized
+POC019-FEEDER-0094,feeder,FDR-ES-26,,Eastern Suffolk,energized
+POC019-FEEDER-0095,feeder,FDR-ES-27,,Eastern Suffolk,energized
+POC019-FEEDER-0096,feeder,FDR-ES-28,,Eastern Suffolk,energized
+POC019-FEEDER-0097,feeder,FDR-ES-29,,Eastern Suffolk,energized
+POC019-FEEDER-0098,feeder,FDR-ES-30,,Eastern Suffolk,energized
+POC019-FEEDER-0099,feeder,FDR-ES-31,,Eastern Suffolk,energized
+POC019-FEEDER-0100,feeder,FDR-ES-32,,Eastern Suffolk,energized
+POC019-FEEDER-0101,feeder,FDR-ES-33,,Eastern Suffolk,energized
+POC019-FEEDER-0102,feeder,FDR-ES-34,,Eastern Suffolk,energized
+POC019-FEEDER-0103,feeder,FDR-ES-35,,Eastern Suffolk,energized
+POC019-FEEDER-0104,feeder,FDR-ES-36,,Eastern Suffolk,energized
+POC019-FEEDER-0105,feeder,FDR-ES-37,,Eastern Suffolk,energized
+POC019-FEEDER-0106,feeder,FDR-ES-38,,Eastern Suffolk,energized
+POC019-FEEDER-0107,feeder,FDR-ES-39,,Eastern Suffolk,energized
+POC019-FEEDER-0108,feeder,FDR-ES-40,,Eastern Suffolk,energized
+POC019-FEEDER-0109,feeder,FDR-QN-01,,Queens-Nassau,energized
+POC019-FEEDER-0110,feeder,FDR-QN-02,,Queens-Nassau,energized
+POC019-FEEDER-0111,feeder,FDR-QN-03,,Queens-Nassau,energized
+POC019-FEEDER-0112,feeder,FDR-QN-04,,Queens-Nassau,energized
+POC019-FEEDER-0113,feeder,FDR-QN-05,,Queens-Nassau,energized
+POC019-FEEDER-0114,feeder,FDR-QN-06,,Queens-Nassau,energized
+POC019-FEEDER-0115,feeder,FDR-QN-07,,Queens-Nassau,energized
+POC019-FEEDER-0116,feeder,FDR-QN-08,,Queens-Nassau,energized
+POC019-FEEDER-0117,feeder,FDR-QN-09,,Queens-Nassau,energized
+POC019-FEEDER-0118,feeder,FDR-QN-10,,Queens-Nassau,energized
+POC019-FEEDER-0119,feeder,FDR-QN-11,,Queens-Nassau,energized
+POC019-FEEDER-0120,feeder,FDR-QN-12,,Queens-Nassau,energized
+POC019-FEEDER-0121,feeder,FDR-QN-13,,Queens-Nassau,energized
+POC019-FEEDER-0122,feeder,FDR-QN-14,,Queens-Nassau,energized
+POC019-FEEDER-0123,feeder,FDR-QN-15,,Queens-Nassau,energized
+POC019-FEEDER-0124,feeder,FDR-QN-16,,Queens-Nassau,energized
+POC019-FEEDER-0125,feeder,FDR-QN-17,,Queens-Nassau,energized
+POC019-FEEDER-0126,feeder,FDR-QN-18,,Queens-Nassau,energized
+POC019-FEEDER-0127,feeder,FDR-QN-19,,Queens-Nassau,energized
+POC019-FEEDER-0128,feeder,FDR-QN-20,,Queens-Nassau,energized
+POC019-FEEDER-0129,feeder,FDR-QN-21,,Queens-Nassau,energized
+POC019-FEEDER-0130,feeder,FDR-QN-22,,Queens-Nassau,energized
+POC019-FEEDER-0131,feeder,FDR-QN-23,,Queens-Nassau,energized
+POC019-FEEDER-0132,feeder,FDR-QN-24,,Queens-Nassau,energized
+POC019-FEEDER-0133,feeder,FDR-QN-25,,Queens-Nassau,energized
+POC019-FEEDER-0134,feeder,FDR-QN-26,,Queens-Nassau,energized
+POC019-FEEDER-0135,feeder,FDR-QN-27,,Queens-Nassau,energized
+POC019-FEEDER-0136,feeder,FDR-QN-28,,Queens-Nassau,energized
+POC019-FEEDER-0137,feeder,FDR-QN-29,,Queens-Nassau,energized
+POC019-FEEDER-0138,feeder,FDR-QN-30,,Queens-Nassau,energized
+POC019-FEEDER-0139,feeder,FDR-QN-31,,Queens-Nassau,energized
+POC019-FEEDER-0140,feeder,FDR-QN-32,,Queens-Nassau,energized
+POC019-FEEDER-0141,feeder,FDR-QN-33,,Queens-Nassau,energized
+POC019-FEEDER-0142,feeder,FDR-QN-34,,Queens-Nassau,energized
+POC019-FEEDER-0143,feeder,FDR-QN-35,,Queens-Nassau,energized
+POC019-FEEDER-0144,feeder,FDR-QN-36,,Queens-Nassau,energized
+POC019-FEEDER-0145,feeder,FDR-QN-37,,Queens-Nassau,energized
+POC019-FEEDER-0146,feeder,FDR-QN-38,,Queens-Nassau,energized
+POC019-FEEDER-0147,feeder,FDR-QN-39,,Queens-Nassau,energized
+POC019-FEEDER-0148,feeder,FDR-QN-40,,Queens-Nassau,energized
+POC019-FEEDER-0149,feeder,FDR-WS-01,,Western Suffolk,energized
+POC019-FEEDER-0150,feeder,FDR-WS-02,,Western Suffolk,energized
+POC019-FEEDER-0151,feeder,FDR-WS-03,,Western Suffolk,energized
+POC019-FEEDER-0152,feeder,FDR-WS-04,,Western Suffolk,energized
+POC019-FEEDER-0153,feeder,FDR-WS-05,,Western Suffolk,energized
+POC019-FEEDER-0154,feeder,FDR-WS-06,,Western Suffolk,energized
+POC019-FEEDER-0155,feeder,FDR-WS-07,,Western Suffolk,energized
+POC019-FEEDER-0156,feeder,FDR-WS-08,,Western Suffolk,energized
+POC019-FEEDER-0157,feeder,FDR-WS-09,,Western Suffolk,energized
+POC019-FEEDER-0158,feeder,FDR-WS-10,,Western Suffolk,energized
+POC019-FEEDER-0159,feeder,FDR-WS-11,,Western Suffolk,energized
+POC019-FEEDER-0160,feeder,FDR-WS-12,,Western Suffolk,energized
+POC019-FEEDER-0161,feeder,FDR-WS-13,,Western Suffolk,energized
+POC019-FEEDER-0162,feeder,FDR-WS-14,,Western Suffolk,energized
+POC019-FEEDER-0163,feeder,FDR-WS-15,,Western Suffolk,energized
+POC019-FEEDER-0164,feeder,FDR-WS-16,,Western Suffolk,energized
+POC019-FEEDER-0165,feeder,FDR-WS-17,,Western Suffolk,energized
+POC019-FEEDER-0166,feeder,FDR-WS-18,,Western Suffolk,energized
+POC019-FEEDER-0167,feeder,FDR-WS-19,,Western Suffolk,energized
+POC019-FEEDER-0168,feeder,FDR-WS-20,,Western Suffolk,energized
+POC019-FEEDER-0169,feeder,FDR-WS-21,,Western Suffolk,energized
+POC019-FEEDER-0170,feeder,FDR-WS-22,,Western Suffolk,energized
+POC019-FEEDER-0171,feeder,FDR-WS-23,,Western Suffolk,energized
+POC019-FEEDER-0172,feeder,FDR-WS-24,,Western Suffolk,energized
+POC019-FEEDER-0173,feeder,FDR-WS-25,,Western Suffolk,energized
+POC019-FEEDER-0174,feeder,FDR-WS-26,,Western Suffolk,energized
+POC019-FEEDER-0175,feeder,FDR-WS-27,,Western Suffolk,energized
+POC019-FEEDER-0176,feeder,FDR-WS-28,,Western Suffolk,energized
+POC019-FEEDER-0177,feeder,FDR-WS-29,,Western Suffolk,energized
+POC019-FEEDER-0178,feeder,FDR-WS-30,,Western Suffolk,energized
+POC019-FEEDER-0179,feeder,FDR-WS-31,,Western Suffolk,energized
+POC019-FEEDER-0180,feeder,FDR-WS-32,,Western Suffolk,energized
+POC019-FEEDER-0181,feeder,FDR-WS-33,,Western Suffolk,energized
+POC019-FEEDER-0182,feeder,FDR-WS-34,,Western Suffolk,energized
+POC019-FEEDER-0183,feeder,FDR-WS-35,,Western Suffolk,energized
+POC019-FEEDER-0184,feeder,FDR-WS-36,,Western Suffolk,energized
+POC019-FEEDER-0185,feeder,FDR-WS-37,,Western Suffolk,energized
+POC019-FEEDER-0186,feeder,FDR-WS-38,,Western Suffolk,energized
+POC019-FEEDER-0187,feeder,FDR-WS-39,,Western Suffolk,energized
+POC019-FEEDER-0188,feeder,FDR-WS-40,,Western Suffolk,energized

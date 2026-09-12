@@ -178,6 +178,29 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Loading scenario metadata...")).toBeTruthy();
   });
 
+  it("keeps data-quality incidents visible while withholding automatic selection", async () => {
+    const withheldIncident = {
+      ...baseIncident,
+      critical_facility_level: null,
+      matched_critical_facility_ids: ["FAC-UNKNOWN"],
+      ranking_status: "withheld",
+      ranking_warning: "Critical-facility level is unknown for matched facility IDs: FAC-UNKNOWN"
+    };
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.incidents.mockResolvedValue([withheldIncident]);
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 1,
+      top_incidents: []
+    });
+
+    render(<App />);
+
+    expect(await screen.findByText("Ranking data requires review")).toBeTruthy();
+    expect(screen.getByText(/1 incident is visible but withheld/)).toBeTruthy();
+    expect(apiMocks.optimize).not.toHaveBeenCalled();
+  });
+
   it("shows authoritative scenario freshness in UTC and updates it when scenarios switch", async () => {
     apiMocks.auditEvents.mockResolvedValue([]);
     apiMocks.dashboard.mockResolvedValueOnce(dashboard("base")).mockResolvedValueOnce(dashboard("storm"));

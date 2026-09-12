@@ -10,7 +10,7 @@ from ..optimization.deterministic_engine import DeterministicOptimizationEngine
 from ..recommendations import dashboard_summary
 from .assignment_service import AssignmentService
 from .crew_service import CrewService
-from .errors import EntityNotFoundError
+from .errors import EntityNotFoundError, IncidentRankingWithheldError
 from .incident_service import IncidentService
 
 
@@ -33,22 +33,30 @@ class RecommendationService:
         self._travel_estimates = travel_estimates
 
     def dashboard(self) -> DashboardResponse:
+        visible_incidents = self._incidents.list_visible()
         summary = dashboard_summary(
             [incident.model_dump() for incident in self._incidents.list_ranked()],
             [crew.model_dump() for crew in self._crews.list()],
             [assignment.model_dump() for assignment in self._assignments.list_active()],
             scenario_id=self._active_scenario_id(),
+            all_incidents=[incident.model_dump() for incident in visible_incidents],
         )
         return DashboardResponse.model_validate(summary)
 
     def recommend(self, incident_id: str | None = None) -> Recommendation:
-        incidents = self._incidents.list_ranked()
         if incident_id is not None:
-            incidents = [incident for incident in incidents if incident.incident_id == incident_id]
-        if not incidents:
-            raise EntityNotFoundError("Incident", incident_id)
-
-        incident = incidents[0]
+            incident = self._incidents.get(incident_id)
+            if incident.ranking_status == "withheld":
+                raise IncidentRankingWithheldError(
+                    incident.incident_id,
+                    incident.ranking_warning or "Critical-facility data requires review.",
+                    incident.matched_critical_facility_ids,
+                )
+        else:
+            incidents = self._incidents.list_ranked()
+            if not incidents:
+                raise EntityNotFoundError("Incident", incident_id)
+            incident = incidents[0]
         crews = self._crews.list()
         if self._travel_estimates is not None:
             crews = self._travel_estimates.crews_for_incident(crews, incident)
