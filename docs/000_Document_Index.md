@@ -158,7 +158,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/907_Phase_7_Implementation_Plan.md` | Drafted | Paused enterprise integration adapter plan and required owner inputs |
 | `docs/900_Delivery/908_POC_002_AI_Copilot_Implementation_Plan.md` | Drafted | Approval-ready hybrid Copilot POC scope, acceptance suite, sequencing, and safety boundary |
 | `docs/900_Delivery/909_Scenario_Data_Integrity_Implementation_Plan.md` | Drafted | Cross-scenario facility linkage, generator validation, timeline consistency, and Copilot evidence correction |
-| `docs/900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md` | Drafted | Deferred reusable expand/restore behavior for data-heavy tab workspaces |
+| `docs/900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md` | Implemented | Reusable expand/restore behavior for five data-heavy operational workspaces; pending owner smoke-test approval |
 | `docs/900_Delivery/911_POC_019_Critical_Facility_Evaluation_Plan.md` | Implemented | Sample-first POC-019 critical-facility evaluation, approved SME decisions, complete isolated dataset, and production-policy gate |
 | `docs/900_Delivery/912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md` | Implemented | Active-by-default level-specific CF scoring, ranking, warnings, compatibility, approval evidence, and rollback |
 | `docs/900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md` | Drafted | Deferred deterministic Copilot queries for Level 1–3 breakdowns, highest-level incident counts, facility-record detail, and unknown warnings |

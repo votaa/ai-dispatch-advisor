@@ -18,6 +18,7 @@ import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
 import { AutocompleteSearch, buildAutocompleteSuggestions } from "./components/AutocompleteSearch";
 import type { AutocompleteField } from "./components/AutocompleteSearch";
+import { ExpandableWorkspace } from "./components/ExpandableWorkspace";
 import {
   ResizableSidebar,
   SIDEBAR_DEFAULT_WIDTH,
@@ -48,6 +49,7 @@ type ChatTurn = {
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
+type ExpandableWorkspaceKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm";
 
 const incidentSortOptions: Array<[IncidentSortKey, string]> = [
   ["id", "Incident"],
@@ -123,6 +125,7 @@ function App() {
   const [sidebarWidth, setSidebarWidth] = useState(initialSidebarWidth);
   const [recommendationsOpen, setRecommendationsOpen] = useState(false);
   const [incidentDetailOpen, setIncidentDetailOpen] = useState(false);
+  const [expandedWorkspace, setExpandedWorkspace] = useState<ExpandableWorkspaceKey | null>(null);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [dashboardDisplayPercentage, setDashboardDisplayPercentage] = useState<number>(25);
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -300,6 +303,7 @@ function App() {
     setScenarioMessage("");
     setError("");
     try {
+      setExpandedWorkspace(null);
       setRecommendationsOpen(false);
       setIncidentDetailOpen(false);
       const activatedScenario = await api.activateScenario(scenarioId);
@@ -333,6 +337,7 @@ function App() {
   }
 
   function selectView(nextView: ViewKey) {
+    setExpandedWorkspace(null);
     if (nextView !== "dashboard" && nextView !== "dispatch") {
       setRecommendationsOpen(false);
     }
@@ -502,9 +507,8 @@ function App() {
             </div>
 
             <div className="dashboard-workspace">
-              <section className="panel">
-                <PanelTitle
-                  action={(
+              <ExpandableWorkspace
+                action={(
                     <div className="dashboard-panel-actions">
                       <label>
                         Search Top {dashboardIncidentLimit} Incidents Shown
@@ -533,10 +537,14 @@ function App() {
                         Recommendations
                       </button>
                     </div>
-                  )}
-                  icon={AlertTriangle}
-                  title={dashboardIncidentLabel}
-                />
+                )}
+                expanded={expandedWorkspace === "dashboard"}
+                icon={AlertTriangle}
+                id="dashboard-priority-workspace"
+                onExpand={() => setExpandedWorkspace("dashboard")}
+                onRestore={() => setExpandedWorkspace(null)}
+                title={dashboardIncidentLabel}
+              >
                 <p className="dashboard-incident-summary" aria-live="polite">
                   Showing {dashboardIncidentLimit} of {dashboard.active_incidents} active incidents
                 </p>
@@ -547,11 +555,12 @@ function App() {
                   selectedIncidentId={selectedIncidentId}
                   searchLabel={`Search Top ${dashboardIncidentLimit} Incidents Shown`}
                   preserveOrder
+                  layoutKey={expandedWorkspace === "dashboard" ? "expanded" : "embedded"}
                   syncSelectionToFirst
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
                 />
-              </section>
+              </ExpandableWorkspace>
             </div>
           </section>
         ))}
@@ -567,9 +576,8 @@ function App() {
           />
         ) : (
           <section className="queue-workspace">
-            <section className="panel">
-              <PanelTitle
-                action={(
+            <ExpandableWorkspace
+              action={(
                   <button
                     aria-controls="recommendations-sheet"
                     aria-expanded={recommendationsOpen}
@@ -581,20 +589,25 @@ function App() {
                   >
                     Recommendations
                   </button>
-                )}
-                icon={RadioTower}
-                title="Incident Queue"
-              />
+              )}
+              expanded={expandedWorkspace === "dispatch"}
+              icon={RadioTower}
+              id="dispatch-incident-workspace"
+              onExpand={() => setExpandedWorkspace("dispatch")}
+              onRestore={() => setExpandedWorkspace(null)}
+              title="Incident Queue"
+            >
               <IncidentTable
                 emptyMessage="No active incidents are available for dispatch."
                 incidents={incidents}
+                layoutKey={expandedWorkspace === "dispatch" ? "expanded" : "embedded"}
                 key={`dispatch-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 syncSelectionToFirst
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
               />
-            </section>
+            </ExpandableWorkspace>
           </section>
         ))}
 
@@ -608,17 +621,24 @@ function App() {
             title="Incidents unavailable"
           />
         ) : (
-          <section className="panel">
-            <PanelTitle icon={ClipboardList} title="Active Incidents" />
+          <ExpandableWorkspace
+            expanded={expandedWorkspace === "incidents"}
+            icon={ClipboardList}
+            id="active-incidents-workspace"
+            onExpand={() => setExpandedWorkspace("incidents")}
+            onRestore={() => setExpandedWorkspace(null)}
+            title="Active Incidents"
+          >
             <IncidentTable
               emptyMessage="No active incidents are available in this scenario."
               incidents={incidents}
+              layoutKey={expandedWorkspace === "incidents" ? "expanded" : "embedded"}
               key={`active-incidents-${activeScenario?.scenario_id ?? "loading"}`}
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
               onSelect={openIncidentDetails}
             />
-          </section>
+          </ExpandableWorkspace>
         ))}
 
         {view === "crews" && (initialLoading ? (
@@ -631,14 +651,21 @@ function App() {
             title="Crew board unavailable"
           />
         ) : (
-          <section className="panel">
-            <PanelTitle icon={Users} title="Crew Board" />
+          <ExpandableWorkspace
+            expanded={expandedWorkspace === "crews"}
+            icon={Users}
+            id="crew-board-workspace"
+            onExpand={() => setExpandedWorkspace("crews")}
+            onRestore={() => setExpandedWorkspace(null)}
+            title="Crew Board"
+          >
             {crews.length === 0 ? (
               <EmptyState message="No crews are available in this scenario." />
             ) : (
               <CrewBoard
                 crews={crews}
                 key={`crew-board-${activeScenario?.scenario_id ?? "loading"}`}
+                layoutKey={expandedWorkspace === "crews" ? "expanded" : "embedded"}
                 onCloseDetails={() => setSelectedCrewId(undefined)}
                 onOpenIncident={openIncidentDetails}
                 onSelectCrew={setSelectedCrewId}
@@ -646,7 +673,7 @@ function App() {
                 selectedCrewId={selectedCrewId}
               />
             )}
-          </section>
+          </ExpandableWorkspace>
         ))}
 
         {view === "storm" && (initialLoading ? (
@@ -664,17 +691,25 @@ function App() {
             <Metric label="Critical Facilities" value={criticalIncidents.length} />
             <Metric label="Crews Assigned" value={dashboard.assigned_crews} />
             <Metric label="Customers Out" value={dashboard.customers_out.toLocaleString()} />
-            <section className="panel full-width">
-              <PanelTitle icon={CloudLightning} title="Storm Exceptions" />
+            <ExpandableWorkspace
+              className="full-width"
+              expanded={expandedWorkspace === "storm"}
+              icon={CloudLightning}
+              id="storm-exceptions-workspace"
+              onExpand={() => setExpandedWorkspace("storm")}
+              onRestore={() => setExpandedWorkspace(null)}
+              title="Storm Exceptions"
+            >
               <IncidentTable
                 emptyMessage="No storm exceptions are active in this scenario."
                 incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)}
+                layoutKey={expandedWorkspace === "storm" ? "expanded" : "embedded"}
                 key={`storm-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Storm exceptions"
                 onSelect={setSelectedIncidentId}
               />
-            </section>
+            </ExpandableWorkspace>
           </section>
         ))}
 
@@ -1116,6 +1151,7 @@ function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: ()
 
 function CrewBoard({
   crews,
+  layoutKey,
   onCloseDetails,
   onOpenIncident,
   onSelectCrew,
@@ -1123,6 +1159,7 @@ function CrewBoard({
   selectedCrewId
 }: {
   crews: Crew[];
+  layoutKey?: string;
   onCloseDetails: () => void;
   onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void;
   onSelectCrew: (crewId: string) => void;
@@ -1136,6 +1173,7 @@ function CrewBoard({
   const [stormReady, setStormReady] = useState("all");
   const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>({ key: "name", direction: "asc" });
   const [page, setPage] = useState(0);
+  const previousPageSizeRef = useRef(24);
 
   const statuses = useMemo(
     () => Array.from(new Set([...crews.map((crew) => crew.status), ...(status !== "all" ? [status] : [])])).sort(),
@@ -1207,7 +1245,7 @@ function CrewBoard({
     itemCount: filteredCrews.length,
     itemSelector: ".crew-card",
     layout: "grid",
-    measurementKey: `${capability}|${page}|${query}|${region}|${sort.key}|${sort.direction}|${status}|${stormReady}`
+    measurementKey: `${capability}|${layoutKey ?? "embedded"}|${page}|${query}|${region}|${sort.key}|${sort.direction}|${status}|${stormReady}`
   });
   const pageCount = Math.max(1, Math.ceil(filteredCrews.length / pageSize));
   const currentPage = Math.min(page, pageCount - 1);
@@ -1220,6 +1258,13 @@ function CrewBoard({
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
   }, [pageCount]);
+
+  useEffect(() => {
+    const previousPageSize = previousPageSizeRef.current;
+    previousPageSizeRef.current = pageSize;
+    if (previousPageSize === pageSize) return;
+    setPage((current) => Math.floor((current * previousPageSize) / pageSize));
+  }, [pageSize]);
 
   const toggleSortDirection = () => {
     setSort((current) => ({ ...current, direction: current.direction === "asc" ? "desc" : "asc" }));
@@ -1333,6 +1378,7 @@ function CrewBoard({
 function IncidentTable({
   emptyMessage,
   incidents,
+  layoutKey,
   preserveOrder = false,
   searchLabel,
   selectedIncidentId,
@@ -1342,6 +1388,7 @@ function IncidentTable({
 }: {
   emptyMessage: string;
   incidents: Incident[];
+  layoutKey?: string;
   preserveOrder?: boolean;
   searchLabel?: string;
   selectedIncidentId?: string;
@@ -1355,6 +1402,7 @@ function IncidentTable({
   const [criticalFacility, setCriticalFacility] = useState("all");
   const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
   const [page, setPage] = useState(0);
+  const previousPageSizeRef = useRef(50);
   const lastSyncedFirstIncidentRef = useRef<string | undefined>(undefined);
 
   const regions = useMemo(
@@ -1449,7 +1497,7 @@ function IncidentTable({
     itemCount: filteredIncidents.length,
     itemSelector: "tbody tr",
     layout: "rows",
-    measurementKey: `${page}|${query}|${region}|${severity}|${sort?.key ?? "default"}|${sort?.direction ?? "default"}`
+    measurementKey: `${layoutKey ?? "embedded"}|${page}|${query}|${region}|${severity}|${sort?.key ?? "default"}|${sort?.direction ?? "default"}`
   });
   const pageCount = Math.max(1, Math.ceil(filteredIncidents.length / pageSize));
   const currentPage = Math.min(page, pageCount - 1);
@@ -1462,6 +1510,13 @@ function IncidentTable({
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
   }, [pageCount]);
+
+  useEffect(() => {
+    const previousPageSize = previousPageSizeRef.current;
+    previousPageSizeRef.current = pageSize;
+    if (previousPageSize === pageSize) return;
+    setPage((current) => Math.floor((current * previousPageSize) / pageSize));
+  }, [pageSize]);
 
   const toggleSort = (key: IncidentSortKey) => {
     setSort((current) => current?.key === key

@@ -275,6 +275,57 @@ describe("application states and scenario switching", () => {
     expect(container.querySelector(".split-layout .recommendation-panel")).toBeTruthy();
   });
 
+  it("offers the shared expandable workspace on every qualifying operational view", async () => {
+    apiMocks.crews.mockResolvedValue([{
+      crew_id: "CR-01",
+      crew_name: "North Line Crew",
+      capability: "line",
+      status: "available",
+      home_region: "North",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 12,
+      assigned_incidents: []
+    }]);
+    render(<App />);
+
+    const expectedControls: Array<[string, string]> = [
+      ["Dashboard", "Expand Top 1 Priority Incidents workspace"],
+      ["Dispatch", "Expand Incident Queue workspace"],
+      ["Incidents", "Expand Active Incidents workspace"],
+      ["Crew Board", "Expand Crew Board workspace"],
+      ["Storm Mode", "Expand Storm Exceptions workspace"]
+    ];
+
+    await screen.findByRole("button", { name: expectedControls[0][1] });
+    for (const [viewName, controlName] of expectedControls) {
+      if (viewName !== "Dashboard") fireEvent.click(screen.getByRole("button", { name: viewName }));
+      const expand = screen.getByRole("button", { name: controlName });
+      fireEvent.click(expand);
+      expect(screen.getByRole("button", { name: controlName.replace("Expand", "Restore") })).toBeTruthy();
+      fireEvent.click(screen.getByRole("button", { name: controlName.replace("Expand", "Restore") }));
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: "Scenario" }));
+    expect(screen.queryByRole("button", { name: /^Expand .* workspace$/ })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    expect(screen.queryByRole("button", { name: /^Expand .* workspace$/ })).toBeNull();
+  });
+
+  it("restores an expanded workspace when navigation changes", async () => {
+    render(<App />);
+
+    const expand = await screen.findByRole("button", { name: "Expand Top 1 Priority Incidents workspace" });
+    fireEvent.click(expand);
+    expect(document.body.style.overflow).toBe("hidden");
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+
+    expect(screen.getByRole("button", { name: "Expand Incident Queue workspace" })).toBeTruthy();
+    expect(document.body.style.overflow).toBe("");
+  });
+
   it("keeps the recommendation sheet synchronized and restores focus when dismissed", async () => {
     const secondIncident = {
       ...baseIncident,

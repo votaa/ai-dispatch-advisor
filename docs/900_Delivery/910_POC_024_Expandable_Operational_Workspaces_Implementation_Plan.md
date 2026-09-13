@@ -2,9 +2,26 @@
 
 ## Status
 
-Status: Deferred; documentation only. Implementation is not part of the current change.
+Status: Implemented; automated and live browser verification passed. Pending owner smoke-test approval before closure.
 
-Date: 2026-09-11
+Date: 2026-09-13
+
+## Implementation Outcome
+
+- Added one reusable accessible expand/restore wrapper used by Dashboard, Dispatch, Active
+  Incidents, Crew Board, and Storm Exceptions.
+- Retained each existing table or card component instance so search, filters, sort,
+  selection, paging, and detail context survive expansion and restoration.
+- Explicitly remeasures fitted pagination in each layout and preserves the prior logical
+  result position when page size changes.
+- Keeps desktop navigation available, uses the full viewport on narrow layouts, locks
+  underlying page scrolling, supports `Escape`, announces state changes, and restores focus.
+- Scenario and AI Copilot remain excluded because their current content is not a qualifying
+  dense operational workspace.
+- Frontend tests and production build pass. Live browser verification at 1280×800 confirmed
+  the Dashboard increases from 2 to 4 visible rows and reduces 250 pages to 125; Dispatch,
+  Active Incidents, and Storm Exceptions show 4 rows, Crew Board shows 8 cards, and the
+  768×1024 expanded layout has no page-level horizontal overflow.
 
 This plan captures an enhancement identified during Dashboard smoke testing. Data-heavy
 tables and detail workspaces should be temporarily expandable within the application so an
