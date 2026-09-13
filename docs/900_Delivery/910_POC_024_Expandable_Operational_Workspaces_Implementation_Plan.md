@@ -20,7 +20,11 @@ Date: 2026-09-13
   dense operational workspace.
 - Frontend tests and production build pass. Live browser verification at 1280×800 confirmed
   the Dashboard increases from 2 to 4 visible rows and reduces 250 pages to 125; Dispatch,
-  Active Incidents, and Storm Exceptions show 4 rows, Crew Board shows 8 cards, and the
+  Active Incidents, and Storm Exceptions show additional rows. A follow-up expanded-density
+  correction uses the complete viewport height and compact expanded-only row/card spacing;
+  at 1440×800 this increases Dispatch and Active Incidents from 3 to 5 rows, Storm Exceptions
+  from 2 to 6 rows, and Crew Board from 8 to 12 cards. At 1280×800, Crew Board increases from
+  6 to 12 cards while fitted table rows continue to exclude any partially visible row. The
   768×1024 expanded layout has no page-level horizontal overflow.
 
 This plan captures an enhancement identified during Dashboard smoke testing. Data-heavy

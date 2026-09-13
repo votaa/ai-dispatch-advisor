@@ -30,4 +30,23 @@ describe("calculateFittedPageSize", () => {
       itemTop: 0
     })).toBe(50);
   });
+
+  it("uses the complete expanded workspace for dense rows and crew cards", () => {
+    expect(calculateFittedPageSize({
+      availableHeight: 719,
+      fallbackPageSize: 50,
+      itemCount: 500,
+      itemHeight: 99,
+      itemTop: 183.5
+    })).toBe(5);
+    expect(calculateFittedPageSize({
+      availableHeight: 719,
+      columns: 4,
+      fallbackPageSize: 24,
+      gap: 10,
+      itemCount: 500,
+      itemHeight: 174,
+      itemTop: 174
+    })).toBe(12);
+  });
 });

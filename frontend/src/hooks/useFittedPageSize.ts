@@ -12,6 +12,7 @@ type FittedPageSizeInput = {
 };
 
 type FittedPageSizeOptions = {
+  bottomPadding?: number;
   fallbackPageSize: number;
   itemCount: number;
   itemSelector: string;
@@ -35,13 +36,14 @@ export function calculateFittedPageSize({
 }
 
 export function useFittedPageSize({
+  bottomPadding = 24,
   fallbackPageSize,
   itemCount,
   itemSelector,
   layout,
   measurementKey
 }: FittedPageSizeOptions) {
-  const { availableHeight, containerRef, height, width } = useViewportMeasurement<HTMLDivElement>();
+  const { availableHeight, containerRef, height, width } = useViewportMeasurement<HTMLDivElement>({ bottomPadding });
   const [pageSize, setPageSize] = useState(fallbackPageSize);
   const maximumItemHeightRef = useRef(0);
   const measuredWidthRef = useRef(0);

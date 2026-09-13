@@ -611,6 +611,18 @@ h1 {
   min-height: 0;
 }
 
+.expandable-workspace.is-expanded .table-shell td {
+  padding: 5px 8px;
+}
+
+.expandable-workspace.is-expanded .crew-card {
+  padding: 8px;
+}
+
+.expandable-workspace.is-expanded .crew-location {
+  margin: 5px 0 3px;
+}
+
 .panel-title {
   display: flex;
   align-items: center;

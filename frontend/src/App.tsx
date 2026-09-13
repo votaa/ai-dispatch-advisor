@@ -1241,6 +1241,7 @@ function CrewBoard({
     [query, suggestionCrews]
   );
   const { containerRef, pageSize } = useFittedPageSize({
+    bottomPadding: layoutKey === "expanded" ? 0 : 24,
     fallbackPageSize: 24,
     itemCount: filteredCrews.length,
     itemSelector: ".crew-card",
@@ -1493,6 +1494,7 @@ function IncidentTable({
   }, [filteredIncidents, onSelect, syncSelectionToFirst]);
 
   const { containerRef, pageSize } = useFittedPageSize({
+    bottomPadding: layoutKey === "expanded" ? 0 : 24,
     fallbackPageSize: 50,
     itemCount: filteredIncidents.length,
     itemSelector: "tbody tr",
