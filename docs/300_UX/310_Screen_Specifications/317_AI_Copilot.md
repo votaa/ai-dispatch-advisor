@@ -92,6 +92,10 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - **POC-021 — Deterministic incident severity counts:** Critical, high, medium, and low severity
   counts are calculated from the complete active scenario in `local_query` mode, with bounded
   examples and incident evidence.
+- **POC-028 — Deterministic all-incident customer aggregates:** Explicit scenario-wide customer-
+  outage totals use the complete visible active-incident inventory in `local_query` mode, ignore
+  selected-incident narrowing, report exact incident and customer totals first, and bound the
+  rendered incident table and evidence without calling the provider.
 - **POC-017 — Temporal Copilot context:** Every new response and grounded provider context carries
   the server-received request time in UTC with `backend_server_clock` provenance and clock skew
   explicitly marked as `not_measured`. The response header displays the value in 24-hour UTC;
@@ -103,6 +107,15 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   breakdowns, individual-level filters, selected-incident level questions, highest-level-once
   incident counts, separately labeled facility-record counts, and unknown/withheld warnings. See
   the [deferred implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
+- **POC-029 — Full-width AI Copilot workspace:** Use the full available content width by default
+  on desktop so response tables have more room, while retaining readable prose measure and
+  narrow-screen table scrolling. This does not add an expand/restore control.
+- **POC-030 — Population-scope guidance and bounded-synthesis disclosure:** Explain how to request
+  supported complete-scenario incident and crew statistics by naming the measure and scope, and
+  label each response as either a complete calculation with its evaluated record count or a
+  grounded summary with dynamically derived bounded-context counts. Grounded synthesis must not
+  present sample-derived values as all-scenario totals; unsupported population calculations must
+  disclose the limitation and suggest a supported exact query rather than infer from the sample.
 
 ## Acceptance Criteria
 

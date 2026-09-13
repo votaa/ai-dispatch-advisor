@@ -1,6 +1,8 @@
 from datetime import date
 from pathlib import Path
 
+import pytest
+
 from app import data_loader
 from app.copilot_provider import CopilotGenerationRequest, CopilotGenerationResult
 from app.scenario_generator import generate_copilot_demo_scenario, write_scenario
@@ -173,6 +175,77 @@ def test_severity_counts_use_complete_scenario_and_markdown_examples(
     assert len(response.evidence) == expected
 
 
+@pytest.mark.parametrize(
+    "question",
+    [
+        "How many customers are out of service across all of the active incidents?",
+        "What is the total customers out?",
+        "How many customers are affected across all active incidents?",
+        "Show the aggregate customers out.",
+    ],
+)
+def test_customer_outage_aggregates_use_every_visible_incident(
+    tmp_path: Path,
+    monkeypatch,
+    question: str,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    incidents = services.incidents.list_visible()
+    assert len(incidents) == 24
+    assert sum(incident.customers_out for incident in incidents) == 24_427
+
+    response = services.copilot.respond(
+        question,
+        incident_id=incidents[0].incident_id,
+    )
+
+    assert response.intent == "all_incident_customer_aggregate"
+    assert response.execution_mode == "local_query"
+    assert response.provider is None
+    assert response.answer.startswith(
+        "## Customer outage aggregate\n\n"
+        "24 active incidents report **24,427 customers out**"
+    )
+    assert "Incident details (showing 10 of 24)" in response.answer
+    assert len(response.evidence) == 11
+    assert response.evidence[0].source_type == "dashboard"
+
+
+def test_customer_outage_aggregate_handles_an_empty_inventory(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    monkeypatch.setattr(services.incidents, "list_ranked", lambda: [])
+    monkeypatch.setattr(services.incidents, "list_visible", lambda: [])
+
+    response = services.copilot.respond("What is the total customers out?")
+
+    assert response.intent == "all_incident_customer_aggregate"
+    assert "0 active incidents report **0 customers out**" in response.answer
+    assert "Incident details" not in response.answer
+    assert len(response.evidence) == 1
+
+
+def test_customer_outage_aggregate_updates_after_scenario_switch(
+    monkeypatch,
+) -> None:
+    scenario_root = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+    monkeypatch.setattr(data_loader, "DATA_ROOT", scenario_root)
+    data_loader.set_active_scenario("base")
+    services = build_services()
+
+    base_incidents = services.incidents.list_visible()
+    base_response = services.copilot.respond("What is the total customers out?")
+    data_loader.set_active_scenario("long-island-copilot-demo")
+    demo_response = services.copilot.respond("What is the total customers out?")
+
+    assert f"{len(base_incidents)} active incidents" in base_response.answer
+    assert base_response.scenario_id == "base"
+    assert "24 active incidents report **24,427 customers out**" in demo_response.answer
+    assert demo_response.scenario_id == "long-island-copilot-demo"
+
+
 def test_crew_queries_support_combined_filters_and_bound_visible_results(
     tmp_path: Path,
     monkeypatch,
@@ -328,6 +401,14 @@ def test_deterministic_queries_bypass_provider_and_grounded_queries_receive_race
         "Which crew should handle this incident?", incident.incident_id
     )
     assert local_response.execution_mode == "local_query"
+    assert provider.requests == []
+
+    aggregate_response = services.copilot.respond(
+        "How many customers are out across all active incidents?",
+        incident.incident_id,
+    )
+    assert aggregate_response.intent == "all_incident_customer_aggregate"
+    assert aggregate_response.execution_mode == "local_query"
     assert provider.requests == []
 
     grounded_response = services.copilot.respond(

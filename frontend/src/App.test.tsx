@@ -1093,6 +1093,68 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Evidence (1)")).toBeTruthy();
   });
 
+  it("renders deterministic all-incident customer aggregates", async () => {
+    const question = "How many customers are out across all active incidents?";
+    apiMocks.chat.mockResolvedValue({
+      answer: [
+        "## Customer outage aggregate",
+        "",
+        "24 active incidents report **24,427 customers out** in scenario `long-island-copilot-demo`.",
+        "",
+        "### Incident details (showing 10 of 24)",
+        "",
+        "| ESD ID | Village | Customers out | Status |",
+        "| --- | --- | ---: | --- |",
+        "| ESD-20260821-0002 | Arverne | 5,000 | unassigned |"
+      ].join("\n"),
+      intent: "all_incident_customer_aggregate",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "long-island-copilot-demo",
+      generated_at: "2026-09-13T13:29:00Z",
+      request_time: {
+        received_at: "2026-09-13T13:29:00Z",
+        timezone: "UTC",
+        source: "backend_server_clock",
+        clock_skew: "not_measured"
+      },
+      data_snapshot_at: "2026-08-21T07:00:00-04:00",
+      provider: null,
+      model: null,
+      warning: null,
+      evidence: [
+        {
+          source_type: "dashboard",
+          record_id: "long-island-copilot-demo",
+          label: "Complete customer-outage aggregate: 24 active incidents"
+        }
+      ]
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.change(screen.getByLabelText("Copilot question"), {
+      target: { value: question }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Customer outage aggregate" })
+    ).toBeTruthy();
+    expect(
+      screen.getByText((_, element) =>
+        element?.tagName === "P"
+        && element.textContent?.includes("24 active incidents report 24,427 customers out") === true
+      )
+    ).toBeTruthy();
+    expect(screen.getByText("24,427 customers out")).toBeTruthy();
+    expect(screen.getByRole("table")).toBeTruthy();
+    expect(screen.getByText("Local scenario query")).toBeTruthy();
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+  });
+
   it("renders safe, semantic Markdown in Copilot responses", async () => {
     apiMocks.chat.mockResolvedValue({
       answer: [

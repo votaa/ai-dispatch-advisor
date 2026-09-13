@@ -201,6 +201,7 @@ Validation should include:
 - POC-015 frontend tests verify exact Copilot helper copy, clearing the default and typed composer values, whitespace-only disabled state, preservation of conversation history, local execution metadata, and safe multi-block grounded-AI Markdown rendering.
 - POC-014 regression tests verify that explicit-ID and selected-incident assignment questions route ahead of recommendation intent and return zero, one, or multiple crews scoped only to that incident.
 - POC-017 backend and frontend tests verify one server-authoritative UTC request time per Copilot response, backend-clock provenance, explicit unmeasured clock skew, propagation into bounded grounded-provider context, 24-hour response-header formatting, and compatibility with responses that omit the optional field.
+- POC-028 backend service/API and frontend tests verify that all-incident customer-outage totals use the complete visible inventory, bypass the provider, ignore selected-incident narrowing for explicit scenario-wide questions, update after scenario switching, handle an empty inventory, retain exact totals with bounded detail/evidence, and render as semantic Markdown without changing the API envelope.
 - Phase 6.6 closeout verification passed 92 backend tests, 17 frontend tests, and the frontend production build on 2026-08-16; the detailed evaluation is recorded in `docs/900_Delivery/906_Phase_6_Closeout.md`.
 - Confidence is not overstated when input data is incomplete.
 - Critical facilities are prioritized appropriately.

@@ -234,6 +234,29 @@ def test_chat_preserves_existing_fields_and_adds_local_evidence_metadata() -> No
     assert payload["evidence"][0]["source_type"] == "dashboard"
 
 
+def test_chat_customer_outage_aggregate_matches_complete_dashboard_totals() -> None:
+    dashboard = client.get("/api/dashboard").json()
+
+    response = client.post(
+        "/api/chat",
+        json={
+            "message": "How many customers are out across all active incidents?",
+            "incident_id": "INC-1001",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["intent"] == "all_incident_customer_aggregate"
+    assert payload["execution_mode"] == "local_query"
+    assert payload["provider"] is None
+    assert (
+        f"{dashboard['active_incidents']} active incidents report "
+        f"**{dashboard['customers_out']:,} customers out**"
+    ) in payload["answer"]
+    assert payload["evidence"][0]["source_type"] == "dashboard"
+
+
 def test_recommendation_action_records_audit_event() -> None:
     clear_decisions()
     recommendation = client.post("/api/optimize", json={}).json()

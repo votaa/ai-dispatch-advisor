@@ -2,7 +2,7 @@
 
 ## Status
 
-Status: Implemented; automated and live browser verification passed. Pending owner smoke-test approval before closure.
+Status: Closed; automated and live browser verification passed, and the owner approved the smoke test on 2026-09-13.
 
 Date: 2026-09-13
 

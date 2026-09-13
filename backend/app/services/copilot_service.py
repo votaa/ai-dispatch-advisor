@@ -120,6 +120,10 @@ class CopilotService:
         severity = self._resolve_severity(normalized)
         if severity is not None and self._is_severity_count_query(normalized):
             return self._incident_severity_count(severity, incidents)
+        if self._is_all_incident_customer_aggregate_query(normalized):
+            return self._all_incident_customer_aggregate(
+                self._incidents.list_visible()
+            )
         if self._is_area_incident_query(normalized):
             return self._area_incidents(message, incidents)
         if self._has_any(normalized, "county", "township", "village", "geography", "located"):
@@ -473,6 +477,91 @@ class CopilotService:
             evidence=[
                 self._evidence("incident", incident.incident_id, incident.municipality)
                 for incident in matches
+            ],
+        )
+
+    @staticmethod
+    def _is_all_incident_customer_aggregate_query(normalized: str) -> bool:
+        if any(
+            term in normalized
+            for term in ("percentage", "percent", "customers served")
+        ):
+            return False
+        customer_impact = any(
+            term in normalized
+            for term in (
+                "customers out",
+                "customers are out",
+                "customers affected",
+                "customers are affected",
+                "customers without service",
+                "customers without power",
+                "customer outage",
+            )
+        )
+        if not customer_impact:
+            return False
+        all_incident_scope = any(
+            term in normalized
+            for term in (
+                "across all",
+                "across the active incident",
+                "all active incident",
+                "all of the active incident",
+                "all incident",
+                "entire scenario",
+                "scenario wide",
+            )
+        )
+        selected_incident_scope = any(
+            term in normalized
+            for term in ("this incident", "selected incident", "for incident")
+        )
+        if selected_incident_scope and not all_incident_scope:
+            return False
+        return all_incident_scope or any(
+            term in normalized for term in ("total", "aggregate", "sum")
+        )
+
+    def _all_incident_customer_aggregate(
+        self,
+        incidents: list[Incident],
+    ) -> ChatResponse:
+        total_customers_out = sum(incident.customers_out for incident in incidents)
+        shown = incidents[:10]
+        answer = (
+            "## Customer outage aggregate\n\n"
+            f"{len(incidents)} active incidents report **{total_customers_out:,} "
+            f"customers out** in scenario `{self._active_scenario_id()}`."
+        )
+        if shown:
+            answer += (
+                f"\n\n### Incident details (showing {len(shown)} of {len(incidents)})\n\n"
+                "| ESD ID | Village | Customers out | Status |\n"
+                "| --- | --- | ---: | --- |\n"
+                + "\n".join(
+                    f"| {incident.incident_id} | {incident.municipality} | "
+                    f"{incident.customers_out:,} | {incident.status} |"
+                    for incident in shown
+                )
+            )
+        return self._response(
+            answer=answer,
+            intent="all_incident_customer_aggregate",
+            evidence=[
+                self._evidence(
+                    "dashboard",
+                    self._active_scenario_id(),
+                    f"Complete customer-outage aggregate: {len(incidents)} active incidents",
+                ),
+                *[
+                    self._evidence(
+                        "incident",
+                        incident.incident_id,
+                        incident.municipality,
+                    )
+                    for incident in shown
+                ],
             ],
         )
 
