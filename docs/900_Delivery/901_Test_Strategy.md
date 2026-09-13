@@ -176,6 +176,11 @@ Data quality tests should validate:
 - Coordinates are valid where geospatial display is required.
 - Timestamps are parseable and timezone-aware.
 - Critical facility references resolve correctly.
+- Newly generated critical-facility incidents resolve by region, feeder, and municipality.
+- Newly generated scenarios contain a healthcare/medium Level 3 LSE facility with linked,
+  unassigned, low-severity incidents at 1, 19, and 20 customers.
+- Single-snapshot and default timeline generation retain the seeded LSE boundary contract,
+  while application loading validates each written scenario independently.
 - Demo scenario data remains internally consistent.
 
 Data modeling expectations are defined in `docs/600_Data_AI/601_Data_Model.md`.

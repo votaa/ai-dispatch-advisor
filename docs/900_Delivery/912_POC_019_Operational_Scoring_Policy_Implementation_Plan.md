@@ -45,8 +45,9 @@ contract and resolve the contribution as follows:
 - Level 3 treatment applies normally to an LSE facility, including low-severity and
   single-customer incidents. Customer count remains an independent additive contribution.
 - Incident severity does not determine whether the scoring engine recognizes an otherwise valid
-  facility level. The standard scenario generator's present high/critical-only impact selection
-  is a separate data-generation behavior and is not part of this scoring rule.
+  facility level. The standard scenario generator's high/critical-only impact selection at the
+  time of POC-019 was a separate data-generation behavior; POC-026 later replaced it with
+  municipality-consistent generated linkage and explicit low-severity Level 3 LSE boundaries.
 - If any matched facility has an unrecognized or blank `priority_level`, withhold the incident
   from ranked recommendation selection and surface a data-quality warning. Do not guess a level,
   silently treat it as no CF, or fall back to the legacy `+80` contribution.

@@ -8,7 +8,12 @@ from pathlib import Path
 
 import pytest
 
-from app.scenario_generator import generate_scenario
+from app.scenario_generator import (
+    LSE_CUSTOMER_BOUNDARIES,
+    LSE_FACILITY_SUFFIX,
+    generate_scenario,
+    validate_lse_coverage,
+)
 from app.scenario_service import ScenarioService
 from app.scenario_timeline_generator import (
     ARRIVAL_PROFILES,
@@ -321,14 +326,43 @@ def test_supporting_reference_data_and_topology_remain_stable() -> None:
             (row["region"], row["feeder"]) for row in snapshot.scenario.incidents
         }.issubset(topology_feeders)
         facility_keys = {
-            (row["region"], row["feeder"])
+            (row["region"], row["feeder"], row["municipality"])
             for row in snapshot.scenario.critical_facilities
         }
         assert all(
             row["critical_facility"] == "false"
-            or (row["region"], row["feeder"]) in facility_keys
+            or (row["region"], row["feeder"], row["municipality"])
+            in facility_keys
             for row in snapshot.scenario.incidents
         )
+        assert all(
+            row["facility_name"].startswith(f"{row['municipality']} ")
+            for row in snapshot.scenario.critical_facilities
+        )
+
+
+def test_default_timeline_preserves_linked_lse_customer_boundaries() -> None:
+    timeline = _timeline()
+
+    for snapshot in timeline.snapshots:
+        validate_lse_coverage(
+            snapshot.scenario.incidents,
+            snapshot.scenario.critical_facilities,
+        )
+        lse_keys = {
+            (row["region"], row["feeder"], row["municipality"])
+            for row in snapshot.scenario.critical_facilities
+            if row["facility_name"].endswith(LSE_FACILITY_SUFFIX)
+        }
+        linked_boundaries = {
+            int(row["customers_out"])
+            for row in snapshot.scenario.incidents
+            if row["critical_facility"] == "true"
+            and row["severity"] == "low"
+            and (row["region"], row["feeder"], row["municipality"])
+            in lse_keys
+        }
+        assert linked_boundaries >= set(LSE_CUSTOMER_BOUNDARIES)
 
 
 def test_snapshot_ages_etrs_shift_hours_and_travel_are_recalculated() -> None:

@@ -104,6 +104,17 @@ they do not assert a real operational facility identity. Facility rows are seede
 stable within a generated scenario or timeline. Timeline arrivals derive critical impact
 from the snapshot-1 facility index, and every snapshot is validated against that index.
 
+POC-026 adds a stricter contract for newly generated data: a critical-impact incident must
+match a facility by `region + feeder + municipality`, and each facility's municipality,
+feeder, and synthetic name are derived from an incident anchor. Every generated scenario
+also reserves three unassigned, low-severity incidents with 1, 19, and 20 customers on the
+same linked healthcare/medium Level 3 `Private Health Device (LSE)` facility. These rows
+provide deterministic customer-impact boundary coverage in both single-snapshot and
+default timeline output. Generation fails when the configured assignment rate does not
+leave three unassigned incident slots. Existing published scenario folders remain
+unchanged and retain the backward-compatible runtime `region + feeder` activation rule
+described above until separately reviewed and republished.
+
 Topology coverage remains a strict generated-scenario contract. It is not yet a runtime
 activation requirement for all legacy fixtures because their fictional topology coverage
 is documented as incomplete. Tightening that compatibility rule requires a separate fixture
@@ -289,6 +300,8 @@ The data model should support validation for:
 - Missing incident location.
 - Inconsistent feeder or topology references.
 - Missing critical facility linkage.
+- Cross-municipality critical-facility linkage in newly generated scenarios.
+- Missing generated Level 3 LSE linkage or 1-, 19-, and 20-customer boundary cases.
 
 Data quality should affect recommendation confidence.
 

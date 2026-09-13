@@ -8,10 +8,17 @@ from pathlib import Path
 
 import pytest
 
+from app.domain.models import Incident
+from app.geography import GeographyRegistry
+from app.optimization.critical_facility import resolve_critical_facility_impact
+from app.optimization.deterministic_engine import DeterministicOptimizationEngine
+from app.optimization.policy import POC019_OPERATIONAL_RECOMMENDATION_POLICY
 from app.scenario_generator import (
     COPILOT_DEMO_CREW_COUNT,
     COPILOT_DEMO_INCIDENT_COUNT,
     FACILITY_CATALOG,
+    LSE_CUSTOMER_BOUNDARIES,
+    LSE_FACILITY_SUFFIX,
     MUA_CONTRACTOR_LOCATIONS,
     SERVICE_LOCATIONS,
     VEGETATION_LOCATIONS,
@@ -21,8 +28,8 @@ from app.scenario_generator import (
     load_municipalities,
     write_scenario,
     validate_critical_facility_linkage,
+    validate_lse_coverage,
 )
-from app.geography import GeographyRegistry
 from app.scenario_service import ScenarioService
 
 
@@ -51,14 +58,47 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
     assert {row["region"] for row in scenario.critical_facilities} == set(REGIONS)
     assert {row["region"] for row in scenario.historical_repairs} == set(REGIONS)
     facility_keys = {
-        (row["region"], row["feeder"])
+        (row["region"], row["feeder"], row["municipality"])
         for row in scenario.critical_facilities
     }
     assert all(
         row["critical_facility"] == "false"
-        or (row["region"], row["feeder"]) in facility_keys
+        or (row["region"], row["feeder"], row["municipality"])
+        in facility_keys
         for row in scenario.incidents
     )
+    assert all(
+        row["facility_name"].startswith(f"{row['municipality']} ")
+        for row in scenario.critical_facilities
+    )
+    lse_facilities = [
+        row
+        for row in scenario.critical_facilities
+        if row["facility_name"].endswith(LSE_FACILITY_SUFFIX)
+    ]
+    assert lse_facilities
+    assert all(
+        row["facility_type"] == "healthcare"
+        and row["priority_level"] == "medium"
+        for row in lse_facilities
+    )
+    lse_keys = {
+        (row["region"], row["feeder"], row["municipality"])
+        for row in lse_facilities
+    }
+    lse_boundary_incidents = [
+        row
+        for row in scenario.incidents
+        if row["critical_facility"] == "true"
+        and row["severity"] == "low"
+        and (row["region"], row["feeder"], row["municipality"])
+        in lse_keys
+    ]
+    assert {row["customers_out"] for row in lse_boundary_incidents} >= set(
+        LSE_CUSTOMER_BOUNDARIES
+    )
+    assert all(row["status"] == "unassigned" for row in lse_boundary_incidents)
+    validate_lse_coverage(scenario.incidents, scenario.critical_facilities)
 
     distribution = Counter(scenario.crew_types.values())
     assert distribution == {
@@ -123,12 +163,15 @@ def test_linkage_validation_reports_orphan_context() -> None:
     incident = {
         "incident_id": "ESD-20260810-0001",
         "region": "Central-Nassau",
+        "municipality": "East Meadow",
         "feeder": "FDR-CN-99",
         "critical_facility": "true",
     }
     facility = {
         "facility_id": "FAC-CN-01",
+        "facility_name": "East Meadow Fire Department",
         "region": "Central-Nassau",
+        "municipality": "East Meadow",
         "feeder": "FDR-CN-01",
     }
 
@@ -140,6 +183,134 @@ def test_linkage_validation_reports_orphan_context() -> None:
     assert "Central-Nassau" in message
     assert "FDR-CN-99" in message
     assert "FAC-CN-01:FDR-CN-01" in message
+
+
+def test_linkage_validation_rejects_cross_municipality_matches() -> None:
+    incident = {
+        "incident_id": "ESD-20260810-0001",
+        "region": "Central-Nassau",
+        "municipality": "East Meadow",
+        "feeder": "FDR-CN-01",
+        "critical_facility": "true",
+    }
+    facility = {
+        "facility_id": "FAC-CN-01",
+        "facility_name": "Hicksville Fire Department",
+        "region": "Central-Nassau",
+        "municipality": "Hicksville",
+        "feeder": "FDR-CN-01",
+    }
+
+    with pytest.raises(ValueError, match="municipality-consistent"):
+        validate_critical_facility_linkage([incident], [facility])
+
+
+def test_generator_preserves_unassigned_capacity_for_lse_boundary_cases() -> None:
+    with pytest.raises(ValueError, match="leave at least three unassigned incidents"):
+        generate_scenario(
+            scenario_id="insufficient-lse-capacity",
+            start_date=date(2026, 8, 10),
+            incident_count=20,
+            crew_count=20,
+            assignment_rate=1,
+            dual_tree_incidents=0,
+        )
+
+
+def test_lse_validation_rejects_missing_boundary_case() -> None:
+    scenario = generate_scenario(
+        scenario_id="missing-lse-boundary",
+        start_date=date(2026, 8, 10),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+    )
+    boundary = scenario.incidents[-1]
+    assert boundary["customers_out"] == LSE_CUSTOMER_BOUNDARIES[-1]
+    assert boundary["severity"] == "low"
+    assert boundary["critical_facility"] == "true"
+    boundary["customers_out"] = 21
+
+    with pytest.raises(ValueError, match="boundaries: 20"):
+        validate_lse_coverage(scenario.incidents, scenario.critical_facilities)
+
+
+def test_lse_validation_rejects_incorrect_level_metadata() -> None:
+    scenario = generate_scenario(
+        scenario_id="invalid-lse-metadata",
+        start_date=date(2026, 8, 10),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+    )
+    lse_facility = next(
+        row
+        for row in scenario.critical_facilities
+        if row["facility_name"].endswith(LSE_FACILITY_SUFFIX)
+    )
+    lse_facility["priority_level"] = "high"
+
+    with pytest.raises(ValueError, match="healthcare Level 3 metadata"):
+        validate_lse_coverage(scenario.incidents, scenario.critical_facilities)
+
+
+def test_generated_lse_boundaries_resolve_level_3_and_customer_threshold() -> None:
+    scenario = generate_scenario(
+        scenario_id="lse-scoring-boundaries",
+        start_date=date(2026, 8, 10),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+    )
+    engine = DeterministicOptimizationEngine(POC019_OPERATIONAL_RECOMMENDATION_POLICY)
+
+    for row, expected_customer_contribution in zip(
+        scenario.incidents[-3:],
+        (0, 0, 1),
+    ):
+        incident = Incident.model_validate(row)
+        impact = resolve_critical_facility_impact(
+            incident,
+            scenario.critical_facilities,
+        )
+        assert impact.level == 3
+        evaluated = engine.evaluate_incidents(
+            [
+                incident.model_copy(
+                    update={
+                        "critical_facility_level": impact.level,
+                        "matched_critical_facility_ids": impact.matched_facility_ids,
+                    }
+                )
+            ]
+        )[0]
+        contributions = {
+            factor.factor_id: factor.contribution
+            for factor in evaluated.score.contributions
+        }
+        assert contributions["critical_facility"] == 40
+        assert contributions["customers_out"] == expected_customer_contribution
+
+
+def test_identical_seeds_produce_identical_lse_linkage() -> None:
+    settings = {
+        "scenario_id": "deterministic-lse",
+        "start_date": date(2026, 8, 10),
+        "incident_count": 40,
+        "crew_count": 40,
+        "assignment_rate": 0.1,
+        "dual_tree_incidents": 1,
+        "seed": 26,
+    }
+
+    first = generate_scenario(**settings)
+    second = generate_scenario(**settings)
+
+    assert first.incidents == second.incidents
+    assert first.critical_facilities == second.critical_facilities
 
 
 def test_start_day_locations_use_approved_facilities() -> None:
@@ -285,7 +456,8 @@ def test_copilot_demo_preset_is_bounded_and_geographically_complete() -> None:
     assert east_meadow["critical_facility"] == "true"
     assert sum(
         row["critical_facility"] == "true" for row in scenario.incidents
-    ) == 2
+    ) == 2 + len(LSE_CUSTOMER_BOUNDARIES)
+    validate_lse_coverage(scenario.incidents, scenario.critical_facilities)
     assert any(
         row["facility_name"] == "East Meadow Fire Department"
         and row["facility_type"] == "emergency_services"

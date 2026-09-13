@@ -2,14 +2,15 @@
 
 ## Status
 
-Status: Implemented; isolated sample review and fixture publication remain pending.
+Status: Implemented; isolated sample approved; fixture publication remains deferred.
 
 Date: 2026-08-24
 
 Implementation review note: generator, runtime, timeline, Copilot, tests, and the formal
-data-contract documentation have been updated. Existing published scenario folders remain
-unchanged. Isolated samples must be approved before either known orphaned fixture is
-regenerated or repaired in `data/scenarios`.
+data-contract documentation have been updated. The owner approved the isolated POC-026
+standard scenario and five-snapshot timeline on 2026-09-13. Existing published scenario
+folders remain unchanged; publishing a corrected fixture as a new version remains a
+separate no-overwrite approval step.
 
 This plan addresses scenario components that can become internally inconsistent, beginning
 with incidents marked `critical_facility=true` that do not have a matching row in
@@ -128,11 +129,12 @@ provenance and final terminology should be reviewed before production use.
 
 ### Linkage rules
 
-The implementation should use a seeded facility-to-feeder index:
+The implementation uses a seeded facility-to-incident-locality index for newly generated
+data:
 
 ```text
 facility record
-  region + feeder
+  region + feeder + municipality
         ↓
 incident critical_facility=true
 ```
@@ -140,13 +142,17 @@ incident critical_facility=true
 Required rules:
 
 - Facility region, municipality, and feeder must be valid for the generated scenario.
-- A critical-impact incident may only use a region/feeder with an eligible facility row.
+- A generated critical-impact incident may only use a region, feeder, and municipality with
+  an eligible facility row.
 - An incident without an eligible facility remains `critical_facility=false`.
-- Every `critical_facility=true` incident must match at least one facility row by region and
-  feeder.
+- Every generated `critical_facility=true` incident must match at least one facility row by
+  region, feeder, and municipality. Runtime activation retains region-and-feeder validation
+  for backward compatibility with published legacy fixtures.
 - Facility IDs must remain unique within a scenario.
 - Set `critical_facility=true` for incidents linked to eligible Level 1, Level 2, or Level 3 facilities.
-- Preserve the current flat `+80` critical-facility scoring contribution for all three levels; level-specific scoring is future work tracked in POC feedback.
+- Preserve the active POC-019 Level 1/2/3 critical-facility contributions of
+  `+120/+80/+40`; generated LSE boundary data validates the Level 3 path without changing
+  the scoring policy.
 - Multiple facility rows on one feeder may be supported, but Copilot responses must report
   all matched records without treating the number of facilities as the number of incidents.
 

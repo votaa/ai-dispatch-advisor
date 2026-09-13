@@ -21,11 +21,13 @@ from .scenario_generator import (
     _base_incident,
     _facility_keys,
     _feeders_by_region,
+    _lse_boundary_incidents,
     _set_linked_criticality,
     _suffix_region,
     generate_scenario,
     load_municipalities,
     validate_critical_facility_linkage,
+    validate_lse_coverage,
     write_scenario,
 )
 from .scenario_service import ScenarioService
@@ -584,8 +586,20 @@ def generate_timeline(
     incidents = {row["incident_id"]: copy.deepcopy(row) for row in base.incidents}
     crews = {row["crew_id"]: copy.deepcopy(row) for row in base.crews}
     assignments = {row["assignment_id"]: copy.deepcopy(row) for row in base.assignments}
-    initial_incident_ids = list(incidents)
+    protected_lse_incident_ids = {
+        str(row["incident_id"])
+        for row in _lse_boundary_incidents(
+            base.incidents,
+            base.critical_facilities,
+        )
+    }
+    initial_incident_ids = [
+        incident_id
+        for incident_id in incidents
+        if incident_id not in protected_lse_incident_ids
+    ]
     rng.shuffle(initial_incident_ids)
+    initial_incident_ids.extend(sorted(protected_lse_incident_ids))
     clearance_cursor = 0
     incident_counters = _initialize_counters(base.incidents, "incident_id")
     assignment_counters = _initialize_counters(base.assignments, "assignment_id")
@@ -752,6 +766,10 @@ def validate_timeline(timeline: GeneratedTimeline) -> None:
     snapshots = timeline.snapshots
     if len(snapshots) != timeline.config.snapshots:
         raise ValueError("Timeline snapshot count does not match configuration")
+    validate_lse_coverage(
+        snapshots[0].scenario.incidents,
+        snapshots[0].scenario.critical_facilities,
+    )
     cleared_seen: set[str] = set()
     for index, snapshot in enumerate(snapshots):
         expected_id = f"{timeline.config.scenario_id}_{index + 1:02d}"

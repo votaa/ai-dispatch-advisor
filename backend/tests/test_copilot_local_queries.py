@@ -192,7 +192,7 @@ def test_customer_outage_aggregates_use_every_visible_incident(
     services = _copilot_services(tmp_path, monkeypatch)
     incidents = services.incidents.list_visible()
     assert len(incidents) == 24
-    assert sum(incident.customers_out for incident in incidents) == 24_427
+    assert sum(incident.customers_out for incident in incidents) == 23_414
 
     response = services.copilot.respond(
         question,
@@ -204,7 +204,7 @@ def test_customer_outage_aggregates_use_every_visible_incident(
     assert response.provider is None
     assert response.answer.startswith(
         "## Customer outage aggregate\n\n"
-        "24 active incidents report **24,427 customers out**"
+        "24 active incidents report **23,414 customers out**"
     )
     assert "Incident details (showing 10 of 24)" in response.answer
     assert len(response.evidence) == 11

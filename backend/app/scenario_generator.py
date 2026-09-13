@@ -62,6 +62,8 @@ MUA_CONTRACTOR_LOCATIONS = {
 DEFAULT_START_DAY_LOCATION_RATE = 0.35
 DEFAULT_CRITICAL_FACILITY_RATE = 0.04
 DEFAULT_CRITICAL_IMPACT_RATE = 0.08
+LSE_FACILITY_SUFFIX = "Private Health Device (LSE)"
+LSE_CUSTOMER_BOUNDARIES = (1, 19, 20)
 COPILOT_DEMO_SCENARIO_ID = "long-island-copilot-demo"
 COPILOT_DEMO_INCIDENT_COUNT = 24
 COPILOT_DEMO_CREW_COUNT = 32
@@ -180,7 +182,7 @@ FACILITY_CATALOG = (
     FacilityProfile("Broadcast Communications Facility", "communications", 2, "high"),
     FacilityProfile("Senior Care Center", "healthcare", 3, "medium"),
     FacilityProfile("Health Related Facility", "healthcare", 3, "medium"),
-    FacilityProfile("Private Health Device (LSE)", "healthcare", 3, "medium"),
+    FacilityProfile(LSE_FACILITY_SUFFIX, "healthcare", 3, "medium"),
 )
 
 
@@ -503,55 +505,161 @@ def _feeders_by_region(incidents: list[dict[str, Any]]) -> dict[str, list[str]]:
     }
 
 
+def _facility_link_key(row: dict[str, Any]) -> tuple[str, str, str]:
+    return (
+        str(row["region"]),
+        str(row["feeder"]),
+        str(row["municipality"]),
+    )
+
+
+def _is_lse_facility(facility: dict[str, Any]) -> bool:
+    return str(facility.get("facility_name", "")).endswith(LSE_FACILITY_SUFFIX)
+
+
+def _configure_lse_boundary_incidents(
+    incidents: list[dict[str, Any]],
+) -> set[str]:
+    if len(incidents) < len(LSE_CUSTOMER_BOUNDARIES):
+        raise ValueError(
+            "incident_count must be at least 3 to generate Level 3 LSE customer boundaries"
+        )
+    selected = incidents[-len(LSE_CUSTOMER_BOUNDARIES) :]
+    anchor = selected[0]
+    for incident, customers_out in zip(selected, LSE_CUSTOMER_BOUNDARIES):
+        incident.update(
+            region=anchor["region"],
+            municipality=anchor["municipality"],
+            feeder=anchor["feeder"],
+            severity="low",
+            customers_out=customers_out,
+            critical_facility="false",
+            hazard="none",
+            required_skill="general",
+            latitude=anchor["latitude"],
+            longitude=anchor["longitude"],
+        )
+    return {str(incident["incident_id"]) for incident in selected}
+
+
+def _lse_boundary_incidents(
+    incidents: Iterable[dict[str, Any]],
+    facilities: Iterable[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    lse_keys = {
+        _facility_link_key(facility)
+        for facility in facilities
+        if _is_lse_facility(facility)
+    }
+    return [
+        incident
+        for incident in incidents
+        if _facility_link_key(incident) in lse_keys
+        and str(incident.get("severity", "")).lower() == "low"
+        and int(incident.get("customers_out", -1)) in LSE_CUSTOMER_BOUNDARIES
+    ]
+
+
 def _generate_critical_facilities(
     incidents: list[dict[str, Any]],
     municipalities: dict[str, list[dict[str, Any]]],
     rng: random.Random,
     facilities_per_region: int | None,
 ) -> list[dict[str, Any]]:
-    feeders = _feeders_by_region(incidents)
     incident_counts = Counter(row["region"] for row in incidents)
+    boundary_candidates: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+    for incident in incidents:
+        if (
+            str(incident.get("severity", "")).lower() == "low"
+            and int(incident.get("customers_out", -1)) in LSE_CUSTOMER_BOUNDARIES
+        ):
+            boundary_candidates.setdefault(_facility_link_key(incident), []).append(
+                incident
+            )
+    boundary_key = next(
+        (
+            key
+            for key, rows_for_key in boundary_candidates.items()
+            if {int(row["customers_out"]) for row in rows_for_key}
+            == set(LSE_CUSTOMER_BOUNDARIES)
+        ),
+        None,
+    )
+    if boundary_key is None:
+        raise ValueError("Generated scenario is missing the configured Level 3 LSE boundaries")
+
     rows: list[dict[str, Any]] = []
     for region in REGIONS:
         facility_count = facilities_per_region or max(
             1,
             round(incident_counts[region] * DEFAULT_CRITICAL_FACILITY_RATE),
         )
-        localities = list(municipalities[region])
-        rng.shuffle(localities)
+        anchors_by_feeder: dict[str, dict[str, Any]] = {}
+        for incident in incidents:
+            if incident["region"] == region:
+                anchors_by_feeder.setdefault(str(incident["feeder"]), incident)
+        if boundary_key[0] == region:
+            boundary_anchor = boundary_candidates[boundary_key][0]
+            anchors_by_feeder[boundary_key[1]] = boundary_anchor
+        else:
+            boundary_anchor = None
+        anchors = sorted(anchors_by_feeder.values(), key=lambda row: str(row["feeder"]))
+        rng.shuffle(anchors)
+        non_boundary_anchors = [
+            anchor for anchor in anchors if _facility_link_key(anchor) != boundary_key
+        ]
+        fallback_localities = list(municipalities[region])
+        rng.shuffle(fallback_localities)
         for index in range(1, facility_count + 1):
-            profile = FACILITY_CATALOG[(index - 1) % len(FACILITY_CATALOG)]
-            locality = localities[(index - 1) % len(localities)]
-            region_feeders = feeders[region]
-            feeder = region_feeders[(index - 1) % len(region_feeders)]
+            is_guaranteed_lse = boundary_anchor is not None and index == facility_count
+            if is_guaranteed_lse:
+                anchor = boundary_anchor
+                profile = FACILITY_CATALOG[-1]
+            elif non_boundary_anchors:
+                anchor = non_boundary_anchors[(index - 1) % len(non_boundary_anchors)]
+                profile = FACILITY_CATALOG[(index - 1) % len(FACILITY_CATALOG)]
+            elif boundary_anchor is not None:
+                anchor = boundary_anchor
+                profile = FACILITY_CATALOG[-1]
+            elif anchors:
+                anchor = anchors[(index - 1) % len(anchors)]
+                profile = FACILITY_CATALOG[(index - 1) % len(FACILITY_CATALOG)]
+            else:
+                locality = fallback_localities[(index - 1) % len(fallback_localities)]
+                anchor = {
+                    "municipality": locality["municipality"],
+                    "feeder": f"FDR-{REGION_CODES[region]}-01",
+                }
+                profile = FACILITY_CATALOG[(index - 1) % len(FACILITY_CATALOG)]
             rows.append(
                 {
                     "facility_id": f"FAC-{REGION_CODES[region]}-{index:02d}",
-                    "facility_name": f"{locality['municipality']} {profile.name_suffix}",
+                    "facility_name": f"{anchor['municipality']} {profile.name_suffix}",
                     "facility_type": profile.facility_type,
                     "region": region,
-                    "municipality": locality["municipality"],
-                    "feeder": feeder,
+                    "municipality": anchor["municipality"],
+                    "feeder": anchor["feeder"],
                     "priority_level": profile.priority_level,
                 }
             )
     return rows
 
 
-def _facility_keys(facilities: Iterable[dict[str, Any]]) -> set[tuple[str, str]]:
-    return {(str(row["region"]), str(row["feeder"])) for row in facilities}
+def _facility_keys(
+    facilities: Iterable[dict[str, Any]],
+) -> set[tuple[str, str, str]]:
+    return {_facility_link_key(row) for row in facilities}
 
 
 def _set_linked_criticality(
     incident: dict[str, Any],
-    facility_keys: set[tuple[str, str]],
+    facility_keys: set[tuple[str, str, str]],
     rng: random.Random,
 ) -> None:
-    eligible = (str(incident["region"]), str(incident["feeder"])) in facility_keys
+    eligible = _facility_link_key(incident) in facility_keys
     incident["critical_facility"] = (
         "true"
         if eligible
-        and incident["severity"] in {"high", "critical"}
         and rng.random() < DEFAULT_CRITICAL_IMPACT_RATE
         else "false"
     )
@@ -562,9 +670,13 @@ def _apply_linked_criticality(
     facilities: Iterable[dict[str, Any]],
     rng: random.Random,
 ) -> None:
-    keys = _facility_keys(facilities)
-    for incident in incidents:
+    incident_rows = list(incidents)
+    facility_rows = list(facilities)
+    keys = _facility_keys(facility_rows)
+    for incident in incident_rows:
         _set_linked_criticality(incident, keys, rng)
+    for incident in _lse_boundary_incidents(incident_rows, facility_rows):
+        incident["critical_facility"] = "true"
 
 
 def validate_critical_facility_linkage(
@@ -572,6 +684,9 @@ def validate_critical_facility_linkage(
     facilities: Iterable[dict[str, Any]],
 ) -> None:
     facility_rows = list(facilities)
+    facility_feeder_keys = {
+        (str(row["region"]), str(row["feeder"])) for row in facility_rows
+    }
     facility_keys = _facility_keys(facility_rows)
     for incident in incidents:
         value = str(incident["critical_facility"]).strip().lower()
@@ -581,7 +696,7 @@ def validate_critical_facility_linkage(
                 f"'{incident['critical_facility']}'"
             )
         key = (str(incident["region"]), str(incident["feeder"]))
-        if value == "true" and key not in facility_keys:
+        if value == "true" and key not in facility_feeder_keys:
             region_facilities = [
                 f"{row['facility_id']}:{row['feeder']}"
                 for row in facility_rows
@@ -592,6 +707,50 @@ def validate_critical_facility_linkage(
                 f"Critical-facility incident {incident['incident_id']} in {key[0]} on {key[1]} "
                 f"has no matching facility; available region facilities: {context}"
             )
+        if value == "true" and _facility_link_key(incident) not in facility_keys:
+            matched_localities = sorted(
+                {
+                    str(row.get("municipality", "unknown"))
+                    for row in facility_rows
+                    if str(row["region"]) == key[0]
+                    and str(row["feeder"]) == key[1]
+                }
+            )
+            raise ValueError(
+                f"Critical-facility incident {incident['incident_id']} in municipality "
+                f"{incident.get('municipality')} has no municipality-consistent facility on "
+                f"{key[1]}; matched facility municipalities: "
+                + ", ".join(matched_localities)
+            )
+
+
+def validate_lse_coverage(
+    incidents: Iterable[dict[str, Any]],
+    facilities: Iterable[dict[str, Any]],
+) -> None:
+    incident_rows = list(incidents)
+    facility_rows = list(facilities)
+    lse_facilities = [row for row in facility_rows if _is_lse_facility(row)]
+    if not lse_facilities:
+        raise ValueError("Generated scenario must include a Level 3 Private Health Device (LSE)")
+    if any(
+        str(row.get("facility_type")) != "healthcare"
+        or str(row.get("priority_level")) != "medium"
+        for row in lse_facilities
+    ):
+        raise ValueError("Generated LSE facilities must use healthcare Level 3 metadata")
+    boundary_incidents = [
+        row
+        for row in _lse_boundary_incidents(incident_rows, lse_facilities)
+        if str(row.get("critical_facility", "")).lower() == "true"
+    ]
+    observed = {int(row["customers_out"]) for row in boundary_incidents}
+    missing = sorted(set(LSE_CUSTOMER_BOUNDARIES) - observed)
+    if missing:
+        raise ValueError(
+            "Generated scenario is missing linked low-severity LSE customer boundaries: "
+            + ", ".join(str(value) for value in missing)
+        )
 
 
 def _generate_topology(incidents: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -697,8 +856,14 @@ def generate_scenario(
         _base_incident(incident_date, sequence, municipalities, rng)
         for incident_date, sequence in _incident_dates(start_date, end_date, incident_count)
     ]
+    lse_boundary_incident_ids = _configure_lse_boundary_incidents(incidents)
 
     assigned_incident_count = round(incident_count * assignment_rate)
+    if assigned_incident_count > incident_count - len(lse_boundary_incident_ids):
+        raise ValueError(
+            "assignment_rate must leave at least three unassigned incidents for "
+            "Level 3 LSE customer-boundary coverage"
+        )
     if dual_tree_incidents > assigned_incident_count:
         raise ValueError("dual_tree_incidents cannot exceed assigned incident count")
     required_crews = assigned_incident_count + dual_tree_incidents
@@ -706,6 +871,21 @@ def generate_scenario(
         raise ValueError("Not enough crews for unique active assignments")
 
     selected_incidents = rng.sample(incidents, assigned_incident_count)
+    selected_incident_ids = {
+        str(incident["incident_id"]) for incident in selected_incidents
+    }
+    replacements = iter(
+        incident
+        for incident in incidents
+        if str(incident["incident_id"]) not in selected_incident_ids
+        and str(incident["incident_id"]) not in lse_boundary_incident_ids
+    )
+    selected_incidents = [
+        next(replacements)
+        if str(incident["incident_id"]) in lse_boundary_incident_ids
+        else incident
+        for incident in selected_incidents
+    ]
     unused_crews = {row["crew_id"]: row for row in crews}
     pending_assignments: list[tuple[dict[str, Any], dict[str, Any], str]] = []
 
@@ -982,8 +1162,19 @@ def generate_copilot_demo_scenario(
         scenario.critical_facilities,
         random.Random(seed + 2_000_003),
     )
+    lse_boundary_incident_ids = {
+        str(incident["incident_id"])
+        for incident in _lse_boundary_incidents(
+            scenario.incidents,
+            scenario.critical_facilities,
+        )
+    }
     for incident in scenario.incidents:
-        incident["critical_facility"] = "false"
+        incident["critical_facility"] = (
+            "true"
+            if str(incident["incident_id"]) in lse_boundary_incident_ids
+            else "false"
+        )
     anchor_incident["critical_facility"] = "true"
     east_meadow_incident["critical_facility"] = "true"
     scenario.topology = _generate_topology(scenario.incidents)
@@ -1131,6 +1322,10 @@ def validate_generated_scenario(
     ):
         raise ValueError("Generated critical-facility IDs are not unique")
     validate_critical_facility_linkage(
+        scenario.incidents,
+        scenario.critical_facilities,
+    )
+    validate_lse_coverage(
         scenario.incidents,
         scenario.critical_facilities,
     )
