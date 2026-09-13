@@ -77,6 +77,7 @@ Batch 1B establishes the UX and dispatch experience foundation.
 | `docs/300_UX/303_Recommendation_Experience.md` | Committed | Recommendation states, action workflow, confidence, alternatives, and audit UX |
 | `docs/300_UX/304_Explainability_and_Trust.md` | Committed | Trust model, explanation content, confidence guidance, and Copilot boundaries |
 | `docs/300_UX/305_Accessibility_Guidelines.md` | Committed | Accessibility expectations for navigation, tables, actions, forms, Copilot, and responsive behavior |
+| `docs/300_UX/306_AI_Copilot_User_Guide.md` | Drafted | Operator query cheat sheet, response-mode interpretation, complete-population requests, and bounded-result guidance |
 
 Batch 1C establishes screen-level UX specifications with visual references.
 
@@ -197,6 +198,7 @@ docs/
     303_Recommendation_Experience.md
     304_Explainability_and_Trust.md
     305_Accessibility_Guidelines.md
+    306_AI_Copilot_User_Guide.md
     310_Screen_Specifications/
       311_Dashboard.md
       312_Dispatch_Recommendation.md

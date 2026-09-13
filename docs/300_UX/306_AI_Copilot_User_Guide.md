@@ -1,0 +1,214 @@
+# AI Copilot User Guide and Query Cheat Sheet
+
+## Purpose
+
+Use this guide to ask AI Copilot questions with a clear scope and to determine whether a response
+was calculated from the complete active scenario, produced from a bounded set of grounded records,
+or returned through the rule-based fallback. AI Copilot is advisory only and does not dispatch
+crews or update source systems.
+
+This guide documents the current POC behavior and the planned transparency improvements in
+POC-030 and POC-031. Example values were verified on 2026-09-13 against the repository's synthetic
+`august-storm-preview` scenario. Scenario data and returned values can change in a later update.
+
+## Quick Query Pattern
+
+For an exact calculation, include four parts when they apply:
+
+> **Action + measure + population + filter**
+
+Examples:
+
+- `How many customers are out across all active incidents?`
+- `How many active incidents have critical severity?`
+- `How many crews are available in the active scenario?`
+- `Show available line crews in Eastern Suffolk.`
+- `Which crews are assigned to ESD-20260810-0401?`
+
+Words such as **all**, **total**, and **entire scenario** make the requested scope clear, but wording
+alone does not give the language model access to every record. A complete-population statistic is
+reliable only when AI Copilot recognizes it as a supported deterministic local query. POC-030 will
+require an explicit limitation instead of a sample-derived total when that deterministic query is
+not supported.
+
+## Read the Response Mode First
+
+The mode label below each answer identifies how the response was produced.
+
+| Visible label | What it means | Appropriate interpretation |
+| --- | --- | --- |
+| **Local scenario query** | Application code calculated or retrieved supported facts from active-scenario data without calling the LLM. | Use the reported total for the stated population and filters. A displayed table may still be a bounded example subset. |
+| **Grounded AI · model** | The LLM summarized only the selected and bounded scenario records supplied to it. | Treat it as a supported narrative about that context, not automatically as complete-population analysis. |
+| **Rule-based fallback** | The configured AI provider was unavailable or disabled, so a local fallback response was returned. | Read the warning and rely only on the facts and scope stated in the fallback. |
+
+Also check the displayed **Scenario**, **Snapshot**, request time, warning, and expandable
+**Evidence** before acting on a response.
+
+## Complete-Population Calculations
+
+Supported deterministic questions bypass the LLM and evaluate the full population named by the
+query. A row limit controls presentation, not the calculation.
+
+### Example: all-incident customer total
+
+**Ask**
+
+> How many customers are out across all active incidents?
+
+**Verified `august-storm-preview` result**
+
+- Mode: **Local scenario query**
+- Evaluated population: **2,000 active incidents**
+- Exact result: **1,000,332 customers out**
+- Displayed details: **10 of 2,000 incidents**
+- Evidence: one complete-scenario aggregate record plus the same ten displayed incident examples
+
+All 2,000 visible incidents contribute to the total. In this verified scenario, all incidents are
+rankable, so the ten displayed rows are the highest operational-priority incidents returned by the
+active deterministic incident policy. They are not random and are not sorted solely by customers
+out. In a scenario containing ranking-withheld incidents, the current visible ordering places all
+ranked incidents first and then withheld incidents by incident ID. A withheld incident remains part
+of the complete customer total and can appear in the displayed ten only when fewer than ten
+rankable incidents precede it.
+
+POC-031 will replace the generic detail heading with wording similar to:
+
+> **Highest-priority rankable incidents (showing 10 of 2,000)**
+
+### Example: incident severity count
+
+**Ask**
+
+> How many active incidents have a severity of critical?
+
+**Verified `august-storm-preview` result**
+
+- Mode: **Local scenario query**
+- Exact result: **229 critical incidents**
+- Displayed examples: **10 of 229**
+- Example order: highest operational priority among the matching critical incidents
+
+Other supported severity words are `high`, `medium`, and `low`.
+
+### Example: complete crew availability count
+
+**Ask**
+
+> How many crews are available in the active scenario?
+
+**Verified `august-storm-preview` result**
+
+- Mode: **Local scenario query**
+- Evaluated population: **500 crews**
+- Exact result: **395 available and 105 assigned**
+
+This count does not require a ten-row table. To retrieve matching crew records, ask a `show` or
+`which` question and provide useful filters.
+
+## Understanding Ten-Row Result Tables
+
+Ten rows means “ten displayed examples,” not “ten records evaluated.” Read the total and heading
+together.
+
+| Result type | Records used for the count or calculation | Which rows are currently displayed |
+| --- | --- | --- |
+| All-incident customer aggregate | Every visible active incident | First ten in deterministic operational-priority order |
+| Severity count | Every incident in the supported severity scope | First ten matching incidents in deterministic operational-priority order |
+| Geography-filtered incidents | Every rankable incident matching the resolved geography | First ten matches in deterministic operational-priority order |
+| Crew query | Every crew matching the requested filters | First ten matches in scenario source order; there is no general crew ranking |
+
+For example, `Show available crews` returns **395 matches** in `august-storm-preview` but displays
+only ten rows. Those ten crews are deterministic, not random, but they are currently the first ten
+available crews in scenario order—not the “best” ten crews. POC-031 will label this as:
+
+> **Matching crews in scenario order (showing 10 of 395)**
+
+Do not infer a ranking from row position unless the response explicitly says the subset is ordered
+by operational priority, feasibility, travel time, or another named criterion.
+
+## When Grounded AI Uses a Bounded Context
+
+Open-ended explanation and briefing questions may use the configured LLM. Examples include:
+
+- `Summarize storm status.`
+- `Explain the main operational concerns.`
+- `Describe the dispatch tradeoffs for this incident.`
+
+The current grounded context can contain:
+
+- The selected incident and selected crew, when present
+- Up to **five ranked incidents**
+- The recommendation for a selected incident, when present
+- Up to **six crews**
+- Up to **eight critical-facility records**
+- Up to **four weather records**
+- No more than the configured overall context-record limit
+
+This is designed for concise, relevant synthesis. It is not a statistically representative sample
+and must not be used to calculate an all-scenario total. The selected incident can also be supplied
+separately from the five ranked incidents, so “five ranked incidents” does not necessarily mean
+that exactly five unique incident records appear in every prompt.
+
+POC-030 plans a dynamically derived scope label similar to:
+
+> **Grounded AI summary · selected context + 5 ranked incidents + 6 crews**
+
+The actual counts should be generated from the records supplied for that response rather than
+hard-coded in UI copy.
+
+## Unsupported Population Calculations
+
+Do not treat a plausible narrative number as a complete-scenario result when:
+
+- The response is labeled **Grounded AI**.
+- The requested measure is not stated as a supported deterministic calculation.
+- The response does not identify the evaluated population.
+- The answer uses phrases such as “based on the provided incidents” or reports missing context.
+
+For example, the scenario does not provide a complete customer-served denominator for this request:
+
+> What percentage of all customers served are without power?
+
+The correct behavior is to disclose the missing denominator, not infer a percentage from the
+bounded incident context. POC-030 will require unsupported all-scope requests to state the
+limitation and suggest an available exact query, such as:
+
+> I cannot calculate the percentage because the active scenario does not provide total customers
+> served. Try: “How many customers are out across all active incidents?”
+
+## Prompt Cheat Sheet
+
+| Goal | Recommended wording | Expected mode and scope |
+| --- | --- | --- |
+| Total customer impact | `How many customers are out across all active incidents?` | Local scenario query; complete visible incident inventory |
+| Count incidents by severity | `How many active incidents have critical severity?` | Local scenario query; complete supported severity scope |
+| Count available crews | `How many crews are available in the active scenario?` | Local scenario query; complete crew inventory |
+| List filtered crews | `Show available line crews in Eastern Suffolk.` | Local scenario query; all matches counted, first ten shown in scenario order |
+| Inspect one incident | `What is the outage status of ESD-20260810-0401?` | Selected-incident local response |
+| Explain one recommendation | `Why was this crew recommended for the selected incident?` | Local deterministic explanation using the selected recommendation |
+| Request a briefing | `Summarize storm status.` | Grounded AI when configured; bounded synthesis context |
+| Request an unavailable statistic | Name the measure and complete scope explicitly. | Copilot should disclose the limitation rather than extrapolate from a sample |
+
+## Operator Checklist
+
+Before relying on a Copilot answer:
+
+1. Confirm the active scenario and data snapshot.
+2. Read the response mode: local query, grounded AI, or fallback.
+3. For a total, confirm that the evaluated population is stated.
+4. Treat `showing 10 of N` as a display subset; identify its stated ordering basis.
+5. Expand Evidence when you need to inspect supporting records.
+6. Do not interpret a grounded subset as an all-scenario total.
+7. Remember that every response is advisory and requires operator judgment.
+
+## Related POC Items
+
+- **POC-020:** readable local-query Markdown and bounded displays
+- **POC-021:** deterministic incident severity counts
+- **POC-028:** deterministic all-incident customer aggregates
+- **POC-030:** query-scope guidance, dynamic scope labels, and bounded-synthesis disclosure
+- **POC-031:** explicit result-subset and ordering headings
+
+See the [POC Feedback Log](../004_POC_Feedback_Log.md) and
+[AI Copilot Screen Specification](310_Screen_Specifications/317_AI_Copilot.md) for status and
+implementation acceptance details.

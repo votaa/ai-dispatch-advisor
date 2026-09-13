@@ -116,6 +116,14 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   grounded summary with dynamically derived bounded-context counts. Grounded synthesis must not
   present sample-derived values as all-scenario totals; unsupported population calculations must
   disclose the limitation and suggest a supported exact query rather than infer from the sample.
+  Use the [AI Copilot User Guide and Query Cheat Sheet](../306_AI_Copilot_User_Guide.md) as the
+  operator-facing explanation and example baseline.
+- **POC-031 — Explicit result-subset and ordering headings:** Name the population, displayed count,
+  and selection order in result headings. Priority-ordered incident examples must say that they
+  are highest-priority rankable incidents; source-ordered crew matches must say that they are in
+  scenario order and must not be called “top” without a defined crew-ranking policy. Clarify
+  whether ranking-withheld incidents contribute to a complete calculation and whether any appear
+  after the ranked incidents in its displayed subset.
 
 ## Acceptance Criteria
 
