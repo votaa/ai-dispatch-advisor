@@ -2,15 +2,15 @@
 
 ## Status
 
-Status: Implemented; isolated sample approved; fixture publication remains deferred.
+Status: Implemented; isolated sample approved; corrected scenario published as a new version.
 
 Date: 2026-08-24
 
 Implementation review note: generator, runtime, timeline, Copilot, tests, and the formal
 data-contract documentation have been updated. The owner approved the isolated POC-026
-standard scenario and five-snapshot timeline on 2026-09-13. Existing published scenario
-folders remain unchanged; publishing a corrected fixture as a new version remains a
-separate no-overwrite approval step.
+standard scenario and five-snapshot timeline on 2026-09-13. The validated full-scale
+`august-storm-preview-v2` was published on 2026-09-14 without changing or replacing the
+original `august-storm-preview` scenario.
 
 This plan addresses scenario components that can become internally inconsistent, beginning
 with incidents marked `critical_facility=true` that do not have a matching row in

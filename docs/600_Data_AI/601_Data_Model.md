@@ -111,9 +111,10 @@ also reserves three unassigned, low-severity incidents with 1, 19, and 20 custom
 same linked healthcare/medium Level 3 `Private Health Device (LSE)` facility. These rows
 provide deterministic customer-impact boundary coverage in both single-snapshot and
 default timeline output. Generation fails when the configured assignment rate does not
-leave three unassigned incident slots. Existing published scenario folders remain
-unchanged and retain the backward-compatible runtime `region + feeder` activation rule
-described above until separately reviewed and republished.
+leave three unassigned incident slots. The full-scale `august-storm-preview-v2` publishes
+this contract alongside the unchanged original August scenario. Runtime activation retains
+the backward-compatible `region + feeder` validation rule described above for legacy
+fixtures.
 
 Topology coverage remains a strict generated-scenario contract. It is not yet a runtime
 activation requirement for all legacy fixtures because their fictional topology coverage

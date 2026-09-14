@@ -12,7 +12,7 @@ The current project baseline includes:
 - Runnable React frontend.
 - Runnable FastAPI backend.
 - Synthetic CSV demo data.
-- Five currently version-controlled, dynamically discovered synthetic scenarios, including four canonical regression fixtures.
+- Seven currently version-controlled, dynamically discovered synthetic scenarios, including four canonical regression fixtures and the POC-026-corrected `august-storm-preview-v2`.
 - Scenario-isolated local SQLite decision and accepted-assignment persistence.
 - Initial dashboard, dispatch, incidents, crew board, scenario, storm mode, and Copilot pages.
 - Demo-functional recommendation actions with visible status and history.
