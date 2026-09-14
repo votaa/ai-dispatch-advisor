@@ -101,12 +101,16 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   explicitly marked as `not_measured`. The response header displays the value in 24-hour UTC;
   older responses without the optional field remain readable.
 
-## Open POC TODOs
+## Implemented POC Enhancements
 
-- **POC-025 — Critical Facility Level queries:** Add deterministic answers for Level 1–3
-  breakdowns, individual-level filters, selected-incident level questions, highest-level-once
-  incident counts, separately labeled facility-record counts, and unknown/withheld warnings. See
-  the [deferred implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
+- **POC-025 — Critical Facility Level queries:** Deterministic Level 1–3 breakdowns,
+  individual-level filters, selected/explicit-incident level questions, highest-level-once
+  incident counts, separately labeled unique matched facility-record counts, and visible
+  unknown/withheld warnings use the complete visible active-scenario inventory. New tables use
+  POC-031 population, subset, and ordering headings. See the
+  [implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
+
+## Open POC TODOs
 - **POC-029 — Full-width AI Copilot workspace:** Use the full available content width by default
   on desktop so response tables have more room, while retaining readable prose measure and
   narrow-screen table scrolling. This does not add an expand/restore control.

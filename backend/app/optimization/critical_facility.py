@@ -4,7 +4,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 from ..domain.models import Incident
-from .contracts import CriticalFacilityImpact
+from .contracts import CriticalFacilityImpact, CriticalFacilityLevel
 
 
 LEVEL_BY_PRIORITY = {
@@ -12,6 +12,14 @@ LEVEL_BY_PRIORITY = {
     "high": 2,
     "medium": 3,
 }
+
+
+def critical_facility_level_for_priority(
+    priority_level: object,
+) -> CriticalFacilityLevel | None:
+    """Map one source facility priority through the shared operational-level contract."""
+
+    return LEVEL_BY_PRIORITY.get(str(priority_level or "").strip().lower())
 
 
 def resolve_critical_facility_impact(
@@ -42,8 +50,7 @@ def resolve_critical_facility_impact(
     unknown_ids = sorted(
         str(facility.get("facility_id"))
         for facility in matches
-        if str(facility.get("priority_level") or "").strip().lower()
-        not in LEVEL_BY_PRIORITY
+        if critical_facility_level_for_priority(facility.get("priority_level")) is None
     )
     if unknown_ids:
         joined_ids = ", ".join(unknown_ids)
@@ -57,8 +64,10 @@ def resolve_critical_facility_impact(
         )
 
     levels = [
-        LEVEL_BY_PRIORITY[str(facility.get("priority_level")).strip().lower()]
+        level
         for facility in matches
+        if (level := critical_facility_level_for_priority(facility.get("priority_level")))
+        is not None
     ]
     return CriticalFacilityImpact(
         level=min(levels),

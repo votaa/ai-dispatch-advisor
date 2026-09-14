@@ -5,6 +5,7 @@ import pytest
 
 from app import data_loader
 from app.copilot_provider import CopilotGenerationRequest, CopilotGenerationResult
+from app.domain.models import Incident
 from app.scenario_generator import generate_copilot_demo_scenario, write_scenario
 from app.services import build_services
 
@@ -28,6 +29,116 @@ def _copilot_services(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(data_loader, "DATA_ROOT", tmp_path)
     data_loader.set_active_scenario(scenario.scenario_id)
     return build_services()
+
+
+def _poc025_inventory(services, monkeypatch) -> list[Incident]:
+    template = services.incidents.list_visible()[0]
+    incidents = [
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-L1-MULTI",
+                "municipality": "Level One Village",
+                "feeder": "FDR-POC025-L1",
+                "critical_facility": True,
+                "critical_facility_level": 1,
+                "matched_critical_facility_ids": ["FAC-L1", "FAC-L3-A"],
+            }
+        ),
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-L2",
+                "municipality": "Level Two Village",
+                "feeder": "FDR-POC025-L2",
+                "critical_facility": True,
+                "critical_facility_level": 2,
+                "matched_critical_facility_ids": ["FAC-L2"],
+            }
+        ),
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-L3",
+                "municipality": "Level Three Village",
+                "feeder": "FDR-POC025-L3",
+                "critical_facility": True,
+                "critical_facility_level": 3,
+                "matched_critical_facility_ids": ["FAC-L3-B"],
+            }
+        ),
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-UNKNOWN",
+                "municipality": "Unknown Village",
+                "feeder": "FDR-POC025-U",
+                "critical_facility": True,
+                "critical_facility_level": None,
+                "matched_critical_facility_ids": ["FAC-U"],
+                "ranking_status": "withheld",
+                "ranking_warning": (
+                    "Critical-facility level is unknown for matched facility IDs: FAC-U"
+                ),
+            }
+        ),
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-MISSING",
+                "municipality": "Missing Link Village",
+                "feeder": "FDR-POC025-MISSING",
+                "critical_facility": True,
+                "critical_facility_level": None,
+                "matched_critical_facility_ids": [],
+                "ranking_status": "withheld",
+                "ranking_warning": (
+                    "Critical-facility incident has no matching facility for its region and feeder."
+                ),
+            }
+        ),
+        template.model_copy(
+            update={
+                "incident_id": "INC-POC025-NO-CF",
+                "municipality": "No Facility Village",
+                "feeder": "FDR-POC025-NONE",
+                "critical_facility": False,
+                "critical_facility_level": None,
+                "matched_critical_facility_ids": [],
+            }
+        ),
+    ]
+    facilities = [
+        {
+            "facility_id": "FAC-L1",
+            "facility_name": "Level One Facility",
+            "facility_type": "hospital",
+            "priority_level": "critical",
+        },
+        {
+            "facility_id": "FAC-L2",
+            "facility_name": "Level Two Facility",
+            "facility_type": "emergency services",
+            "priority_level": "high",
+        },
+        {
+            "facility_id": "FAC-L3-A",
+            "facility_name": "Level Three Facility A",
+            "facility_type": "healthcare",
+            "priority_level": "medium",
+        },
+        {
+            "facility_id": "FAC-L3-B",
+            "facility_name": "Private Health Device (LSE)",
+            "facility_type": "healthcare",
+            "priority_level": "medium",
+        },
+        {
+            "facility_id": "FAC-U",
+            "facility_name": "Unknown Level Facility",
+            "facility_type": "other",
+            "priority_level": "unsupported",
+        },
+    ]
+    monkeypatch.setattr(services.incidents, "list_ranked", lambda: incidents[:3] + [incidents[5]])
+    monkeypatch.setattr(services.incidents, "list_visible", lambda: incidents)
+    monkeypatch.setattr(services.context, "critical_facilities", lambda: facilities)
+    return incidents
 
 
 def test_deterministic_acceptance_questions_use_local_evidence(
@@ -121,6 +232,182 @@ def test_deterministic_acceptance_questions_use_local_evidence(
     )
     assert synthesis.execution_mode == "rule_based_fallback"
     assert "AI provider unavailable" in (synthesis.warning or "")
+
+
+def test_critical_facility_level_breakdown_uses_resolved_visible_metadata(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    _poc025_inventory(services, monkeypatch)
+
+    response = services.copilot.respond(
+        "What is the breakdown of critical facilities by level?"
+    )
+
+    assert response.intent == "critical_facility_levels"
+    assert response.execution_mode == "local_query"
+    assert response.provider is None
+    assert "| Level 1 | 1 | +120 |" in response.answer
+    assert "| Level 2 | 1 | +80 |" in response.answer
+    assert "| Level 3 | 1 | +40 |" in response.answer
+    assert "| Unknown/withheld | 2 | Withheld |" in response.answer
+    assert "| Level 1 | 1 |" in response.answer
+    assert "| Level 2 | 1 |" in response.answer
+    assert "| Level 3 | 2 |" in response.answer
+    assert "| Unknown | 1 |" in response.answer
+    assert response.answer.count("| INC-POC025-L1-MULTI |") == 1
+    assert "INC-POC025-NO-CF" not in response.answer
+    assert (
+        "### Complete visible affected-incident counts "
+        "(all 5 critical-facility incidents)"
+    ) in response.answer
+    assert (
+        "### Complete matched facility-record counts (all 5 matched records)"
+    ) in response.answer
+    assert (
+        "### Priority-ordered visible critical-facility incidents "
+        "(rankable first; withheld by incident ID; showing 5 of 5)"
+    ) in response.answer
+    assert (
+        "Unknown/withheld incidents contribute 2 record(s) to the complete "
+        "affected-incident calculation; 2 appear in the displayed subset."
+    ) in response.answer
+    assert response.warning == (
+        "2 critical-facility incident(s) are withheld from ranking because their "
+        "facility level is unresolved."
+    )
+    assert len(response.evidence) == 10
+
+
+@pytest.mark.parametrize(
+    ("question", "expected_scope", "expected_heading"),
+    [
+        (
+            "How many Level 1 critical facilities are affected?",
+            "Level 1 — 1 affected incident(s)",
+            "Highest-priority rankable Level 1 incidents (showing 1 of 1)",
+        ),
+        (
+            "Which incidents affect Level Two facilities?",
+            "Level 2 — 1 affected incident(s)",
+            "Highest-priority rankable Level 2 incidents (showing 1 of 1)",
+        ),
+        (
+            "Show L3 critical-facility incidents.",
+            "Level 3 — 1 affected incident(s)",
+            "Highest-priority rankable Level 3 incidents (showing 1 of 1)",
+        ),
+        (
+            "Are any critical-facility levels unknown?",
+            "Unknown/withheld — 2 affected incident(s)",
+            (
+                "Ranking-withheld unknown-level incidents in incident ID order "
+                "(showing 2 of 2)"
+            ),
+        ),
+    ],
+)
+def test_critical_facility_level_filters_have_explicit_subset_headings(
+    tmp_path: Path,
+    monkeypatch,
+    question: str,
+    expected_scope: str,
+    expected_heading: str,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    _poc025_inventory(services, monkeypatch)
+
+    response = services.copilot.respond(question)
+
+    assert response.intent == "critical_facility_levels"
+    assert f"The requested {expected_scope.split(' — ')[0]} scope contains" in response.answer
+    assert f"**Requested scope:** {expected_scope}." in response.answer
+    assert f"### {expected_heading}" in response.answer
+
+
+def test_critical_facility_level_incident_detail_uses_highest_level_once(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    _poc025_inventory(services, monkeypatch)
+
+    response = services.copilot.respond(
+        "What level and scoring contribution apply to INC-POC025-L1-MULTI?"
+    )
+
+    assert response.intent == "critical_facility_levels"
+    assert "**Applied level:** Level 1" in response.answer
+    assert "**Critical-facility score contribution:** +120" in response.answer
+    assert "only the highest resolved level once" in response.answer
+    assert (
+        "### Matched facility records in facility ID order (showing 2 of 2)"
+    ) in response.answer
+    assert "| FAC-L1 | Level One Facility | hospital | Level 1 |" in response.answer
+    assert (
+        "| FAC-L3-A | Level Three Facility A | healthcare | Level 3 |"
+    ) in response.answer
+
+
+def test_unknown_critical_facility_incident_stays_visible_and_withheld(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    incidents = _poc025_inventory(services, monkeypatch)
+    unknown = next(row for row in incidents if row.incident_id == "INC-POC025-UNKNOWN")
+
+    response = services.copilot.respond(
+        "What critical-facility level applies to this incident?",
+        incident_id=unknown.incident_id,
+    )
+
+    assert response.intent == "critical_facility_levels"
+    assert "**Applied level:** Unknown/withheld" in response.answer
+    assert "**Critical-facility score contribution:** Withheld" in response.answer
+    assert "**Ranking status:** withheld" in response.answer
+    assert unknown.ranking_warning in response.answer
+    assert response.warning == unknown.ranking_warning
+
+
+def test_critical_facility_level_queries_bypass_the_provider(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    provider = RecordingProvider()
+    scenario = generate_copilot_demo_scenario(start_date=date(2026, 8, 21))
+    write_scenario(scenario, tmp_path)
+    monkeypatch.setattr(data_loader, "DATA_ROOT", tmp_path)
+    data_loader.set_active_scenario(scenario.scenario_id)
+    services = build_services(copilot_provider=provider)
+
+    response = services.copilot.respond("Break down critical facilities by level.")
+
+    assert response.intent == "critical_facility_levels"
+    assert response.execution_mode == "local_query"
+    assert provider.requests == []
+
+
+def test_poc026_published_scenario_supplies_all_resolved_facility_levels(
+    monkeypatch,
+) -> None:
+    scenario_root = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+    monkeypatch.setattr(data_loader, "DATA_ROOT", scenario_root)
+    data_loader.set_active_scenario("august-storm-preview-v2")
+    services = build_services()
+
+    response = services.copilot.respond("Break down critical facilities by level.")
+
+    assert response.scenario_id == "august-storm-preview-v2"
+    assert "| Level 1 | 5 | +120 |" in response.answer
+    assert "| Level 2 | 3 | +80 |" in response.answer
+    assert "| Level 3 | 7 | +40 |" in response.answer
+    assert "| Unknown/withheld | 0 | Withheld |" in response.answer
+    assert "### Complete matched facility-record counts (all 11 matched records)" in response.answer
+    assert "| Level 1 | 5 |" in response.answer
+    assert "| Level 2 | 3 |" in response.answer
+    assert "| Level 3 | 3 |" in response.answer
 
 
 def test_geography_and_external_fact_gaps_are_not_inferred(

@@ -779,7 +779,7 @@ function App() {
               {[
                 "What should I focus on first?",
                 "How many crews are available?",
-                "What critical facilities are affected?",
+                "Break down critical facilities by level.",
                 "Why was this crew recommended?",
                 "Summarize storm status"
               ].map((prompt) => (

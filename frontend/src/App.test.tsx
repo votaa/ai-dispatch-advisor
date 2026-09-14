@@ -994,6 +994,9 @@ describe("application states and scenario switching", () => {
     expect(copilotContext.textContent).toContain("Selected incident: INC-1001 · Millbrook");
     expect(copilotContext.textContent).toContain("Selected crew: None");
     expect(screen.getByText("Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.")).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Break down critical facilities by level." })
+    ).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
     expect(screen.getByRole("button", { name: "Asking..." })).toBeTruthy();
@@ -1152,6 +1155,80 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("24,427 customers out")).toBeTruthy();
     expect(screen.getByRole("table")).toBeTruthy();
     expect(screen.getByText("Local scenario query")).toBeTruthy();
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+  });
+
+  it("renders POC-025 tables with explicit population and subset headings", async () => {
+    const question = "Break down critical facilities by level.";
+    apiMocks.chat.mockResolvedValue({
+      answer: [
+        "## Critical-facility levels",
+        "",
+        "### Complete visible affected-incident counts (all 15 critical-facility incidents)",
+        "",
+        "| Applied level | Affected incidents | Score contribution |",
+        "| --- | ---: | ---: |",
+        "| Level 1 | 5 | +120 |",
+        "| Level 2 | 3 | +80 |",
+        "| Level 3 | 7 | +40 |",
+        "| Unknown/withheld | 0 | Withheld |",
+        "",
+        "### Complete matched facility-record counts (all 11 matched records)",
+        "",
+        "| Source facility level | Facility records |",
+        "| --- | ---: |",
+        "| Level 1 | 5 |",
+        "| Level 2 | 3 |",
+        "| Level 3 | 3 |",
+        "| Unknown | 0 |",
+        "",
+        "### Priority-ordered visible critical-facility incidents (rankable first; withheld by incident ID; showing 10 of 15)",
+        "",
+        "| ESD ID | Village | Applied level |",
+        "| --- | --- | --- |",
+        "| ESD-20260810-0661 | Riverhead | Level 1 |"
+      ].join("\n"),
+      intent: "critical_facility_levels",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "august-storm-preview-v2",
+      generated_at: "2026-09-14T13:29:00Z",
+      request_time: {
+        received_at: "2026-09-14T13:29:00Z",
+        timezone: "UTC",
+        source: "backend_server_clock",
+        clock_skew: "not_measured"
+      },
+      data_snapshot_at: null,
+      provider: null,
+      model: null,
+      warning: null,
+      evidence: []
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.click(screen.getByRole("button", { name: question }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "Complete visible affected-incident counts (all 15 critical-facility incidents)"
+      })
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("heading", {
+        name: "Complete matched facility-record counts (all 11 matched records)"
+      })
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("heading", {
+        name: "Priority-ordered visible critical-facility incidents (rankable first; withheld by incident ID; showing 10 of 15)"
+      })
+    ).toBeTruthy();
+    expect(screen.getAllByRole("table")).toHaveLength(3);
     expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
   });
 

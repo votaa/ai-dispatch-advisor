@@ -2,15 +2,22 @@
 
 ## Status
 
-Status: Deferred; documentation only. Implementation is not part of the current change.
+Status: Implemented and validated on 2026-09-14.
 
 Date: 2026-09-12
 
 This plan captures a Copilot capability gap observed after POC-019 level-specific
-critical-facility scoring became the default. The question “What is the breakdown of Critical
-Facilities by Level?” currently routes to the generic critical-facility response. It reports
-affected incidents and raw facility priorities such as `critical`, but it does not translate,
-group, or count those records as Level 1, Level 2, and Level 3.
+critical-facility scoring became the default. Before POC-025, the question “What is the breakdown
+of Critical Facilities by Level?” routed to the generic critical-facility response. It reported
+affected incidents and raw facility priorities such as `critical`, but did not translate, group,
+or count those records as Level 1, Level 2, and Level 3.
+
+The implemented deterministic `critical_facility_levels` path uses the complete visible incident
+inventory and resolved POC-019/POC-026 incident metadata. It reports highest-level-once
+affected-incident counts, separately labeled unique matched facility-record counts, and
+unknown/withheld incidents. New result tables use POC-031 headings that identify the evaluated
+population, displayed subset, and ordering basis. The existing generic critical-facility route,
+API schema, advisory boundary, and scenario data remain unchanged.
 
 ## Goal
 

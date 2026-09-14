@@ -51,6 +51,14 @@ class IncidentService:
             if incident.ranking_status == "withheld"
         ]
 
+    def critical_facility_score_contribution(self, level: int | None) -> int:
+        """Return the active policy contribution for one already-resolved CF level."""
+
+        scoring = self._optimization_engine.policy.incident_scoring
+        if scoring.critical_facility_weights is not None:
+            return scoring.critical_facility_weights.for_level(level)
+        return scoring.critical_facility_bonus if level is not None else 0
+
     def _list_incidents(self) -> list[Incident]:
         assignments = self._assignments.list_active()
         latest_decisions = self._latest_decisions(self._active_scenario_id())

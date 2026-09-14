@@ -14,6 +14,7 @@ from ..copilot_provider import (
 )
 from ..domain.models import Crew, Incident, Recommendation
 from ..geography import GeographyRecord, GeographyRegistry, TravelEstimateService
+from ..optimization import critical_facility_level_for_priority
 from .context_service import OperationalContextService
 from .copilot_context_service import CopilotContextBuilder
 from .crew_service import CrewService
@@ -116,6 +117,20 @@ class CopilotService:
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
         selected_crew = self._resolve_crew(message, self._crews.list(), crew_id)
+
+        if self._is_critical_facility_level_query(normalized):
+            visible_incidents = self._incidents.list_visible()
+            visible_selected = self._resolve_incident(
+                message,
+                incident_id,
+                visible_incidents,
+            )
+            return self._critical_facility_levels(
+                message,
+                normalized,
+                visible_selected,
+                visible_incidents,
+            )
 
         severity = self._resolve_severity(normalized)
         if severity is not None and self._is_severity_count_query(normalized):
@@ -943,6 +958,354 @@ class CopilotService:
                 for row in facilities
             ],
         )
+
+    @staticmethod
+    def _is_critical_facility_level_query(normalized: str) -> bool:
+        facility_context = "critical facilit" in normalized or (
+            "facilit" in normalized
+            and any(
+                re.search(pattern, normalized)
+                for pattern in (
+                    r"\blevel (?:1|2|3|one|two|three)\b",
+                    r"\btier (?:1|2|3|one|two|three)\b",
+                    r"\bl[123]\b",
+                )
+            )
+        ) or (
+            "scoring contribution" in normalized
+            and re.search(r"\b(?:esd|inc) [a-z0-9]+", normalized) is not None
+        )
+        if not facility_context:
+            return False
+        return any(
+            term in normalized
+            for term in (
+                "level",
+                "tier",
+                "l1",
+                "l2",
+                "l3",
+                "breakdown",
+                "distribution",
+                "unknown",
+                "unresolved",
+                "scoring contribution",
+            )
+        )
+
+    @staticmethod
+    def _requested_critical_facility_level(normalized: str) -> int | None:
+        words = {"one": 1, "two": 2, "three": 3}
+        match = re.search(r"\b(?:level|tier) (1|2|3|one|two|three)\b", normalized)
+        if match:
+            value = match.group(1)
+            return int(value) if value.isdigit() else words[value]
+        abbreviation = re.search(r"\bl([123])\b", normalized)
+        return int(abbreviation.group(1)) if abbreviation else None
+
+    def _critical_facility_levels(
+        self,
+        message: str,
+        normalized: str,
+        selected: Incident | None,
+        incidents: list[Incident],
+    ) -> ChatResponse:
+        critical_incidents = [incident for incident in incidents if incident.critical_facility]
+        explicit_incident = next(
+            (
+                incident
+                for incident in incidents
+                if _contains_phrase(message, incident.incident_id)
+            ),
+            None,
+        )
+        if self._targets_selected_record(message) or explicit_incident is not None:
+            return self._critical_facility_level_for_incident(
+                explicit_incident or selected,
+            )
+
+        target_level = self._requested_critical_facility_level(normalized)
+        unknown_only = any(term in normalized for term in ("unknown", "unresolved", "missing"))
+        if unknown_only:
+            filtered = [
+                incident
+                for incident in critical_incidents
+                if incident.critical_facility_level is None
+            ]
+            scope_label = "Unknown/withheld"
+            result_heading = (
+                "Ranking-withheld unknown-level incidents in incident ID order"
+            )
+        elif target_level is not None:
+            filtered = [
+                incident
+                for incident in critical_incidents
+                if incident.critical_facility_level == target_level
+            ]
+            scope_label = f"Level {target_level}"
+            result_heading = f"Highest-priority rankable Level {target_level} incidents"
+        else:
+            filtered = critical_incidents
+            scope_label = "All levels"
+
+        facilities_by_id = self._critical_facilities_by_id()
+        matched_facilities = self._matched_facility_records(
+            critical_incidents,
+            facilities_by_id,
+        )
+        facility_counts = Counter(
+            critical_facility_level_for_priority(row.get("priority_level"))
+            for row in matched_facilities
+        )
+        incident_counts = Counter(
+            incident.critical_facility_level for incident in critical_incidents
+        )
+        shown = filtered[:10]
+        withheld = [
+            incident for incident in critical_incidents if incident.ranking_status == "withheld"
+        ]
+        shown_withheld = sum(incident.ranking_status == "withheld" for incident in shown)
+        answer_parts = [
+            "## Critical-facility levels",
+            "",
+        ]
+        if target_level is not None or unknown_only:
+            answer_parts.extend(
+                [
+                    f"The requested {scope_label} scope contains **{len(filtered)} affected incident(s)**.",
+                    "",
+                ]
+            )
+        answer_parts.extend(
+            [
+                (
+                    f"The complete visible scenario inventory contains {len(critical_incidents)} "
+                    "critical-facility incident(s). Each affected incident is counted once at its "
+                    "resolved highest level; unknown-level incidents remain visible but are "
+                    "withheld from ranking."
+                ),
+                "",
+                (
+                    f"Unknown/withheld incidents contribute {len(withheld)} record(s) to the "
+                    "complete affected-incident calculation; "
+                    f"{shown_withheld} appear in the displayed subset."
+                ),
+                "",
+                (
+                    "### Complete visible affected-incident counts "
+                    f"(all {len(critical_incidents)} critical-facility incidents)"
+                ),
+                "",
+                "| Applied level | Affected incidents | Score contribution |",
+                "| --- | ---: | ---: |",
+            ]
+        )
+        for level in (1, 2, 3):
+            contribution = self._incidents.critical_facility_score_contribution(level)
+            answer_parts.append(
+                f"| Level {level} | {incident_counts[level]} | +{contribution} |"
+            )
+        answer_parts.append(f"| Unknown/withheld | {incident_counts[None]} | Withheld |")
+        answer_parts.extend(
+            [
+                "",
+                (
+                    "### Complete matched facility-record counts "
+                    f"(all {len(matched_facilities)} matched records)"
+                ),
+                "",
+                (
+                    "Each source facility record is counted once by facility ID at its own "
+                    "resolved level, separately from affected incidents."
+                ),
+                "",
+                "| Source facility level | Facility records |",
+                "| --- | ---: |",
+                f"| Level 1 | {facility_counts[1]} |",
+                f"| Level 2 | {facility_counts[2]} |",
+                f"| Level 3 | {facility_counts[3]} |",
+                f"| Unknown | {facility_counts[None]} |",
+                "",
+                f"**Requested scope:** {scope_label} — {len(filtered)} affected incident(s).",
+            ]
+        )
+        if shown:
+            if target_level is None and not unknown_only:
+                subset_heading = (
+                    "Priority-ordered visible critical-facility incidents "
+                    f"(rankable first; withheld by incident ID; showing {len(shown)} of {len(filtered)})"
+                )
+            else:
+                subset_heading = (
+                    f"{result_heading} (showing {len(shown)} of {len(filtered)})"
+                )
+            answer_parts.extend(
+                [
+                    "",
+                    f"### {subset_heading}",
+                    "",
+                    (
+                        "| ESD ID | Village | Feeder | Applied level | "
+                        "Matched facility IDs | Score contribution |"
+                    ),
+                    "| --- | --- | --- | --- | --- | ---: |",
+                ]
+            )
+            for incident in shown:
+                contribution = (
+                    f"+{self._incidents.critical_facility_score_contribution(incident.critical_facility_level)}"
+                    if incident.critical_facility_level is not None
+                    else "Withheld"
+                )
+                applied_level = (
+                    f"Level {incident.critical_facility_level}"
+                    if incident.critical_facility_level is not None
+                    else "Unknown/withheld"
+                )
+                answer_parts.append(
+                    f"| {incident.incident_id} | {incident.municipality} | "
+                    f"{incident.feeder} | {applied_level} | "
+                    f"{', '.join(incident.matched_critical_facility_ids) or 'None'} | "
+                    f"{contribution} |"
+                )
+        else:
+            answer_parts.extend(["", f"No incidents match the requested {scope_label} scope."])
+
+        warning = None
+        if withheld:
+            warning = (
+                f"{len(withheld)} critical-facility incident(s) are withheld from ranking "
+                "because their facility level is unresolved."
+            )
+        return self._response(
+            answer="\n".join(answer_parts),
+            intent="critical_facility_levels",
+            evidence=[
+                self._evidence("incident", incident.incident_id, incident.municipality)
+                for incident in critical_incidents
+            ]
+            + [
+                self._evidence(
+                    "critical_facility",
+                    str(row.get("facility_id")),
+                    str(row.get("facility_name", "Unknown")),
+                )
+                for row in matched_facilities
+            ],
+            warning=warning,
+        )
+
+    def _critical_facility_level_for_incident(
+        self,
+        incident: Incident | None,
+    ) -> ChatResponse:
+        if incident is None:
+            return self._unavailable_incident()
+        if not incident.critical_facility:
+            return self._response(
+                answer=(
+                    f"## Critical-facility level for {incident.incident_id}\n\n"
+                    "This incident has no critical-facility impact in the visible scenario "
+                    "inventory, so no facility level or score contribution applies."
+                ),
+                intent="critical_facility_levels",
+                evidence=[self._evidence("incident", incident.incident_id, incident.municipality)],
+            )
+
+        facilities_by_id = self._critical_facilities_by_id()
+        facilities = [
+            facilities_by_id[facility_id]
+            for facility_id in incident.matched_critical_facility_ids
+            if facility_id in facilities_by_id
+        ]
+        if incident.critical_facility_level is None:
+            applied_level = "Unknown/withheld"
+            contribution = "Withheld; no score is fabricated"
+        else:
+            applied_level = f"Level {incident.critical_facility_level}"
+            contribution = (
+                f"+{self._incidents.critical_facility_score_contribution(incident.critical_facility_level)}"
+            )
+        answer_parts = [
+            f"## Critical-facility level for {incident.incident_id}",
+            "",
+            f"- **Applied level:** {applied_level}",
+            f"- **Critical-facility score contribution:** {contribution}",
+            f"- **Ranking status:** {incident.ranking_status}",
+            f"- **Matched facility IDs:** {', '.join(incident.matched_critical_facility_ids) or 'None'}",
+        ]
+        if len(incident.matched_critical_facility_ids) > 1 and incident.critical_facility_level:
+            answer_parts.extend(
+                [
+                    "",
+                    (
+                        "Multiple facilities match this incident. Operational scoring applies "
+                        "only the highest resolved level once."
+                    ),
+                ]
+            )
+        if incident.ranking_warning:
+            answer_parts.extend(["", f"**Data-quality warning:** {incident.ranking_warning}"])
+        if facilities:
+            answer_parts.extend(
+                [
+                    "",
+                    (
+                        "### Matched facility records in facility ID order "
+                        f"(showing {len(facilities)} of {len(facilities)})"
+                    ),
+                    "",
+                    "| Facility ID | Name | Type | Source level |",
+                    "| --- | --- | --- | --- |",
+                ]
+            )
+            for row in facilities:
+                source_level = critical_facility_level_for_priority(row.get("priority_level"))
+                answer_parts.append(
+                    f"| {row.get('facility_id')} | {row.get('facility_name', 'Unknown')} | "
+                    f"{row.get('facility_type', 'Unknown')} | "
+                    f"{'Level ' + str(source_level) if source_level else 'Unknown'} |"
+                )
+        return self._response(
+            answer="\n".join(answer_parts),
+            intent="critical_facility_levels",
+            evidence=[
+                self._evidence("incident", incident.incident_id, incident.municipality),
+                *[
+                    self._evidence(
+                        "critical_facility",
+                        str(row.get("facility_id")),
+                        str(row.get("facility_name", "Unknown")),
+                    )
+                    for row in facilities
+                ],
+            ],
+            warning=incident.ranking_warning,
+        )
+
+    def _critical_facilities_by_id(self) -> dict[str, dict[str, object]]:
+        return {
+            str(row.get("facility_id")): row
+            for row in self._context.critical_facilities()
+        }
+
+    @staticmethod
+    def _matched_facility_records(
+        incidents: list[Incident],
+        facilities_by_id: dict[str, dict[str, object]],
+    ) -> list[dict[str, object]]:
+        matched_ids = sorted(
+            {
+                facility_id
+                for incident in incidents
+                for facility_id in incident.matched_critical_facility_ids
+            }
+        )
+        return [
+            facilities_by_id[facility_id]
+            for facility_id in matched_ids
+            if facility_id in facilities_by_id
+        ]
 
     def _geography_answer(self, incident: Incident | None) -> ChatResponse:
         if incident is None:

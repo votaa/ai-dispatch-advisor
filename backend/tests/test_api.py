@@ -257,6 +257,28 @@ def test_chat_customer_outage_aggregate_matches_complete_dashboard_totals() -> N
     assert payload["evidence"][0]["source_type"] == "dashboard"
 
 
+def test_chat_critical_facility_levels_preserve_the_public_response_contract() -> None:
+    response = client.post(
+        "/api/chat",
+        json={"message": "Break down critical facilities by level."},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["intent"] == "critical_facility_levels"
+    assert payload["execution_mode"] == "local_query"
+    assert payload["scenario_id"] == "base"
+    assert payload["provider"] is None
+    assert "| Level 1 | 3 | +120 |" in payload["answer"]
+    assert "| Level 2 | 0 | +80 |" in payload["answer"]
+    assert "| Level 3 | 0 | +40 |" in payload["answer"]
+    assert "| Unknown/withheld | 0 | Withheld |" in payload["answer"]
+    assert {item["source_type"] for item in payload["evidence"]} == {
+        "incident",
+        "critical_facility",
+    }
+
+
 def test_recommendation_action_records_audit_event() -> None:
     clear_decisions()
     recommendation = client.post("/api/optimize", json={}).json()
