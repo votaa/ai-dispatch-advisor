@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const apiMocks = vi.hoisted(() => ({
@@ -869,6 +869,33 @@ describe("application states and scenario switching", () => {
     expect(await screen.findByLabelText("Crew details CR-01")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /INC-1001/ }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
+  });
+
+  it("opens incident details in place from Dashboard and Dispatch rows", async () => {
+    render(<App />);
+
+    const dashboardTable = await screen.findByRole("region", { name: "Priority dispatch queue" });
+    const dashboardRow = within(dashboardTable).getByRole("row", { name: "Open incident details for INC-1001" });
+    expect(dashboardRow.tabIndex).toBe(0);
+    fireEvent.click(dashboardRow);
+
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1001" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dashboard" }).getAttribute("aria-current")).toBe("page");
+    fireEvent.click(screen.getByRole("button", { name: "Close Incident details" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    const dispatchTable = screen.getByRole("region", { name: "Dispatch incident queue" });
+    const dispatchRow = within(dispatchTable).getByRole("row", { name: "Open incident details for INC-1001" });
+    dispatchRow.focus();
+    fireEvent.keyDown(dispatchRow, { key: "Enter" });
+
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1001" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dispatch" }).getAttribute("aria-current")).toBe("page");
+    fireEvent.click(screen.getByRole("button", { name: "Close Incident details" }));
+    await waitFor(() => expect(dispatchRow).toBe(document.activeElement));
+
+    fireEvent.keyDown(dispatchRow, { key: " " });
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1001" })).toBeTruthy();
   });
 
   it("updates and dismisses incident details without clearing selection", async () => {

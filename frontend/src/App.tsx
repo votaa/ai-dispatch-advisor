@@ -152,7 +152,7 @@ function App() {
   const [recommendationRequestVersion, setRecommendationRequestVersion] = useState(0);
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
   const recommendationTriggerRef = useRef<HTMLButtonElement>(null);
-  const incidentDetailTriggerRef = useRef<HTMLButtonElement>(null);
+  const incidentDetailTriggerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     loadApplication();
@@ -352,10 +352,14 @@ function App() {
     selectView("crews");
   }
 
-  function openIncidentDetails(incidentId: string, trigger?: HTMLButtonElement) {
+  function showIncidentDetails(incidentId: string, trigger?: HTMLElement) {
     incidentDetailTriggerRef.current = trigger ?? null;
     setSelectedIncidentId(incidentId);
     setIncidentDetailOpen(true);
+  }
+
+  function openIncidentDetails(incidentId: string, trigger?: HTMLElement) {
+    showIncidentDetails(incidentId, trigger);
     selectView("incidents");
   }
 
@@ -559,6 +563,7 @@ function App() {
                   syncSelectionToFirst
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
+                  onActivate={showIncidentDetails}
                 />
               </ExpandableWorkspace>
             </div>
@@ -606,6 +611,7 @@ function App() {
                 syncSelectionToFirst
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
+                onActivate={showIncidentDetails}
               />
             </ExpandableWorkspace>
           </section>
@@ -877,7 +883,7 @@ function App() {
           ariaLabel={incidentDetail ? `Incident details ${incidentDetail.incident_id}` : "Incident details"}
           id="incident-detail-sheet"
           onClose={() => setIncidentDetailOpen(false)}
-          open={incidentDetailOpen && view === "incidents" && Boolean(incidentDetail)}
+          open={incidentDetailOpen && (view === "dashboard" || view === "dispatch" || view === "incidents") && Boolean(incidentDetail)}
           returnFocusRef={incidentDetailTriggerRef}
           title="Incident details"
         >
@@ -1385,6 +1391,7 @@ function IncidentTable({
   selectedIncidentId,
   syncSelectionToFirst = false,
   tableLabel,
+  onActivate,
   onSelect
 }: {
   emptyMessage: string;
@@ -1395,7 +1402,8 @@ function IncidentTable({
   selectedIncidentId?: string;
   syncSelectionToFirst?: boolean;
   tableLabel: string;
-  onSelect: (incidentId: string, trigger?: HTMLButtonElement) => void;
+  onActivate?: (incidentId: string, trigger?: HTMLElement) => void;
+  onSelect: (incidentId: string, trigger?: HTMLElement) => void;
 }) {
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState("all");
@@ -1530,6 +1538,7 @@ function IncidentTable({
   const sortLabel = (key: IncidentSortKey, label: string) => sort?.key === key
     ? `Sort by ${label} ${sort.direction === "asc" ? "descending next" : "ascending next"}`
     : `Sort by ${label} ascending`;
+  const activateIncident = onActivate ?? onSelect;
 
   if (incidents.length === 0) {
     return <EmptyState message={emptyMessage} />;
@@ -1622,13 +1631,20 @@ function IncidentTable({
         <tbody>
           {visibleIncidents.map((incident) => (
             <tr
+              aria-label={`Open incident details for ${incident.incident_id}`}
               aria-selected={selectedIncidentId === incident.incident_id}
               className={selectedIncidentId === incident.incident_id ? "selected-row" : ""}
               key={incident.incident_id}
-              onClick={(event) => onSelect(
+              onClick={(event) => activateIncident(
                 incident.incident_id,
                 event.currentTarget.querySelector<HTMLButtonElement>(".incident-select-button") ?? undefined
               )}
+              onKeyDown={(event) => {
+                if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
+                event.preventDefault();
+                activateIncident(incident.incident_id, event.currentTarget);
+              }}
+              tabIndex={0}
             >
               <td>
                 <span className="compact-cell-label">Incident</span>
