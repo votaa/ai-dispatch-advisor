@@ -1861,7 +1861,7 @@ tbody tr:focus-visible {
 }
 
 .copilot {
-  max-width: 820px;
+  width: 100%;
 }
 
 .copilot-context {
@@ -1947,6 +1947,7 @@ textarea {
   background: #f4f8fb;
   border-left: 4px solid #2f6f9f;
   border-radius: 8px;
+  max-width: 72ch;
   padding: 14px;
 }
 
@@ -1954,6 +1955,7 @@ textarea {
   background: #f4f8fb;
   border: 1px solid #d8e0e8;
   border-radius: 8px;
+  min-width: 0;
   padding: 14px;
 }
 
@@ -1980,9 +1982,13 @@ textarea {
 .copilot-markdown {
   color: #263746;
   line-height: 1.6;
-  max-width: 72ch;
+  min-width: 0;
   overflow-wrap: anywhere;
   user-select: text;
+}
+
+.copilot-markdown > :not(.copilot-table-scroll) {
+  max-width: 72ch;
 }
 
 .copilot-markdown > :first-child {
@@ -2079,6 +2085,7 @@ textarea {
 .copilot-table-scroll {
   max-width: 100%;
   overflow-x: auto;
+  width: 100%;
 }
 
 .copilot-table-scroll:focus-visible {
@@ -2221,6 +2228,10 @@ textarea {
   .main {
     padding: 18px;
     width: 100%;
+  }
+
+  .copilot-markdown table {
+    min-width: 640px;
   }
 
   .action-row,

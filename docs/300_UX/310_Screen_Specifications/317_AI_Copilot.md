@@ -100,6 +100,11 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   the server-received request time in UTC with `backend_server_clock` provenance and clock skew
   explicitly marked as `not_measured`. The response header displays the value in 24-hour UTC;
   older responses without the optional field remain readable.
+- **POC-029 — Full-width AI Copilot workspace:** The Copilot panel uses the full responsive content
+  width by default without an expand/restore control. Response tables use the wider panel and an
+  accessible horizontal-scroll fallback on narrow screens, while prose retains a comfortable
+  reading measure. The existing header, context, prompts, composer, response history, evidence,
+  focus order, and advisory metadata remain intact.
 
 ## Implemented POC Enhancements
 
@@ -111,9 +116,7 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   [implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
 
 ## Open POC TODOs
-- **POC-029 — Full-width AI Copilot workspace:** Use the full available content width by default
-  on desktop so response tables have more room, while retaining readable prose measure and
-  narrow-screen table scrolling. This does not add an expand/restore control.
+
 - **POC-030 — Population-scope guidance and bounded-synthesis disclosure:** Explain how to request
   supported complete-scenario incident and crew statistics by naming the measure and scope, and
   label each response as either a complete calculation with its evaluated record count or a

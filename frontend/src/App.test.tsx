@@ -1033,6 +1033,21 @@ describe("application states and scenario switching", () => {
     expect(screen.getByRole("button", { name: "Ask Copilot" })).toBeTruthy();
   });
 
+  it("renders Copilot as a persistent full-width workspace without an expand control", async () => {
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+
+    const heading = screen.getByRole("heading", { level: 2, name: "AI Copilot" });
+    const workspace = heading.closest("section");
+    expect(workspace?.classList.contains("copilot")).toBe(true);
+    expect(workspace?.parentElement?.id).toBe("main-content");
+    expect(screen.getByRole("status", { name: "Copilot context" })).toBeTruthy();
+    expect(screen.getByLabelText("Copilot question")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /^(Expand|Restore) AI Copilot workspace$/ })).toBeNull();
+  });
+
   it("clears only the Copilot composer and disables Clear for blank input", async () => {
     apiMocks.chat.mockResolvedValue({
       answer: "Five crews are available.",
@@ -1256,6 +1271,10 @@ describe("application states and scenario switching", () => {
       })
     ).toBeTruthy();
     expect(screen.getAllByRole("table")).toHaveLength(3);
+    for (const tableRegion of screen.getAllByRole("region", { name: "Copilot response table" })) {
+      expect(tableRegion.classList.contains("copilot-table-scroll")).toBe(true);
+      expect(tableRegion.parentElement?.classList.contains("copilot-markdown")).toBe(true);
+    }
     expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
   });
 
