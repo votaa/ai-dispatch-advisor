@@ -424,14 +424,15 @@ class CopilotService:
             answer = (
                 "## Currently assigned crews\n\n"
                 f"0 crews are currently assigned to {incident.incident_id} "
-                f"in {incident.municipality}."
+                f"in {incident.municipality}. No result subset is displayed."
             )
         else:
             answer = (
                 "## Currently assigned crews\n\n"
                 f"{len(assignments)} crew(s) are currently assigned to "
                 f"{incident.incident_id} in {incident.municipality}.\n\n"
-                f"### Assignments (showing {len(assignments)} of {len(assignments)})\n\n"
+                "### Current assignments in scenario crew order "
+                f"(showing {len(assignments)} of {len(assignments)})\n\n"
                 "| Crew | Status | Capability | Assignment | Assigned at |\n"
                 "| --- | --- | --- | --- | --- |\n"
                 + "\n".join(
@@ -471,11 +472,19 @@ class CopilotService:
 
     def _incident_severity_count(self, severity: str, incidents: list[Incident]) -> ChatResponse:
         matches = [incident for incident in incidents if incident.severity.casefold() == severity]
+        withheld_matches = [
+            incident
+            for incident in self._incidents.list_withheld()
+            if incident.severity.casefold() == severity
+        ]
         shown = matches[:10]
         if matches:
             answer = (
-                f"{len(matches)} active incident(s) have **{severity}** severity.\n\n"
-                f"### Examples (showing {len(shown)} of {len(matches)})\n\n"
+                f"{len(matches)} rankable active incident(s) have **{severity}** severity.\n\n"
+                f"{len(withheld_matches)} ranking-withheld **{severity}** incident(s) are "
+                "excluded from this rankable-incident count; 0 appear in the displayed subset.\n\n"
+                f"### Highest-priority rankable {severity} incidents "
+                f"(showing {len(shown)} of {len(matches)})\n\n"
                 "| ESD ID | Village | Feeder | Customers out | Status |\n"
                 "| --- | --- | --- | ---: | --- |\n"
                 + "\n".join(
@@ -485,7 +494,11 @@ class CopilotService:
                 )
             )
         else:
-            answer = f"0 active incident(s) have **{severity}** severity in the current scenario."
+            answer = (
+                f"0 rankable active incident(s) have **{severity}** severity in the current "
+                f"scenario. {len(withheld_matches)} ranking-withheld **{severity}** incident(s) "
+                "are excluded from this rankable-incident count; no result subset is displayed."
+            )
         return self._response(
             answer=answer,
             intent="incident_severity_counts",
@@ -544,14 +557,40 @@ class CopilotService:
     ) -> ChatResponse:
         total_customers_out = sum(incident.customers_out for incident in incidents)
         shown = incidents[:10]
+        withheld_count = sum(
+            incident.ranking_status == "withheld" for incident in incidents
+        )
+        shown_withheld = sum(
+            incident.ranking_status == "withheld" for incident in shown
+        )
+        withheld_scope = (
+            f"Ranking-withheld incidents contribute {withheld_count} record(s) to this complete "
+            f"visible-incident calculation; {shown_withheld} appear in the displayed subset."
+            if shown
+            else (
+                f"Ranking-withheld incidents contribute {withheld_count} record(s) to this "
+                "complete visible-incident calculation; no result subset is displayed."
+            )
+        )
         answer = (
             "## Customer outage aggregate\n\n"
             f"{len(incidents)} active incidents report **{total_customers_out:,} "
-            f"customers out** in scenario `{self._active_scenario_id()}`."
+            f"customers out** in scenario `{self._active_scenario_id()}`.\n\n"
+            f"{withheld_scope}"
         )
         if shown:
+            if withheld_count:
+                subset_heading = (
+                    "Priority-ordered visible incidents (rankable first; withheld by incident ID; "
+                    f"showing {len(shown)} of {len(incidents)})"
+                )
+            else:
+                subset_heading = (
+                    "Highest-priority rankable incidents "
+                    f"(showing {len(shown)} of {len(incidents)})"
+                )
             answer += (
-                f"\n\n### Incident details (showing {len(shown)} of {len(incidents)})\n\n"
+                f"\n\n### {subset_heading}\n\n"
                 "| ESD ID | Village | Customers out | Status |\n"
                 "| --- | --- | ---: | --- |\n"
                 + "\n".join(
@@ -656,11 +695,15 @@ class CopilotService:
         shown = filtered[:10]
         qualifier = ", ".join(filters) if filters else "all"
         if not filtered:
-            answer = f"## Crew query\n\n0 crews match ({qualifier})."
+            answer = (
+                f"## Crew query\n\n0 crews match ({qualifier}). "
+                "No result subset is displayed."
+            )
         else:
             answer = (
                 f"## Crew query\n\n{len(filtered)} crew(s) match ({qualifier}).\n\n"
-                f"### Results (showing {len(shown)} of {len(filtered)})\n\n"
+                "### Matching crews in scenario order "
+                f"(showing {len(shown)} of {len(filtered)})\n\n"
                 "| Crew | Status | Capability | Region | Storm-ready | Assigned |\n"
                 "| --- | --- | --- | --- | --- | ---: |\n"
                 + "\n".join(
@@ -844,20 +887,34 @@ class CopilotService:
                 evidence=[self._evidence("incident", selected.incident_id, selected.municipality)],
             )
         hazardous = [incident for incident in incidents if incident.hazard.lower() != "none"]
+        if not hazardous:
+            return self._response(
+                answer=(
+                    "0 rankable incidents have a recorded hazard. Ranking-withheld incidents "
+                    "are excluded from this rankable-incident count; no result subset is displayed."
+                ),
+                intent="hazards",
+                evidence=[],
+            )
         counts = Counter(incident.hazard for incident in hazardous)
         top_hazards = ", ".join(
             f"{hazard} ({count})" for hazard, count in counts.most_common(5)
         )
         priority_hazards = hazardous[:5]
+        shown_count = len(priority_hazards)
         return self._response(
             answer=(
                 f"{len(hazardous)} incidents have a recorded hazard. Leading types: "
-                f"{top_hazards}. Highest-ranked examples: "
-                + "; ".join(
-                    f"{incident.incident_id} {incident.municipality}: {incident.hazard}"
+                f"{top_hazards}. Ranking-withheld incidents are excluded from this "
+                "rankable-incident count and do not appear in the displayed subset.\n\n"
+                "### Highest-priority rankable hazard incidents "
+                f"(showing {shown_count} of {len(hazardous)})\n\n"
+                "| ESD ID | Village | Hazard |\n"
+                "| --- | --- | --- |\n"
+                + "\n".join(
+                    f"| {incident.incident_id} | {incident.municipality} | {incident.hazard} |"
                     for incident in priority_hazards
                 )
-                + "."
             ),
             intent="hazards",
             evidence=[
@@ -885,7 +942,10 @@ class CopilotService:
         ]
         if not critical_incidents:
             return self._response(
-                answer="No incidents are marked with critical-facility impact in the local scenario data for that scope.",
+                answer=(
+                    "No incidents are marked with critical-facility impact in the local "
+                    "scenario data for that scope. No result subset is displayed."
+                ),
                 intent="critical_facilities",
                 evidence=[],
             )
@@ -897,39 +957,63 @@ class CopilotService:
             for incident in critical_incidents
             if (incident.region, incident.feeder) not in matched_keys
         ]
-        answer_parts = [
-            f"{len(critical_incidents)} incident(s) are marked with critical-facility impact: "
-            + "; ".join(
-                f"{incident.incident_id} ({incident.municipality})"
-                for incident in critical_incidents[:10]
-            )
-            + (f" (showing 10 of {len(critical_incidents)})" if len(critical_incidents) > 10 else "")
-            + ".",
-            "",
-            f"### Matched facility records: ({len(facilities)})",
-            "",
-            "| ESD ID | Village | Feeder | Facility ID / name | Type | Priority |",
-            "| --- | --- | --- | --- | --- | --- |",
-        ]
+        shown_incidents = critical_incidents[:10]
         facilities_by_key: dict[tuple[str, str], list[dict[str, object]]] = {}
         for row in facilities:
             facilities_by_key.setdefault(
                 (str(row.get("region")), str(row.get("feeder"))), []
             ).append(row)
-        for incident in critical_incidents:
-            rows = facilities_by_key.get((incident.region, incident.feeder), [])
-            if not rows:
-                continue
-            for row in rows:
-                answer_parts.append(
-                    f"| {incident.incident_id} | {incident.municipality} | {incident.feeder} | "
-                    f"{row.get('facility_id', 'Unknown')} / {row.get('facility_name', 'Unknown')} | "
-                    f"{row.get('facility_type', 'Unknown')} | {row.get('priority_level', 'Unknown')} |"
-                )
+        matched_rows = [
+            (incident, row)
+            for incident in critical_incidents
+            for row in facilities_by_key.get((incident.region, incident.feeder), [])
+        ]
+        selected_scope = self._targets_selected_record(message) and selected is not None
+        incident_heading = (
+            "Selected rankable critical-facility incident"
+            if selected_scope
+            else "Highest-priority rankable critical-facility incidents"
+        )
+        answer_parts = [
+            f"{len(critical_incidents)} rankable incident(s) are marked with "
+            "critical-facility impact. Ranking-withheld incidents are excluded from this "
+            "rankable-incident count and do not appear in the displayed subsets.",
+            "",
+            f"### {incident_heading} (showing {len(shown_incidents)} of {len(critical_incidents)})",
+            "",
+            "; ".join(
+                f"{incident.incident_id} ({incident.municipality})"
+                for incident in shown_incidents
+            )
+            + ".",
+            "",
+            (
+                "### Matched incident-to-facility records in incident priority and facility "
+                f"source order (showing {len(matched_rows)} of {len(matched_rows)})"
+            ),
+            "",
+            "| ESD ID | Village | Feeder | Facility ID / name | Type | Priority |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        for incident, row in matched_rows:
+            answer_parts.append(
+                f"| {incident.incident_id} | {incident.municipality} | {incident.feeder} | "
+                f"{row.get('facility_id', 'Unknown')} / {row.get('facility_name', 'Unknown')} | "
+                f"{row.get('facility_type', 'Unknown')} | {row.get('priority_level', 'Unknown')} |"
+            )
         if not facilities:
             answer_parts.append("| None | — | — | No matching facility record | — | — |")
         if unmatched:
-            answer_parts.extend(["", "### Unmatched incidents", ""])
+            answer_parts.extend(
+                [
+                    "",
+                    (
+                        "### Unmatched rankable critical-facility incidents in priority order "
+                        f"(showing {len(unmatched)} of {len(unmatched)})"
+                    ),
+                    "",
+                ]
+            )
             answer_parts.append(
                 "Data limitation: no matching facility record was found for "
                 + "; ".join(
@@ -1367,21 +1451,33 @@ class CopilotService:
         area_label = ", ".join(areas)
         if not matches:
             return self._response(
-                answer=f"No incidents in the active scenario resolve to {area_label}.",
+                answer=(
+                    f"No incidents in the active scenario resolve to {area_label}. "
+                    "No result subset is displayed."
+                ),
                 intent="incidents_by_geography",
                 evidence=[],
             )
-        listed = "; ".join(
-            f"{incident.incident_id} in {location.village}"
-            for incident, location in matches[:10]
-        )
-        suffix = f" Showing the first 10 of {len(matches)}." if len(matches) > 10 else ""
+        shown = matches[:10]
         return self._response(
-            answer=f"Incidents in {area_label}: {listed}.{suffix}",
+            answer=(
+                f"## Incidents in {area_label}\n\n"
+                f"{len(matches)} rankable incident(s) resolve to {area_label}. "
+                "Ranking-withheld incidents are outside this evaluated population and do not "
+                "appear in the displayed subset.\n\n"
+                f"### Highest-priority rankable incidents matching {area_label} "
+                f"(showing {len(shown)} of {len(matches)})\n\n"
+                "| ESD ID | Village |\n"
+                "| --- | --- |\n"
+                + "\n".join(
+                    f"| {incident.incident_id} | {location.village} |"
+                    for incident, location in shown
+                )
+            ),
             intent="incidents_by_geography",
             evidence=[
                 self._evidence("incident", incident.incident_id, location.hierarchy)
-                for incident, location in matches[:10]
+                for incident, location in shown
             ],
         )
 

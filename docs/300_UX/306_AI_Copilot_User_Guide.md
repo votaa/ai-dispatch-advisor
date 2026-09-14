@@ -71,7 +71,7 @@ ranked incidents first and then withheld incidents by incident ID. A withheld in
 of the complete customer total and can appear in the displayed ten only when fewer than ten
 rankable incidents precede it.
 
-POC-031 will replace the generic detail heading with wording similar to:
+The result heading identifies that ranked subset explicitly:
 
 > **Highest-priority rankable incidents (showing 10 of 2,000)**
 
@@ -89,6 +89,8 @@ POC-031 will replace the generic detail heading with wording similar to:
 - Example order: highest operational priority among the matching critical incidents
 
 Other supported severity words are `high`, `medium`, and `low`.
+Ranking-withheld records are outside this rankable severity calculation and do not appear in its
+displayed examples.
 
 ### Example: complete crew availability count
 
@@ -112,14 +114,14 @@ together.
 
 | Result type | Records used for the count or calculation | Which rows are currently displayed |
 | --- | --- | --- |
-| All-incident customer aggregate | Every visible active incident | First ten in deterministic operational-priority order |
-| Severity count | Every incident in the supported severity scope | First ten matching incidents in deterministic operational-priority order |
+| All-incident customer aggregate | Every visible active incident | First ten in visible order: rankable incidents by deterministic operational priority, then withheld incidents by incident ID |
+| Severity count | Every rankable incident in the supported severity scope | First ten matching rankable incidents in deterministic operational-priority order |
 | Geography-filtered incidents | Every rankable incident matching the resolved geography | First ten matches in deterministic operational-priority order |
 | Crew query | Every crew matching the requested filters | First ten matches in scenario source order; there is no general crew ranking |
 
 For example, `Show available crews` returns **395 matches** in `august-storm-preview` but displays
 only ten rows. Those ten crews are deterministic, not random, but they are currently the first ten
-available crews in scenario order—not the “best” ten crews. POC-031 will label this as:
+available crews in scenario order—not the “best” ten crews. The result heading labels this as:
 
 > **Matching crews in scenario order (showing 10 of 395)**
 

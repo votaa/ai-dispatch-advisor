@@ -135,8 +135,10 @@ def _poc025_inventory(services, monkeypatch) -> list[Incident]:
             "priority_level": "unsupported",
         },
     ]
-    monkeypatch.setattr(services.incidents, "list_ranked", lambda: incidents[:3] + [incidents[5]])
-    monkeypatch.setattr(services.incidents, "list_visible", lambda: incidents)
+    rankable = incidents[:3] + [incidents[5]]
+    visible = rankable + sorted(incidents[3:5], key=lambda incident: incident.incident_id)
+    monkeypatch.setattr(services.incidents, "list_ranked", lambda: rankable)
+    monkeypatch.setattr(services.incidents, "list_visible", lambda: visible)
     monkeypatch.setattr(services.context, "critical_facilities", lambda: facilities)
     return incidents
 
@@ -203,6 +205,17 @@ def test_deterministic_acceptance_questions_use_local_evidence(
     assert "Arverne Emergency Services Center" in responses[
         "critical_facilities"
     ].answer
+    assert "### Highest-priority rankable hazard incidents (showing" in responses[
+        "hazards"
+    ].answer
+    assert (
+        "### Highest-priority rankable critical-facility incidents (showing"
+        in responses["critical_facilities"].answer
+    )
+    assert (
+        "### Highest-priority rankable incidents matching Queens (showing"
+        in responses["incidents_by_geography"].answer
+    )
     assert "County Queens, Township Rockaway Peninsula, Village Arverne" in responses[
         "incident_geography"
     ].answer
@@ -218,9 +231,12 @@ def test_deterministic_acceptance_questions_use_local_evidence(
     assert critical_response.execution_mode == "local_query"
     assert critical_response.intent == "critical_facilities"
     assert critical_response.answer.startswith(
-        f"{critical_count} incident(s) are marked with critical-facility impact:"
+        f"{critical_count} rankable incident(s) are marked with critical-facility impact."
     )
-    assert "Matched facility records:" in critical_response.answer
+    assert (
+        "Matched incident-to-facility records in incident priority and facility source order"
+        in critical_response.answer
+    )
     assert {item.source_type for item in critical_response.evidence} == {
         "incident",
         "critical_facility",
@@ -444,21 +460,34 @@ def test_geography_and_external_fact_gaps_are_not_inferred(
     assert geography.warning == "No geographic hierarchy was inferred from model knowledge."
 
 
-def test_severity_counts_use_complete_scenario_and_markdown_examples(
+def test_severity_counts_use_complete_rankable_scope_and_ordered_examples(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
     services = _copilot_services(tmp_path, monkeypatch)
     incidents = services.incidents.list_ranked()
     expected = sum(incident.severity.casefold() == "low" for incident in incidents)
+    expected_withheld = sum(
+        incident.severity.casefold() == "low"
+        for incident in services.incidents.list_withheld()
+    )
 
     response = services.copilot.respond("How many severity Low incidents?")
 
     assert response.intent == "incident_severity_counts"
     assert response.execution_mode == "local_query"
     assert response.provider is None
-    assert response.answer.startswith(f"{expected} active incident(s) have **low** severity.")
-    assert "### Examples" in response.answer
+    assert response.answer.startswith(
+        f"{expected} rankable active incident(s) have **low** severity."
+    )
+    assert (
+        f"{expected_withheld} ranking-withheld **low** incident(s) are excluded"
+        in response.answer
+    )
+    assert (
+        "### Highest-priority rankable low incidents "
+        f"(showing {min(expected, 10)} of {expected})"
+    ) in response.answer
     assert len(response.evidence) == expected
 
 
@@ -493,7 +522,11 @@ def test_customer_outage_aggregates_use_every_visible_incident(
         "## Customer outage aggregate\n\n"
         "24 active incidents report **23,414 customers out**"
     )
-    assert "Incident details (showing 10 of 24)" in response.answer
+    assert "Highest-priority rankable incidents (showing 10 of 24)" in response.answer
+    assert (
+        "Ranking-withheld incidents contribute 0 record(s) to this complete "
+        "visible-incident calculation; 0 appear in the displayed subset."
+    ) in response.answer
     assert len(response.evidence) == 11
     assert response.evidence[0].source_type == "dashboard"
 
@@ -512,6 +545,52 @@ def test_customer_outage_aggregate_handles_an_empty_inventory(
     assert "0 active incidents report **0 customers out**" in response.answer
     assert "Incident details" not in response.answer
     assert len(response.evidence) == 1
+
+
+def test_empty_rankable_queries_do_not_render_a_result_subset(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    monkeypatch.setattr(services.incidents, "list_ranked", lambda: [])
+    monkeypatch.setattr(services.incidents, "list_visible", lambda: [])
+    monkeypatch.setattr(services.crews, "list", lambda: [])
+
+    severity = services.copilot.respond("How many severity Low incidents?")
+    geography = services.copilot.respond("Which incidents are in Queens?")
+    crews = services.copilot.respond("Show available crews")
+    hazards = services.copilot.respond("What hazards require attention?")
+
+    assert "no result subset is displayed" in severity.answer
+    assert geography.answer == (
+        "No incidents in the active scenario resolve to Queens. "
+        "No result subset is displayed."
+    )
+    assert crews.answer == (
+        "## Crew query\n\n0 crews match (available). No result subset is displayed."
+    )
+    assert "no result subset is displayed" in hazards.answer
+    assert all("###" not in response.answer for response in (severity, geography, crews, hazards))
+
+
+def test_customer_outage_aggregate_discloses_withheld_records_in_visible_subset(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    incidents = _poc025_inventory(services, monkeypatch)
+
+    response = services.copilot.respond("What is the total customers out?")
+
+    assert response.intent == "all_incident_customer_aggregate"
+    assert (
+        "Ranking-withheld incidents contribute 2 record(s) to this complete "
+        "visible-incident calculation; 2 appear in the displayed subset."
+    ) in response.answer
+    assert (
+        "### Priority-ordered visible incidents (rankable first; withheld by incident ID; "
+        f"showing {len(incidents)} of {len(incidents)})"
+    ) in response.answer
 
 
 def test_customer_outage_aggregate_updates_after_scenario_switch(
@@ -554,7 +633,10 @@ def test_crew_queries_support_combined_filters_and_bound_visible_results(
     assert response.intent == "crew_query"
     assert response.execution_mode == "local_query"
     assert response.answer.startswith(f"## Crew query\n\n{len(expected)} crew(s) match")
-    assert "Results (showing" in response.answer
+    assert (
+        "### Matching crews in scenario order "
+        f"(showing {min(len(expected), 10)} of {len(expected)})"
+    ) in response.answer
     assert len(response.evidence) == len(expected)
 
 
@@ -570,6 +652,7 @@ def test_crew_query_can_target_id_and_shift_hours(
 
     assert response.intent == "crew_query"
     assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
+    assert "Matching crews in scenario order (showing 1 of 1)" in response.answer
     assert crew.crew_id in response.answer
 
 
@@ -610,6 +693,7 @@ def test_incident_assignment_queries_use_explicit_and_selected_incident_scope(
         assert response.intent == "incident_assignments"
         assert response.execution_mode == "local_query"
         assert response.answer.startswith("## Currently assigned crews\n\n1 crew(s)")
+        assert "Current assignments in scenario crew order (showing 1 of 1)" in response.answer
         assert "Central Veg Beta (CR-02)" in response.answer
         assert "South Veg India (CR-08)" not in response.answer
         assert {item.record_id for item in response.evidence} == {"INC-1002", "CR-02"}

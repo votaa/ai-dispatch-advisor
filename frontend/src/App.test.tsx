@@ -1146,7 +1146,9 @@ describe("application states and scenario switching", () => {
         "",
         "24 active incidents report **24,427 customers out** in scenario `long-island-copilot-demo`.",
         "",
-        "### Incident details (showing 10 of 24)",
+        "Ranking-withheld incidents contribute 0 record(s) to this complete visible-incident calculation; 0 appear in the displayed subset.",
+        "",
+        "### Highest-priority rankable incidents (showing 10 of 24)",
         "",
         "| ESD ID | Village | Customers out | Status |",
         "| --- | --- | ---: | --- |",
@@ -1195,6 +1197,11 @@ describe("application states and scenario switching", () => {
       )
     ).toBeTruthy();
     expect(screen.getByText("24,427 customers out")).toBeTruthy();
+    expect(
+      screen.getByRole("heading", {
+        name: "Highest-priority rankable incidents (showing 10 of 24)"
+      })
+    ).toBeTruthy();
     expect(screen.getByRole("table")).toBeTruthy();
     expect(screen.getByText("Local scenario query")).toBeTruthy();
     expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);

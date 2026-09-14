@@ -114,6 +114,11 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   unknown/withheld warnings use the complete visible active-scenario inventory. New tables use
   POC-031 population, subset, and ordering headings. See the
   [implementation plan](../../900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md).
+- **POC-031 — Explicit result-subset and ordering headings:** Deterministic local-query result
+  headings name the evaluated population, displayed count, and ordering basis. Incident subsets
+  identify operational-priority or visible rankable-first ordering; crew and assignment subsets
+  identify scenario source order without implying a crew-ranking policy. Adjacent scope text
+  states whether ranking-withheld incidents contribute to a calculation or displayed subset.
 
 ## Open POC TODOs
 
@@ -125,12 +130,6 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   disclose the limitation and suggest a supported exact query rather than infer from the sample.
   Use the [AI Copilot User Guide and Query Cheat Sheet](../306_AI_Copilot_User_Guide.md) as the
   operator-facing explanation and example baseline.
-- **POC-031 — Explicit result-subset and ordering headings:** Name the population, displayed count,
-  and selection order in result headings. Priority-ordered incident examples must say that they
-  are highest-priority rankable incidents; source-ordered crew matches must say that they are in
-  scenario order and must not be called “top” without a defined crew-ranking policy. Clarify
-  whether ranking-withheld incidents contribute to a complete calculation and whether any appear
-  after the ranked incidents in its displayed subset.
 
 ## Acceptance Criteria
 
