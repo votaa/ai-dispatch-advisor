@@ -1020,7 +1020,22 @@ describe("application states and scenario switching", () => {
     const copilotContext = screen.getByRole("status", { name: "Copilot context" });
     expect(copilotContext.textContent).toContain("Selected incident: INC-1001 · Millbrook");
     expect(copilotContext.textContent).toContain("Selected crew: None");
-    expect(screen.getByText("Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.")).toBeTruthy();
+    expect(
+      screen.getByText(/For an exact complete-scenario calculation, name both the measure and population/)
+    ).toBeTruthy();
+    expect(
+      screen.getByText(/Open-ended summaries use grounded AI over a bounded context disclosed with each response/)
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", {
+        name: "How many customers are out across all active incidents?"
+      })
+    ).toBeTruthy();
+    expect(
+      screen.getByRole("button", {
+        name: "How many crews are available in the active scenario?"
+      })
+    ).toBeTruthy();
     expect(
       screen.getByRole("button", { name: "Break down critical facilities by level." })
     ).toBeTruthy();
@@ -1096,7 +1111,7 @@ describe("application states and scenario switching", () => {
     fireEvent.click(clear);
     expect(composer.value).toBe("");
     expect(screen.getByText("Five crews are available.")).toBeTruthy();
-    expect(screen.getAllByText("How many crews are available?")).toHaveLength(2);
+    expect(screen.getAllByText("How many crews are available?")).toHaveLength(1);
   });
 
   it("shows Copilot execution mode, snapshot, and evidence metadata", async () => {
@@ -1118,6 +1133,7 @@ describe("application states and scenario switching", () => {
       provider: null,
       model: null,
       warning: null,
+      response_scope: "Local scenario records for the stated query scope",
       evidence: [
         { source_type: "incident", record_id: "INC-1001", label: "Millbrook" }
       ]
@@ -1135,7 +1151,44 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Local scenario query")).toBeTruthy();
     expect(screen.getByText("Scenario: base")).toBeTruthy();
     expect(screen.getByText("Snapshot: 2026-08-21T11:45:00Z")).toBeTruthy();
+    const scope = screen.getByLabelText("Response scope");
+    expect(scope.textContent).toBe(
+      "Response scope: Local scenario records for the stated query scope"
+    );
     expect(screen.getByText("Evidence (1)")).toBeTruthy();
+  });
+
+  it("clears response-scope metadata when the active scenario changes", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.chat.mockResolvedValue({
+      answer: "Five crews are available.",
+      intent: "crew_status",
+      source: "synthetic-demo-data",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "base",
+      generated_at: "2026-08-21T12:00:00Z",
+      request_time: null,
+      data_snapshot_at: null,
+      provider: null,
+      model: null,
+      warning: null,
+      response_scope: "Complete crew calculation: 5 crews evaluated",
+      evidence: []
+    });
+    render(<App />);
+
+    const scenarioSelector = await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+    expect(await screen.findByLabelText("Response scope")).toBeTruthy();
+
+    fireEvent.change(scenarioSelector, { target: { value: "storm" } });
+
+    await waitFor(() => expect(screen.queryByLabelText("Response scope")).toBeNull());
+    expect(
+      screen.getByText(/For an exact complete-scenario calculation, name both the measure and population/)
+    ).toBeTruthy();
   });
 
   it("renders deterministic all-incident customer aggregates", async () => {
@@ -1312,6 +1365,10 @@ describe("application states and scenario switching", () => {
       provider: "ollama",
       model: "gpt-oss:120b",
       warning: null,
+      response_scope: (
+        "Bounded grounded context: 1 selected incident + 5 ranked incidents + 6 crews + " +
+        "8 critical-facility records + 4 weather records (24 of 30 record limit used)"
+      ),
       evidence: []
     });
     render(<App />);
@@ -1334,6 +1391,9 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Run script")).toBeTruthy();
     expect(document.querySelector("script")).toBeNull();
     expect(screen.queryByText("<br>")).toBeNull();
+    expect(screen.getByLabelText("Response scope").textContent).toContain(
+      "Bounded grounded context"
+    );
   });
 
   it("shows an explicit rule-based fallback warning", async () => {
@@ -1349,6 +1409,9 @@ describe("application states and scenario switching", () => {
       provider: null,
       model: null,
       warning: "AI provider unavailable; using the rule-based scenario summary.",
+      response_scope: (
+        "Rule-based scenario summary: complete dashboard totals plus 8 rankable incidents evaluated"
+      ),
       evidence: []
     });
     render(<App />);
@@ -1361,6 +1424,9 @@ describe("application states and scenario switching", () => {
     expect(
       screen.getByText("AI provider unavailable; using the rule-based scenario summary.")
     ).toBeTruthy();
+    expect(screen.getByLabelText("Response scope").textContent).toContain(
+      "complete dashboard totals"
+    );
   });
 
   it("keeps the current scenario selected when activation fails", async () => {

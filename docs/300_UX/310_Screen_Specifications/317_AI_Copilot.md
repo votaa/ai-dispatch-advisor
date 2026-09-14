@@ -52,7 +52,7 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 - Deterministic crew-to-incident distance and estimated travel time
 - Scenario and data-snapshot timestamps
 - Server-authoritative request time with clock provenance and explicit skew status
-- Bounded evidence references and response execution mode
+- Bounded evidence references, response execution mode, and optional response-scope text
 
 ## Backend and API Dependencies
 
@@ -65,7 +65,10 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 
 The current POC uses deterministic local services for supported factual and calculation questions, a grounded model call for bounded synthesis, and rule-based behavior as a visibly labeled fallback. The model must not supply incident, crew, recommendation, geography, distance, travel, customer, or demographic facts from general model knowledge. All modes retain strict no-action execution boundaries.
 
-The empty-history helper copy is: “Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.”
+The empty-history helper explains that exact calculations require a named measure and population,
+using total customers out and available crews as examples. It also explains that open-ended
+summaries use grounded AI over a bounded context disclosed with each response. Prompt chips expose
+both complete-scenario query patterns alongside filtered, recommendation, and summary examples.
 
 ## Audit Requirements
 
@@ -85,7 +88,8 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   location, shift hours, storm readiness, assigned incidents, counts, combined filters, and
   bounded evidence-backed results are handled locally without provider calls. Explicit incident
   IDs and “this/selected incident” assignment questions return every currently assigned crew for
-  that incident and remain distinct from available-crew recommendation questions.
+  that incident and remain distinct from available-crew recommendation questions. Filtered crew
+  summaries label each applied field once and retain the scenario-order subset heading.
 - **POC-020 — Deterministic local-response readability:** Local answers now use concise semantic
   Markdown with totals first, bounded shown-versus-total results, expandable evidence, and
   incident-to-facility correlation for critical-facility questions.
@@ -119,17 +123,13 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
   identify operational-priority or visible rankable-first ordering; crew and assignment subsets
   identify scenario source order without implying a crew-ranking policy. Adjacent scope text
   states whether ranking-withheld incidents contribute to a calculation or displayed subset.
-
-## Open POC TODOs
-
-- **POC-030 — Population-scope guidance and bounded-synthesis disclosure:** Explain how to request
-  supported complete-scenario incident and crew statistics by naming the measure and scope, and
-  label each response as either a complete calculation with its evaluated record count or a
-  grounded summary with dynamically derived bounded-context counts. Grounded synthesis must not
-  present sample-derived values as all-scenario totals; unsupported population calculations must
-  disclose the limitation and suggest a supported exact query rather than infer from the sample.
-  Use the [AI Copilot User Guide and Query Cheat Sheet](../306_AI_Copilot_User_Guide.md) as the
-  operator-facing explanation and example baseline.
+- **POC-030 — Population-scope guidance and bounded-synthesis disclosure:** Each response can carry
+  optional backend-generated scope text. Supported deterministic calculations report the complete
+  or filtered population evaluated; grounded responses report the selected and bounded record
+  counts actually supplied after the configured context limit; and rule-based fallback reports its
+  mixed dashboard/rankable scope. Unsupported all-population calculations bypass the provider,
+  disclose that no scenario-wide value was evaluated, and suggest supported exact incident and
+  crew queries. Older responses without scope metadata remain readable.
 
 ## Acceptance Criteria
 
@@ -137,7 +137,8 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - Free-form questions and prompt examples are supported
 - Clear appears immediately left of Ask Copilot, clears only the composer, and preserves conversation history
 - Clear is disabled when the composer contains no non-whitespace text
-- The approved helper copy distinguishes local scenario facts from grounded-AI summaries and explanations
+- Helper copy and prompt examples show how to request supported complete-scenario calculations
+- Accessible response-scope text distinguishes complete calculations, bounded synthesis, and fallback
 - Supported factual questions return active-scenario values without calling the model
 - Grounded model responses cite only supplied scenario evidence
 - County, Township, and Village answers resolve through the geographic registry

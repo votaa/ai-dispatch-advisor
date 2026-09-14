@@ -105,6 +105,7 @@ export type CopilotResponse = {
   provider: string | null;
   model: string | null;
   warning: string | null;
+  response_scope?: string | null;
   evidence: CopilotEvidence[];
 };
 

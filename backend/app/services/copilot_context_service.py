@@ -18,6 +18,7 @@ from .recommendation_service import RecommendationService
 class GroundedCopilotContext:
     user_prompt: str
     evidence: list[CopilotEvidence]
+    response_scope: str
 
 
 class CopilotContextBuilder:
@@ -61,6 +62,7 @@ class CopilotContextBuilder:
             "crews": [],
             "critical_facilities": [],
             "weather": [],
+            "context_scope": {},
         }
 
         if selected_incident is not None and remaining:
@@ -131,7 +133,55 @@ class CopilotContextBuilder:
         weather = self._context.weather()[: min(4, remaining)]
         payload["weather"] = weather
 
+        selected_incident_count = 1 if payload["selected_incident"] else 0
+        selected_crew_count = 1 if payload["selected_crew"] else 0
+        recommendation_count = 1 if payload["recommendation"] else 0
+        records_supplied = (
+            selected_incident_count
+            + selected_crew_count
+            + len(ranked)
+            + recommendation_count
+            + len(crews)
+            + len(facilities)
+            + len(weather)
+        )
+        payload["context_scope"] = {
+            "kind": "bounded_grounded_context",
+            "complete_population": False,
+            "record_limit": self._max_records,
+            "records_supplied": records_supplied,
+            "selected_incidents": selected_incident_count,
+            "selected_crews": selected_crew_count,
+            "ranked_incidents": len(ranked),
+            "recommendations": recommendation_count,
+            "crews": len(crews),
+            "critical_facilities": len(facilities),
+            "weather_records": len(weather),
+        }
+
+        scope_parts = []
+        if selected_incident_count:
+            scope_parts.append("1 selected incident")
+        if selected_crew_count:
+            scope_parts.append("1 selected crew")
+        scope_parts.append(f"{len(ranked)} ranked incidents")
+        if recommendation_count:
+            scope_parts.append("1 recommendation")
+        scope_parts.extend(
+            [
+                f"{len(crews)} crews",
+                f"{len(facilities)} critical-facility records",
+                f"{len(weather)} weather records",
+            ]
+        )
+        response_scope = (
+            "Bounded grounded context: "
+            + " + ".join(scope_parts)
+            + f" ({records_supplied} of {self._max_records} record limit used)"
+        )
+
         return GroundedCopilotContext(
             user_prompt=json.dumps(payload, sort_keys=True, separators=(",", ":")),
             evidence=evidence,
+            response_scope=response_scope,
         )

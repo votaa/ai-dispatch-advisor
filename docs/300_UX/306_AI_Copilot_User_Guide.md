@@ -7,7 +7,7 @@ was calculated from the complete active scenario, produced from a bounded set of
 or returned through the rule-based fallback. AI Copilot is advisory only and does not dispatch
 crews or update source systems.
 
-This guide documents the current POC behavior and the planned transparency improvements in
+This guide documents the current POC behavior, including the transparency implemented by
 POC-030 and POC-031. Example values were verified on 2026-09-13 against the repository's synthetic
 `august-storm-preview` scenario. Scenario data and returned values can change in a later update.
 
@@ -27,9 +27,9 @@ Examples:
 
 Words such as **all**, **total**, and **entire scenario** make the requested scope clear, but wording
 alone does not give the language model access to every record. A complete-population statistic is
-reliable only when AI Copilot recognizes it as a supported deterministic local query. POC-030 will
-require an explicit limitation instead of a sample-derived total when that deterministic query is
-not supported.
+reliable only when AI Copilot recognizes it as a supported deterministic local query. When that
+deterministic query is not supported, AI Copilot returns an explicit limitation instead of a
+sample-derived total.
 
 ## Read the Response Mode First
 
@@ -125,6 +125,10 @@ available crews in scenario order—not the “best” ten crews. The result hea
 
 > **Matching crews in scenario order (showing 10 of 395)**
 
+The summary above the heading labels each applied filter once, for example:
+
+> **30 crews match the requested filters: Status: available · Capability: line · Region: Eastern Suffolk.**
+
 Do not infer a ranking from row position unless the response explicitly says the subset is ordered
 by operational priority, feasibility, travel time, or another named criterion.
 
@@ -151,12 +155,12 @@ and must not be used to calculate an all-scenario total. The selected incident c
 separately from the five ranked incidents, so “five ranked incidents” does not necessarily mean
 that exactly five unique incident records appear in every prompt.
 
-POC-030 plans a dynamically derived scope label similar to:
+Each grounded response displays a dynamically derived scope label based on the records actually
+supplied after applying the configured limit, for example:
 
-> **Grounded AI summary · selected context + 5 ranked incidents + 6 crews**
+> **Response scope: Bounded grounded context: 1 selected incident + 5 ranked incidents + 1 recommendation + 6 crews + 8 critical-facility records + 4 weather records (25 of 30 record limit used)**
 
-The actual counts should be generated from the records supplied for that response rather than
-hard-coded in UI copy.
+The counts come from the generated context payload and are not hard-coded in UI copy.
 
 ## Unsupported Population Calculations
 
@@ -172,8 +176,8 @@ For example, the scenario does not provide a complete customer-served denominato
 > What percentage of all customers served are without power?
 
 The correct behavior is to disclose the missing denominator, not infer a percentage from the
-bounded incident context. POC-030 will require unsupported all-scope requests to state the
-limitation and suggest an available exact query, such as:
+bounded incident context. Unsupported all-scope requests state the limitation and suggest an
+available exact query, such as:
 
 > I cannot calculate the percentage because the active scenario does not provide total customers
 > served. Try: “How many customers are out across all active incidents?”

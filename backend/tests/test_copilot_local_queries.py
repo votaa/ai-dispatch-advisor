@@ -480,6 +480,10 @@ def test_severity_counts_use_complete_rankable_scope_and_ordered_examples(
     assert response.answer.startswith(
         f"{expected} rankable active incident(s) have **low** severity."
     )
+    assert response.response_scope == (
+        f"Complete rankable severity calculation: {len(incidents)} incidents evaluated; "
+        f"{expected} match low"
+    )
     assert (
         f"{expected_withheld} ranking-withheld **low** incident(s) are excluded"
         in response.answer
@@ -529,6 +533,7 @@ def test_customer_outage_aggregates_use_every_visible_incident(
     ) in response.answer
     assert len(response.evidence) == 11
     assert response.evidence[0].source_type == "dashboard"
+    assert response.response_scope == "Complete visible-incident calculation: 24 incidents evaluated"
 
 
 def test_customer_outage_aggregate_handles_an_empty_inventory(
@@ -567,7 +572,8 @@ def test_empty_rankable_queries_do_not_render_a_result_subset(
         "No result subset is displayed."
     )
     assert crews.answer == (
-        "## Crew query\n\n0 crews match (available). No result subset is displayed."
+        "## Crew query\n\n0 crews match the requested filters: Status: available. "
+        "No result subset is displayed."
     )
     assert "no result subset is displayed" in hazards.answer
     assert all("###" not in response.answer for response in (severity, geography, crews, hazards))
@@ -627,17 +633,53 @@ def test_crew_queries_support_combined_filters_and_bound_visible_results(
     ]
 
     response = services.copilot.respond(
-        "How many available crews are not storm ready in Central-Nassau?"
+        "How many available crews are not storm ready in Central-Nassau in the active scenario?"
     )
 
     assert response.intent == "crew_query"
     assert response.execution_mode == "local_query"
-    assert response.answer.startswith(f"## Crew query\n\n{len(expected)} crew(s) match")
+    assert response.answer.startswith(
+        f"## Crew query\n\n{len(expected)} crews match the requested filters: "
+        "Status: available · Storm-ready: no · Region: Central-Nassau."
+    )
+    assert response.response_scope == (
+        f"Filtered crew query: {len(crews)} crews evaluated; {len(expected)} match"
+    )
     assert (
         "### Matching crews in scenario order "
         f"(showing {min(len(expected), 10)} of {len(expected)})"
     ) in response.answer
     assert len(response.evidence) == len(expected)
+
+
+def test_crew_query_summarizes_each_requested_filter_once(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    services = _copilot_services(tmp_path, monkeypatch)
+    crews = services.crews.list()
+    expected = [
+        crew
+        for crew in crews
+        if crew.status.casefold() == "available"
+        and crew.capability.casefold() == "line"
+        and crew.home_region == "Eastern Suffolk"
+    ]
+
+    response = services.copilot.respond(
+        "Show available line crews in Eastern Suffolk."
+    )
+
+    assert response.answer.startswith(
+        f"## Crew query\n\n{len(expected)} crews match the requested filters: "
+        "Status: available · Capability: line · Region: Eastern Suffolk."
+    )
+    assert response.answer.count("Capability: line") == 1
+    assert response.answer.count("Region: Eastern Suffolk") == 1
+    assert (
+        f"Matching crews in scenario order (showing {min(len(expected), 10)} of {len(expected)})"
+        in response.answer
+    )
 
 
 def test_crew_query_can_target_id_and_shift_hours(
@@ -651,7 +693,7 @@ def test_crew_query_can_target_id_and_shift_hours(
     )
 
     assert response.intent == "crew_query"
-    assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
+    assert response.answer.startswith("## Crew query\n\n1 crew match the requested filters:")
     assert "Matching crews in scenario order (showing 1 of 1)" in response.answer
     assert crew.crew_id in response.answer
 
@@ -668,7 +710,7 @@ def test_crew_query_can_target_selected_crew_context(
     )
 
     assert response.intent == "crew_query"
-    assert response.answer.startswith("## Crew query\n\n1 crew(s) match")
+    assert response.answer.startswith("## Crew query\n\n1 crew match the requested filters:")
     assert crew.crew_id in response.answer
 
 
@@ -780,6 +822,34 @@ def test_deterministic_queries_bypass_provider_and_grounded_queries_receive_race
     )
     assert aggregate_response.intent == "all_incident_customer_aggregate"
     assert aggregate_response.execution_mode == "local_query"
+    assert provider.requests == []
+
+    unsupported_response = services.copilot.respond(
+        "What is the average restoration time across all active incidents?"
+    )
+    assert unsupported_response.intent == "unsupported_population_calculation"
+    assert unsupported_response.execution_mode == "local_query"
+    assert unsupported_response.response_scope == (
+        "Unsupported complete-population calculation: no scenario-wide value evaluated"
+    )
+    assert "cannot be verified from the bounded grounded-AI context" in unsupported_response.answer
+    assert "How many customers are out across all active incidents?" in unsupported_response.answer
+    assert provider.requests == []
+
+    for unsupported_question in (
+        "What is the average priority score across all active incidents?",
+        "What is the total number of hazards across all active incidents?",
+        "What is the average travel time across all crews?",
+    ):
+        routed_response = services.copilot.respond(unsupported_question)
+        assert routed_response.intent == "unsupported_population_calculation"
+        assert provider.requests == []
+
+    percentage_response = services.copilot.respond(
+        "What percentage of all customers served are without power?"
+    )
+    assert percentage_response.intent == "unsupported_population_calculation"
+    assert "verified total customers-served denominator" in percentage_response.answer
     assert provider.requests == []
 
     grounded_response = services.copilot.respond(

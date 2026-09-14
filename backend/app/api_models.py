@@ -94,4 +94,5 @@ class ChatResponse(DomainModel):
     provider: Optional[str] = None
     model: Optional[str] = None
     warning: Optional[str] = None
+    response_scope: Optional[str] = None
     evidence: list[CopilotEvidence] = Field(default_factory=list)

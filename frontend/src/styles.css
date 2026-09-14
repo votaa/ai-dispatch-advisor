@@ -2149,6 +2149,15 @@ textarea {
   color: #72540b;
 }
 
+.copilot-scope {
+  background: #eef4f8;
+  border-left: 3px solid #6f96ad;
+  color: #334f61;
+  flex-basis: 100%;
+  margin: 0;
+  padding: 8px 10px;
+}
+
 .copilot-warning {
   border-left: 3px solid #d5a72e;
   flex-basis: 100%;

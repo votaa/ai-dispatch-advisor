@@ -199,6 +199,7 @@ Returns advisory Copilot text based on operational demo context.
   "provider": null,
   "model": null,
   "warning": null,
+  "response_scope": "Complete visible-incident calculation: 8 incidents evaluated",
   "evidence": [],
   "safety_note": "This copilot response is advisory and does not execute dispatch actions."
 }
@@ -207,6 +208,13 @@ Returns advisory Copilot text based on operational demo context.
 `request_time` is captured once when the backend Copilot service receives the request and is carried through local-query, grounded-AI, and rule-based fallback responses. It is also included in the bounded JSON context sent to a configured grounded provider. The backend clock is authoritative for this POC, all request times are normalized to UTC, and clock skew relative to external operational systems is not measured. The value provides temporal context only; it does not currently determine whether an ETR is expired or recalculate incident age.
 
 The object is optional in the response schema so older stored or mocked responses remain readable. New server responses always include it. The UI displays the value as `Request Received MM/DD/YYYY HH:MM UTC` in 24-hour time and does not place it in the question composer.
+
+`response_scope` is also optional for backward compatibility. New responses populate it from the
+actual route and data used: deterministic calculations identify their evaluated population,
+grounded synthesis reports the bounded record counts actually placed in provider context, and the
+rule-based fallback identifies its dashboard-total and rankable-incident scope. The UI displays
+this backend-generated value as accessible response metadata rather than reconstructing limits or
+counts client-side.
 
 ## Copilot Safety Boundary
 

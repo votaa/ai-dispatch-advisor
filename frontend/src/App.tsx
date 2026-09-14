@@ -91,6 +91,15 @@ const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
 
 const SIDEBAR_STORAGE_KEY = "aida.ui.sidebar-width.v1";
 const DASHBOARD_DISPLAY_PERCENTAGES = [25, 50, 75, 100] as const;
+const COPILOT_PROMPTS = [
+  "What should I focus on first?",
+  "How many customers are out across all active incidents?",
+  "How many crews are available in the active scenario?",
+  "Show available line crews in Eastern Suffolk.",
+  "Break down critical facilities by level.",
+  "Why was this crew recommended?",
+  "Summarize storm status"
+] as const;
 
 function initialSidebarWidth() {
   try {
@@ -782,13 +791,7 @@ function App() {
               <span><strong>Selected crew:</strong> {selectedCrewContext ? `${selectedCrewContext.crew_id} · ${selectedCrewContext.crew_name}` : "None"}</span>
             </div>
             <div className="prompt-row">
-              {[
-                "What should I focus on first?",
-                "How many crews are available?",
-                "Break down critical facilities by level.",
-                "Why was this crew recommended?",
-                "Summarize storm status"
-              ].map((prompt) => (
+              {COPILOT_PROMPTS.map((prompt) => (
                 <button key={prompt} onClick={() => usePrompt(prompt)} type="button">
                   {prompt}
                 </button>
@@ -811,7 +814,11 @@ function App() {
             </div>
             <div aria-live="polite" className="chat-history">
               {chatTurns.length === 0 ? (
-                <div className="copilot-answer">Ask about incidents, crews, hazards, facilities, geography, travel, or the overall scenario—or choose a sample question. Supported facts are answered from local scenario data; broader summaries and explanations use grounded AI.</div>
+                <div className="copilot-answer">
+                  For an exact complete-scenario calculation, name both the measure and population—for example,
+                  total customers out across all active incidents or available crews in the active scenario.
+                  Open-ended summaries use grounded AI over a bounded context disclosed with each response.
+                </div>
               ) : (
                 chatTurns.map((turn, index) => (
                   <article className="chat-turn" key={`${turn.question}-${index}`} role={turn.error ? "alert" : undefined}>
@@ -835,6 +842,11 @@ function App() {
                         </span>
                         <span>Scenario: {turn.metadata.scenario_id}</span>
                         {turn.metadata.data_snapshot_at && <span>Snapshot: {turn.metadata.data_snapshot_at}</span>}
+                        {turn.metadata.response_scope ? (
+                          <p aria-label="Response scope" className="copilot-scope">
+                            <strong>Response scope:</strong> {turn.metadata.response_scope}
+                          </p>
+                        ) : null}
                         {turn.metadata.warning && <p className="copilot-warning">{turn.metadata.warning}</p>}
                         {turn.metadata.evidence.length > 0 && (
                           <details>

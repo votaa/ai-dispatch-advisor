@@ -93,6 +93,7 @@ def test_openapi_exposes_explicit_core_response_contracts() -> None:
         "scenario_id",
         "generated_at",
         "request_time",
+        "response_scope",
         "evidence",
     }.issubset(schema["components"]["schemas"]["ChatResponse"]["properties"])
 
@@ -232,6 +233,7 @@ def test_chat_preserves_existing_fields_and_adds_local_evidence_metadata() -> No
         "clock_skew": "not_measured",
     }
     assert payload["evidence"][0]["source_type"] == "dashboard"
+    assert payload["response_scope"] == "Complete crew calculation: 8 crews evaluated"
 
 
 def test_chat_customer_outage_aggregate_matches_complete_dashboard_totals() -> None:

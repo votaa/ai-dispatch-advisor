@@ -232,6 +232,10 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     assert synthesis.answer == "Grounded provider summary from supplied scenario facts."
     assert synthesis.provider == "fake"
     assert synthesis.model == "fake-grounded-v1"
+    assert synthesis.response_scope == (
+        "Bounded grounded context: 1 selected incident + 4 ranked incidents + 0 crews + "
+        "0 critical-facility records + 0 weather records (5 of 5 record limit used)"
+    )
     assert synthesis.request_time is not None
     assert synthesis.request_time.received_at == received_at
     assert len(provider.requests) == 1
@@ -248,6 +252,19 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     )
     record_count += 1 if payload["recommendation"] else 0
     assert record_count <= 5
+    assert payload["context_scope"] == {
+        "complete_population": False,
+        "crews": 0,
+        "critical_facilities": 0,
+        "kind": "bounded_grounded_context",
+        "ranked_incidents": 4,
+        "recommendations": 0,
+        "record_limit": 5,
+        "records_supplied": 5,
+        "selected_crews": 0,
+        "selected_incidents": 1,
+        "weather_records": 0,
+    }
     assert payload["synthetic_data"] is True
     assert payload["request_time"] == {
         "clock_skew": "not_measured",
@@ -270,6 +287,8 @@ def test_deterministic_question_bypasses_provider_and_synthesis_is_grounded(
     assert "Do not hallucinate or invent facts" in system_prompt
     assert "Distinguish confirmed facts from assessment and recommendations" in system_prompt
     assert "Answer only from supplied facts" in system_prompt
+    assert "Never describe its records as the complete scenario" in system_prompt
+    assert "unsupported complete-population calculation" in system_prompt
     assert "Remain advisory and never claim an action was executed" in system_prompt
     assert "concise operational briefing in Markdown" in system_prompt
     assert "Do not use HTML, <br>, nested tables" in system_prompt
@@ -324,4 +343,6 @@ def test_provider_failure_is_visible_and_uses_rule_based_fallback(
     assert response.warning == (
         "AI provider unavailable (provider timeout); using the rule-based scenario summary."
     )
+    assert response.response_scope is not None
+    assert response.response_scope.startswith("Rule-based scenario summary: complete dashboard totals")
     assert "Scenario long-island-copilot-demo" in response.answer
