@@ -2,9 +2,11 @@
 
 ## Status
 
-Status: Proposed; implementation has not started.
+Status: Phase 1 ready; Phase 0 approved on 2026-09-15. Implementation has not started.
 
 Date: 2026-09-14
+
+Phase 0 review updated: 2026-09-15
 
 This plan defines a bounded, SME-maintained static reference for the PSEG Long Island/KUBRA
 County/Township/Village hierarchy and customers-served counts. It deliberately avoids a live
@@ -149,6 +151,37 @@ changes cannot silently redefine AIDA geography.
 
 ## Phase 0 — Governance and Contract Approval
 
+### Approval record
+
+| Decision | Disposition | Status |
+| --- | --- | --- |
+| POC use | Use an SME-maintained static reference for hierarchy and customers served. | Confirmed |
+| Source method | Generate the candidate through the separately maintained `process_kubra_report_village_SC5` extractor and publish only after SME review. | Confirmed |
+| Runtime boundary | AIDA must not call or scrape KUBRA at runtime; live or scheduled retrieval requires a separately approved contract. | Confirmed |
+| Initial fields | Include source and normalized County/Township/Village plus `customers_served`; exclude customers affected, outage count, affected percentage, ETR, and outage-location detail. | Confirmed |
+| Repository boundary | The extractor produces an isolated candidate; AIDA owns only the approved static artifact, manifest, validation, and read-only use. | Confirmed |
+| Storage and audience | Commit the minimal derived CSV and manifest under `data/reference/pseg-long-island/` and share them with the same audience as this repository. | Confirmed |
+| Refresh cadence | Refresh before formal demonstrations or releases and at least once every 90 days. | Confirmed |
+| Stale threshold | Mark the reference stale when its source timestamp is more than 90 days old. | Confirmed |
+| Stale behavior | Continue showing hierarchy and customers-served values with a prominent stale warning, but refuse new mixed-source outage-percentage calculations until a refreshed snapshot is approved. | Confirmed |
+| Normalization | Approve the versioned Rockaway, Hempstead, composite-key, and ambiguous-name rules in this plan. | Confirmed |
+| Review identity | Record reviewer role and UTC review time in the manifest; a personal name is optional and not required by the application. | Confirmed |
+
+“Confirmed” above records the bounded direction already supplied for POC-012. It does not claim
+legal approval for broader publication, production reuse, or a live KUBRA integration.
+
+Approval evidence: the PSEG Long Island SME explicitly confirmed all six previously pending
+decisions on 2026-09-15. The approval applies to this bounded POC and repository audience.
+
+### Data-handling classification
+
+- The initial artifact contains aggregate geography and customers-served counts only.
+- It contains no credentials, account identifiers, customer records, addresses, crew locations,
+  outage locations, current customers affected, or ETRs.
+- The artifact is reference data, not an operational source of record.
+- The manifest identifies provenance and review status without requiring a reviewer name.
+- Any future field expansion requires a new data-handling review before extraction or publication.
+
 ### Work
 
 - Confirm the SME is authorized to create and provide the static reference for this POC.
@@ -167,6 +200,10 @@ changes cannot silently redefine AIDA geography.
 - Owner/SME approval of the bounded static-reference use, storage location, fields, and freshness
   policy.
 - No credentials, private operational fields, or transient outage details are included.
+
+Phase 0 passed on 2026-09-15: every approval-record row is `Confirmed`, and the plan is Phase 1
+ready. Extractor hardening may begin; candidate publication remains gated by the Phase 2 SME
+review.
 
 ## Phase 1 — Harden the Offline Extractor
 
