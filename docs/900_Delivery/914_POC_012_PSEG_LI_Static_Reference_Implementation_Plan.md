@@ -2,11 +2,13 @@
 
 ## Status
 
-Status: Phase 1 ready; Phase 0 approved on 2026-09-15. Implementation has not started.
+Status: Phase 3 ready; Phases 0-2 completed on 2026-09-15.
 
 Date: 2026-09-14
 
 Phase 0 review updated: 2026-09-15
+
+Phase 2 review updated: 2026-09-15
 
 This plan defines a bounded, SME-maintained static reference for the PSEG Long Island/KUBRA
 County/Township/Village hierarchy and customers-served counts. It deliberately avoids a live
@@ -239,6 +241,10 @@ review.
 - A dry run prints source identity, timestamps, record counts, totals, and sample rows without
   publishing an artifact.
 
+Phase 1 passed on 2026-09-15 at extractor commit
+`f7582aeac0cb204dd1eed0d069fc0b4adc4be63c`: all 11 extractor tests passed, and the clean-worktree
+dry run validated 3 counties, 14 townships, 347 leaf records, and 1,158,552 customers served.
+
 ## Phase 2 — Generate and Approve the Reference Snapshot
 
 ### Work
@@ -267,6 +273,14 @@ review.
 - One approved, checksum-matched CSV/manifest pair exists in AIDA.
 - Repository diff contains only the intended reference artifacts and documentation for this
   phase.
+
+Phase 2 passed on 2026-09-15. The PSEG Long Island SME approved the candidate generated from
+source timestamp `2026-09-15T23:41:56Z`; the manifest records the reviewer role and UTC approval
+time. Validation confirmed 347 unique composite IDs, no blank or zero-value rows, expected
+Rockaway and Hempstead normalization, all 24 `LongIslandGeography.csv` paths matched, and the
+approved CSV SHA-256 is
+`0147f268b7fa63b841a40a13233be5c6bbb593ab233480367ebb2e63a1dd661f`. This first approved
+snapshot establishes the baseline for future change comparisons.
 
 ## Phase 3 — Add the AIDA Static Reference Boundary
 

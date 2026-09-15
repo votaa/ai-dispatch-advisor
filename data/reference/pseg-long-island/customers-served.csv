@@ -1,0 +1,348 @@
+reference_id,source_county,source_township,source_village,county,township,village,customers_served
+pseg-li-68d68742c07b623100b5,NASSAU,HEMPSTEAD,ATLANTIC BEACH,Nassau,Hempstead,Atlantic Beach,1010
+pseg-li-f593f9379d7bcdfaa240,NASSAU,HEMPSTEAD,BALDWIN,Nassau,Hempstead,Baldwin,8576
+pseg-li-3ef38654d66e0b92eeab,NASSAU,HEMPSTEAD,BALDWIN HARBOR,Nassau,Hempstead,Baldwin Harbor,2849
+pseg-li-41aa6d3bf8de966503b9,NASSAU,HEMPSTEAD,BARNUM ISLAND,Nassau,Hempstead,Barnum Island,1230
+pseg-li-21127162f54d1d78e128,NASSAU,HEMPSTEAD,BAY PARK,Nassau,Hempstead,Bay Park,906
+pseg-li-16c48a60e553708cbd2a,NASSAU,HEMPSTEAD,BELLEROSE,Nassau,Hempstead,Bellerose,424
+pseg-li-1c72467f46dcbb5386bc,NASSAU,HEMPSTEAD,BELLEROSE TERRACE,Nassau,Hempstead,Bellerose Terrace,745
+pseg-li-f2995d95b7f12602a672,NASSAU,HEMPSTEAD,BELLMORE,Nassau,Hempstead,Bellmore,6172
+pseg-li-9685d35012cdfd22b187,NASSAU,HEMPSTEAD,CEDARHURST,Nassau,Hempstead,Cedarhurst,2941
+pseg-li-28710a4b27c340b779a7,NASSAU,HEMPSTEAD,EAST ATLANTIC BEACH,Nassau,Hempstead,East Atlantic Beach,927
+pseg-li-2c8b65236189e9f36e98,NASSAU,HEMPSTEAD,EAST GARDEN CITY,Nassau,Hempstead,East Garden City,2829
+pseg-li-501220e4e8242f37d957,NASSAU,HEMPSTEAD,EAST MEADOW,Nassau,Hempstead,East Meadow,14101
+pseg-li-e056d8f14ae3412db65e,NASSAU,HEMPSTEAD,EAST ROCKAWAY,Nassau,Hempstead,East Rockaway,4191
+pseg-li-270a54b2de13074c795a,NASSAU,HEMPSTEAD,ELMONT,Nassau,Hempstead,Elmont,9513
+pseg-li-237fada70f56e8de6610,NASSAU,HEMPSTEAD,FLORAL PARK,Nassau,Hempstead,Floral Park,5508
+pseg-li-cde0c1107b3a33b72a60,NASSAU,HEMPSTEAD,FRANKLIN SQUARE,Nassau,Hempstead,Franklin Square,10237
+pseg-li-d64d9e710bdcfd1b3ea5,NASSAU,HEMPSTEAD,FREEPORT,Nassau,Hempstead,Freeport,22
+pseg-li-41d1c8dcfcc706587b9f,NASSAU,HEMPSTEAD,GARDEN CITY,Nassau,Hempstead,Garden City,8110
+pseg-li-5cbe4141a31554109814,NASSAU,HEMPSTEAD,GARDEN CITY SOUTH,Nassau,Hempstead,Garden City South,1576
+pseg-li-e9b516f97970e1816e6e,NASSAU,HEMPSTEAD,HARBOR ISLE,Nassau,Hempstead,Harbor Isle,683
+pseg-li-bab1039ca6af519b87a8,NASSAU,HEMPSTEAD,HEMPSTEAD VILLAGE,Nassau,Hempstead,Hempstead,17319
+pseg-li-78b452f119b7098c48bb,NASSAU,HEMPSTEAD,HEWLETT,Nassau,Hempstead,Hewlett,3046
+pseg-li-c51dec351272db2f3050,NASSAU,HEMPSTEAD,HEWLETT BAY PARK,Nassau,Hempstead,Hewlett Bay Park,162
+pseg-li-c85fba4420c1ddf9095b,NASSAU,HEMPSTEAD,HEWLETT HARBOR,Nassau,Hempstead,Hewlett Harbor,453
+pseg-li-249a15df15f595be40c5,NASSAU,HEMPSTEAD,HEWLETT NECK,Nassau,Hempstead,Hewlett Neck,168
+pseg-li-75e6e1f5af3820d64e30,NASSAU,HEMPSTEAD,INWOOD,Nassau,Hempstead,Inwood,3599
+pseg-li-82abb3dda27d38bda15e,NASSAU,HEMPSTEAD,ISLAND PARK,Nassau,Hempstead,Island Park,1938
+pseg-li-0c89cc6563a0fe6b4102,NASSAU,HEMPSTEAD,JONES BEACH,Nassau,Hempstead,Jones Beach,43
+pseg-li-1efc60cf445c9649e522,NASSAU,HEMPSTEAD,LAKEVIEW,Nassau,Hempstead,Lakeview,1621
+pseg-li-26d762af5243b6b6a351,NASSAU,HEMPSTEAD,LAWRENCE,Nassau,Hempstead,Lawrence,2623
+pseg-li-4e4588479ae9ec47bceb,NASSAU,HEMPSTEAD,LEVITTOWN,Nassau,Hempstead,Levittown,17336
+pseg-li-c6fac26608eb7ce52044,NASSAU,HEMPSTEAD,LIDO BEACH,Nassau,Hempstead,Lido Beach,1348
+pseg-li-0ba5bf903345a07689f6,NASSAU,HEMPSTEAD,LONG BEACH,Nassau,Hempstead,Long Beach,16492
+pseg-li-81165d687b11fa821a1b,NASSAU,HEMPSTEAD,LYNBROOK,Nassau,Hempstead,Lynbrook,8662
+pseg-li-eeffcf024725af23ac87,NASSAU,HEMPSTEAD,MALVERNE,Nassau,Hempstead,Malverne,3286
+pseg-li-5064a41571715e56a1a5,NASSAU,HEMPSTEAD,MALVERNE PARK OAKS,Nassau,Hempstead,Malverne Park Oaks,192
+pseg-li-69a660510b476a166aa2,NASSAU,HEMPSTEAD,MERRICK,Nassau,Hempstead,Merrick,8205
+pseg-li-820e3be83c7ddc3943c7,NASSAU,HEMPSTEAD,NEW HYDE PARK,Nassau,Hempstead,New Hyde Park,1593
+pseg-li-12be1a3a9378a6f2a1e5,NASSAU,HEMPSTEAD,NORTH BELLMORE,Nassau,Hempstead,North Bellmore,7002
+pseg-li-2f63604d27473082da73,NASSAU,HEMPSTEAD,NORTH LYNBROOK,Nassau,Hempstead,North Lynbrook,239
+pseg-li-d5f67fd3ca76e1ab8189,NASSAU,HEMPSTEAD,NORTH MERRICK,Nassau,Hempstead,North Merrick,4186
+pseg-li-05fed113116e65d63cfa,NASSAU,HEMPSTEAD,NORTH VALLEY STREAM,Nassau,Hempstead,North Valley Stream,5473
+pseg-li-bbc5637f8cb17b3ef147,NASSAU,HEMPSTEAD,NORTH WANTAGH,Nassau,Hempstead,North Wantagh,4187
+pseg-li-35606198be61e0f1dc3a,NASSAU,HEMPSTEAD,OCEANSIDE,Nassau,Hempstead,Oceanside,12750
+pseg-li-1a4f0dffe2ead8125ae6,NASSAU,HEMPSTEAD,POINT LOOKOUT,Nassau,Hempstead,Point Lookout,918
+pseg-li-5ca05abcd6011d163637,NASSAU,HEMPSTEAD,ROCKVILLE CENTRE,Nassau,Hempstead,Rockville Centre,7
+pseg-li-12b46a4d978580219aa4,NASSAU,HEMPSTEAD,ROOSEVELT,Nassau,Hempstead,Roosevelt,4360
+pseg-li-fa30d9233f491e7dc819,NASSAU,HEMPSTEAD,SALISBURY,Nassau,Hempstead,Salisbury,3476
+pseg-li-d4ce4d1d754a12cd9062,NASSAU,HEMPSTEAD,SEAFORD,Nassau,Hempstead,Seaford,5729
+pseg-li-93c662890987ff6fcea6,NASSAU,HEMPSTEAD,SILVER POINT COUNTY PARK,Nassau,Hempstead,Silver Point County Park,29
+pseg-li-1a4cc0c203ab8bc8e2c7,NASSAU,HEMPSTEAD,SOUTH FLORAL PARK,Nassau,Hempstead,South Floral Park,470
+pseg-li-8657df6e598e23fe59e4,NASSAU,HEMPSTEAD,SOUTH HEMPSTEAD,Nassau,Hempstead,South Hempstead,1079
+pseg-li-35ab1667430a56886d3f,NASSAU,HEMPSTEAD,SOUTH VALLEY STREAM,Nassau,Hempstead,South Valley Stream,2157
+pseg-li-39b7c9c561134b76515e,NASSAU,HEMPSTEAD,STEWART MANOR,Nassau,Hempstead,Stewart Manor,765
+pseg-li-db5697b09353968a2ec5,NASSAU,HEMPSTEAD,UNIONDALE,Nassau,Hempstead,Uniondale,6585
+pseg-li-7fb66dacff4da56afd0e,NASSAU,HEMPSTEAD,VALLEY STREAM,Nassau,Hempstead,Valley Stream,13554
+pseg-li-ab8ee7ed3c6dde650d90,NASSAU,HEMPSTEAD,WANTAGH,Nassau,Hempstead,Wantagh,6744
+pseg-li-4f106d9f24bdefb9b159,NASSAU,HEMPSTEAD,WEST HEMPSTEAD,Nassau,Hempstead,West Hempstead,7078
+pseg-li-d1acfd8590dfb1e1208b,NASSAU,HEMPSTEAD,WOODMERE,Nassau,Hempstead,Woodmere,5760
+pseg-li-e5e79954d155eb9bf453,NASSAU,HEMPSTEAD,WOODSBURGH,Nassau,Hempstead,Woodsburgh,314
+pseg-li-ce599c45ba22cf4bf45e,NASSAU,NORTH HEMPSTEAD,ALBERTSON,Nassau,North Hempstead,Albertson,2061
+pseg-li-e877168eccab156fff9b,NASSAU,NORTH HEMPSTEAD,BAXTER ESTATES,Nassau,North Hempstead,Baxter Estates,505
+pseg-li-914be3232b04b3efc59e,NASSAU,NORTH HEMPSTEAD,CARLE PLACE,Nassau,North Hempstead,Carle Place,2328
+pseg-li-f022c181bf3b54bad204,NASSAU,NORTH HEMPSTEAD,EAST HILLS,Nassau,North Hempstead,East Hills,2431
+pseg-li-e04532aecae6331c922a,NASSAU,NORTH HEMPSTEAD,EAST WILLISTON,Nassau,North Hempstead,East Williston,884
+pseg-li-7cbfe370dbf95dcbd275,NASSAU,NORTH HEMPSTEAD,FLORAL PARK,Nassau,North Hempstead,Floral Park,874
+pseg-li-07f4f4aa6e78594308fb,NASSAU,NORTH HEMPSTEAD,FLOWER HILL,Nassau,North Hempstead,Flower Hill,1652
+pseg-li-bde5b4296fc050932100,NASSAU,NORTH HEMPSTEAD,GARDEN CITY PARK,Nassau,North Hempstead,Garden City Park,2757
+pseg-li-2645db455bd37b9c8a0f,NASSAU,NORTH HEMPSTEAD,GREAT NECK,Nassau,North Hempstead,Great Neck,4098
+pseg-li-6097a487969b2d987a52,NASSAU,NORTH HEMPSTEAD,GREAT NECK ESTATES,Nassau,North Hempstead,Great Neck Estates,1123
+pseg-li-ab5b486d9290533740c0,NASSAU,NORTH HEMPSTEAD,GREAT NECK GARDENS,Nassau,North Hempstead,Great Neck Gardens,493
+pseg-li-93c1903bb29da3474f74,NASSAU,NORTH HEMPSTEAD,GREAT NECK PLAZA,Nassau,North Hempstead,Great Neck Plaza,4584
+pseg-li-c99c6aef0c74b5eb3fdd,NASSAU,NORTH HEMPSTEAD,GREENVALE,Nassau,North Hempstead,Greenvale,452
+pseg-li-7c75cdc23c7e0a8698d2,NASSAU,NORTH HEMPSTEAD,HARBOR HILLS,Nassau,North Hempstead,Harbor Hills,201
+pseg-li-77b284dc727ec67448ac,NASSAU,NORTH HEMPSTEAD,HERRICKS,Nassau,North Hempstead,Herricks,1439
+pseg-li-1dedd30fed7559d69ad1,NASSAU,NORTH HEMPSTEAD,KENSINGTON,Nassau,North Hempstead,Kensington,382
+pseg-li-9bc75d1523c3e8f6492a,NASSAU,NORTH HEMPSTEAD,KINGS POINT,Nassau,North Hempstead,Kings Point,1497
+pseg-li-5a973b383f1f5aba33dc,NASSAU,NORTH HEMPSTEAD,LAKE SUCCESS,Nassau,North Hempstead,Lake Success,1007
+pseg-li-b82fe5a3906ecfb035dc,NASSAU,NORTH HEMPSTEAD,MANHASSET,Nassau,North Hempstead,Manhasset,3481
+pseg-li-9bf352fcd788dd5413ba,NASSAU,NORTH HEMPSTEAD,MANHASSET HILLS,Nassau,North Hempstead,Manhasset Hills,1177
+pseg-li-1d1d01e8b2b810bbee51,NASSAU,NORTH HEMPSTEAD,MANORHAVEN,Nassau,North Hempstead,Manorhaven,2853
+pseg-li-61f469b45dc05f15db4e,NASSAU,NORTH HEMPSTEAD,MINEOLA,Nassau,North Hempstead,Mineola,10101
+pseg-li-c736b7aa4fa3d2a4c5a9,NASSAU,NORTH HEMPSTEAD,MUNSEY PARK,Nassau,North Hempstead,Munsey Park,883
+pseg-li-5e8033e66ffe5b0e840b,NASSAU,NORTH HEMPSTEAD,NEW CASSEL,Nassau,North Hempstead,New Cassel,3653
+pseg-li-a4dbe8a669a0c976724c,NASSAU,NORTH HEMPSTEAD,NEW HYDE PARK,Nassau,North Hempstead,New Hyde Park,2086
+pseg-li-27d42c3b306072941be0,NASSAU,NORTH HEMPSTEAD,NORTH HILLS,Nassau,North Hempstead,North Hills,2574
+pseg-li-826f7cd555101a706d2e,NASSAU,NORTH HEMPSTEAD,NORTH NEW HYDE PARK,Nassau,North Hempstead,North New Hyde Park,5524
+pseg-li-ad0d7f66a5c0838befe0,NASSAU,NORTH HEMPSTEAD,OLD WESTBURY,Nassau,North Hempstead,Old Westbury,1079
+pseg-li-fdda490df121f8d746b3,NASSAU,NORTH HEMPSTEAD,PLANDOME,Nassau,North Hempstead,Plandome,466
+pseg-li-32f36868e9174b37e866,NASSAU,NORTH HEMPSTEAD,PLANDOME HEIGHTS,Nassau,North Hempstead,Plandome Heights,328
+pseg-li-2cb492daebd7d23933a8,NASSAU,NORTH HEMPSTEAD,PLANDOME MANOR,Nassau,North Hempstead,Plandome Manor,298
+pseg-li-599ef3dd4bc3533dd120,NASSAU,NORTH HEMPSTEAD,PORT WASHINGTON,Nassau,North Hempstead,Port Washington,6700
+pseg-li-ed547694daf04f1db1f1,NASSAU,NORTH HEMPSTEAD,PORT WASHINGTON NORTH,Nassau,North Hempstead,Port Washington North,1468
+pseg-li-de8c7c2ef534eecf172c,NASSAU,NORTH HEMPSTEAD,ROSLYN,Nassau,North Hempstead,Roslyn,1641
+pseg-li-6bb6835cc010ba82838f,NASSAU,NORTH HEMPSTEAD,ROSLYN ESTATES,Nassau,North Hempstead,Roslyn Estates,441
+pseg-li-abe2d59119e196c67a38,NASSAU,NORTH HEMPSTEAD,ROSLYN HARBOR,Nassau,North Hempstead,Roslyn Harbor,296
+pseg-li-351b0ada4ac5db9b011e,NASSAU,NORTH HEMPSTEAD,ROSLYN HEIGHTS,Nassau,North Hempstead,Roslyn Heights,2490
+pseg-li-3b6092ab4d3829fb3b29,NASSAU,NORTH HEMPSTEAD,RUSSELL GARDENS,Nassau,North Hempstead,Russell Gardens,480
+pseg-li-198129f02ba79d476966,NASSAU,NORTH HEMPSTEAD,SADDLE ROCK,Nassau,North Hempstead,Saddle Rock,301
+pseg-li-13b3aeec923214c6e2e7,NASSAU,NORTH HEMPSTEAD,SADDLE ROCK ESTATES,Nassau,North Hempstead,Saddle Rock Estates,151
+pseg-li-61f502ec13814e833777,NASSAU,NORTH HEMPSTEAD,SANDS POINT,Nassau,North Hempstead,Sands Point,1053
+pseg-li-e63caefd83a2098cb08d,NASSAU,NORTH HEMPSTEAD,SEARINGTOWN,Nassau,North Hempstead,Searingtown,1652
+pseg-li-a3e96973b5cf87ca03a1,NASSAU,NORTH HEMPSTEAD,THOMASTON,Nassau,North Hempstead,Thomaston,1104
+pseg-li-186d7d6cbdc4bebad364,NASSAU,NORTH HEMPSTEAD,UNIVERSITY GARDENS,Nassau,North Hempstead,University Gardens,2066
+pseg-li-1660a4382682f7cd0c8b,NASSAU,NORTH HEMPSTEAD,WESTBURY,Nassau,North Hempstead,Westbury,5759
+pseg-li-366a0884f6cfb055cb2f,NASSAU,NORTH HEMPSTEAD,WILLISTON PARK,Nassau,North Hempstead,Williston Park,3020
+pseg-li-c84d905ddcccf50d8593,NASSAU,OYSTER BAY,BAYVILLE,Nassau,Oyster Bay,Bayville,2810
+pseg-li-61ace93cea4536693eb9,NASSAU,OYSTER BAY,BETHPAGE,Nassau,Oyster Bay,Bethpage,6409
+pseg-li-07c13022f55079ef9962,NASSAU,OYSTER BAY,BROOKVILLE,Nassau,Oyster Bay,Brookville,764
+pseg-li-ab24befa48fa09154e61,NASSAU,OYSTER BAY,CENTRE ISLAND,Nassau,Oyster Bay,Centre Island,228
+pseg-li-7c75d7e1df8f3d5b5d45,NASSAU,OYSTER BAY,CENTRE ISLAND TOWN PARK,Nassau,Oyster Bay,Centre Island Town Park,4
+pseg-li-03ecbca5b24ad487105e,NASSAU,OYSTER BAY,COLD SPRING HARBOR,Nassau,Oyster Bay,Cold Spring Harbor,100
+pseg-li-1c2e77bc45a2770176e6,NASSAU,OYSTER BAY,COVE NECK,Nassau,Oyster Bay,Cove Neck,181
+pseg-li-c2a4e2062f4ad8726a01,NASSAU,OYSTER BAY,EAST HILLS,Nassau,Oyster Bay,East Hills,10
+pseg-li-cc102eaa9783f3331d5b,NASSAU,OYSTER BAY,EAST MASSAPEQUA,Nassau,Oyster Bay,East Massapequa,7230
+pseg-li-742ad7db1e69562504b9,NASSAU,OYSTER BAY,EAST NORWICH,Nassau,Oyster Bay,East Norwich,1090
+pseg-li-86cdb162ece4ddd172bc,NASSAU,OYSTER BAY,FARMINGDALE,Nassau,Oyster Bay,Farmingdale,4077
+pseg-li-373649e762c2aaf79e0a,NASSAU,OYSTER BAY,GLEN COVE,Nassau,Oyster Bay,Glen Cove,11866
+pseg-li-cd81159110df9fc4aafb,NASSAU,OYSTER BAY,GLEN HEAD,Nassau,Oyster Bay,Glen Head,1954
+pseg-li-38d40e5df5c8b4530544,NASSAU,OYSTER BAY,GLENWOOD LANDING,Nassau,Oyster Bay,Glenwood Landing,1582
+pseg-li-e8e5b5784ff34246af51,NASSAU,OYSTER BAY,GREENVALE,Nassau,Oyster Bay,Greenvale,98
+pseg-li-32180e1a9c9aeac831db,NASSAU,OYSTER BAY,HICKSVILLE,Nassau,Oyster Bay,Hicksville,15339
+pseg-li-eb78158f2d342c8fe21b,NASSAU,OYSTER BAY,JERICHO,Nassau,Oyster Bay,Jericho,5227
+pseg-li-b08ae512183ac3479e75,NASSAU,OYSTER BAY,LATTINGTOWN,Nassau,Oyster Bay,Lattingtown,751
+pseg-li-fe2e21fb2ff7bf913c8e,NASSAU,OYSTER BAY,LAUREL HOLLOW,Nassau,Oyster Bay,Laurel Hollow,584
+pseg-li-75ef5d13fab24e706a22,NASSAU,OYSTER BAY,LOCUST VALLEY,Nassau,Oyster Bay,Locust Valley,1698
+pseg-li-5e435ebc6b9118ea9c50,NASSAU,OYSTER BAY,MASSAPEQUA,Nassau,Oyster Bay,Massapequa,7849
+pseg-li-55d60316dabf0f7966d1,NASSAU,OYSTER BAY,MASSAPEQUA PARK,Nassau,Oyster Bay,Massapequa Park,5989
+pseg-li-b4475df799b765bf25d3,NASSAU,OYSTER BAY,MATINECOCK,Nassau,Oyster Bay,Matinecock,417
+pseg-li-39b6ec9d15495be5b322,NASSAU,OYSTER BAY,MILL NECK,Nassau,Oyster Bay,Mill Neck,478
+pseg-li-7d639a825c34c33c5b50,NASSAU,OYSTER BAY,MUTTONTOWN,Nassau,Oyster Bay,Muttontown,1277
+pseg-li-4b72d61b862db256f280,NASSAU,OYSTER BAY,NORTH MASSAPEQUA,Nassau,Oyster Bay,North Massapequa,6292
+pseg-li-1109cc965373c90b9e54,NASSAU,OYSTER BAY,OLD BETHPAGE,Nassau,Oyster Bay,Old Bethpage,2667
+pseg-li-55e86906ddc979ab9b1a,NASSAU,OYSTER BAY,OLD BROOKVILLE,Nassau,Oyster Bay,Old Brookville,825
+pseg-li-9fbc585f144f57c4510c,NASSAU,OYSTER BAY,OLD WESTBURY,Nassau,Oyster Bay,Old Westbury,269
+pseg-li-2832204a21e89dba5f98,NASSAU,OYSTER BAY,OYSTER BAY COVE,Nassau,Oyster Bay,Oyster Bay Cove,845
+pseg-li-efed831c7f169e79c780,NASSAU,OYSTER BAY,OYSTER BAY HAMLET,Nassau,Oyster Bay,Oyster Bay Hamlet,3311
+pseg-li-551b7b5307353664c8a3,NASSAU,OYSTER BAY,PLAINEDGE,Nassau,Oyster Bay,Plainedge,3087
+pseg-li-ed2c22ffe0e6b31fb03c,NASSAU,OYSTER BAY,PLAINVIEW,Nassau,Oyster Bay,Plainview,10049
+pseg-li-0915ceba23409303b4f5,NASSAU,OYSTER BAY,ROSLYN HARBOR,Nassau,Oyster Bay,Roslyn Harbor,47
+pseg-li-d337d68811c7c214375a,NASSAU,OYSTER BAY,SEA CLIFF,Nassau,Oyster Bay,Sea Cliff,2263
+pseg-li-a9c032aa915dc2ecaf64,NASSAU,OYSTER BAY,SOUTH FARMINGDALE,Nassau,Oyster Bay,South Farmingdale,4989
+pseg-li-87a95e52ce548ae6516d,NASSAU,OYSTER BAY,SYOSSET,Nassau,Oyster Bay,Syosset,7009
+pseg-li-4c1f9958936ea6737c87,NASSAU,OYSTER BAY,TOBAY,Nassau,Oyster Bay,Tobay,8
+pseg-li-addc8c835bd0a7b1e982,NASSAU,OYSTER BAY,UPPER BROOKVILLE,Nassau,Oyster Bay,Upper Brookville,668
+pseg-li-0205144088130de635b3,NASSAU,OYSTER BAY,WOODBURY,Nassau,Oyster Bay,Woodbury,3972
+pseg-li-31d3df560aa45c14a0a3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ARVERNE,Queens,Rockaway Peninsula,Arverne,4607
+pseg-li-5c4318612c37e3cc5ce3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,BELLE HARBOR,Queens,Rockaway Peninsula,Belle Harbor,2415
+pseg-li-c91eed01f362fa24d8e3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,BREEZY POINT,Queens,Rockaway Peninsula,Breezy Point,2478
+pseg-li-c1a98a8326d828eaa6f5,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,EDGEMERE,Queens,Rockaway Peninsula,Edgemere,1984
+pseg-li-2be55479fb0baeb7f566,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,FAR ROCKAWAY,Queens,Rockaway Peninsula,Far Rockaway,18472
+pseg-li-2deecd722be7b5834bc3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,NEPONSIT,Queens,Rockaway Peninsula,Neponsit,621
+pseg-li-b2a3bb344932268c63d4,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ROCKAWAY BEACH,Queens,Rockaway Peninsula,Rockaway Beach,1473
+pseg-li-7fe28c07c87c12d24ae3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ROCKAWAY PARK,Queens,Rockaway Peninsula,Rockaway Park,5541
+pseg-li-14776f831adef73e5d5d,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ROXBURY,Queens,Rockaway Peninsula,Roxbury,456
+pseg-li-00a4e06805e141089e47,SUFFOLK,BABYLON,AMITYVILLE,Suffolk,Babylon,Amityville,5198
+pseg-li-ef5225dd8758afff11da,SUFFOLK,BABYLON,BABYLON,Suffolk,Babylon,Babylon,5376
+pseg-li-f29202ad9006ff7ac0f4,SUFFOLK,BABYLON,CAPTREE,Suffolk,Babylon,Captree,35
+pseg-li-869ae581e1682fd36ddf,SUFFOLK,BABYLON,COPIAGUE,Suffolk,Babylon,Copiague,8311
+pseg-li-1f11d63d6e234e549e48,SUFFOLK,BABYLON,DEER PARK,Suffolk,Babylon,Deer Park,11618
+pseg-li-b908666d02f4dc0f0c8a,SUFFOLK,BABYLON,EAST FARMINGDALE,Suffolk,Babylon,East Farmingdale,3981
+pseg-li-882b46d6040abf3b39fd,SUFFOLK,BABYLON,GILGO BEACH,Suffolk,Babylon,Gilgo Beach,186
+pseg-li-c969288e609749672ae9,SUFFOLK,BABYLON,LINDENHURST,Suffolk,Babylon,Lindenhurst,10301
+pseg-li-84e94dab14803ddec3c0,SUFFOLK,BABYLON,NORTH AMITYVILLE,Suffolk,Babylon,North Amityville,5889
+pseg-li-61be38f5ddc5f94279ef,SUFFOLK,BABYLON,NORTH BABYLON,Suffolk,Babylon,North Babylon,7227
+pseg-li-1948c34eee9a479b7243,SUFFOLK,BABYLON,NORTH LINDENHURST,Suffolk,Babylon,North Lindenhurst,4334
+pseg-li-a82def9793fded452d17,SUFFOLK,BABYLON,OAK BEACH,Suffolk,Babylon,Oak Beach,169
+pseg-li-b7548114d4674c826678,SUFFOLK,BABYLON,ROBERT MOSES PK,Suffolk,Babylon,Robert Moses Pk,23
+pseg-li-f6c562ba168688c3fb9e,SUFFOLK,BABYLON,WEST BABYLON,Suffolk,Babylon,West Babylon,16392
+pseg-li-ac9b5e588cf8eca479c5,SUFFOLK,BABYLON,WHEATLEY HEIGHTS,Suffolk,Babylon,Wheatley Heights,1419
+pseg-li-8be3a7bf961837e6d6fd,SUFFOLK,BABYLON,WYANDANCH,Suffolk,Babylon,Wyandanch,5412
+pseg-li-7b04ec39440c58d9f766,SUFFOLK,BROOKHAVEN,BARRETT BEACH,Suffolk,Brookhaven,Barrett Beach,2
+pseg-li-5262e0875c8587e8011c,SUFFOLK,BROOKHAVEN,BELLE TERRE,Suffolk,Brookhaven,Belle Terre,328
+pseg-li-de41b237e6f2fca52b32,SUFFOLK,BROOKHAVEN,BELLPORT,Suffolk,Brookhaven,Bellport,1313
+pseg-li-c97c0358f4a5e91e5133,SUFFOLK,BROOKHAVEN,BLUE POINT,Suffolk,Brookhaven,Blue Point,2392
+pseg-li-c18068a7aa6d2f9f96e2,SUFFOLK,BROOKHAVEN,BLUE POINT BEACH,Suffolk,Brookhaven,Blue Point Beach,7
+pseg-li-aead2244bbe55d8e14e3,SUFFOLK,BROOKHAVEN,BROOKHAVEN,Suffolk,Brookhaven,Brookhaven,1384
+pseg-li-6d25b5933fd5aa1796f5,SUFFOLK,BROOKHAVEN,CALVERTON,Suffolk,Brookhaven,Calverton,453
+pseg-li-62322c897d86c56c8005,SUFFOLK,BROOKHAVEN,CENTER MORICHES,Suffolk,Brookhaven,Center Moriches,3593
+pseg-li-3664473e4f31d18d6c32,SUFFOLK,BROOKHAVEN,CENTEREACH,Suffolk,Brookhaven,Centereach,9355
+pseg-li-dbc8af0a614550922aaa,SUFFOLK,BROOKHAVEN,CHERRY GROVE,Suffolk,Brookhaven,Cherry Grove,325
+pseg-li-47ea78c3be45f15ee91b,SUFFOLK,BROOKHAVEN,CORAM,Suffolk,Brookhaven,Coram,16865
+pseg-li-7dad019fda028322b0fe,SUFFOLK,BROOKHAVEN,DAVIS PARK,Suffolk,Brookhaven,Davis Park,169
+pseg-li-d1eb6c83ce2160ec837c,SUFFOLK,BROOKHAVEN,EAST MORICHES,Suffolk,Brookhaven,East Moriches,2821
+pseg-li-4bf05490e2acc26efd0b,SUFFOLK,BROOKHAVEN,EAST PATCHOGUE,Suffolk,Brookhaven,East Patchogue,9428
+pseg-li-0e353cd6d84fafb4d78f,SUFFOLK,BROOKHAVEN,EAST SHOREHAM,Suffolk,Brookhaven,East Shoreham,2341
+pseg-li-3d0679ffae01aa2f3a51,SUFFOLK,BROOKHAVEN,EASTPORT,Suffolk,Brookhaven,Eastport,803
+pseg-li-267d838e1ca69842852d,SUFFOLK,BROOKHAVEN,FARMINGVILLE,Suffolk,Brookhaven,Farmingville,5777
+pseg-li-7d525cd25650527bf68a,SUFFOLK,BROOKHAVEN,FIRE ISLAND,Suffolk,Brookhaven,Fire Island,767
+pseg-li-6f3ac05c1910b3346c35,SUFFOLK,BROOKHAVEN,FIRE ISLAND NATIONAL SEASHORE,Suffolk,Brookhaven,Fire Island National Seashore,25
+pseg-li-27649c16c3926c11b535,SUFFOLK,BROOKHAVEN,GORDON HEIGHTS,Suffolk,Brookhaven,Gordon Heights,1232
+pseg-li-6d0dea83a70ce3317cd0,SUFFOLK,BROOKHAVEN,HOLBROOK,Suffolk,Brookhaven,Holbrook,1712
+pseg-li-2bafb8d22ba30a8fc68c,SUFFOLK,BROOKHAVEN,HOLTSVILLE,Suffolk,Brookhaven,Holtsville,5452
+pseg-li-51c1b4aa90bb16dc3c43,SUFFOLK,BROOKHAVEN,LAKE GROVE,Suffolk,Brookhaven,Lake Grove,4267
+pseg-li-eef5186e51df5135469c,SUFFOLK,BROOKHAVEN,LAKE RONKONKOMA,Suffolk,Brookhaven,Lake Ronkonkoma,7090
+pseg-li-24ce30b7a7f43dcecc7f,SUFFOLK,BROOKHAVEN,MANORVILLE,Suffolk,Brookhaven,Manorville,5965
+pseg-li-e86c069e0a47e4eb7f51,SUFFOLK,BROOKHAVEN,MASTIC,Suffolk,Brookhaven,Mastic,4831
+pseg-li-d43b67643929ab2dfa09,SUFFOLK,BROOKHAVEN,MASTIC BEACH,Suffolk,Brookhaven,Mastic Beach,5560
+pseg-li-3d8047f886c85e697957,SUFFOLK,BROOKHAVEN,MEDFORD,Suffolk,Brookhaven,Medford,9390
+pseg-li-90e2ab841790177d7143,SUFFOLK,BROOKHAVEN,MIDDLE ISLAND,Suffolk,Brookhaven,Middle Island,5103
+pseg-li-3163027ccb81d6f18b06,SUFFOLK,BROOKHAVEN,MILLER PLACE,Suffolk,Brookhaven,Miller Place,4507
+pseg-li-9ed6d8b8a6bd07d9e76a,SUFFOLK,BROOKHAVEN,MORICHES,Suffolk,Brookhaven,Moriches,1566
+pseg-li-81c1c73ddaaf85288e33,SUFFOLK,BROOKHAVEN,MOUNT SINAI,Suffolk,Brookhaven,Mount Sinai,5240
+pseg-li-71b89fd2fab6f48c1517,SUFFOLK,BROOKHAVEN,NORTH BELLPORT,Suffolk,Brookhaven,North Bellport,4165
+pseg-li-f913bcbec000b3ffae70,SUFFOLK,BROOKHAVEN,NORTH PATCHOGUE,Suffolk,Brookhaven,North Patchogue,3013
+pseg-li-b73a8312bb54bec08608,SUFFOLK,BROOKHAVEN,OAKLEYVILLE,Suffolk,Brookhaven,Oakleyville,7
+pseg-li-d39ac5e7e188f7d25e2e,SUFFOLK,BROOKHAVEN,OCEAN BAY PARK,Suffolk,Brookhaven,Ocean Bay Park,318
+pseg-li-1a129bf8a3732a1703a1,SUFFOLK,BROOKHAVEN,OCEAN RIDGE,Suffolk,Brookhaven,Ocean Ridge,124
+pseg-li-2098f5e44816994efaee,SUFFOLK,BROOKHAVEN,OLD FIELD,Suffolk,Brookhaven,Old Field,389
+pseg-li-7df6c7d16cc457d6fec3,SUFFOLK,BROOKHAVEN,PATCHOGUE,Suffolk,Brookhaven,Patchogue,6402
+pseg-li-af39ed1225dcd7e4e051,SUFFOLK,BROOKHAVEN,POINT O'WOODS,Suffolk,Brookhaven,Point O'Woods,157
+pseg-li-3bd2e482ffb390c0b045,SUFFOLK,BROOKHAVEN,POQUOTT,Suffolk,Brookhaven,Poquott,387
+pseg-li-2b047b26421be7f73a09,SUFFOLK,BROOKHAVEN,PORT JEFFERSON,Suffolk,Brookhaven,Port Jefferson,4270
+pseg-li-a63cb13486ee05648cff,SUFFOLK,BROOKHAVEN,PORT JEFFERSON STATION,Suffolk,Brookhaven,Port Jefferson Station,3514
+pseg-li-67b8ae8b1bea6479ce6f,SUFFOLK,BROOKHAVEN,RIDGE,Suffolk,Brookhaven,Ridge,6589
+pseg-li-c0fe02bd2d703461570f,SUFFOLK,BROOKHAVEN,ROCKY POINT,Suffolk,Brookhaven,Rocky Point,4803
+pseg-li-a5c0a1788db39c90b9dd,SUFFOLK,BROOKHAVEN,SAILORS HAVEN,Suffolk,Brookhaven,Sailors Haven,8
+pseg-li-b4b4d096f32581f531fe,SUFFOLK,BROOKHAVEN,SEAVIEW,Suffolk,Brookhaven,Seaview,72
+pseg-li-71af61d9523be5477bf2,SUFFOLK,BROOKHAVEN,SELDEN,Suffolk,Brookhaven,Selden,7335
+pseg-li-8d8185ddf857df30b5a0,SUFFOLK,BROOKHAVEN,SETAUKET-EAST SETAUKET,Suffolk,Brookhaven,Setauket-East Setauket,6296
+pseg-li-013f91763bde24feceb6,SUFFOLK,BROOKHAVEN,SHIRLEY,Suffolk,Brookhaven,Shirley,9278
+pseg-li-a9db4be92ea6ee8661cc,SUFFOLK,BROOKHAVEN,SHOREHAM,Suffolk,Brookhaven,Shoreham,221
+pseg-li-8fbd758fa7d1c1d30bb6,SUFFOLK,BROOKHAVEN,SMITH POINT,Suffolk,Brookhaven,Smith Point,13
+pseg-li-fd474c83dfc776ed5244,SUFFOLK,BROOKHAVEN,SOUND BEACH,Suffolk,Brookhaven,Sound Beach,3917
+pseg-li-cd224b86103dfd0430b5,SUFFOLK,BROOKHAVEN,STONY BROOK,Suffolk,Brookhaven,Stony Brook,5427
+pseg-li-7a48ff2b3c724b92e6d0,SUFFOLK,BROOKHAVEN,TERRYVILLE,Suffolk,Brookhaven,Terryville,4715
+pseg-li-73df2843e8d597860aa3,SUFFOLK,BROOKHAVEN,UPTON,Suffolk,Brookhaven,Upton,91
+pseg-li-159279674d1087d5a189,SUFFOLK,BROOKHAVEN,WATCH HILL,Suffolk,Brookhaven,Watch Hill,4
+pseg-li-d6d8b9d48089aa5b5738,SUFFOLK,BROOKHAVEN,WATER ISLAND,Suffolk,Brookhaven,Water Island,45
+pseg-li-363c43f233984390377f,SUFFOLK,BROOKHAVEN,WESTHAMPTON BEACH,Suffolk,Brookhaven,Westhampton Beach,4
+pseg-li-7cca1561fc2897d0a9e4,SUFFOLK,BROOKHAVEN,YAPHANK,Suffolk,Brookhaven,Yaphank,3578
+pseg-li-cfcecab4b9e75eb7b200,SUFFOLK,EAST HAMPTON,AMAGANSETT,Suffolk,East Hampton,Amagansett,2092
+pseg-li-c1ef2152d176ff078dee,SUFFOLK,EAST HAMPTON,EAST HAMPTON,Suffolk,East Hampton,East Hampton,3297
+pseg-li-598be41a785c8b25b37c,SUFFOLK,EAST HAMPTON,EAST HAMPTON VILLAGE,Suffolk,East Hampton,East Hampton Village,2411
+pseg-li-ac887ff38dbe03e10e6e,SUFFOLK,EAST HAMPTON,MONTAUK,Suffolk,East Hampton,Montauk,6024
+pseg-li-229cbeeab06ef1ebf283,SUFFOLK,EAST HAMPTON,NAPEAGUE,Suffolk,East Hampton,Napeague,886
+pseg-li-de177863bda0ef6fdfb8,SUFFOLK,EAST HAMPTON,NORTH WEST HARBOR,Suffolk,East Hampton,North West Harbor,3706
+pseg-li-09542e4ffed3cd394858,SUFFOLK,EAST HAMPTON,SAG HARBOR,Suffolk,East Hampton,Sag Harbor,1004
+pseg-li-0c41699e01f3a38a924c,SUFFOLK,EAST HAMPTON,SPRINGS,Suffolk,East Hampton,Springs,4733
+pseg-li-d6ec6df2b6bf56106f4a,SUFFOLK,EAST HAMPTON,WAINSCOTT,Suffolk,East Hampton,Wainscott,1289
+pseg-li-6a980a716ca721d91847,SUFFOLK,HUNTINGTON,ASHAROKEN,Suffolk,Huntington,Asharoken,373
+pseg-li-51ad52bf353ffe9d4711,SUFFOLK,HUNTINGTON,CENTERPORT,Suffolk,Huntington,Centerport,2371
+pseg-li-78126a5b7f349de36d85,SUFFOLK,HUNTINGTON,COLD SPRING HARBOR,Suffolk,Huntington,Cold Spring Harbor,2021
+pseg-li-289e368faf8b9b59e020,SUFFOLK,HUNTINGTON,COMMACK,Suffolk,Huntington,Commack,4697
+pseg-li-05f297d13adb82397631,SUFFOLK,HUNTINGTON,DIX HILLS,Suffolk,Huntington,Dix Hills,8823
+pseg-li-11e86878d235004c8b35,SUFFOLK,HUNTINGTON,EAST NORTHPORT,Suffolk,Huntington,East Northport,7785
+pseg-li-31b8d859415175603dc9,SUFFOLK,HUNTINGTON,EATONS NECK,Suffolk,Huntington,Eatons Neck,571
+pseg-li-a5b6247d62ad4a213f2c,SUFFOLK,HUNTINGTON,ELWOOD,Suffolk,Huntington,Elwood,4538
+pseg-li-1b0997a70373ee3f67b0,SUFFOLK,HUNTINGTON,FORT SALONGA,Suffolk,Huntington,Fort Salonga,2246
+pseg-li-d704897218f1b0b32ce2,SUFFOLK,HUNTINGTON,GREENLAWN,Suffolk,Huntington,Greenlawn,4873
+pseg-li-b5a5161f81b65ffe4770,SUFFOLK,HUNTINGTON,HALESITE,Suffolk,Huntington,Halesite,1221
+pseg-li-39518595a166d3abc6d7,SUFFOLK,HUNTINGTON,HUNTINGTON,Suffolk,Huntington,Huntington,8952
+pseg-li-a5c926fe550eb09df1be,SUFFOLK,HUNTINGTON,HUNTINGTON BAY,Suffolk,Huntington,Huntington Bay,631
+pseg-li-a55cb05e1edeaaf66a34,SUFFOLK,HUNTINGTON,HUNTINGTON STATION,Suffolk,Huntington,Huntington Station,11453
+pseg-li-35572fcbe80d38306197,SUFFOLK,HUNTINGTON,LLOYD HARBOR,Suffolk,Huntington,Lloyd Harbor,1409
+pseg-li-5b9a7b6b1be35e55c535,SUFFOLK,HUNTINGTON,MELVILLE,Suffolk,Huntington,Melville,8513
+pseg-li-9766c827d8ab03f312f8,SUFFOLK,HUNTINGTON,NORTHPORT,Suffolk,Huntington,Northport,3482
+pseg-li-45c43153defa15d0f0fd,SUFFOLK,HUNTINGTON,SOUTH HUNTINGTON,Suffolk,Huntington,South Huntington,3886
+pseg-li-4887db53e5fe38f26779,SUFFOLK,HUNTINGTON,WEST HILLS,Suffolk,Huntington,West Hills,2349
+pseg-li-760ca33b97af829c329d,SUFFOLK,ISLIP,ATLANTIQUE,Suffolk,Islip,Atlantique,64
+pseg-li-12bd9fd78f12cf8b7432,SUFFOLK,ISLIP,BAY SHORE,Suffolk,Islip,Bay Shore,10834
+pseg-li-124fe278f19d12880d46,SUFFOLK,ISLIP,BAYPORT,Suffolk,Islip,Bayport,3877
+pseg-li-8c206a5f1530ad024e4c,SUFFOLK,ISLIP,BAYWOOD,Suffolk,Islip,Baywood,2561
+pseg-li-66276694215a3ebdcfcf,SUFFOLK,ISLIP,BOHEMIA,Suffolk,Islip,Bohemia,5460
+pseg-li-19dde346bc11e762bd90,SUFFOLK,ISLIP,BRENTWOOD,Suffolk,Islip,Brentwood,13300
+pseg-li-d787feb94514be39d555,SUFFOLK,ISLIP,BRIGHTWATERS,Suffolk,Islip,Brightwaters,1307
+pseg-li-1c0a01d60ff7f797104b,SUFFOLK,ISLIP,CAPTREE,Suffolk,Islip,Captree,1
+pseg-li-30ee11f85e608c30190d,SUFFOLK,ISLIP,CENTRAL ISLIP,Suffolk,Islip,Central Islip,11075
+pseg-li-ba36181b615ed2ea6d7a,SUFFOLK,ISLIP,CORNEILLE ESTATES,Suffolk,Islip,Corneille Estates,115
+pseg-li-b641fbf80d469f039c60,SUFFOLK,ISLIP,DUNEWOOD,Suffolk,Islip,Dunewood,101
+pseg-li-57cedc4b7cad9b4d6ebc,SUFFOLK,ISLIP,EAST ISLIP,Suffolk,Islip,East Islip,5328
+pseg-li-d955a365d223dddc9032,SUFFOLK,ISLIP,FAIRHAVEN,Suffolk,Islip,Fairhaven,394
+pseg-li-12d05b777e54d35a98d5,SUFFOLK,ISLIP,GREAT RIVER,Suffolk,Islip,Great River,985
+pseg-li-a4a60d74a61a3f2c528b,SUFFOLK,ISLIP,HAUPPAUGE,Suffolk,Islip,Hauppauge,4372
+pseg-li-4d636294b0937184e09a,SUFFOLK,ISLIP,HOLBROOK,Suffolk,Islip,Holbrook,8885
+pseg-li-1719f9b1c2d79889d87f,SUFFOLK,ISLIP,HOLTSVILLE,Suffolk,Islip,Holtsville,1350
+pseg-li-3bd291f802f06509f0cc,SUFFOLK,ISLIP,ISLANDIA,Suffolk,Islip,Islandia,1700
+pseg-li-caf65cb5120e4bab6cad,SUFFOLK,ISLIP,ISLIP,Suffolk,Islip,Islip,7561
+pseg-li-e5efc0cc1a34d135e6aa,SUFFOLK,ISLIP,ISLIP TERRACE,Suffolk,Islip,Islip Terrace,1864
+pseg-li-290e6002e239c75de229,SUFFOLK,ISLIP,KISMET,Suffolk,Islip,Kismet,258
+pseg-li-b290d93402d2ab8b31d5,SUFFOLK,ISLIP,LONELYVILLE,Suffolk,Islip,Lonelyville,98
+pseg-li-fca400dc60961bf49a68,SUFFOLK,ISLIP,NORTH BAY SHORE,Suffolk,Islip,North Bay Shore,3844
+pseg-li-a99fe6f5d007fb0063da,SUFFOLK,ISLIP,NORTH GREAT RIVER,Suffolk,Islip,North Great River,1462
+pseg-li-721e144f153687dcef84,SUFFOLK,ISLIP,OAKDALE,Suffolk,Islip,Oakdale,3649
+pseg-li-86e346fd028da7bcaf56,SUFFOLK,ISLIP,OCEAN BEACH,Suffolk,Islip,Ocean Beach,697
+pseg-li-c3bf6f7700764ffa12fd,SUFFOLK,ISLIP,ROBBINS REST,Suffolk,Islip,Robbins Rest,37
+pseg-li-f8c94b0108a60380ccb6,SUFFOLK,ISLIP,RONKONKOMA,Suffolk,Islip,Ronkonkoma,8156
+pseg-li-042a146e6c16f9c980ba,SUFFOLK,ISLIP,SALTAIRE,Suffolk,Islip,Saltaire,445
+pseg-li-e26f0a02feb163a9b9ce,SUFFOLK,ISLIP,SAYVILLE,Suffolk,Islip,Sayville,6865
+pseg-li-c2ba9b15fdf77583a525,SUFFOLK,ISLIP,SEAVIEW,Suffolk,Islip,Seaview,323
+pseg-li-a5d915ab81693947467a,SUFFOLK,ISLIP,US COAST GUARD STA,Suffolk,Islip,Us Coast Guard Sta,3
+pseg-li-e437218ac70f646ac1fd,SUFFOLK,ISLIP,WEST BAY SHORE,Suffolk,Islip,West Bay Shore,2088
+pseg-li-a07a05afa9df57154fe3,SUFFOLK,ISLIP,WEST ISLIP,Suffolk,Islip,West Islip,9386
+pseg-li-69e02f56a2ff88d9020c,SUFFOLK,ISLIP,WEST SAYVILLE,Suffolk,Islip,West Sayville,2089
+pseg-li-b1b7b846f471e0cfd702,SUFFOLK,RIVERHEAD,AQUEBOGUE,Suffolk,Riverhead,Aquebogue,1355
+pseg-li-acb53babc73b9ac2e141,SUFFOLK,RIVERHEAD,BAITING HOLLOW,Suffolk,Riverhead,Baiting Hollow,1353
+pseg-li-12217e6aef649637ea6e,SUFFOLK,RIVERHEAD,CALVERTON,Suffolk,Riverhead,Calverton,3560
+pseg-li-c4ddaf62e10f4ed8161a,SUFFOLK,RIVERHEAD,JAMESPORT,Suffolk,Riverhead,Jamesport,1370
+pseg-li-109d62ab0964a298aff1,SUFFOLK,RIVERHEAD,NORTHVILLE,Suffolk,Riverhead,Northville,984
+pseg-li-808d36974b333bb1ab63,SUFFOLK,RIVERHEAD,RIVERHEAD,Suffolk,Riverhead,Riverhead,7344
+pseg-li-bd2ed9577e34f7c1caf0,SUFFOLK,RIVERHEAD,WADING RIVER,Suffolk,Riverhead,Wading River,3620
+pseg-li-adf2f410822e6365c44e,SUFFOLK,SHELTER ISLAND,DERING HARBOR,Suffolk,Shelter Island,Dering Harbor,55
+pseg-li-e836a31e87f8dce29e04,SUFFOLK,SHELTER ISLAND,SHELTER ISLAND,Suffolk,Shelter Island,Shelter Island,1395
+pseg-li-89cf025b59a28d343b0e,SUFFOLK,SHELTER ISLAND,SHELTER ISLAND HEIGHTS,Suffolk,Shelter Island,Shelter Island Heights,1807
+pseg-li-28ac694c954da7bffa41,SUFFOLK,SMITHTOWN,COMMACK,Suffolk,Smithtown,Commack,8779
+pseg-li-032163f827acbbaa4333,SUFFOLK,SMITHTOWN,FORT SALONGA,Suffolk,Smithtown,Fort Salonga,1452
+pseg-li-eb1056de80e81478e9cb,SUFFOLK,SMITHTOWN,HAUPPAUGE,Suffolk,Smithtown,Hauppauge,4754
+pseg-li-d0b9c7885ecd3c0576d7,SUFFOLK,SMITHTOWN,HEAD OF THE HARBOR,Suffolk,Smithtown,Head Of The Harbor,588
+pseg-li-c6a3417d72e7c5e7186d,SUFFOLK,SMITHTOWN,KINGS PARK,Suffolk,Smithtown,Kings Park,6221
+pseg-li-5319801db196fabf05f5,SUFFOLK,SMITHTOWN,LAKE RONKONKOMA,Suffolk,Smithtown,Lake Ronkonkoma,1838
+pseg-li-55f85ce00c192cd1e859,SUFFOLK,SMITHTOWN,NESCONSET,Suffolk,Smithtown,Nesconset,5321
+pseg-li-a6cd8714204e499ca61b,SUFFOLK,SMITHTOWN,NISSEQUOGUE,Suffolk,Smithtown,Nissequogue,678
+pseg-li-982b285545d79c875ef7,SUFFOLK,SMITHTOWN,SAINT JAMES,Suffolk,Smithtown,Saint James,5695
+pseg-li-9d0f8b2559233b2c53f3,SUFFOLK,SMITHTOWN,SMITHTOWN,Suffolk,Smithtown,Smithtown,10018
+pseg-li-fd814096a338c5a3eb96,SUFFOLK,SMITHTOWN,VILLAGE OF THE BRANCH,Suffolk,Smithtown,Village Of The Branch,783
+pseg-li-11d5c0f1e79c6389f943,SUFFOLK,SOUTHAMPTON,BRIDGEHAMPTON,Suffolk,Southampton,Bridgehampton,2796
+pseg-li-faa546dfc07e155d6801,SUFFOLK,SOUTHAMPTON,EAST QUOGUE,Suffolk,Southampton,East Quogue,4093
+pseg-li-da01d318a33d932ae36a,SUFFOLK,SOUTHAMPTON,EASTPORT,Suffolk,Southampton,Eastport,410
+pseg-li-09faeb38d540b2f6761d,SUFFOLK,SOUTHAMPTON,FLANDERS,Suffolk,Southampton,Flanders,1758
+pseg-li-58e1bab665d954f3f841,SUFFOLK,SOUTHAMPTON,HAMPTON BAYS,Suffolk,Southampton,Hampton Bays,7081
+pseg-li-532088e9809050c7072f,SUFFOLK,SOUTHAMPTON,NORTH HAVEN,Suffolk,Southampton,North Haven,797
+pseg-li-87fc0963cdc1106cfb2b,SUFFOLK,SOUTHAMPTON,NORTH SEA,Suffolk,Southampton,North Sea,3108
+pseg-li-f8adceb833c23ed20fe9,SUFFOLK,SOUTHAMPTON,NOYACK,Suffolk,Southampton,Noyack,2699
+pseg-li-104d7dd63ea5c05e5d44,SUFFOLK,SOUTHAMPTON,QUIOGUE,Suffolk,Southampton,Quiogue,632
+pseg-li-1c260b710393130d762e,SUFFOLK,SOUTHAMPTON,QUOGUE,Suffolk,Southampton,Quogue,1962
+pseg-li-4b694315770fe173c467,SUFFOLK,SOUTHAMPTON,REMSENBURG-SPEONK,Suffolk,Southampton,Remsenburg-Speonk,1756
+pseg-li-f879207a80d062e641f4,SUFFOLK,SOUTHAMPTON,RIVERSIDE,Suffolk,Southampton,Riverside,1250
+pseg-li-d0a3b3d56553337cf5c9,SUFFOLK,SOUTHAMPTON,SAG HARBOR,Suffolk,Southampton,Sag Harbor,1493
+pseg-li-cce2e82db750ed2666ae,SUFFOLK,SOUTHAMPTON,SAGAPONACK,Suffolk,Southampton,Sagaponack,827
+pseg-li-5c94fa8004a04d886893,SUFFOLK,SOUTHAMPTON,SHINNECOCK HILLS,Suffolk,Southampton,Shinnecock Hills,3829
+pseg-li-d73ab1f01151b249a8e9,SUFFOLK,SOUTHAMPTON,SHINNECOCK INDIAN RES,Suffolk,Southampton,Shinnecock Indian Res,376
+pseg-li-0afc5ef16e5a6ba1e9d1,SUFFOLK,SOUTHAMPTON,SOUTHAMPTON,Suffolk,Southampton,Southampton,576
+pseg-li-9da3adf61aa2a90e6706,SUFFOLK,SOUTHAMPTON,SOUTHAMPTON VILLAGE,Suffolk,Southampton,Southampton Village,4221
+pseg-li-0e9affa66b38953a140f,SUFFOLK,SOUTHAMPTON,WATER MILL,Suffolk,Southampton,Water Mill,3444
+pseg-li-2d2608b1e5761f4f5597,SUFFOLK,SOUTHAMPTON,WESTHAMPTON,Suffolk,Southampton,Westhampton,2430
+pseg-li-4aaa333214d2bfa1d7c5,SUFFOLK,SOUTHAMPTON,WESTHAMPTON BEACH,Suffolk,Southampton,Westhampton Beach,3265
+pseg-li-5a1321a654310023d872,SUFFOLK,SOUTHAMPTON,WESTHAMPTON DUNES,Suffolk,Southampton,Westhampton Dunes,295
+pseg-li-e6eff67e970f61c43aea,SUFFOLK,SOUTHOLD,CUTCHOGUE,Suffolk,Southold,Cutchogue,2362
+pseg-li-5c4730eedb81e66f11c4,SUFFOLK,SOUTHOLD,EAST MARION,Suffolk,Southold,East Marion,897
+pseg-li-3305b8c7d54e81ce2aae,SUFFOLK,SOUTHOLD,GREENPORT,Suffolk,Southold,Greenport,3
+pseg-li-e354348df14b8063c42e,SUFFOLK,SOUTHOLD,GREENPORT WEST,Suffolk,Southold,Greenport West,1431
+pseg-li-62052f7cedf0b6a1e72b,SUFFOLK,SOUTHOLD,LAUREL,Suffolk,Southold,Laurel,944
+pseg-li-f3d2ccf9f1486af6ed24,SUFFOLK,SOUTHOLD,MATTITUCK,Suffolk,Southold,Mattituck,2963
+pseg-li-f577b7f7bc8fde6a21e5,SUFFOLK,SOUTHOLD,NEW SUFFOLK,Suffolk,Southold,New Suffolk,338
+pseg-li-d1444b717dab34de8e7c,SUFFOLK,SOUTHOLD,ORIENT,Suffolk,Southold,Orient,979
+pseg-li-c3ff9421973853bd7d7b,SUFFOLK,SOUTHOLD,PECONIC,Suffolk,Southold,Peconic,872
+pseg-li-8542dbd54f326f7bd8a0,SUFFOLK,SOUTHOLD,SOUTHOLD,Suffolk,Southold,Southold,4698

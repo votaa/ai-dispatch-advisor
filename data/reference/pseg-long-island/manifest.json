@@ -1,0 +1,41 @@
+{
+  "artifact": {
+    "file_name": "customers-served.csv",
+    "sha256": "0147f268b7fa63b841a40a13233be5c6bbb593ab233480367ebb2e63a1dd661f"
+  },
+  "counts": {
+    "county": 3,
+    "leaf": 347,
+    "township": 14
+  },
+  "dataset_id": "pseg-li-customers-served",
+  "extracted_at": "2026-09-15T23:43:31.388958Z",
+  "extractor": {
+    "commit": "f7582aeac0cb204dd1eed0d069fc0b4adc4be63c",
+    "repository": "https://github.com/votaa/process_kubra_report_village_SC5",
+    "working_tree_dirty": false
+  },
+  "normalization_rule_version": "poc-012-v1",
+  "reconciliation": {
+    "status": "passed"
+  },
+  "review": {
+    "status": "approved",
+    "reviewed_by_role": "PSEG Long Island SME",
+    "reviewed_at": "2026-09-15T23:47:02Z"
+  },
+  "schema_version": "1.0",
+  "source": {
+    "current_state_url": "https://kubra.io/stormcenter/api/v1/stormcenters/48006d55-45bb-40a4-99a6-1289326f0d0d/views/fb50e444-70e5-4b69-b868-28463b5dbd19/currentState?preview=false",
+    "instance_id": "48006d55-45bb-40a4-99a6-1289326f0d0d",
+    "interval_id": "fe27906d-6f07-44ea-98fb-62f122bc7858",
+    "organization": "PSEG Long Island",
+    "product": "KUBRA Storm Center",
+    "report_id": "be6c533e-409e-4f3a-8d62-799b65331056",
+    "report_url": "https://kubra.io/data/fe27906d-6f07-44ea-98fb-62f122bc7858/public/reports/be6c533e-409e-4f3a-8d62-799b65331056_report.json",
+    "updated_at": "2026-09-15T23:41:56Z",
+    "view_id": "fb50e444-70e5-4b69-b868-28463b5dbd19"
+  },
+  "supersedes": null,
+  "total_customers_served": 1158552
+}
