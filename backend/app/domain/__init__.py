@@ -11,6 +11,14 @@ from .models import (
     ScenarioFreshness,
     ScenarioMetadata,
 )
+from .reference import (
+    PsegReferenceLookupResult,
+    PsegReferenceManifest,
+    PsegReferenceProvenance,
+    PsegReferenceRow,
+    PsegReferenceSnapshot,
+    ReferenceValidationResult,
+)
 
 __all__ = [
     "Assignment",
@@ -22,4 +30,10 @@ __all__ = [
     "RecommendationDecision",
     "ScenarioFreshness",
     "ScenarioMetadata",
+    "PsegReferenceLookupResult",
+    "PsegReferenceManifest",
+    "PsegReferenceProvenance",
+    "PsegReferenceRow",
+    "PsegReferenceSnapshot",
+    "ReferenceValidationResult",
 ]

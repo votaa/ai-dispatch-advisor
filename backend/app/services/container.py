@@ -19,6 +19,7 @@ from .crew_service import CrewService
 from .decision_service import DecisionService
 from .incident_service import IncidentService
 from .recommendation_service import RecommendationService
+from .reference_service import PsegLongIslandReferenceService
 from .scenario_management_service import ScenarioManagementService
 
 
@@ -34,6 +35,7 @@ class ApplicationServices:
     context: OperationalContextService
     geography: GeographyRegistry
     travel_estimates: TravelEstimateService
+    pseg_reference: PsegLongIslandReferenceService
 
 
 def build_services(
@@ -42,6 +44,7 @@ def build_services(
     copilot_config: CopilotConfig | None = None,
     copilot_provider: CopilotProvider | None = None,
     copilot_clock: Callable[[], datetime] | None = None,
+    pseg_reference: PsegLongIslandReferenceService | None = None,
 ) -> ApplicationServices:
     optimization_engine = optimization_engine or DeterministicOptimizationEngine(
         configured_recommendation_policy()
@@ -50,6 +53,13 @@ def build_services(
     copilot_provider = copilot_provider or configured_provider(copilot_config)
     geography = GeographyRegistry.from_csv()
     travel_estimates = TravelEstimateService(geography)
+    if pseg_reference is None:
+        reference_aliases = {
+            alias: (record.county, record.township, record.village)
+            for record in geography.records
+            for alias in record.aliases
+        }
+        pseg_reference = PsegLongIslandReferenceService(aliases=reference_aliases)
     assignments = AssignmentService(
         active_scenario_id=data_loader.get_active_scenario,
         baseline_assignments=data_loader.assignments,
@@ -127,6 +137,7 @@ def build_services(
         context=context,
         geography=geography,
         travel_estimates=travel_estimates,
+        pseg_reference=pseg_reference,
     )
 
 

@@ -2,13 +2,15 @@
 
 ## Status
 
-Status: Phase 3 ready; Phases 0-2 completed on 2026-09-15.
+Status: Phase 4 ready; Phases 0-3 completed on 2026-09-15.
 
 Date: 2026-09-14
 
 Phase 0 review updated: 2026-09-15
 
 Phase 2 review updated: 2026-09-15
+
+Phase 3 implementation updated: 2026-09-15
 
 This plan defines a bounded, SME-maintained static reference for the PSEG Long Island/KUBRA
 County/Township/Village hierarchy and customers-served counts. It deliberately avoids a live
@@ -310,6 +312,13 @@ snapshot establishes the baseline for future change comparisons.
 
 - The approved snapshot is accessible through a typed, read-only boundary.
 - No application path contacts KUBRA, mutates the artifact, or treats it as scenario-owned data.
+
+Phase 3 passed on 2026-09-15. A strict internal reference service now validates the approved
+manifest and CSV, exposes provenance-bearing County, Township, Village, complete-path, and alias
+lookups, keeps ambiguity separate from freshness, and reports explicit current, stale,
+unavailable, and invalid states. The service is independent of `ScenarioService`, performs no
+network calls or writes, and is injected into the application service container without adding a
+public endpoint. The full backend regression suite passed with 224 tests.
 
 ## Phase 4 — Deterministic Copilot Reference Queries
 

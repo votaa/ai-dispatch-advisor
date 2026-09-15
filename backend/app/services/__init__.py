@@ -5,6 +5,7 @@ from .errors import (
     DecisionReasonRequiredError,
     EntityNotFoundError,
 )
+from .reference_service import PsegLongIslandReferenceService
 
 __all__ = [
     "ApplicationServices",
@@ -12,6 +13,7 @@ __all__ = [
     "DecisionCrewSelectionError",
     "DecisionReasonRequiredError",
     "EntityNotFoundError",
+    "PsegLongIslandReferenceService",
     "build_services",
     "initialize_application",
 ]
