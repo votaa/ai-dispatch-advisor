@@ -83,7 +83,7 @@ The detailed, controlling scope is the [POC-002 AI Copilot implementation plan](
 - Preserve the current rule-based responder as a visible degraded mode when the provider is disabled or unavailable.
 - Show execution mode, source/evidence, data freshness, provider warnings, loading, empty-data, error, and timeout states.
 - Preserve the advisory-only boundary; Copilot cannot execute or mutate dispatch actions.
-- Keep a future PSEG Long Island customers-served reference or adapter in `POC-012`, outside the POC-002 critical path.
+- Keep the [POC-012 SME-maintained PSEG Long Island static reference](900_Delivery/914_POC_012_PSEG_LI_Static_Reference_Implementation_Plan.md) outside the POC-002 critical path; any future live adapter remains separately gated.
 
 ## Interfaces and Data Changes
 
