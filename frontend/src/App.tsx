@@ -94,6 +94,8 @@ const DASHBOARD_DISPLAY_PERCENTAGES = [25, 50, 75, 100] as const;
 const COPILOT_PROMPTS = [
   "What should I focus on first?",
   "How many customers are out across all active incidents?",
+  "How many customers are served in Nassau County?",
+  "What percentage of customers in Melville are affected?",
   "How many crews are available in the active scenario?",
   "Show available line crews in Eastern Suffolk.",
   "Break down critical facilities by level.",

@@ -49,6 +49,7 @@ Distribution Dispatcher, Dispatch Supervisor, Operations Analyst
 - Critical facility summary
 - Hazard and assignment context
 - County, Township, and Village registry
+- Approved PSEG Long Island static hierarchy/customers-served reference and manifest provenance
 - Deterministic crew-to-incident distance and estimated travel time
 - Scenario and data-snapshot timestamps
 - Server-authoritative request time with clock provenance and explicit skew status
@@ -83,6 +84,13 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - Provide visible focus and confirmation states for user actions.
 
 ## Completed POC Enhancements
+
+- **POC-012 — PSEG Long Island static reference queries:** Deterministic County, Township,
+  Village, alias, hierarchy, and customers-served questions use the approved local reference
+  without runtime KUBRA or model-provider calls. Ambiguous names remain unselected. Aligned area
+  percentages visibly combine a complete synthetic numerator with a current static denominator;
+  stale, unavailable, invalid, zero-denominator, missing-timestamp, and partial-coverage states
+  refuse the calculation.
 
 - **POC-014 — Deterministic Crew Board queries:** Crew ID/name, status, capability, region,
   location, shift hours, storm readiness, assigned incidents, counts, combined filters, and
@@ -142,6 +150,8 @@ Production may audit Copilot prompts/responses depending on policy. Copilot must
 - Supported factual questions return active-scenario values without calling the model
 - Grounded model responses cite only supplied scenario evidence
 - County, Township, and Village answers resolve through the geographic registry
+- PSEG Long Island reference answers show source and normalized scope, provenance timestamps,
+  freshness, and static-versus-synthetic labeling without requiring Evidence expansion
 - Distance and travel-time answers use the same deterministic values as recommendations
 - Response mode, evidence, data freshness, and advisory safety note are visible
 - Server-received request time is visible on each new response and absent from the editable composer

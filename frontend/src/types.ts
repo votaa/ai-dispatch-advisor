@@ -82,7 +82,8 @@ export type CopilotEvidence = {
     | "recommendation"
     | "critical_facility"
     | "geography"
-    | "travel_estimate";
+    | "travel_estimate"
+    | "pseg_reference";
   record_id: string;
   label: string;
 };

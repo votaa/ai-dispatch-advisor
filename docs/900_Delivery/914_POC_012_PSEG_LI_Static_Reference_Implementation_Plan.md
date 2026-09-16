@@ -2,7 +2,7 @@
 
 ## Status
 
-Status: Phase 4 ready; Phases 0-3 completed on 2026-09-15.
+Status: Phase 5 ready; Phases 0-4 completed on 2026-09-15.
 
 Date: 2026-09-14
 
@@ -11,6 +11,8 @@ Phase 0 review updated: 2026-09-15
 Phase 2 review updated: 2026-09-15
 
 Phase 3 implementation updated: 2026-09-15
+
+Phase 4 implementation updated: 2026-09-15
 
 This plan defines a bounded, SME-maintained static reference for the PSEG Long Island/KUBRA
 County/Township/Village hierarchy and customers-served counts. It deliberately avoids a live
@@ -365,6 +367,14 @@ public endpoint. The full backend regression suite passed with 224 tests.
 - Deterministic queries and failure states pass backend/API/frontend regression coverage.
 - Response language makes the static-versus-synthetic boundary understandable without opening
   evidence details.
+
+Phase 4 passed on 2026-09-15. Dedicated local-query handling now covers County, Township,
+Village, configured alias, selected-incident, hierarchy, and ambiguous-name requests without a
+model-provider call. Aligned percentages combine only a complete active-scenario area aggregate
+with a current approved static denominator and display both values, timestamps, provenance, and
+the synthetic-versus-static boundary. Stale, unavailable, invalid, zero-denominator,
+missing-timestamp, and partial-coverage states refuse the calculation visibly. Backend/API and
+frontend rendering regression coverage passed; Phase 5 manual smoke testing remains pending.
 
 ## Phase 5 — Smoke Test, Refresh Procedure, and Closeout
 

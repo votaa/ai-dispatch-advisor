@@ -426,7 +426,7 @@ def test_poc026_published_scenario_supplies_all_resolved_facility_levels(
     assert "| Level 3 | 3 |" in response.answer
 
 
-def test_geography_and_external_fact_gaps_are_not_inferred(
+def test_reference_percentage_is_calculated_but_unknown_geography_is_not_inferred(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -442,9 +442,11 @@ def test_geography_and_external_fact_gaps_are_not_inferred(
         arverne.incident_id,
     )
 
-    assert percentage.intent == "data_limitations"
-    assert "customers-served denominator" in percentage.answer
-    assert "model memory" in percentage.answer
+    assert percentage.intent == "reference_outage_percentage"
+    assert "420 synthetic customers out" in percentage.answer
+    assert "8,513 static customers served" in percentage.answer
+    assert "= 4.93%" in percentage.answer
+    assert "not a live PSEG Long Island outage percentage" in percentage.answer
 
     base_root = Path(__file__).resolve().parents[2] / "data" / "scenarios"
     monkeypatch.setattr(data_loader, "DATA_ROOT", base_root)
@@ -849,7 +851,9 @@ def test_deterministic_queries_bypass_provider_and_grounded_queries_receive_race
         "What percentage of all customers served are without power?"
     )
     assert percentage_response.intent == "unsupported_population_calculation"
-    assert "verified total customers-served denominator" in percentage_response.answer
+    assert "does not identify an aligned County, Township, or Village scope" in (
+        percentage_response.answer
+    )
     assert provider.requests == []
 
     grounded_response = services.copilot.respond(

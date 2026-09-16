@@ -62,6 +62,7 @@ class CopilotEvidence(DomainModel):
         "critical_facility",
         "geography",
         "travel_estimate",
+        "pseg_reference",
     ]
     record_id: str
     label: str

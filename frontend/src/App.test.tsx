@@ -1260,6 +1260,75 @@ describe("application states and scenario switching", () => {
     expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
   });
 
+  it("renders mixed-source PSEG reference calculations and evidence", async () => {
+    const question = "What percent of customers in Melville are affected?";
+    apiMocks.chat.mockResolvedValue({
+      answer: [
+        "## Mixed-source outage percentage",
+        "",
+        "**420 synthetic customers out ÷ 8,513 static customers served = 4.93%** for Suffolk → Huntington → Melville.",
+        "",
+        "- **Numerator:** Complete active-scenario aggregate from `long-island-copilot-demo`; snapshot 2026-08-24T21:13:51Z.",
+        "- **Denominator:** SME-approved static PSEG Long Island reference; source timestamp 2026-09-15T23:41:56Z.",
+        "",
+        "This deliberately mixes synthetic outage data with a static reference denominator. It is not a live PSEG Long Island outage percentage."
+      ].join("\n"),
+      intent: "reference_outage_percentage",
+      source: "synthetic-demo-data + approved-static-reference",
+      safety_note: "Advisory only.",
+      execution_mode: "local_query",
+      scenario_id: "long-island-copilot-demo",
+      generated_at: "2026-09-15T23:55:00Z",
+      request_time: {
+        received_at: "2026-09-15T23:55:00Z",
+        timezone: "UTC",
+        source: "backend_server_clock",
+        clock_skew: "not_measured"
+      },
+      data_snapshot_at: "2026-08-24T21:13:51Z",
+      provider: null,
+      model: null,
+      warning: null,
+      response_scope: "Complete aligned area calculation for Suffolk → Huntington → Melville",
+      evidence: [
+        {
+          source_type: "pseg_reference",
+          record_id: "pseg-li-5b9a7b6b1be35e55c535",
+          label: "Approved static reference: Melville; 8,513 customers served"
+        },
+        {
+          source_type: "incident",
+          record_id: "ESD-20260821-0004",
+          label: "Synthetic numerator record: Melville, 420 customers out"
+        }
+      ]
+    });
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.change(screen.getByLabelText("Copilot question"), {
+      target: { value: question }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Mixed-source outage percentage" })
+    ).toBeTruthy();
+    expect(
+      screen.getByText((_, element) =>
+        element?.tagName === "STRONG"
+        && element.textContent?.includes("4.93%") === true
+      )
+    ).toBeTruthy();
+    expect(
+      screen.getByText(/It is not a live PSEG Long Island outage percentage/)
+    ).toBeTruthy();
+    expect(screen.getByText("Evidence (2)")).toBeTruthy();
+    expect(screen.getByText("Local scenario query")).toBeTruthy();
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+  });
+
   it("renders POC-025 tables with explicit population and subset headings", async () => {
     const question = "Break down critical facilities by level.";
     apiMocks.chat.mockResolvedValue({

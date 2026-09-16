@@ -17,6 +17,7 @@ from ..geography import GeographyRecord, GeographyRegistry, TravelEstimateServic
 from ..optimization import critical_facility_level_for_priority
 from .context_service import OperationalContextService
 from .copilot_context_service import CopilotContextBuilder
+from .copilot_reference_service import CopilotReferenceService
 from .crew_service import CrewService
 from .incident_service import IncidentService
 from .recommendation_service import RecommendationService
@@ -92,6 +93,7 @@ class CopilotService:
         travel_estimates: TravelEstimateService,
         config: CopilotConfig,
         context_builder: CopilotContextBuilder,
+        reference_queries: CopilotReferenceService,
         provider: CopilotProvider | None = None,
         clock: Callable[[], datetime] | None = None,
     ) -> None:
@@ -104,6 +106,7 @@ class CopilotService:
         self._travel_estimates = travel_estimates
         self._config = config
         self._context_builder = context_builder
+        self._reference_queries = reference_queries
         self._provider = provider
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
@@ -123,6 +126,29 @@ class CopilotService:
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
         selected_crew = self._resolve_crew(message, self._crews.list(), crew_id)
+
+        if self._reference_queries.is_query(normalized):
+            reference_answer = self._reference_queries.answer(
+                message,
+                selected,
+                use_selected_incident=(
+                    incident_id is not None
+                    or self._targets_selected_record(message)
+                    or (
+                        selected is not None
+                        and _contains_phrase(message, selected.incident_id)
+                    )
+                ),
+            )
+            return self._response(
+                answer=reference_answer.answer,
+                intent=reference_answer.intent,
+                evidence=reference_answer.evidence,
+                warning=reference_answer.warning,
+                source=reference_answer.source,
+                response_scope=reference_answer.response_scope,
+                data_snapshot_at=reference_answer.data_snapshot_at,
+            )
 
         if self._is_critical_facility_level_query(normalized):
             visible_incidents = self._incidents.list_visible()
@@ -237,6 +263,8 @@ class CopilotService:
         provider: str | None = None,
         model: str | None = None,
         response_scope: str | None = None,
+        source: str = "synthetic-demo-data",
+        data_snapshot_at: str | None = None,
     ) -> ChatResponse:
         weather_timestamps = [
             str(row.get("updated_at"))
@@ -254,12 +282,16 @@ class CopilotService:
         return ChatResponse(
             answer=answer,
             intent=intent,
-            source="synthetic-demo-data",
+            source=source,
             safety_note=SAFETY_NOTE,
             execution_mode=execution_mode,
             scenario_id=self._active_scenario_id(),
             generated_at=self._server_time().isoformat(),
-            data_snapshot_at=max(weather_timestamps) if weather_timestamps else None,
+            data_snapshot_at=(
+                data_snapshot_at
+                if data_snapshot_at is not None
+                else (max(weather_timestamps) if weather_timestamps else None)
+            ),
             evidence=unique_evidence,
             warning=warning,
             response_scope=response_scope or "Local scenario records for the stated query scope",
@@ -1719,8 +1751,9 @@ class CopilotService:
             and "customers served" in normalized
         )
         limitation = (
-            "The active scenario does not provide a verified total customers-served "
-            "denominator, so that complete-population percentage cannot be calculated."
+            "That request does not identify an aligned County, Township, or Village scope "
+            "for combining the synthetic scenario numerator with the approved static "
+            "customers-served reference, so the percentage cannot be calculated."
             if missing_customer_denominator
             else (
                 "That complete-population calculation is not supported by a deterministic "
@@ -1754,9 +1787,12 @@ class CopilotService:
         return self._response(
             answer=(
                 "The current POC uses synthetic scenario records and deterministic planning "
-                "estimates. It does not have live OMS state, live road routing, a verified "
-                "utility customers-served denominator, or demographic reference data. "
-                "Missing facts will not be supplied from model memory."
+                "estimates. It has an SME-approved static PSEG Long Island hierarchy and "
+                "customers-served reference, but that reference is not live outage data. "
+                "Aligned mixed-source percentages are calculated only from complete synthetic "
+                "area aggregates and a current approved denominator. The POC does not have live "
+                "OMS state, live road routing, or demographic reference data. Missing facts "
+                "will not be supplied from model memory."
             ),
             intent="data_limitations",
             evidence=[

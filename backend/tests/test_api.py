@@ -259,6 +259,29 @@ def test_chat_customer_outage_aggregate_matches_complete_dashboard_totals() -> N
     assert payload["evidence"][0]["source_type"] == "dashboard"
 
 
+def test_chat_exposes_deterministic_pseg_reference_query() -> None:
+    activation = client.put(
+        "/api/scenarios/active",
+        json={"scenario_id": "long-island-copilot-demo"},
+    )
+    assert activation.status_code == 200
+
+    response = client.post(
+        "/api/chat",
+        json={"message": "How many customers are served in Arverne?"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["intent"] == "reference_customers_served"
+    assert payload["execution_mode"] == "local_query"
+    assert payload["source"] == "approved-static-reference"
+    assert "**4,607 customers served**" in payload["answer"]
+    assert payload["evidence"][0]["source_type"] == "pseg_reference"
+    assert payload["provider"] is None
+    assert payload["model"] is None
+
+
 def test_chat_critical_facility_levels_preserve_the_public_response_contract() -> None:
     response = client.post(
         "/api/chat",

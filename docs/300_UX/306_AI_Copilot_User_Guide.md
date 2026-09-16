@@ -162,6 +162,27 @@ supplied after applying the configured limit, for example:
 
 The counts come from the generated context payload and are not hard-coded in UI copy.
 
+## PSEG Long Island Static Reference Queries
+
+Copilot can answer deterministic questions about the approved PSEG Long Island County,
+Township, and Village hierarchy and customers-served counts. These answers use an SME-reviewed
+static reference and never call KUBRA or the model provider at runtime. Examples include:
+
+- `How many customers are served in Nassau County?`
+- `How many customers are served in the Town of Hempstead?`
+- `Show the PSEG Long Island hierarchy for Rockaway Peninsula.`
+- `Which townships or villages match Calverton?`
+
+Each answer labels the normalized AIDA scope, KUBRA source scope, source timestamp, extraction
+timestamp, and freshness state. Ambiguous village names return every matching Township path and
+do not silently combine customer counts. Stale reference values remain visible with a warning.
+
+An area outage percentage is available only when Copilot can aggregate every active synthetic
+incident into the same approved reference geography and both timestamps are available. The
+answer displays the synthetic numerator, static denominator, calculation, timestamps, and a
+prominent statement that the result is not a live utility outage percentage. Stale, unavailable,
+invalid, zero-denominator, partial-coverage, and missing-timestamp cases refuse the calculation.
+
 ## Unsupported Population Calculations
 
 Do not treat a plausible narrative number as a complete-scenario result when:
@@ -171,22 +192,25 @@ Do not treat a plausible narrative number as a complete-scenario result when:
 - The response does not identify the evaluated population.
 - The answer uses phrases such as “based on the provided incidents” or reports missing context.
 
-For example, the scenario does not provide a complete customer-served denominator for this request:
+For example, this request does not identify an aligned geographic scope:
 
 > What percentage of all customers served are without power?
 
-The correct behavior is to disclose the missing denominator, not infer a percentage from the
-bounded incident context. Unsupported all-scope requests state the limitation and suggest an
-available exact query, such as:
+The correct behavior is to request a County, Township, Village, or selected incident rather than
+combine an all-scenario synthetic numerator with an unspecified static denominator. Unsupported
+all-scope requests state the limitation and suggest an available exact query, such as:
 
-> I cannot calculate the percentage because the active scenario does not provide total customers
-> served. Try: “How many customers are out across all active incidents?”
+> I cannot calculate the percentage because the request does not identify an aligned geographic
+> scope. Try: “What percentage of customers in Melville are affected?”
 
 ## Prompt Cheat Sheet
 
 | Goal | Recommended wording | Expected mode and scope |
 | --- | --- | --- |
 | Total customer impact | `How many customers are out across all active incidents?` | Local scenario query; complete visible incident inventory |
+| Static customers served | `How many customers are served in Nassau County?` | Local reference query; approved static County aggregate |
+| Mixed-source area percentage | `What percentage of customers in Melville are affected?` | Local calculation; complete aligned synthetic numerator plus current static denominator |
+| Reference hierarchy | `Show the PSEG Long Island hierarchy for Rockaway Peninsula.` | Local reference query; source and normalized paths |
 | Count incidents by severity | `How many active incidents have critical severity?` | Local scenario query; complete supported severity scope |
 | Count available crews | `How many crews are available in the active scenario?` | Local scenario query; complete crew inventory |
 | List filtered crews | `Show available line crews in Eastern Suffolk.` | Local scenario query; all matches counted, first ten shown in scenario order |
@@ -206,6 +230,7 @@ Before relying on a Copilot answer:
 5. Expand Evidence when you need to inspect supporting records.
 6. Do not interpret a grounded subset as an all-scenario total.
 7. Remember that every response is advisory and requires operator judgment.
+8. Treat customers-served values as static reference data and mixed-source percentages as synthetic POC calculations, not live outage statistics.
 
 ## Related POC Items
 

@@ -13,6 +13,7 @@ from ..optimization.policy import configured_recommendation_policy
 from ..optimization.contracts import OptimizationEngine
 from .assignment_service import AssignmentService
 from .copilot_service import CopilotService
+from .copilot_reference_service import CopilotReferenceService
 from .context_service import OperationalContextService
 from .copilot_context_service import CopilotContextBuilder
 from .crew_service import CrewService
@@ -113,6 +114,12 @@ def build_services(
         travel_estimates=travel_estimates,
         max_records=copilot_config.max_context_records,
     )
+    reference_queries = CopilotReferenceService(
+        reference=pseg_reference,
+        geography=geography,
+        incidents=incidents,
+        active_scenario=scenarios.active,
+    )
     copilot = CopilotService(
         active_scenario_id=data_loader.get_active_scenario,
         incidents=incidents,
@@ -123,6 +130,7 @@ def build_services(
         travel_estimates=travel_estimates,
         config=copilot_config,
         context_builder=copilot_context,
+        reference_queries=reference_queries,
         provider=copilot_provider,
         clock=copilot_clock,
     )
