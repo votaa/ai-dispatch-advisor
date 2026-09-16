@@ -163,7 +163,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/911_POC_019_Critical_Facility_Evaluation_Plan.md` | Implemented | Sample-first POC-019 critical-facility evaluation, approved SME decisions, complete isolated dataset, and production-policy gate |
 | `docs/900_Delivery/912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md` | Implemented | Active-by-default level-specific CF scoring, ranking, warnings, compatibility, approval evidence, and rollback |
 | `docs/900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md` | Drafted | Deferred deterministic Copilot queries for Level 1–3 breakdowns, highest-level incident counts, facility-record detail, and unknown warnings |
-| `docs/900_Delivery/914_POC_012_PSEG_LI_Static_Reference_Implementation_Plan.md` | Drafted | Phased SME-maintained PSEG Long Island hierarchy and customers-served snapshot, validation, ingestion, Copilot use, and refresh governance |
+| `docs/900_Delivery/914_POC_012_PSEG_LI_Static_Reference_Implementation_Plan.md` | Completed | SME-maintained PSEG Long Island hierarchy and customers-served snapshot, validation, ingestion, deterministic Copilot use, refresh governance, and Phase 5 closeout evidence |
 
 ## Planned Documentation Structure
 

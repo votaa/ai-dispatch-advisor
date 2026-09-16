@@ -2,7 +2,7 @@
 
 ## Status
 
-Status: Phase 5 ready; Phases 0-4 completed on 2026-09-15.
+Status: Complete; Phases 0-5 completed on 2026-09-15.
 
 Date: 2026-09-14
 
@@ -13,6 +13,8 @@ Phase 2 review updated: 2026-09-15
 Phase 3 implementation updated: 2026-09-15
 
 Phase 4 implementation updated: 2026-09-15
+
+Phase 5 validation and closeout updated: 2026-09-15
 
 This plan defines a bounded, SME-maintained static reference for the PSEG Long Island/KUBRA
 County/Township/Village hierarchy and customers-served counts. It deliberately avoids a live
@@ -411,6 +413,32 @@ frontend rendering regression coverage passed; Phase 5 manual smoke testing rema
 - Manual smoke-test result.
 - Confirmation that runtime network traffic to KUBRA is absent.
 - Feedback-log disposition for POC-012.
+
+Phase 5 passed on 2026-09-15. Manual browser smoke testing against the committed Docker build
+and `long-island-copilot-demo` scenario confirmed the approved County, Township, and Village
+values and provenance: Nassau County returned 479,704; the Town of Hempstead returned 263,498;
+and `Hempstead` returned 17,319 with the explicit `HEMPSTEAD VILLAGE` source alias. Rockaway
+Peninsula displayed both the `ROCKAWAY PENINSULA → ROCKAWAY PENINSULA` source hierarchy and
+the `Queens → Township Rockaway Peninsula` normalized hierarchy. The duplicated `Calverton`
+query displayed both Township paths without combining totals or selecting one silently. The
+aligned Melville calculation displayed 420 synthetic customers out, the 8,513-customer static
+denominator, both timestamps and provenance, the 4.93% result, and the mixed-source warning.
+
+The focused POC-012 backend/reference suite passed 21 tests, including missing, stale,
+invalid-checksum, zero-denominator, missing-timestamp, partial-coverage, and dispatch-state
+immutability cases; the full backend suite passed 234 tests. The full frontend suite passed all
+54 tests and the production build succeeded. The extractor suite passed all 11 tests, and a
+clean-worktree dry run completed without writing files. That dry run observed source
+timestamp `2026-09-16T00:11:39Z` with the same 3 counties, 14 townships, 347 leaves, and 1,158,552
+customers served as the approved snapshot; no replacement was published because Phase 5 was a
+procedure verification, not a new approval cycle. The committed CSV checksum remained
+`0147f268b7fa63b841a40a13233be5c6bbb593ab233480367ebb2e63a1dd661f` and matched the approved
+manifest. Browser requests for the smoke test were confined to local AIDA endpoints, the backend
+reference boundary remained file-backed, and no KUBRA request was made by an AIDA runtime path.
+No assignment or decision endpoint was invoked, and the read-only regression test confirmed that
+reference queries do not change recommendations, scoring, assignments, decision history, or the
+approved artifact. POC-012 is closed; any live KUBRA integration remains a separately gated
+non-goal.
 
 ## Acceptance Criteria
 
