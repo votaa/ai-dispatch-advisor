@@ -28,6 +28,7 @@ from app.scenario_generator import (
     load_municipalities,
     write_scenario,
     validate_critical_facility_linkage,
+    validate_geographic_reference_coverage,
     validate_lse_coverage,
 )
 from app.scenario_service import ScenarioService
@@ -115,7 +116,6 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
     for crew in scenario.crews:
         location = crew["current_location"]
         assert not location.endswith(" Staging Area") or location in VEGETATION_LOCATIONS.values()
-
     incidents = {row["incident_id"]: row for row in scenario.incidents}
     crews = {row["crew_id"]: row for row in scenario.crews}
     topology_assets = {row["asset_id"]: row for row in scenario.topology}
@@ -147,6 +147,18 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
             assert incident["customers_out"] >= 40
             assert incident["severity"] in {"high", "critical"}
             assert incident["required_skill"] == "line"
+
+
+def test_geographic_reference_coverage_rejects_unmapped_or_wrong_region() -> None:
+    with pytest.raises(ValueError, match="Unknown Village"):
+        validate_geographic_reference_coverage(
+            [{"municipality": "Unknown Village", "region": "Central-Nassau"}]
+        )
+
+    with pytest.raises(ValueError, match="Melville.*Eastern Suffolk.*Western Suffolk"):
+        validate_geographic_reference_coverage(
+            [{"municipality": "Melville", "region": "Eastern Suffolk"}]
+        )
 
 
 def test_facility_catalog_uses_approved_level_priority_mapping() -> None:
@@ -396,6 +408,23 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
         assert len(list(csv.DictReader(handle))) == 40
     with (target / "Topology.csv").open(newline="", encoding="utf-8") as handle:
         assert len(list(csv.DictReader(handle))) == len(scenario.topology)
+
+
+def test_publication_rejects_incomplete_geographic_coverage(tmp_path: Path) -> None:
+    scenario = generate_scenario(
+        scenario_id="unmapped-geography",
+        start_date=date(2026, 8, 10),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+    )
+    scenario.incidents[0]["municipality"] = "Unknown Village"
+
+    with pytest.raises(ValueError, match="Unknown Village"):
+        write_scenario(scenario, tmp_path)
+
+    assert not (tmp_path / scenario.scenario_id).exists()
 
 
 def test_generator_refuses_to_replace_base_or_existing_output(tmp_path: Path) -> None:

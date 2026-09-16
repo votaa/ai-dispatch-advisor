@@ -71,6 +71,32 @@ COPILOT_DEMO_ASSIGNMENT_RATE = 0.25
 COPILOT_DEMO_DUAL_TREE_INCIDENTS = 1
 COPILOT_DEMO_CRITICAL_FACILITIES_PER_REGION = 2
 COPILOT_DEMO_SEED = 20260821
+COPILOT_DEMO_MUNICIPALITIES = (
+    "Arverne",
+    "Edgemere",
+    "Far Rockaway",
+    "Rockaway Park",
+    "Hewlett",
+    "Cedarhurst",
+    "Valley Stream",
+    "Mineola",
+    "Hicksville",
+    "East Meadow",
+    "Westbury",
+    "Hempstead",
+    "Massapequa",
+    "Babylon",
+    "Brentwood",
+    "Melville",
+    "Smithtown",
+    "Bay Shore",
+    "Riverhead",
+    "Yaphank",
+    "Westhampton Beach",
+    "Southampton",
+    "Montauk",
+    "Greenport",
+)
 
 INCIDENT_HEADERS = [
     "incident_id",
@@ -837,6 +863,7 @@ def generate_scenario(
     start_day_location_rate: float = DEFAULT_START_DAY_LOCATION_RATE,
     critical_facilities_per_region: int | None = None,
     lookup_path: Path = DEFAULT_LOOKUP_PATH,
+    allowed_municipalities: Iterable[str] | None = None,
 ) -> GeneratedScenario:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
         raise ValueError("scenario_id must use lowercase letters, numbers, hyphens, or underscores")
@@ -851,6 +878,35 @@ def generate_scenario(
     end_date = end_date or start_date
     rng = random.Random(seed)
     municipalities = load_municipalities(lookup_path)
+    if allowed_municipalities is not None:
+        allowed_order = tuple(allowed_municipalities)
+        if len(set(allowed_order)) != len(allowed_order):
+            raise ValueError("Allowed municipalities must be unique")
+        available = {
+            str(row["municipality"]): row
+            for rows in municipalities.values()
+            for row in rows
+        }
+        missing = sorted(set(allowed_order) - set(available))
+        if missing:
+            raise ValueError(
+                "Allowed municipalities are absent from the lookup: "
+                + ", ".join(missing)
+            )
+        municipalities = {
+            region: [
+                available[name]
+                for name in allowed_order
+                if str(available[name]["region"]) == region
+            ]
+            for region in municipalities
+        }
+        empty_regions = [region for region, rows in municipalities.items() if not rows]
+        if empty_regions:
+            raise ValueError(
+                "Allowed municipalities leave no entries for: "
+                + ", ".join(empty_regions)
+            )
     crews, crew_types = _generate_crews(crew_count, municipalities, rng, start_day_location_rate)
     incidents = [
         _base_incident(incident_date, sequence, municipalities, rng)
@@ -1003,6 +1059,7 @@ def generate_copilot_demo_scenario(
             COPILOT_DEMO_CRITICAL_FACILITIES_PER_REGION
         ),
         lookup_path=geography_path,
+        allowed_municipalities=COPILOT_DEMO_MUNICIPALITIES,
     )
     municipalities = load_municipalities(geography_path)
     registry = GeographyRegistry.from_csv(geography_path)
@@ -1280,6 +1337,7 @@ def validate_generated_scenario(
     expected_assigned_incidents: int | None = None,
     expected_dual_tree_incidents: int | None = None,
 ) -> None:
+    validate_geographic_reference_coverage(scenario.incidents)
     incident_by_id = {row["incident_id"]: row for row in scenario.incidents}
     crew_by_id = {row["crew_id"]: row for row in scenario.crews}
     if len(incident_by_id) != len(scenario.incidents):
@@ -1347,6 +1405,40 @@ def validate_generated_scenario(
             raise ValueError(f"Topology asset {asset['asset_id']} has an unknown parent")
 
 
+def validate_geographic_reference_coverage(
+    incidents: Iterable[dict[str, Any]],
+    registry: GeographyRegistry | None = None,
+) -> None:
+    registry = registry or GeographyRegistry.from_csv()
+    unresolved: set[str] = set()
+    region_mismatches: set[tuple[str, str, str]] = set()
+    for incident in incidents:
+        municipality = str(incident["municipality"])
+        location = registry.resolve(municipality)
+        if location is None:
+            unresolved.add(municipality)
+            continue
+        incident_region = str(incident["region"])
+        if location.region != incident_region:
+            region_mismatches.add(
+                (municipality, incident_region, location.region)
+            )
+    if unresolved:
+        raise ValueError(
+            "Generated incidents lack approved geography mappings: "
+            + ", ".join(sorted(unresolved))
+        )
+    if region_mismatches:
+        details = ", ".join(
+            f"{municipality} ({incident_region} != {mapped_region})"
+            for municipality, incident_region, mapped_region in sorted(region_mismatches)
+        )
+        raise ValueError(
+            "Generated incident regions do not match approved geography mappings: "
+            + details
+        )
+
+
 def _write_csv(path: Path, headers: list[str], rows: Iterable[dict[str, Any]]) -> None:
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=headers, extrasaction="ignore", lineterminator="\n")
@@ -1357,6 +1449,7 @@ def _write_csv(path: Path, headers: list[str], rows: Iterable[dict[str, Any]]) -
 def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTPUT_ROOT) -> Path:
     if scenario.scenario_id == "base":
         raise ValueError("The protected base scenario cannot be generated or replaced")
+    validate_geographic_reference_coverage(scenario.incidents)
     output_root = output_root.resolve()
     target = output_root / scenario.scenario_id
     if target.exists():

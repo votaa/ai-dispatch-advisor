@@ -113,6 +113,7 @@ data/scenarios/
   critical-facility/
   august-storm-preview/
   august-storm-preview-v2/
+  august-storm-preview-v3/
   long-island-copilot-demo/
 ```
 
@@ -127,7 +128,7 @@ Each scenario contains:
 - `CriticalFacilities.csv`
 - `Topology.csv`
 
-The base, storm, crew-shortage, and critical-facility scenarios are the four canonical deterministic regression fixtures. Additional complete scenario folders, including the generated `august-storm-preview` and POC-026-corrected `august-storm-preview-v2`, are discovered dynamically and are not subject to a four-scenario limit. The original August scenario remains available for comparison. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed from the frontend selector or through the validated activation API. If the active scenario has recorded dispatch decisions, the frontend asks for confirmation before switching and explains that its decisions remain saved under that scenario.
+The base, storm, crew-shortage, and critical-facility scenarios are the four canonical deterministic regression fixtures. Additional complete scenario folders, including the generated `august-storm-preview`, POC-026-corrected `august-storm-preview-v2`, and POC-032 geography-validated `august-storm-preview-v3`, are discovered dynamically and are not subject to a four-scenario limit. The earlier August scenarios remain available for comparison. `AIDA_DEMO_SCENARIO` selects the initial scenario at backend startup. The active scenario can then be changed from the frontend selector or through the validated activation API. If the active scenario has recorded dispatch decisions, the frontend asks for confirmation before switching and explains that its decisions remain saved under that scenario.
 
 When running with Docker Compose, `data/scenarios/` is mounted read-only into the backend container. Complete scenario folders added under that directory become discoverable without rebuilding the backend image. Refresh the frontend to reload the scenario selector. The backend can read scenario data but cannot modify or delete the host scenario files through this mount.
 
@@ -173,7 +174,7 @@ To enable grounded POC Copilot synthesis, copy the server-side values from `back
 
 After exporting the server-side values, verify the configured model and one non-streaming chat call with `backend/.venv/bin/python scripts/smoke_copilot.py`. The smoke test reports only provider, model, and response length; it never prints the key or response content.
 
-Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`.
+Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`. Generation and publication also require every incident municipality to resolve to one approved record in `data/generator-lookups/LongIslandGeography.csv`, including a stable reference ID and preserved source and normalized County/Township/Village paths. The POC-032 mapping chooses one explicit path for a split municipality as an acceptable synthetic-data simplification; it is not a name-only identity strategy for real OMS data.
 
 By default, 35% of crews start at an approved home facility and the rest use a plain municipality name to represent their last completed job. Adjust that mix with `--start-day-location-rate`. Internal, LKP, WW, and CG crews use the Hewlett, Hicksville, Brentwood, or Riverhead service location for their region; TREE crews use the corresponding Vegetation Staging Area; and MUA/CNTR crews use the configured RDA MUA locations. No generic municipality-based `Staging Area` names are generated.
 

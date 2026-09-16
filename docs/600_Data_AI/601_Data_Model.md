@@ -116,6 +116,18 @@ this contract alongside the unchanged original August scenario. Runtime activati
 the backward-compatible `region + feeder` validation rule described above for legacy
 fixtures.
 
+POC-032 expands the governed geographic reference to 49 records: all 48
+municipalities available to the scenario generator plus Melville. Each record carries a
+stable reference ID and preserves both the source and normalized County/Township/Village
+paths. Generation and publication fail when an incident municipality is missing from the
+reference or resolves to a different operating region. The full-scale
+`august-storm-preview-v3` publishes the same seeded scenario CSV content as v2 with this
+complete geography contract and updated provenance; v2 remains unchanged for
+reproducibility. The SME-approved Floral Park/Hempstead, Commack/Huntington,
+Calverton/Riverhead, and Westhampton Beach/Southampton choices are intentional
+synthetic-data simplifications. POC-033 tracks stable composite identity for villages that
+span townships or counties before real OMS integration.
+
 Topology coverage remains a strict generated-scenario contract. It is not yet a runtime
 activation requirement for all legacy fixtures because their fictional topology coverage
 is documented as incomplete. Tightening that compatibility rule requires a separate fixture

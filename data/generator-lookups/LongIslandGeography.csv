@@ -1,25 +1,50 @@
-region,municipality,locality_type,latitude,longitude,county,township,village,aliases,reference_source
-Queens-Nassau,Arverne,Queens neighborhood,40.5912,-73.7957,Queens,Rockaway Peninsula,Arverne,,POC-002-approved-registry-v1
-Queens-Nassau,Edgemere,Queens neighborhood,40.5965,-73.7696,Queens,Rockaway Peninsula,Edgemere,,POC-002-approved-registry-v1
-Queens-Nassau,Far Rockaway,Queens neighborhood,40.6034,-73.7551,Queens,Rockaway Peninsula,Far Rockaway,,POC-002-approved-registry-v1
-Queens-Nassau,Rockaway Park,Queens neighborhood,40.5807,-73.8371,Queens,Rockaway Peninsula,Rockaway Park,Rockaway Beach,POC-002-approved-registry-v1
-Queens-Nassau,Hewlett,hamlet and CDP,40.6432,-73.6957,Nassau,Hempstead,Hewlett,Hewlett Service Center,POC-002-approved-registry-v1
-Queens-Nassau,Cedarhurst,incorporated village,40.6229,-73.7243,Nassau,Hempstead,Cedarhurst,,POC-002-approved-registry-v1
-Queens-Nassau,Valley Stream,incorporated village,40.6643,-73.7085,Nassau,Hempstead,Valley Stream,,POC-002-approved-registry-v1
-Central-Nassau,Mineola,incorporated village,40.7493,-73.6407,Nassau,North Hempstead,Mineola,,POC-002-approved-registry-v1
-Central-Nassau,Hicksville,hamlet and CDP,40.7684,-73.5251,Nassau,Oyster Bay,Hicksville,Hicksville Operations Yard,POC-002-approved-registry-v1
-Central-Nassau,East Meadow,hamlet and CDP,40.7139,-73.5590,Nassau,Hempstead,East Meadow,,POC-002-approved-registry-v1
-Central-Nassau,Westbury,incorporated village,40.7557,-73.5876,Nassau,North Hempstead,Westbury,,POC-002-approved-registry-v1
-Central-Nassau,Hempstead,incorporated village,40.7062,-73.6187,Nassau,Hempstead,Hempstead,,POC-002-approved-registry-v1
-Central-Nassau,Massapequa,hamlet and CDP,40.6807,-73.4743,Nassau,Oyster Bay,Massapequa,,POC-002-approved-registry-v1
-Western Suffolk,Babylon,incorporated village,40.6957,-73.3257,Suffolk,Babylon,Babylon,,POC-002-approved-registry-v1
-Western Suffolk,Brentwood,hamlet and CDP,40.7812,-73.2462,Suffolk,Islip,Brentwood,Brentwood Operations Yard,POC-002-approved-registry-v1
-Western Suffolk,Melville,hamlet and CDP,40.7934,-73.4151,Suffolk,Huntington,Melville,,POC-002-approved-registry-v1
-Western Suffolk,Smithtown,hamlet and CDP,40.8559,-73.2007,Suffolk,Smithtown,Smithtown,,POC-002-approved-registry-v1
-Western Suffolk,Bay Shore,hamlet and CDP,40.7251,-73.2454,Suffolk,Islip,Bay Shore,,POC-002-approved-registry-v1
-Eastern Suffolk,Riverhead,hamlet and CDP,40.9170,-72.6620,Suffolk,Riverhead,Riverhead,Riverhead Operations Yard,POC-002-approved-registry-v1
-Eastern Suffolk,Yaphank,hamlet and CDP,40.8368,-72.9170,Suffolk,Brookhaven,Yaphank,,POC-002-approved-registry-v1
-Eastern Suffolk,Westhampton Beach,incorporated village,40.8098,-72.6454,Suffolk,Southampton,Westhampton Beach,,POC-002-approved-registry-v1
-Eastern Suffolk,Southampton,incorporated village,40.8843,-72.3895,Suffolk,Southampton,Southampton,,POC-002-approved-registry-v1
-Eastern Suffolk,Montauk,hamlet and CDP,41.0359,-71.9545,Suffolk,East Hampton,Montauk,,POC-002-approved-registry-v1
-Eastern Suffolk,Greenport,incorporated village,41.1034,-72.3593,Suffolk,Southold,Greenport,,POC-002-approved-registry-v1
+region,municipality,locality_type,latitude,longitude,reference_id,source_county,source_township,source_village,county,township,village,aliases,reference_source
+Queens-Nassau,Arverne,Queens neighborhood,40.5912,-73.7957,pseg-li-31d3df560aa45c14a0a3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ARVERNE,Queens,Rockaway Peninsula,Arverne,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Edgemere,Queens neighborhood,40.5965,-73.7696,pseg-li-c1a98a8326d828eaa6f5,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,EDGEMERE,Queens,Rockaway Peninsula,Edgemere,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Far Rockaway,Queens neighborhood,40.6034,-73.7551,pseg-li-2be55479fb0baeb7f566,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,FAR ROCKAWAY,Queens,Rockaway Peninsula,Far Rockaway,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Rockaway Park,Queens neighborhood,40.5807,-73.8371,pseg-li-7fe28c07c87c12d24ae3,ROCKAWAY PENINSULA,ROCKAWAY PENINSULA,ROCKAWAY PARK,Queens,Rockaway Peninsula,Rockaway Park,Rockaway Beach,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Inwood,hamlet and CDP,40.6221,-73.7468,pseg-li-75e6e1f5af3820d64e30,NASSAU,HEMPSTEAD,INWOOD,Nassau,Hempstead,Inwood,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Lawrence,incorporated village,40.6157,-73.7296,pseg-li-26d762af5243b6b6a351,NASSAU,HEMPSTEAD,LAWRENCE,Nassau,Hempstead,Lawrence,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Cedarhurst,incorporated village,40.6229,-73.7243,pseg-li-9685d35012cdfd22b187,NASSAU,HEMPSTEAD,CEDARHURST,Nassau,Hempstead,Cedarhurst,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Hewlett,hamlet and CDP,40.6432,-73.6957,pseg-li-78b452f119b7098c48bb,NASSAU,HEMPSTEAD,HEWLETT,Nassau,Hempstead,Hewlett,Hewlett Service Center,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Woodmere,hamlet and CDP,40.6320,-73.7126,pseg-li-d1acfd8590dfb1e1208b,NASSAU,HEMPSTEAD,WOODMERE,Nassau,Hempstead,Woodmere,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Elmont,hamlet and CDP,40.7009,-73.7129,pseg-li-270a54b2de13074c795a,NASSAU,HEMPSTEAD,ELMONT,Nassau,Hempstead,Elmont,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Floral Park,incorporated village,40.7237,-73.7049,pseg-li-237fada70f56e8de6610,NASSAU,HEMPSTEAD,FLORAL PARK,Nassau,Hempstead,Floral Park,,POC-032-SME-approved-static-reference-v1
+Queens-Nassau,Valley Stream,incorporated village,40.6643,-73.7085,pseg-li-7fb66dacff4da56afd0e,NASSAU,HEMPSTEAD,VALLEY STREAM,Nassau,Hempstead,Valley Stream,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Garden City,incorporated village,40.7268,-73.6343,pseg-li-41d1c8dcfcc706587b9f,NASSAU,HEMPSTEAD,GARDEN CITY,Nassau,Hempstead,Garden City,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Mineola,incorporated village,40.7493,-73.6407,pseg-li-61f469b45dc05f15db4e,NASSAU,NORTH HEMPSTEAD,MINEOLA,Nassau,North Hempstead,Mineola,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Hicksville,hamlet and CDP,40.7684,-73.5251,pseg-li-32180e1a9c9aeac831db,NASSAU,OYSTER BAY,HICKSVILLE,Nassau,Oyster Bay,Hicksville,Hicksville Operations Yard,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Levittown,hamlet and CDP,40.7259,-73.5143,pseg-li-4e4588479ae9ec47bceb,NASSAU,HEMPSTEAD,LEVITTOWN,Nassau,Hempstead,Levittown,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,East Meadow,hamlet and CDP,40.7139,-73.5590,pseg-li-501220e4e8242f37d957,NASSAU,HEMPSTEAD,EAST MEADOW,Nassau,Hempstead,East Meadow,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Westbury,incorporated village,40.7557,-73.5876,pseg-li-1660a4382682f7cd0c8b,NASSAU,NORTH HEMPSTEAD,WESTBURY,Nassau,North Hempstead,Westbury,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Uniondale,hamlet and CDP,40.7004,-73.5929,pseg-li-db5697b09353968a2ec5,NASSAU,HEMPSTEAD,UNIONDALE,Nassau,Hempstead,Uniondale,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Hempstead,incorporated village,40.7062,-73.6187,pseg-li-bab1039ca6af519b87a8,NASSAU,HEMPSTEAD,HEMPSTEAD VILLAGE,Nassau,Hempstead,Hempstead,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Freeport,incorporated village,40.6576,-73.5832,pseg-li-d64d9e710bdcfd1b3ea5,NASSAU,HEMPSTEAD,FREEPORT,Nassau,Hempstead,Freeport,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Merrick,hamlet and CDP,40.6629,-73.5515,pseg-li-69a660510b476a166aa2,NASSAU,HEMPSTEAD,MERRICK,Nassau,Hempstead,Merrick,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Wantagh,hamlet and CDP,40.6837,-73.5101,pseg-li-ab8ee7ed3c6dde650d90,NASSAU,HEMPSTEAD,WANTAGH,Nassau,Hempstead,Wantagh,,POC-032-SME-approved-static-reference-v1
+Central-Nassau,Massapequa,hamlet and CDP,40.6807,-73.4743,pseg-li-5e435ebc6b9118ea9c50,NASSAU,OYSTER BAY,MASSAPEQUA,Nassau,Oyster Bay,Massapequa,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Babylon,incorporated village,40.6957,-73.3257,pseg-li-ef5225dd8758afff11da,SUFFOLK,BABYLON,BABYLON,Suffolk,Babylon,Babylon,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Lindenhurst,incorporated village,40.6868,-73.3735,pseg-li-c969288e609749672ae9,SUFFOLK,BABYLON,LINDENHURST,Suffolk,Babylon,Lindenhurst,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Copiague,hamlet and CDP,40.6815,-73.3998,pseg-li-869ae581e1682fd36ddf,SUFFOLK,BABYLON,COPIAGUE,Suffolk,Babylon,Copiague,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Amityville,incorporated village,40.6787,-73.4171,pseg-li-00a4e06805e141089e47,SUFFOLK,BABYLON,AMITYVILLE,Suffolk,Babylon,Amityville,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Deer Park,hamlet and CDP,40.7618,-73.3293,pseg-li-1f11d63d6e234e549e48,SUFFOLK,BABYLON,DEER PARK,Suffolk,Babylon,Deer Park,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Huntington,hamlet and CDP,40.8682,-73.4257,pseg-li-39518595a166d3abc6d7,SUFFOLK,HUNTINGTON,HUNTINGTON,Suffolk,Huntington,Huntington,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Melville,hamlet and CDP,40.7934,-73.4151,pseg-li-5b9a7b6b1be35e55c535,SUFFOLK,HUNTINGTON,MELVILLE,Suffolk,Huntington,Melville,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Smithtown,hamlet and CDP,40.8559,-73.2007,pseg-li-9d0f8b2559233b2c53f3,SUFFOLK,SMITHTOWN,SMITHTOWN,Suffolk,Smithtown,Smithtown,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Brentwood,hamlet and CDP,40.7812,-73.2462,pseg-li-19dde346bc11e762bd90,SUFFOLK,ISLIP,BRENTWOOD,Suffolk,Islip,Brentwood,Brentwood Operations Yard,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Islip,hamlet and CDP,40.7298,-73.2104,pseg-li-caf65cb5120e4bab6cad,SUFFOLK,ISLIP,ISLIP,Suffolk,Islip,Islip,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Bay Shore,hamlet and CDP,40.7251,-73.2454,pseg-li-12bd9fd78f12cf8b7432,SUFFOLK,ISLIP,BAY SHORE,Suffolk,Islip,Bay Shore,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Commack,hamlet and CDP,40.8429,-73.2929,pseg-li-289e368faf8b9b59e020,SUFFOLK,HUNTINGTON,COMMACK,Suffolk,Huntington,Commack,,POC-032-SME-approved-static-reference-v1
+Western Suffolk,Ronkonkoma,hamlet and CDP,40.8154,-73.1123,pseg-li-f8c94b0108a60380ccb6,SUFFOLK,ISLIP,RONKONKOMA,Suffolk,Islip,Ronkonkoma,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Riverhead,hamlet and CDP,40.9170,-72.6620,pseg-li-808d36974b333bb1ab63,SUFFOLK,RIVERHEAD,RIVERHEAD,Suffolk,Riverhead,Riverhead,Riverhead Operations Yard,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Calverton,hamlet and CDP,40.9065,-72.7434,pseg-li-12217e6aef649637ea6e,SUFFOLK,RIVERHEAD,CALVERTON,Suffolk,Riverhead,Calverton,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Wading River,hamlet and CDP,40.9504,-72.8426,pseg-li-bd2ed9577e34f7c1caf0,SUFFOLK,RIVERHEAD,WADING RIVER,Suffolk,Riverhead,Wading River,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Yaphank,hamlet and CDP,40.8368,-72.9170,pseg-li-7cca1561fc2897d0a9e4,SUFFOLK,BROOKHAVEN,YAPHANK,Suffolk,Brookhaven,Yaphank,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Manorville,hamlet and CDP,40.8737,-72.8079,pseg-li-24ce30b7a7f43dcecc7f,SUFFOLK,BROOKHAVEN,MANORVILLE,Suffolk,Brookhaven,Manorville,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Center Moriches,hamlet and CDP,40.8004,-72.7898,pseg-li-62322c897d86c56c8005,SUFFOLK,BROOKHAVEN,CENTER MORICHES,Suffolk,Brookhaven,Center Moriches,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Westhampton Beach,incorporated village,40.8098,-72.6454,pseg-li-4aaa333214d2bfa1d7c5,SUFFOLK,SOUTHAMPTON,WESTHAMPTON BEACH,Suffolk,Southampton,Westhampton Beach,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Southampton,incorporated village,40.8843,-72.3895,pseg-li-0afc5ef16e5a6ba1e9d1,SUFFOLK,SOUTHAMPTON,SOUTHAMPTON,Suffolk,Southampton,Southampton,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Hampton Bays,hamlet and CDP,40.8689,-72.5176,pseg-li-58e1bab665d954f3f841,SUFFOLK,SOUTHAMPTON,HAMPTON BAYS,Suffolk,Southampton,Hampton Bays,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,East Hampton,incorporated village,40.9634,-72.1848,pseg-li-c1ef2152d176ff078dee,SUFFOLK,EAST HAMPTON,EAST HAMPTON,Suffolk,East Hampton,East Hampton,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Montauk,hamlet and CDP,41.0359,-71.9545,pseg-li-ac887ff38dbe03e10e6e,SUFFOLK,EAST HAMPTON,MONTAUK,Suffolk,East Hampton,Montauk,,POC-032-SME-approved-static-reference-v1
+Eastern Suffolk,Greenport,incorporated village,41.1034,-72.3593,pseg-li-3305b8c7d54e81ce2aae,SUFFOLK,SOUTHOLD,GREENPORT,Suffolk,Southold,Greenport,,POC-032-SME-approved-static-reference-v1

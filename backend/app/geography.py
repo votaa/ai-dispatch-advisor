@@ -20,13 +20,17 @@ GEOGRAPHY_HEADERS = [
     "locality_type",
     "latitude",
     "longitude",
+    "reference_id",
+    "source_county",
+    "source_township",
+    "source_village",
     "county",
     "township",
     "village",
     "aliases",
     "reference_source",
 ]
-GEOGRAPHY_REFERENCE_VERSION = "poc-002-v1-2026-08-21"
+GEOGRAPHY_REFERENCE_VERSION = "poc-032-v1-2026-09-15"
 
 
 def _normalized_name(value: str) -> str:
@@ -40,6 +44,10 @@ class GeographyRecord:
     locality_type: str
     latitude: float
     longitude: float
+    reference_id: str
+    source_county: str
+    source_township: str
+    source_village: str
     county: str
     township: str
     village: str
@@ -66,7 +74,28 @@ class GeographyRegistry:
             raise ValueError("Geography registry must contain at least one record")
 
         self._by_name: dict[str, GeographyRecord] = {}
+        reference_ids: set[str] = set()
         for record in self.records:
+            if not record.reference_id:
+                raise ValueError("Geography reference IDs must not be blank")
+            if record.reference_id in reference_ids:
+                raise ValueError(
+                    f"Geography reference ID is duplicated: {record.reference_id}"
+                )
+            reference_ids.add(record.reference_id)
+            if not all(
+                (
+                    record.source_county,
+                    record.source_township,
+                    record.source_village,
+                    record.county,
+                    record.township,
+                    record.village,
+                )
+            ):
+                raise ValueError(
+                    f"Geography hierarchy fields must not be blank: {record.municipality}"
+                )
             names = (record.municipality, record.village, *record.aliases)
             for name in names:
                 key = _normalized_name(name)
@@ -99,6 +128,10 @@ class GeographyRegistry:
                         locality_type=row["locality_type"].strip(),
                         latitude=float(row["latitude"]),
                         longitude=float(row["longitude"]),
+                        reference_id=row["reference_id"].strip(),
+                        source_county=row["source_county"].strip(),
+                        source_township=row["source_township"].strip(),
+                        source_village=row["source_village"].strip(),
                         county=row["county"].strip(),
                         township=row["township"].strip(),
                         village=row["village"].strip(),

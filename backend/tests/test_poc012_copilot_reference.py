@@ -162,6 +162,35 @@ def test_aligned_percentage_uses_complete_synthetic_area_numerator(monkeypatch) 
     assert provider.requests == []
 
 
+def test_full_scale_scenario_percentage_uses_complete_zero_numerator(
+    monkeypatch,
+) -> None:
+    provider = RecordingProvider()
+    monkeypatch.setattr(data_loader, "DATA_ROOT", SCENARIO_ROOT)
+    data_loader.set_active_scenario("august-storm-preview-v2")
+    services = build_services(copilot_provider=provider)
+
+    assert len(services.incidents.list_visible()) == 2000
+    assert not any(
+        incident.municipality == "Melville"
+        for incident in services.incidents.list_visible()
+    )
+
+    response = services.copilot.respond(
+        "What percentage of customers in Melville are affected?"
+    )
+
+    assert response.intent == "reference_outage_percentage"
+    assert (
+        "**0 synthetic customers out ÷ 8,513 static customers served = 0.00%**"
+        in response.answer
+    )
+    assert "0 incident record(s)" in response.answer
+    assert "2000 active incidents evaluated" in response.response_scope
+    assert response.warning is None
+    assert provider.requests == []
+
+
 def test_percentage_refuses_partial_geographic_coverage(monkeypatch) -> None:
     monkeypatch.setattr(data_loader, "DATA_ROOT", SCENARIO_ROOT)
     data_loader.set_active_scenario("base")

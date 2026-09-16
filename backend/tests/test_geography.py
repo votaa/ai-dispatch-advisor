@@ -1,9 +1,14 @@
+import csv
 from datetime import date
 from pathlib import Path
 
 from app import data_loader
 from app.geography import GeographyRegistry, TravelEstimateService
-from app.scenario_generator import generate_copilot_demo_scenario, write_scenario
+from app.scenario_generator import (
+    generate_copilot_demo_scenario,
+    load_municipalities,
+    write_scenario,
+)
 from app.services import build_services
 
 
@@ -24,6 +29,54 @@ def test_registry_normalizes_owner_approved_geography_hierarchy() -> None:
     )
     assert registry.require("Rockaway Beach").village == "Rockaway Park"
     assert registry.resolve("Briarcliff") is None
+
+
+def test_registry_covers_every_generator_municipality_with_stable_reference() -> None:
+    registry = GeographyRegistry.from_csv()
+    municipalities = load_municipalities()
+    generator_names = {
+        row["municipality"]
+        for rows in municipalities.values()
+        for row in rows
+    }
+
+    assert len(generator_names) == 48
+    assert len(registry.records) == 49
+    assert all(registry.resolve(name) is not None for name in generator_names)
+    assert len({record.reference_id for record in registry.records}) == 49
+
+    reference_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "reference"
+        / "pseg-long-island"
+        / "customers-served.csv"
+    )
+    with reference_path.open(newline="", encoding="utf-8") as handle:
+        reference_by_id = {
+            row["reference_id"]: row for row in csv.DictReader(handle)
+        }
+    for record in registry.records:
+        reference = reference_by_id[record.reference_id]
+        assert (
+            record.source_county,
+            record.source_township,
+            record.source_village,
+        ) == (
+            reference["source_county"],
+            reference["source_township"],
+            reference["source_village"],
+        )
+        assert (record.county, record.township, record.village) == (
+            reference["county"],
+            reference["township"],
+            reference["village"],
+        )
+
+    assert registry.require("Floral Park").township == "Hempstead"
+    assert registry.require("Commack").township == "Huntington"
+    assert registry.require("Calverton").township == "Riverhead"
+    assert registry.require("Westhampton Beach").township == "Southampton"
 
 
 def test_travel_estimates_are_deterministic_and_incident_specific() -> None:
