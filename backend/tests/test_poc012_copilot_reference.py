@@ -167,7 +167,7 @@ def test_full_scale_scenario_percentage_uses_complete_zero_numerator(
 ) -> None:
     provider = RecordingProvider()
     monkeypatch.setattr(data_loader, "DATA_ROOT", SCENARIO_ROOT)
-    data_loader.set_active_scenario("august-storm-preview-v2")
+    data_loader.set_active_scenario("august-storm-preview-v3")
     services = build_services(copilot_provider=provider)
 
     assert len(services.incidents.list_visible()) == 2000

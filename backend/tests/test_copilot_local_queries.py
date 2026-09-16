@@ -405,10 +405,10 @@ def test_critical_facility_level_queries_bypass_the_provider(
     assert provider.requests == []
 
 
-def test_poc026_published_scenario_supplies_all_resolved_facility_levels(
+def test_poc026_regression_scenario_supplies_all_resolved_facility_levels(
     monkeypatch,
 ) -> None:
-    scenario_root = Path(__file__).resolve().parents[2] / "data" / "scenarios"
+    scenario_root = Path(__file__).resolve().parents[2] / "data" / "regression-scenarios"
     monkeypatch.setattr(data_loader, "DATA_ROOT", scenario_root)
     data_loader.set_active_scenario("august-storm-preview-v2")
     services = build_services()

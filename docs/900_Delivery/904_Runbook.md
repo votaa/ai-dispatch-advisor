@@ -120,6 +120,8 @@ For every canonical scenario:
 ## Discovered Scenario Smoke Test
 
 The application discovers valid scenario folders dynamically. It is not limited to the four canonical regression fixtures.
+Fixtures under `data/regression-scenarios/` are intentionally excluded from runtime discovery and
+must not appear in the frontend selector.
 
 1. Call `GET /api/scenarios` and note every returned scenario.
 2. Confirm every returned scenario appears once in the frontend selector.

@@ -9,7 +9,9 @@ crews or update source systems.
 
 This guide documents the current POC behavior, including the transparency implemented by
 POC-030 and POC-031. Example values were verified on 2026-09-13 against the repository's synthetic
-`august-storm-preview` scenario. Scenario data and returned values can change in a later update.
+`august-storm-preview` scenario. That historical scenario is now retained in the non-discovered
+regression archive; use `august-storm-preview-v3` for the current full-scale browser walkthrough.
+Scenario data and returned values can change in a later update.
 
 ## Quick Query Pattern
 

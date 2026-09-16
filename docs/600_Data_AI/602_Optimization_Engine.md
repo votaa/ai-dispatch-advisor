@@ -45,7 +45,7 @@ Recommendations now include an optional nested `RecommendationExplanation` objec
 
 ### Phase 5.6 Evaluation and Closeout
 
-Evaluation runs across every manifested scenario, including the generated `august-storm-preview`, while canonical scenarios retain explicit expected-result fixtures. Edge-case coverage includes no feasible crew, capability mismatch, insufficient shift time, missing travel estimates, active assignments, and deterministic ties. The SME review checklist records expected evidence and keeps solver adoption, repair-duration modeling, and crew-ID presentation as documented follow-up items.
+Evaluation runs across every runtime-discovered manifested scenario, including `august-storm-preview-v3`, while canonical scenarios retain explicit expected-result fixtures and historical August versions remain available in the non-discovered regression archive. Edge-case coverage includes no feasible crew, capability mismatch, insufficient shift time, missing travel estimates, active assignments, and deterministic ties. The SME review checklist records expected evidence and keeps solver adoption, repair-duration modeling, and crew-ID presentation as documented follow-up items.
 
 This is intentionally illustrative. It is not operationally validated optimization.
 

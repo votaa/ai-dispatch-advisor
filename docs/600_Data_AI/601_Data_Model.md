@@ -30,6 +30,10 @@ The backend reads incident, crew, assignment, weather, facility, topology, and r
 
 Each scenario directory includes a `scenario.json` metadata and file-inventory contract as defined in [Scenario Manifest](606_Scenario_Manifest.md). The backend scenario service validates metadata, required files, CSV headers, identifiers, and assignment references before process-local activation. Recommendation decisions and accepted demo assignments are filtered by `scenario_id` so state remains isolated while switching.
 
+Historical full-scale scenarios retained only for backend regression live under
+`data/regression-scenarios/`. They keep the same manifest and CSV contract but are outside
+the runtime discovery root, so they do not appear in the application scenario selector.
+
 ## Phase 4 Persistence Boundary
 
 Decision `D-007` defines the current ownership boundary:
@@ -111,10 +115,11 @@ also reserves three unassigned, low-severity incidents with 1, 19, and 20 custom
 same linked healthcare/medium Level 3 `Private Health Device (LSE)` facility. These rows
 provide deterministic customer-impact boundary coverage in both single-snapshot and
 default timeline output. Generation fails when the configured assignment rate does not
-leave three unassigned incident slots. The full-scale `august-storm-preview-v2` publishes
-this contract alongside the unchanged original August scenario. Runtime activation retains
-the backward-compatible `region + feeder` validation rule described above for legacy
-fixtures.
+leave three unassigned incident slots. The full-scale `august-storm-preview-v2` captured
+this contract alongside the unchanged original August scenario. Both historical versions
+are retained under `data/regression-scenarios/` for regression testing without appearing
+in the runtime selector. Runtime activation retains the backward-compatible
+`region + feeder` validation rule described above for legacy fixtures.
 
 POC-032 expands the governed geographic reference to 49 records: all 48
 municipalities available to the scenario generator plus Melville. Each record carries a
@@ -122,8 +127,8 @@ stable reference ID and preserves both the source and normalized County/Township
 paths. Generation and publication fail when an incident municipality is missing from the
 reference or resolves to a different operating region. The full-scale
 `august-storm-preview-v3` publishes the same seeded scenario CSV content as v2 with this
-complete geography contract and updated provenance; v2 remains unchanged for
-reproducibility. The SME-approved Floral Park/Hempstead, Commack/Huntington,
+complete geography contract and updated provenance; v2 remains unchanged in the regression
+archive for reproducibility. The SME-approved Floral Park/Hempstead, Commack/Huntington,
 Calverton/Riverhead, and Westhampton Beach/Southampton choices are intentional
 synthetic-data simplifications. POC-033 tracks stable composite identity for villages that
 span townships or counties before real OMS integration.

@@ -10,7 +10,9 @@ Implementation review note: generator, runtime, timeline, Copilot, tests, and th
 data-contract documentation have been updated. The owner approved the isolated POC-026
 standard scenario and five-snapshot timeline on 2026-09-13. The validated full-scale
 `august-storm-preview-v2` was published on 2026-09-14 without changing or replacing the
-original `august-storm-preview` scenario.
+original `august-storm-preview` scenario. After v3 superseded both browser-demo versions,
+the original and v2 were retained unchanged under `data/regression-scenarios/` so backend
+regressions remain reproducible without exposing obsolete choices in the runtime selector.
 
 This plan addresses scenario components that can become internally inconsistent, beginning
 with incidents marked `critical_facility=true` that do not have a matching row in
