@@ -160,6 +160,16 @@ python scripts/generate_scenario.py \
 
 The approved crew-type distribution scales proportionally to the requested crew count. Assigned incidents are calculated from `--assignment-rate`, which defaults to `0.05` (5%). Use `--dual-tree-incidents` to specify how many assigned incidents receive an additional TREE crew. For example, 1,200 incidents at the default assignment rate produce 60 assigned incidents; specifying three dual-TREE incidents produces 63 assignment records. Generation reserves three unassigned incidents for deterministic Level 3 LSE customer-boundary coverage, so the incident count must be at least three and the assignment rate must leave at least three incidents unassigned.
 
+Standard generation is population-constrained against the current, SME-approved `data/reference/pseg-long-island/customers-served.csv` snapshot. The generator preserves the seeded scenario-wide `customers_out` total, assigns every incident a stable `geography_reference_id`, and expands its geography pool until both the configured coverage target and required customer capacity fit. The 2,000-incident default uses at least 334 of the 347 approved leaf geographies. Use `--geography-coverage-target` to request a different minimum or `--customers-out-target` to request an exact overall total. Generation fails without writing when the reference is stale, invalid, unapproved, too small, or when requested leaf coverage cannot be achieved.
+
+```bash
+python scripts/generate_scenario.py \
+  --scenario-id capacity-demo-preview \
+  --start-date 2026-08-10 \
+  --geography-coverage-target 300 \
+  --customers-out-target 900000
+```
+
 POC-002 adds a bounded `copilot-demo` preset. It uses the local County/Township/Village registry and prints geographic and crew-travel samples without writing files:
 
 ```bash
@@ -176,7 +186,7 @@ To enable grounded POC Copilot synthesis, copy the server-side values from `back
 
 After exporting the server-side values, verify the configured model and one non-streaming chat call with `backend/.venv/bin/python scripts/smoke_copilot.py`. The smoke test reports only provider, model, and response length; it never prints the key or response content.
 
-Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`. Generation and publication also require every incident municipality to resolve to one approved record in `data/generator-lookups/LongIslandGeography.csv`, including a stable reference ID and preserved source and normalized County/Township/Village paths. The POC-032 mapping chooses one explicit path for a split municipality as an acceptable synthetic-data simplification; it is not a name-only identity strategy for real OMS data.
+Crew IDs encode the approved operating rules: numeric suffixes `1xxx` through `4xxx` map to Queens-Nassau, Central-Nassau, Western Suffolk, and Eastern Suffolk respectively; unprefixed `5000-5999` and `7000-7999` are internal low-voltage crews; and unprefixed `6000-6999` are internal line crews. The legacy municipality lookup is maintained in `data/generator-lookups/LongIslandMunicipalities.csv`; the 49-record `LongIslandGeography.csv` remains the coordinate authority for its reviewed locations and crew mapping. Population-constrained incidents carry a stable ID from the complete 347-leaf customers-served reference. Duplicate village names use qualified labels such as `Commack-Huntington`, and generation/publication validate the ID, qualified label, operating region, and customer ceiling together instead of inferring identity from a name. Reference leaves without a reviewed coordinate use a deterministic synthetic planning point within their operating region; this supports scenario display but is not presented as a live or authoritative village location.
 
 By default, 35% of crews start at an approved home facility and the rest use a plain municipality name to represent their last completed job. Adjust that mix with `--start-day-location-rate`. Internal, LKP, WW, and CG crews use the Hewlett, Hicksville, Brentwood, or Riverhead service location for their region; TREE crews use the corresponding Vegetation Staging Area; and MUA/CNTR crews use the configured RDA MUA locations. No generic municipality-based `Staging Area` names are generated.
 

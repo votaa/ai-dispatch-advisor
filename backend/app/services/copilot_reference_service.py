@@ -323,9 +323,13 @@ class CopilotReferenceService:
                 "Mixed-source percentage blocked because numerator freshness is unavailable.",
             )
 
+        reference_rows = self._reference.snapshot().rows
         reference_paths = {
-            (row.county, row.township, row.village)
-            for row in self._reference.snapshot().rows
+            (row.county, row.township, row.village) for row in reference_rows
+        }
+        reference_paths_by_id = {
+            row.reference_id: (row.county, row.township, row.village)
+            for row in reference_rows
         }
         target_paths = {
             (row.county, row.township, row.village) for row in lookup.matches
@@ -334,6 +338,13 @@ class CopilotReferenceService:
         located: list[tuple[Incident, tuple[str, str, str]]] = []
         unresolved: list[Incident] = []
         for incident in incidents:
+            if incident.geography_reference_id:
+                path = reference_paths_by_id.get(incident.geography_reference_id)
+                if path is None:
+                    unresolved.append(incident)
+                    continue
+                located.append((incident, path))
+                continue
             location = self._geography.hierarchy_for_incident(incident)
             if location is None:
                 unresolved.append(incident)

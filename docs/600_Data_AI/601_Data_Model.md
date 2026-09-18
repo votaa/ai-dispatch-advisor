@@ -153,6 +153,7 @@ Target fields:
 - `severity`.
 - `region`.
 - `municipality`.
+- `geography_reference_id` (optional for legacy scenarios; required for population-constrained generated scenarios).
 - `feeder_id`.
 - `customers_out`.
 - `critical_facility_impact`.

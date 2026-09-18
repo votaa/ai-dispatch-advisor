@@ -287,7 +287,17 @@ class ScenarioService:
             try:
                 with file_path.open(newline="", encoding="utf-8") as handle:
                     reader = csv.DictReader(handle, strict=True)
-                    if reader.fieldnames != expected_headers:
+                    actual_headers = reader.fieldnames or []
+                    allowed_headers = [expected_headers]
+                    if filename == "PendingIncidents.csv":
+                        allowed_headers.append(
+                            [
+                                *expected_headers[:3],
+                                "geography_reference_id",
+                                *expected_headers[3:],
+                            ]
+                        )
+                    if actual_headers not in allowed_headers:
                         issues.append(
                             {
                                 "location": filename,

@@ -13,11 +13,16 @@ from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
 from .geography import DEFAULT_GEOGRAPHY_PATH, GeographyRegistry, TravelEstimateService
+from .services.reference_service import (
+    DEFAULT_REFERENCE_ROOT,
+    PsegLongIslandReferenceService,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "scenario-previews"
 DEFAULT_LOOKUP_PATH = REPO_ROOT / "data" / "generator-lookups" / "LongIslandMunicipalities.csv"
+DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS = 6
 LOCAL_TIMEZONE = ZoneInfo("America/New_York")
 
 REGIONS = (
@@ -102,6 +107,7 @@ INCIDENT_HEADERS = [
     "incident_id",
     "region",
     "municipality",
+    "geography_reference_id",
     "feeder",
     "severity",
     "status",
@@ -190,6 +196,19 @@ class FacilityProfile:
     priority_level: str
 
 
+@dataclass(frozen=True)
+class CapacityGeography:
+    reference_id: str
+    region: str
+    municipality: str
+    county: str
+    township: str
+    village: str
+    latitude: float
+    longitude: float
+    customers_served: int
+
+
 FACILITY_CATALOG = (
     FacilityProfile("Regional Medical Center", "hospital", 1, "critical"),
     FacilityProfile("Emergency Services Center", "emergency_services", 1, "critical"),
@@ -238,6 +257,11 @@ class GeneratedScenario:
     crew_types: dict[str, str]
 
     def summary(self) -> dict[str, Any]:
+        geography_ids = {
+            str(row["geography_reference_id"])
+            for row in self.incidents
+            if row.get("geography_reference_id")
+        }
         return {
             "scenario_id": self.scenario_id,
             "incidents": len(self.incidents),
@@ -250,6 +274,8 @@ class GeneratedScenario:
             "topology_assets": len(self.topology),
             "crew_distribution": dict(sorted(Counter(self.crew_types.values()).items())),
             "regions": dict(sorted(Counter(row["region"] for row in self.incidents).items())),
+            "customers_out": sum(int(row["customers_out"]) for row in self.incidents),
+            "geography_coverage": len(geography_ids),
         }
 
 
@@ -293,6 +319,341 @@ def load_municipalities(path: Path = DEFAULT_LOOKUP_PATH) -> dict[str, list[dict
     if missing:
         raise ValueError(f"Municipality lookup has no entries for: {', '.join(missing)}")
     return dict(by_region)
+
+
+def _capacity_region(
+    *,
+    reference_id: str,
+    county: str,
+    township: str,
+    approved_by_id: dict[str, Any],
+) -> str:
+    approved = approved_by_id.get(reference_id)
+    if approved is not None:
+        return str(approved.region)
+    if county == "Queens":
+        return "Queens-Nassau"
+    if county == "Nassau":
+        return "Queens-Nassau" if township == "Hempstead" else "Central-Nassau"
+    if township in {"Babylon", "Huntington", "Islip", "Smithtown"}:
+        return "Western Suffolk"
+    return "Eastern Suffolk"
+
+
+def _synthetic_reference_coordinates(
+    reference_id: str,
+    region: str,
+) -> tuple[float, float]:
+    centers = {
+        "Queens-Nassau": (40.6650, -73.7200),
+        "Central-Nassau": (40.7500, -73.5600),
+        "Western Suffolk": (40.7900, -73.2200),
+        "Eastern Suffolk": (40.9100, -72.6100),
+    }
+    latitude, longitude = centers[region]
+    value = int(reference_id.removeprefix("pseg-li-")[:12], 16)
+    latitude += ((value % 2001) - 1000) / 100_000
+    longitude += (((value // 2001) % 3001) - 1500) / 100_000
+    return round(latitude, 5), round(longitude, 5)
+
+
+def load_capacity_geographies(
+    *,
+    reference_root: Path = DEFAULT_REFERENCE_ROOT,
+    geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
+) -> list[CapacityGeography]:
+    snapshot = PsegLongIslandReferenceService(reference_root).snapshot()
+    if snapshot.validation.reference_status != "current":
+        issues = "; ".join(
+            f"{issue.location}: {issue.message}"
+            for issue in snapshot.validation.issues
+        )
+        detail = f" ({issues})" if issues else ""
+        raise ValueError(
+            "Population-constrained generation requires a current, approved "
+            f"customers-served reference; status was {snapshot.validation.reference_status}{detail}"
+        )
+
+    approved_registry = GeographyRegistry.from_csv(geography_path)
+    approved_by_id = {
+        record.reference_id: record for record in approved_registry.records
+    }
+    village_counts = Counter(row.village.casefold() for row in snapshot.rows)
+    result: list[CapacityGeography] = []
+    for row in snapshot.rows:
+        approved = approved_by_id.get(row.reference_id)
+        region = _capacity_region(
+            reference_id=row.reference_id,
+            county=row.county,
+            township=row.township,
+            approved_by_id=approved_by_id,
+        )
+        if approved is not None:
+            latitude, longitude = approved.latitude, approved.longitude
+        else:
+            latitude, longitude = _synthetic_reference_coordinates(
+                row.reference_id,
+                region,
+            )
+        municipality = (
+            f"{row.village}-{row.township}"
+            if village_counts[row.village.casefold()] > 1
+            else row.village
+        )
+        result.append(
+            CapacityGeography(
+                reference_id=row.reference_id,
+                region=region,
+                municipality=municipality,
+                county=row.county,
+                township=row.township,
+                village=row.village,
+                latitude=latitude,
+                longitude=longitude,
+                customers_served=row.customers_served,
+            )
+        )
+    return result
+
+
+def _apply_capacity_location(
+    incident: dict[str, Any],
+    geography: CapacityGeography,
+    *,
+    feeder: str | None = None,
+) -> None:
+    incident.update(
+        region=geography.region,
+        municipality=geography.municipality,
+        geography_reference_id=geography.reference_id,
+        latitude=geography.latitude,
+        longitude=geography.longitude,
+        feeder=feeder or (
+            f"FDR-{REGION_CODES[geography.region]}-"
+            f"{(int(geography.reference_id[-4:], 16) + int(str(incident['incident_id'])[-4:])) % 98 + 1:02d}"
+        ),
+    )
+
+
+def _select_capacity_geographies(
+    geographies: list[CapacityGeography],
+    *,
+    incident_count: int,
+    customers_out: int,
+    coverage_target: int | None,
+) -> list[CapacityGeography]:
+    max_coverage = max(1, incident_count - len(LSE_CUSTOMER_BOUNDARIES) + 1)
+    if coverage_target is None:
+        requested = max(
+            min(48, max_coverage),
+            (incident_count + DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS - 1)
+            // DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS,
+        )
+    else:
+        if coverage_target <= 0:
+            raise ValueError("geography_coverage_target must be positive")
+        requested = coverage_target
+    if requested > max_coverage:
+        raise ValueError(
+            "geography_coverage_target exceeds the number of distinct locations "
+            "available after reserving the three co-located LSE boundary incidents"
+        )
+    if requested > len(geographies):
+        raise ValueError(
+            f"geography_coverage_target {requested} exceeds the approved "
+            f"{len(geographies)}-leaf reference"
+        )
+
+    ordered = sorted(
+        geographies,
+        key=lambda row: (-row.customers_served, row.reference_id),
+    )
+    selected = ordered[:requested]
+    index = requested
+    while sum(row.customers_served for row in selected) < customers_out:
+        if index >= len(ordered):
+            total_capacity = sum(row.customers_served for row in geographies)
+            raise ValueError(
+                "Requested scenario-wide customers_out target cannot fit the "
+                f"approved reference capacity: requested {customers_out:,}, "
+                f"available {total_capacity:,}"
+            )
+        selected.append(ordered[index])
+        index += 1
+    return selected
+
+
+def allocate_population_capacity(
+    incidents: list[dict[str, Any]],
+    geographies: list[CapacityGeography],
+    *,
+    coverage_target: int | None = None,
+) -> None:
+    customers_out = sum(int(row["customers_out"]) for row in incidents)
+    selected = _select_capacity_geographies(
+        geographies,
+        incident_count=len(incidents),
+        customers_out=customers_out,
+        coverage_target=coverage_target,
+    )
+    remaining = {row.reference_id: row.customers_served for row in selected}
+    used: set[str] = set()
+
+    def place(rows: list[dict[str, Any]], *, region: str | None = None) -> None:
+        required = sum(int(row["customers_out"]) for row in rows)
+        candidates = [
+            row for row in selected
+            if (region is None or row.region == region)
+            and remaining[row.reference_id] >= required
+        ]
+        if not candidates:
+            scope = f" in {region}" if region else ""
+            raise ValueError(
+                "Population capacity allocation failed"
+                f"{scope}: no approved geography has {required:,} remaining customers"
+            )
+        geography = min(
+            candidates,
+            key=lambda row: (
+                row.reference_id in used,
+                remaining[row.reference_id],
+                row.reference_id,
+            ),
+        )
+        remaining[geography.reference_id] -= required
+        used.add(geography.reference_id)
+        shared_feeder = (
+            f"FDR-{REGION_CODES[geography.region]}-99" if len(rows) > 1 else None
+        )
+        for incident in rows:
+            _apply_capacity_location(incident, geography, feeder=shared_feeder)
+
+    lse_rows = incidents[-len(LSE_CUSTOMER_BOUNDARIES) :]
+    place(lse_rows)
+    lse_ids = {str(row["incident_id"]) for row in lse_rows}
+
+    assigned = sorted(
+        (
+            row for row in incidents
+            if row["status"] == "assigned" and str(row["incident_id"]) not in lse_ids
+        ),
+        key=lambda row: (-int(row["customers_out"]), str(row["incident_id"])),
+    )
+    for incident in assigned:
+        place([incident], region=str(incident["region"]))
+
+    unassigned = [
+        row for row in incidents
+        if row["status"] != "assigned" and str(row["incident_id"]) not in lse_ids
+    ]
+    unassigned.sort(key=lambda row: (int(row["customers_out"]), str(row["incident_id"])))
+    unused_geographies = sorted(
+        (row for row in selected if row.reference_id not in used),
+        key=lambda row: (row.customers_served, row.reference_id),
+    )
+    remaining_incidents = list(unassigned)
+    for geography in unused_geographies:
+        match_index = next(
+            (
+                index for index, incident in enumerate(remaining_incidents)
+                if int(incident["customers_out"]) <= remaining[geography.reference_id]
+            ),
+            None,
+        )
+        if match_index is None:
+            continue
+        incident = remaining_incidents.pop(match_index)
+        remaining[geography.reference_id] -= int(incident["customers_out"])
+        used.add(geography.reference_id)
+        _apply_capacity_location(incident, geography)
+
+    remaining_incidents.sort(
+        key=lambda row: (-int(row["customers_out"]), str(row["incident_id"]))
+    )
+    for incident in remaining_incidents:
+        place([incident])
+
+    achieved = len(used)
+    requested = coverage_target or min(
+        len(selected),
+        max(
+            min(48, len(incidents) - len(LSE_CUSTOMER_BOUNDARIES) + 1),
+            (len(incidents) + DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS - 1)
+            // DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS,
+        ),
+    )
+    if achieved < requested:
+        raise ValueError(
+            "Population capacity allocation could not meet geography coverage target: "
+            f"requested {requested}, achieved {achieved}"
+        )
+
+
+def apply_customer_out_target(
+    incidents: list[dict[str, Any]],
+    target: int,
+) -> None:
+    if target <= 0:
+        raise ValueError("customer_out_target must be positive")
+    lse_ids = {
+        str(row["incident_id"])
+        for row in incidents[-len(LSE_CUSTOMER_BOUNDARIES) :]
+    }
+    lower_bounds: dict[str, int] = {}
+    for incident in incidents:
+        incident_id = str(incident["incident_id"])
+        if incident_id in lse_ids:
+            lower_bounds[incident_id] = int(incident["customers_out"])
+        elif str(incident.get("required_skill")) == "low_voltage":
+            lower_bounds[incident_id] = 1
+        elif (
+            incident.get("status") == "assigned"
+            and str(incident.get("required_skill")) == "line"
+        ):
+            lower_bounds[incident_id] = 40
+        else:
+            lower_bounds[incident_id] = 1
+    minimum_total = sum(lower_bounds.values())
+    if target < minimum_total:
+        raise ValueError(
+            "customer_out_target is below required incident minimums: "
+            f"requested {target:,}, minimum {minimum_total:,}"
+        )
+
+    adjustable = [
+        row for row in incidents if str(row["incident_id"]) not in lse_ids
+    ]
+    available = target - minimum_total
+    weights = {
+        str(row["incident_id"]): max(
+            0,
+            int(row["customers_out"]) - lower_bounds[str(row["incident_id"])],
+        )
+        for row in adjustable
+    }
+    weight_total = sum(weights.values())
+    exact: dict[str, float] = {}
+    allocated = 0
+    for row in adjustable:
+        incident_id = str(row["incident_id"])
+        share = (
+            available * weights[incident_id] / weight_total
+            if weight_total
+            else available / max(1, len(adjustable))
+        )
+        exact[incident_id] = share
+        addition = int(share)
+        row["customers_out"] = lower_bounds[incident_id] + addition
+        allocated += addition
+    remainder = available - allocated
+    for row in sorted(
+        adjustable,
+        key=lambda item: (
+            -(exact[str(item["incident_id"])] % 1),
+            str(item["incident_id"]),
+        ),
+    )[:remainder]:
+        row["customers_out"] = int(row["customers_out"]) + 1
 
 
 def _balanced_regions(count: int, rng: random.Random) -> list[str]:
@@ -864,6 +1225,11 @@ def generate_scenario(
     critical_facilities_per_region: int | None = None,
     lookup_path: Path = DEFAULT_LOOKUP_PATH,
     allowed_municipalities: Iterable[str] | None = None,
+    geography_coverage_target: int | None = None,
+    customer_out_target: int | None = None,
+    reference_root: Path = DEFAULT_REFERENCE_ROOT,
+    geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
+    population_constrained: bool = True,
 ) -> GeneratedScenario:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
         raise ValueError("scenario_id must use lowercase letters, numbers, hyphens, or underscores")
@@ -990,6 +1356,19 @@ def generate_scenario(
             }
         )
 
+    if customer_out_target is not None:
+        apply_customer_out_target(incidents, customer_out_target)
+
+    if population_constrained:
+        allocate_population_capacity(
+            incidents,
+            load_capacity_geographies(
+                reference_root=reference_root,
+                geography_path=geography_path,
+            ),
+            coverage_target=geography_coverage_target,
+        )
+
     weather = _generate_weather(start_date, rng)
     critical_facilities = _generate_critical_facilities(
         incidents,
@@ -1053,6 +1432,7 @@ def generate_copilot_demo_scenario(
         crew_count=COPILOT_DEMO_CREW_COUNT,
         assignment_rate=COPILOT_DEMO_ASSIGNMENT_RATE,
         dual_tree_incidents=COPILOT_DEMO_DUAL_TREE_INCIDENTS,
+        population_constrained=False,
         seed=seed,
         start_day_location_rate=0,
         critical_facilities_per_region=(
@@ -1338,6 +1718,8 @@ def validate_generated_scenario(
     expected_dual_tree_incidents: int | None = None,
 ) -> None:
     validate_geographic_reference_coverage(scenario.incidents)
+    if any(row.get("geography_reference_id") for row in scenario.incidents):
+        validate_population_capacity(scenario.incidents)
     incident_by_id = {row["incident_id"]: row for row in scenario.incidents}
     crew_by_id = {row["crew_id"]: row for row in scenario.crews}
     if len(incident_by_id) != len(scenario.incidents):
@@ -1408,12 +1790,44 @@ def validate_generated_scenario(
 def validate_geographic_reference_coverage(
     incidents: Iterable[dict[str, Any]],
     registry: GeographyRegistry | None = None,
+    *,
+    reference_root: Path = DEFAULT_REFERENCE_ROOT,
 ) -> None:
     registry = registry or GeographyRegistry.from_csv()
+    incident_rows = list(incidents)
+    has_reference_ids = any(
+        row.get("geography_reference_id") for row in incident_rows
+    )
+    capacity_by_id = (
+        {
+            row.reference_id: row
+            for row in load_capacity_geographies(reference_root=reference_root)
+        }
+        if has_reference_ids
+        else {}
+    )
     unresolved: set[str] = set()
+    unknown_reference_ids: set[str] = set()
+    municipality_mismatches: set[tuple[str, str]] = set()
     region_mismatches: set[tuple[str, str, str]] = set()
-    for incident in incidents:
+    for incident in incident_rows:
         municipality = str(incident["municipality"])
+        reference_id = str(incident.get("geography_reference_id") or "").strip()
+        if reference_id:
+            location = capacity_by_id.get(reference_id)
+            if location is None:
+                unknown_reference_ids.add(reference_id)
+                continue
+            if municipality != location.municipality:
+                municipality_mismatches.add(
+                    (municipality, location.municipality)
+                )
+            incident_region = str(incident["region"])
+            if location.region != incident_region:
+                region_mismatches.add(
+                    (municipality, incident_region, location.region)
+                )
+            continue
         location = registry.resolve(municipality)
         if location is None:
             unresolved.add(municipality)
@@ -1428,6 +1842,20 @@ def validate_geographic_reference_coverage(
             "Generated incidents lack approved geography mappings: "
             + ", ".join(sorted(unresolved))
         )
+    if unknown_reference_ids:
+        raise ValueError(
+            "Generated incidents use unapproved geography reference IDs: "
+            + ", ".join(sorted(unknown_reference_ids))
+        )
+    if municipality_mismatches:
+        details = ", ".join(
+            f"{actual} (expected {expected})"
+            for actual, expected in sorted(municipality_mismatches)
+        )
+        raise ValueError(
+            "Generated incident municipality does not match its approved geography "
+            "reference ID: " + details
+        )
     if region_mismatches:
         details = ", ".join(
             f"{municipality} ({incident_region} != {mapped_region})"
@@ -1436,6 +1864,51 @@ def validate_geographic_reference_coverage(
         raise ValueError(
             "Generated incident regions do not match approved geography mappings: "
             + details
+        )
+
+
+def validate_population_capacity(
+    incidents: Iterable[dict[str, Any]],
+    *,
+    reference_root: Path = DEFAULT_REFERENCE_ROOT,
+) -> None:
+    geographies = load_capacity_geographies(reference_root=reference_root)
+    capacity_by_id = {
+        row.reference_id: row.customers_served for row in geographies
+    }
+    totals: Counter[str] = Counter()
+    missing: list[str] = []
+    for incident in incidents:
+        if str(incident.get("status", "")).casefold() in {
+            "cancelled",
+            "closed",
+            "resolved",
+            "restored",
+        }:
+            continue
+        reference_id = str(incident.get("geography_reference_id") or "").strip()
+        if not reference_id:
+            missing.append(str(incident.get("incident_id", "unknown")))
+            continue
+        totals[reference_id] += int(incident["customers_out"])
+    if missing:
+        raise ValueError(
+            "Population-constrained incidents are missing geography_reference_id: "
+            + ", ".join(missing[:10])
+        )
+    exceeded = [
+        (reference_id, total, capacity_by_id.get(reference_id))
+        for reference_id, total in totals.items()
+        if capacity_by_id.get(reference_id) is None
+        or total > int(capacity_by_id[reference_id])
+    ]
+    if exceeded:
+        details = ", ".join(
+            f"{reference_id} ({total:,} > {capacity if capacity is not None else 'unknown'})"
+            for reference_id, total, capacity in exceeded[:10]
+        )
+        raise ValueError(
+            "Active customers_out exceeds approved geography capacity: " + details
         )
 
 
@@ -1450,6 +1923,8 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
     if scenario.scenario_id == "base":
         raise ValueError("The protected base scenario cannot be generated or replaced")
     validate_geographic_reference_coverage(scenario.incidents)
+    if any(row.get("geography_reference_id") for row in scenario.incidents):
+        validate_population_capacity(scenario.incidents)
     output_root = output_root.resolve()
     target = output_root / scenario.scenario_id
     if target.exists():

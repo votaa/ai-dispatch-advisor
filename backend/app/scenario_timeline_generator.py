@@ -18,16 +18,18 @@ from .scenario_generator import (
     LOCAL_TIMEZONE,
     REGIONS,
     GeneratedScenario,
+    _apply_capacity_location,
     _base_incident,
     _facility_keys,
-    _feeders_by_region,
     _lse_boundary_incidents,
     _set_linked_criticality,
     _suffix_region,
     generate_scenario,
+    load_capacity_geographies,
     load_municipalities,
     validate_critical_facility_linkage,
     validate_lse_coverage,
+    validate_population_capacity,
     write_scenario,
 )
 from .scenario_service import ScenarioService
@@ -625,7 +627,9 @@ def generate_timeline(
         }
         offsets[assignment["crew_id"]] = 0
 
-    feeders = _feeders_by_region(base.incidents)
+    capacity_geographies = {
+        row.reference_id: row for row in load_capacity_geographies()
+    }
     facility_keys = _facility_keys(base.critical_facilities)
     results: list[TimelineSnapshot] = []
     previous_timestamp = start
@@ -654,7 +658,36 @@ def generate_timeline(
                 sequence = int(arrival_id.rsplit("-", 1)[1])
                 incident = _base_incident(timestamp.date(), sequence, municipalities, rng)
                 incident["incident_id"] = arrival_id
-                incident["feeder"] = rng.choice(feeders[incident["region"]])
+                active_totals: Counter[str] = Counter()
+                anchors: dict[str, dict[str, Any]] = {}
+                for active in incidents.values():
+                    reference_id = str(active.get("geography_reference_id") or "")
+                    if reference_id:
+                        active_totals[reference_id] += int(active["customers_out"])
+                        anchors.setdefault(reference_id, active)
+                required = int(incident["customers_out"])
+                candidates = [
+                    geography
+                    for reference_id, geography in capacity_geographies.items()
+                    if reference_id in anchors
+                    and geography.customers_served - active_totals[reference_id]
+                    >= required
+                ]
+                if not candidates:
+                    raise ValueError(
+                        "Timeline arrival cannot fit remaining approved geography capacity: "
+                        f"incident {arrival_id}, customers_out {required:,}"
+                    )
+                geography = min(
+                    candidates,
+                    key=lambda row: (
+                        row.region != incident["region"],
+                        row.customers_served - active_totals[row.reference_id],
+                        row.reference_id,
+                    ),
+                )
+                _apply_capacity_location(incident, geography)
+                incident["feeder"] = anchors[geography.reference_id]["feeder"]
                 _set_linked_criticality(incident, facility_keys, criticality_rng)
                 incident["age_minutes"] = rng.randint(1, max(1, elapsed_minutes))
                 incident["etr"] = (timestamp + timedelta(minutes=_repair_duration(
@@ -713,6 +746,7 @@ def generate_timeline(
 
 
 def validate_timeline_snapshot(scenario: GeneratedScenario) -> None:
+    validate_population_capacity(scenario.incidents)
     incident_by_id = {row["incident_id"]: row for row in scenario.incidents}
     crew_by_id = {row["crew_id"]: row for row in scenario.crews}
     if len(incident_by_id) != len(scenario.incidents):

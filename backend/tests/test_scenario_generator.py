@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import shutil
 from collections import Counter
 from datetime import date
 from pathlib import Path
@@ -25,11 +26,13 @@ from app.scenario_generator import (
     REGIONS,
     generate_copilot_demo_scenario,
     generate_scenario,
+    load_capacity_geographies,
     load_municipalities,
     write_scenario,
     validate_critical_facility_linkage,
     validate_geographic_reference_coverage,
     validate_lse_coverage,
+    validate_population_capacity,
 )
 from app.scenario_service import ScenarioService
 
@@ -147,6 +150,127 @@ def test_default_generator_obeys_approved_dispatch_rules() -> None:
             assert incident["customers_out"] >= 40
             assert incident["severity"] in {"high", "critical"}
             assert incident["required_skill"] == "line"
+
+
+def test_population_constrained_generation_preserves_seeded_total_and_capacity() -> None:
+    settings = {
+        "scenario_id": "population-capacity",
+        "start_date": date(2026, 8, 10),
+        "incident_count": 2000,
+        "crew_count": 500,
+        "assignment_rate": 0.05,
+        "dual_tree_incidents": 5,
+        "seed": 20260810,
+    }
+    unconstrained = generate_scenario(**settings, population_constrained=False)
+    constrained = generate_scenario(**settings)
+    capacities = {
+        row.reference_id: row.customers_served
+        for row in load_capacity_geographies()
+    }
+    totals = Counter()
+    for incident in constrained.incidents:
+        totals[incident["geography_reference_id"]] += incident["customers_out"]
+
+    assert sum(row["customers_out"] for row in constrained.incidents) == sum(
+        row["customers_out"] for row in unconstrained.incidents
+    )
+    assert len(totals) == 334
+    assert all(total <= capacities[reference_id] for reference_id, total in totals.items())
+    validate_population_capacity(constrained.incidents)
+
+
+def test_population_reference_has_complete_stable_split_geography_identity() -> None:
+    geographies = load_capacity_geographies()
+
+    assert len(geographies) == 347
+    assert len({row.reference_id for row in geographies}) == 347
+    assert sum(row.customers_served for row in geographies) == 1_158_552
+    commack = [row for row in geographies if row.village == "Commack"]
+    assert {row.township for row in commack} == {"Huntington", "Smithtown"}
+    assert {row.municipality for row in commack} == {
+        "Commack-Huntington",
+        "Commack-Smithtown",
+    }
+
+
+def test_population_target_is_exact_and_fails_when_reference_capacity_is_insufficient() -> None:
+    scenario = generate_scenario(
+        scenario_id="explicit-customer-target",
+        start_date=date(2026, 8, 10),
+        incident_count=80,
+        crew_count=80,
+        assignment_rate=0.1,
+        dual_tree_incidents=1,
+        customer_out_target=25_000,
+        seed=34,
+    )
+    assert sum(row["customers_out"] for row in scenario.incidents) == 25_000
+
+    with pytest.raises(ValueError, match="requested 1,158,553.*available 1,158,552"):
+        generate_scenario(
+            scenario_id="impossible-customer-target",
+            start_date=date(2026, 8, 10),
+            incident_count=2000,
+            crew_count=500,
+            customer_out_target=1_158_553,
+        )
+
+
+def test_population_generation_rejects_unapproved_reference_manifest(
+    tmp_path: Path,
+) -> None:
+    source = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "reference"
+        / "pseg-long-island"
+    )
+    reference_root = tmp_path / "reference"
+    shutil.copytree(source, reference_root)
+    manifest_path = reference_root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["review"]["status"] = "pending"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="current, approved.*status was invalid"):
+        generate_scenario(
+            scenario_id="unapproved-reference",
+            start_date=date(2026, 8, 10),
+            incident_count=20,
+            crew_count=20,
+            assignment_rate=0,
+            dual_tree_incidents=0,
+            reference_root=reference_root,
+        )
+
+
+def test_population_generation_rejects_stale_reference(tmp_path: Path) -> None:
+    source = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "reference"
+        / "pseg-long-island"
+    )
+    reference_root = tmp_path / "reference"
+    shutil.copytree(source, reference_root)
+    manifest_path = reference_root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["source"]["updated_at"] = "2025-01-01T00:00:00Z"
+    manifest["extracted_at"] = "2025-01-01T01:00:00Z"
+    manifest["review"]["reviewed_at"] = "2025-01-01T02:00:00Z"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="current, approved.*status was stale"):
+        generate_scenario(
+            scenario_id="stale-reference",
+            start_date=date(2026, 8, 10),
+            incident_count=20,
+            crew_count=20,
+            assignment_rate=0,
+            dual_tree_incidents=0,
+            reference_root=reference_root,
+        )
 
 
 def test_geographic_reference_coverage_rejects_unmapped_or_wrong_region() -> None:

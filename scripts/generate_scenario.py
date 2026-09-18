@@ -72,6 +72,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="Share of crews located at their mapped home facility; other crews use a prior-job municipality",
     )
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
+    parser.add_argument(
+        "--geography-coverage-target",
+        type=int,
+        help=(
+            "Minimum distinct approved leaf geographies; generation expands beyond "
+            "this target when more customer capacity is required"
+        ),
+    )
+    parser.add_argument(
+        "--customers-out-target",
+        type=int,
+        help="Exact scenario-wide synthetic customers-out total to preserve during allocation",
+    )
     parser.add_argument("--preview-rows", type=int, default=5)
     parser.add_argument("--write", action="store_true", help="Write a new scenario folder; otherwise run as a dry-run preview")
     return parser
@@ -102,6 +115,8 @@ def main() -> None:
             critical_facilities_per_region=args.critical_facilities_per_region,
             seed=args.seed if args.seed is not None else 20260810,
             start_day_location_rate=args.start_day_location_rate,
+            geography_coverage_target=args.geography_coverage_target,
+            customer_out_target=args.customers_out_target,
         )
     print(f"Preset: {args.preset}")
     print(json.dumps(scenario.summary(), indent=2))

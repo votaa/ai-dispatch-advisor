@@ -718,6 +718,7 @@ def build_complete_evaluation(
         dual_tree_incidents=0,
         seed=seed,
         critical_facilities_per_region=max(1, round(incident_count * 0.01 / 4)),
+        population_constrained=False,
     )
     incidents = [
         *controlled.incidents,

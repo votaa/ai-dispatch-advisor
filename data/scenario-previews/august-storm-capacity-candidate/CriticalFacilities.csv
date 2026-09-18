@@ -1,0 +1,81 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-QN-01,Breezy Point Regional Medical Center,hospital,Queens-Nassau,Breezy Point,FDR-QN-96,critical
+FAC-QN-02,Oceanside Emergency Services Center,emergency_services,Queens-Nassau,Oceanside,FDR-QN-95,critical
+FAC-QN-03,Arverne Emergency Shelter,shelter,Queens-Nassau,Arverne,FDR-QN-19,critical
+FAC-QN-04,Franklin Square Fire District Headquarters,emergency_services,Queens-Nassau,Franklin Square,FDR-QN-04,critical
+FAC-QN-05,Oceanside Police Precinct,emergency_services,Queens-Nassau,Oceanside,FDR-QN-75,critical
+FAC-QN-06,Franklin Square Water Treatment Facility,water,Queens-Nassau,Franklin Square,FDR-QN-36,critical
+FAC-QN-07,Island Park Water Pumping Station,water,Queens-Nassau,Island Park,FDR-QN-08,critical
+FAC-QN-08,Elmont Wastewater Treatment Facility,water,Queens-Nassau,Elmont,FDR-QN-40,critical
+FAC-QN-09,East Rockaway Wastewater Pump Station,water,Queens-Nassau,East Rockaway,FDR-QN-02,critical
+FAC-QN-10,Oceanside Transit Operations Center,transportation,Queens-Nassau,Oceanside,FDR-QN-48,critical
+FAC-QN-11,Oceanside Public Safety Communications Center,communications,Queens-Nassau,Oceanside,FDR-QN-49,critical
+FAC-QN-12,Elmont Nursing Home,healthcare,Queens-Nassau,Elmont,FDR-QN-21,high
+FAC-QN-13,Oceanside Dialysis Center,healthcare,Queens-Nassau,Oceanside,FDR-QN-60,high
+FAC-QN-14,North Valley Stream Correctional Facility,public_services,Queens-Nassau,North Valley Stream,FDR-QN-88,high
+FAC-QN-15,Oceanside Broadcast Communications Facility,communications,Queens-Nassau,Oceanside,FDR-QN-89,high
+FAC-QN-16,Oceanside Senior Care Center,healthcare,Queens-Nassau,Oceanside,FDR-QN-22,medium
+FAC-QN-17,Elmont Health Related Facility,healthcare,Queens-Nassau,Elmont,FDR-QN-33,medium
+FAC-QN-18,Jones Beach Private Health Device (LSE),healthcare,Queens-Nassau,Jones Beach,FDR-QN-99,medium
+FAC-CN-01,Massapequa Regional Medical Center,hospital,Central-Nassau,Massapequa,FDR-CN-31,critical
+FAC-CN-02,Floral Park-North Hempstead Emergency Services Center,emergency_services,Central-Nassau,Floral Park-North Hempstead,FDR-CN-40,critical
+FAC-CN-03,Port Washington Emergency Shelter,shelter,Central-Nassau,Port Washington,FDR-CN-36,critical
+FAC-CN-04,Mill Neck Fire District Headquarters,emergency_services,Central-Nassau,Mill Neck,FDR-CN-63,critical
+FAC-CN-05,Port Washington Police Precinct,emergency_services,Central-Nassau,Port Washington,FDR-CN-15,critical
+FAC-CN-06,Massapequa Park Water Treatment Facility,water,Central-Nassau,Massapequa Park,FDR-CN-64,critical
+FAC-CN-07,Glen Cove Water Pumping Station,water,Central-Nassau,Glen Cove,FDR-CN-95,critical
+FAC-CN-08,Glen Cove Wastewater Treatment Facility,water,Central-Nassau,Glen Cove,FDR-CN-92,critical
+FAC-CN-09,East Norwich Wastewater Pump Station,water,Central-Nassau,East Norwich,FDR-CN-54,critical
+FAC-CN-10,Great Neck Gardens Transit Operations Center,transportation,Central-Nassau,Great Neck Gardens,FDR-CN-65,critical
+FAC-CN-11,Glen Cove Public Safety Communications Center,communications,Central-Nassau,Glen Cove,FDR-CN-44,critical
+FAC-CN-12,Freeport Nursing Home,healthcare,Central-Nassau,Freeport,FDR-CN-49,high
+FAC-CN-13,Merrick Dialysis Center,healthcare,Central-Nassau,Merrick,FDR-CN-82,high
+FAC-CN-14,Merrick Correctional Facility,public_services,Central-Nassau,Merrick,FDR-CN-10,high
+FAC-CN-15,Brookville Broadcast Communications Facility,communications,Central-Nassau,Brookville,FDR-CN-19,high
+FAC-CN-16,Mineola Senior Care Center,healthcare,Central-Nassau,Mineola,FDR-CN-13,medium
+FAC-CN-17,Greenvale-North Hempstead Health Related Facility,healthcare,Central-Nassau,Greenvale-North Hempstead,FDR-CN-20,medium
+FAC-CN-18,Westbury Private Health Device (LSE),healthcare,Central-Nassau,Westbury,FDR-CN-43,medium
+FAC-WS-01,Deer Park Regional Medical Center,hospital,Western Suffolk,Deer Park,FDR-WS-68,critical
+FAC-WS-02,Bay Shore Emergency Services Center,emergency_services,Western Suffolk,Bay Shore,FDR-WS-55,critical
+FAC-WS-03,Bohemia Emergency Shelter,shelter,Western Suffolk,Bohemia,FDR-WS-88,critical
+FAC-WS-04,Dix Hills Fire District Headquarters,emergency_services,Western Suffolk,Dix Hills,FDR-WS-35,critical
+FAC-WS-05,Wyandanch Police Precinct,emergency_services,Western Suffolk,Wyandanch,FDR-WS-12,critical
+FAC-WS-06,Lonelyville Water Treatment Facility,water,Western Suffolk,Lonelyville,FDR-WS-66,critical
+FAC-WS-07,Northport Water Pumping Station,water,Western Suffolk,Northport,FDR-WS-64,critical
+FAC-WS-08,Smithtown Wastewater Treatment Facility,water,Western Suffolk,Smithtown,FDR-WS-39,critical
+FAC-WS-09,Smithtown Wastewater Pump Station,water,Western Suffolk,Smithtown,FDR-WS-65,critical
+FAC-WS-10,Commack-Smithtown Transit Operations Center,transportation,Western Suffolk,Commack-Smithtown,FDR-WS-27,critical
+FAC-WS-11,Centerport Public Safety Communications Center,communications,Western Suffolk,Centerport,FDR-WS-94,critical
+FAC-WS-12,Sayville Nursing Home,healthcare,Western Suffolk,Sayville,FDR-WS-67,high
+FAC-WS-13,Melville Dialysis Center,healthcare,Western Suffolk,Melville,FDR-WS-81,high
+FAC-WS-14,Smithtown Correctional Facility,public_services,Western Suffolk,Smithtown,FDR-WS-07,high
+FAC-WS-15,Eatons Neck Broadcast Communications Facility,communications,Western Suffolk,Eatons Neck,FDR-WS-34,high
+FAC-WS-16,West Islip Senior Care Center,healthcare,Western Suffolk,West Islip,FDR-WS-18,medium
+FAC-WS-17,Lindenhurst Health Related Facility,healthcare,Western Suffolk,Lindenhurst,FDR-WS-31,medium
+FAC-WS-18,Deer Park Private Health Device (LSE),healthcare,Western Suffolk,Deer Park,FDR-WS-08,medium
+FAC-WS-19,West Islip Regional Medical Center,hospital,Western Suffolk,West Islip,FDR-WS-56,critical
+FAC-WS-20,Sayville Emergency Services Center,emergency_services,Western Suffolk,Sayville,FDR-WS-76,critical
+FAC-WS-21,Elwood Emergency Shelter,shelter,Western Suffolk,Elwood,FDR-WS-89,critical
+FAC-WS-22,East Islip Fire District Headquarters,emergency_services,Western Suffolk,East Islip,FDR-WS-44,critical
+FAC-WS-23,Bay Shore Police Precinct,emergency_services,Western Suffolk,Bay Shore,FDR-WS-13,critical
+FAC-WS-24,Lindenhurst Water Treatment Facility,water,Western Suffolk,Lindenhurst,FDR-WS-90,critical
+FAC-WS-25,Huntington Station Water Pumping Station,water,Western Suffolk,Huntington Station,FDR-WS-86,critical
+FAC-WS-26,Bay Shore Wastewater Treatment Facility,water,Western Suffolk,Bay Shore,FDR-WS-20,critical
+FAC-WS-27,East Northport Wastewater Pump Station,water,Western Suffolk,East Northport,FDR-WS-33,critical
+FAC-ES-01,East Patchogue Regional Medical Center,hospital,Eastern Suffolk,East Patchogue,FDR-ES-78,critical
+FAC-ES-02,Middle Island Emergency Services Center,emergency_services,Eastern Suffolk,Middle Island,FDR-ES-04,critical
+FAC-ES-03,Setauket-East Setauket Emergency Shelter,shelter,Eastern Suffolk,Setauket-East Setauket,FDR-ES-20,critical
+FAC-ES-04,New Suffolk Fire District Headquarters,emergency_services,Eastern Suffolk,New Suffolk,FDR-ES-85,critical
+FAC-ES-05,Centereach Police Precinct,emergency_services,Eastern Suffolk,Centereach,FDR-ES-84,critical
+FAC-ES-06,Lake Ronkonkoma-Brookhaven Water Treatment Facility,water,Eastern Suffolk,Lake Ronkonkoma-Brookhaven,FDR-ES-47,critical
+FAC-ES-07,Sag Harbor-East Hampton Water Pumping Station,water,Eastern Suffolk,Sag Harbor-East Hampton,FDR-ES-73,critical
+FAC-ES-08,Hampton Bays Wastewater Treatment Facility,water,Eastern Suffolk,Hampton Bays,FDR-ES-39,critical
+FAC-ES-09,Westhampton Wastewater Pump Station,water,Eastern Suffolk,Westhampton,FDR-ES-46,critical
+FAC-ES-10,Shirley Transit Operations Center,transportation,Eastern Suffolk,Shirley,FDR-ES-79,critical
+FAC-ES-11,North Haven Public Safety Communications Center,communications,Eastern Suffolk,North Haven,FDR-ES-34,critical
+FAC-ES-12,Cherry Grove Nursing Home,healthcare,Eastern Suffolk,Cherry Grove,FDR-ES-91,high
+FAC-ES-13,Hampton Bays Dialysis Center,healthcare,Eastern Suffolk,Hampton Bays,FDR-ES-33,high
+FAC-ES-14,East Marion Correctional Facility,public_services,Eastern Suffolk,East Marion,FDR-ES-25,high
+FAC-ES-15,Lake Ronkonkoma-Brookhaven Broadcast Communications Facility,communications,Eastern Suffolk,Lake Ronkonkoma-Brookhaven,FDR-ES-13,high
+FAC-ES-16,Mastic Beach Senior Care Center,healthcare,Eastern Suffolk,Mastic Beach,FDR-ES-89,medium
+FAC-ES-17,Miller Place Health Related Facility,healthcare,Eastern Suffolk,Miller Place,FDR-ES-61,medium

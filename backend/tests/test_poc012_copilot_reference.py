@@ -11,6 +11,11 @@ from app import data_loader
 from app.copilot_provider import CopilotGenerationRequest, CopilotGenerationResult
 from app.services import PsegLongIslandReferenceService, build_services
 from app.services.reference_service import CSV_HEADERS, DEFAULT_REFERENCE_ROOT
+from app.scenario_generator import (
+    generate_scenario,
+    load_capacity_geographies,
+    write_scenario,
+)
 
 
 SCENARIO_ROOT = Path(__file__).resolve().parents[2] / "data" / "scenarios"
@@ -189,6 +194,49 @@ def test_full_scale_scenario_percentage_uses_complete_zero_numerator(
     assert "2000 active incidents evaluated" in response.response_scope
     assert response.warning is None
     assert provider.requests == []
+
+
+def test_population_constrained_scenario_percentage_can_reach_exactly_100_percent(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    scenario = generate_scenario(
+        scenario_id="exact-capacity-percentage",
+        start_date=datetime(2026, 8, 21, tzinfo=timezone.utc).date(),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+        seed=34,
+    )
+    melville = next(
+        row for row in load_capacity_geographies() if row.village == "Melville"
+    )
+    incident = scenario.incidents[0]
+    incident.update(
+        region=melville.region,
+        municipality=melville.municipality,
+        geography_reference_id=melville.reference_id,
+        customers_out=melville.customers_served,
+        latitude=melville.latitude,
+        longitude=melville.longitude,
+    )
+    for other in scenario.incidents[1:]:
+        assert other["geography_reference_id"] != melville.reference_id
+    write_scenario(scenario, tmp_path)
+    monkeypatch.setattr(data_loader, "DATA_ROOT", tmp_path)
+    data_loader.set_active_scenario(scenario.scenario_id)
+    services = build_services()
+
+    response = services.copilot.respond(
+        "What percentage of customers in Melville are affected?"
+    )
+
+    assert (
+        "**8,513 synthetic customers out ÷ 8,513 static customers served = 100.00%**"
+        in response.answer
+    )
+    assert response.warning is None
 
 
 def test_percentage_refuses_partial_geographic_coverage(monkeypatch) -> None:

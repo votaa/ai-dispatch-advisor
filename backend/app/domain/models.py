@@ -128,6 +128,7 @@ class Incident(DomainModel):
     incident_id: str
     region: str
     municipality: str
+    geography_reference_id: Optional[str] = None
     feeder: str
     severity: str
     status: str

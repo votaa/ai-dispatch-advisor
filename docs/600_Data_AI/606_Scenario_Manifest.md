@@ -125,6 +125,7 @@ A conforming version `1.0` manifest must meet these rules:
 - Each file value is a CSV filename relative to the scenario directory; absolute paths and parent-directory traversal are not allowed.
 - Every inventoried CSV file exists in the same scenario directory.
 - CSV headers conform to the domain definitions in the data model.
+- `PendingIncidents.csv` may include `geography_reference_id` after `municipality`; population-constrained generated scenarios require it, while existing version `1.0` fixtures remain compatible without it.
 - Identifiers are unique within their domain, and assignment references resolve to existing incident and crew identifiers.
 - A crew with an active assignment has `assigned` status, and every crew with `assigned` status has exactly one active assignment.
 
