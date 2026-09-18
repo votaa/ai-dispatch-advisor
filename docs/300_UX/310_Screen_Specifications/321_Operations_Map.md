@@ -25,6 +25,10 @@ The `base` scenario has fictional named crew locations outside the Long Island r
 
 Explicit operations-center/staging-area coordinates, live GPS, road routing, electrical topology, outage-area polygons, weather overlays, and map-based dispatch actions are outside this scope.
 
+## Candidate enhancements
+
+POC-036 through POC-045 separately track proposed priority and crew filters, assignment relationships, geographic aggregation, qualified scenario overlays, and consistent detail/related/summary/map navigation. Their scope, dependencies, relative effort, and recommended implementation order are documented in the [Operations Map enhancement implementation plans](../../900_Delivery/915_POC_036_045_Operations_Map_Enhancement_Plans.md). These items remain documentation-only proposals until individually reviewed and approved; they do not expand the implemented POC-035 boundary.
+
 ## Validation
 
 Validate authoritative center resolution and unknown-location handling; full-scale inventory; layer and search filtering across all pages; selection links; coincident points; scenario reset; invalid coordinates; tile failure/retry; keyboard access; desktop and narrow-screen layouts. No existing scenario fixtures are regenerated.

@@ -165,6 +165,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/912_POC_019_Operational_Scoring_Policy_Implementation_Plan.md` | Implemented | Active-by-default level-specific CF scoring, ranking, warnings, compatibility, approval evidence, and rollback |
 | `docs/900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md` | Drafted | Deferred deterministic Copilot queries for Level 1–3 breakdowns, highest-level incident counts, facility-record detail, and unknown warnings |
 | `docs/900_Delivery/914_POC_012_PSEG_LI_Static_Reference_Implementation_Plan.md` | Completed | SME-maintained PSEG Long Island hierarchy and customers-served snapshot, validation, ingestion, deterministic Copilot use, refresh governance, and Phase 5 closeout evidence |
+| `docs/900_Delivery/915_POC_036_045_Operations_Map_Enhancement_Plans.md` | Drafted | Review-ready grouping, effort, sequencing, boundaries, and approval gates for POC-036 through POC-045 map and cross-view navigation enhancements |
 
 ## Planned Documentation Structure
 
@@ -313,3 +314,4 @@ Documents should avoid duplicating full content from other documents. Instead, t
 - [Release Management](900_Delivery/903_Release_Management.md)
 - [Runbook](900_Delivery/904_Runbook.md)
 - [POC-024 Expandable Operational Workspaces Implementation Plan](900_Delivery/910_POC_024_Expandable_Operational_Workspaces_Implementation_Plan.md)
+- [POC-036–045 Operations Map Enhancement Implementation Plans](900_Delivery/915_POC_036_045_Operations_Map_Enhancement_Plans.md)
