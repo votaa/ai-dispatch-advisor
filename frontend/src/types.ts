@@ -32,6 +32,13 @@ export type Crew = {
   storm_ready: boolean;
   travel_minutes_to_selected_incident: number;
   assigned_incidents: AssignedIncident[];
+  map_location?: {
+    latitude: number;
+    longitude: number;
+    village: string;
+    reference_id: string;
+    precision: "village_center";
+  } | null;
   suitability_score?: number;
   capability_match?: boolean;
   estimated_travel_minutes?: number;

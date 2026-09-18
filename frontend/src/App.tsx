@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Users
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
@@ -39,7 +39,9 @@ import type {
   ScenarioDescriptor
 } from "./types";
 
-type ViewKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
+const OperationsMap = lazy(() => import("./components/OperationsMap"));
+
+type ViewKey = "map" | "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
 type ChatTurn = {
   question: string;
   answer: string;
@@ -84,6 +86,7 @@ const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dispatch", label: "Dispatch", icon: RadioTower },
   { key: "incidents", label: "Incidents", icon: ClipboardList },
   { key: "crews", label: "Crew Board", icon: Users },
+  { key: "map", label: "Operations Map", icon: Map },
   { key: "storm", label: "Storm Mode", icon: CloudLightning },
   { key: "scenario", label: "Scenario", icon: Map },
   { key: "copilot", label: "AI Copilot", icon: Bot }
@@ -656,6 +659,22 @@ function App() {
               onSelect={openIncidentDetails}
             />
           </ExpandableWorkspace>
+        ))}
+
+        {view === "map" && (initialLoading || scenarioLoading ? (
+          <ViewState title="Loading operations map..." message="Retrieving incident and crew locations." />
+        ) : operationalDataUnavailable ? (
+          <ViewState title="Operations map unavailable" message="Location data could not be loaded from the backend." actionLabel="Retry connection" onAction={loadApplication} />
+        ) : (
+          <Suspense fallback={<ViewState title="Loading map..." message="Preparing the geographic view." />}>
+            <OperationsMap
+              key={`operations-map-${activeScenario?.scenario_id ?? "loading"}`}
+              incidents={incidents}
+              crews={crews}
+              onOpenIncident={openIncidentDetails}
+              onOpenCrew={openCrewDetails}
+            />
+          </Suspense>
         ))}
 
         {view === "crews" && (initialLoading ? (

@@ -157,3 +157,32 @@ def test_recommendation_uses_derived_travel_for_requested_incident(
         if estimate is not None
     )
     assert ineligible_travel < selected.estimated_travel_minutes
+
+
+def test_crew_map_locations_use_authoritative_village_centers() -> None:
+    data_loader.set_active_scenario("long-island-copilot-demo")
+    services = build_services()
+    crews = services.crews.list()
+    assert crews
+    for crew in crews:
+        location = services.geography.require(crew.current_location)
+        assert crew.map_location is not None
+        assert crew.map_location.precision == "village_center"
+        assert crew.map_location.latitude == location.latitude
+        assert crew.map_location.longitude == location.longitude
+        assert crew.map_location.village == location.village
+        assert crew.map_location.reference_id == location.reference_id
+
+
+def test_full_scale_map_keeps_unresolved_staging_locations_unmapped() -> None:
+    data_loader.set_active_scenario("august-storm-preview-v3")
+    services = build_services()
+    crews = services.crews.list()
+    assert len(crews) == 500
+    mapped = [crew for crew in crews if crew.map_location is not None]
+    unmapped = [crew for crew in crews if crew.map_location is None]
+    assert mapped and unmapped
+    for crew in unmapped:
+        assert services.geography.resolve(crew.current_location) is None
+    # Assignment never substitutes an incident position for a crew village center.
+    assert any(crew.assigned_incidents for crew in mapped)

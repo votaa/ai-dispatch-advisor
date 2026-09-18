@@ -32,6 +32,14 @@ class AssignedIncident(DomainModel):
     severity: Optional[str] = None
 
 
+class CrewMapLocation(DomainModel):
+    latitude: float
+    longitude: float
+    village: str
+    reference_id: str
+    precision: Literal["village_center"] = "village_center"
+
+
 class Crew(DomainModel):
     crew_id: str
     crew_name: str
@@ -43,6 +51,7 @@ class Crew(DomainModel):
     storm_ready: bool
     travel_minutes_to_selected_incident: int
     assigned_incidents: list[AssignedIncident] = Field(default_factory=list)
+    map_location: Optional[CrewMapLocation] = None
 
 
 class CrewCandidate(Crew):

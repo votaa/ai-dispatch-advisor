@@ -34,6 +34,7 @@ Current fields:
 | `status` | Current demo availability state |
 | `capability` | Crew capability or work type |
 | `current_location` | Demo location or staging point |
+| `map_location` | Nullable approximate village center: latitude, longitude, village, reference_id, and precision (`village_center`). Resolved from the authoritative geography registry; unknown names remain null. |
 | `shift_remaining_hours` | Remaining shift availability |
 | `storm_ready` | Whether crew is storm-ready |
 | `travel_minutes_to_selected_incident` | Demo travel estimate used by recommendation logic |
@@ -62,6 +63,7 @@ Returns all synthetic crews in the active demo scenario.
 - Loads `Crews.csv` for the active scenario.
 - Applies active seed and accepted demo assignment state.
 - Returns assigned incident context for each crew.
+- Resolves `current_location` through the shared geography registry (including approved aliases) for `map_location`. Does not infer positions from assignments or staging-area names. The additive field is also present in crew candidates; existing scenario CSVs are unchanged.
 
 ### Example Response Shape
 

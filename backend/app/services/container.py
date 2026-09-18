@@ -76,6 +76,7 @@ def build_services(
         optimization_engine=optimization_engine,
     )
     crews = CrewService(
+        geography=geography,
         crew_rows=data_loader.crews,
         incident_rows=data_loader.incidents,
         assignments=assignments,

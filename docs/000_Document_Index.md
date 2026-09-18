@@ -93,6 +93,7 @@ Batch 1C establishes screen-level UX specifications with visual references.
 | `docs/300_UX/310_Screen_Specifications/318_Audit_History.md` | Drafted | One-page specification for audit and recommendation history review |
 | `docs/300_UX/310_Screen_Specifications/319_Integration_Health.md` | Drafted | One-page specification for integration status and data freshness review |
 | `docs/300_UX/310_Screen_Specifications/320_Restoration_Timeline_Prediction.md` | Drafted | One-page specification for restoration timeline forecasting and prediction |
+| `docs/300_UX/310_Screen_Specifications/321_Operations_Map.md` | Implemented | POC-035 incident and approximate crew geography with existing workflow links |
 
 Batch 2A establishes the backend and API design foundation.
 
@@ -211,6 +212,7 @@ docs/
       318_Audit_History.md
       319_Integration_Health.md
       320_Restoration_Timeline_Prediction.md
+      321_Operations_Map.md
 
   400_Backend_API/
     401_Backend_Service_Design.md

@@ -12,6 +12,7 @@ The current POC uses local React state to select one of these views:
 - Dispatch.
 - Incidents.
 - Crew Board.
+- Operations Map.
 - Storm Mode.
 - Scenario.
 - AI Copilot.
@@ -41,6 +42,7 @@ The current primary navigation model should remain:
 | Dispatch | `/dispatch` | Primary dispatch work surface |
 | Incidents | `/incidents` | Active incident list and future detail views |
 | Crew Board | `/crews` | Crew availability and assignment context |
+| Operations Map | `/map` (future route) | Incident and approximate crew geography; links to existing workflows |
 | Storm Mode | `/storm` | Major event operations |
 | Scenario | `/scenarios` | Dispatch and restoration scenario comparison |
 | AI Copilot | `/copilot` | Advisory operational questions |

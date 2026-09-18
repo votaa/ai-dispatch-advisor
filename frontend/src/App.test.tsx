@@ -154,6 +154,7 @@ describe("application states and scenario switching", () => {
   afterEach(() => {
     cleanup();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("shows purposeful loading states across data-backed primary views", () => {
@@ -1553,4 +1554,25 @@ describe("application states and scenario switching", () => {
     await waitFor(() => expect(selector.value).toBe("storm"));
     expect(await screen.findByText("Major Storm activated.")).toBeTruthy();
   });
+  it("opens map incidents in the existing detail view and clears map filters on scenario change", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.incidents.mockResolvedValue([{...baseIncident, region: "North"}]);
+    render(<App />);
+    await screen.findByRole("button", {name: "Open recommendations"});
+    fireEvent.click(screen.getByRole("button", {name: "Operations Map"}));
+    fireEvent.click(await screen.findByRole("button", {name: /! · INC-1001/}));
+    fireEvent.click(screen.getByRole("button", {name: "Open incident"}));
+    expect(await screen.findByRole("complementary", {name: "Incident details INC-1001"})).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Operations Map"}));
+    fireEvent.change(await screen.findByRole("searchbox", {name: "Search records"}), {target: {value: "no match"}});
+    expect(screen.getByText("No records match these filters.")).toBeTruthy();
+    apiMocks.activateScenario.mockResolvedValue({...stormScenario, is_active: true});
+    fireEvent.change(screen.getByLabelText("Active synthetic scenario"), {target: {value: "storm"}});
+    await screen.findByText("Major Storm activated.");
+    expect((screen.getByRole("searchbox", {name: "Search records"}) as HTMLInputElement).value).toBe("");
+    expect(screen.getByRole("button", {name: /! · INC-1001/})).toBeTruthy();
+    expect(apiMocks.recordRecommendationAction).not.toHaveBeenCalled();
+  });
+
 });

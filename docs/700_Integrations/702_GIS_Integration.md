@@ -20,7 +20,7 @@ GET /api/topology
 GET /api/critical-facilities
 ```
 
-The current frontend does not yet include an interactive map.
+The Operations Map (POC-035) displays active scenario incidents and approximate crew village centers on an interactive Long Island basemap. This uses synthetic scenario data and the authoritative local geography registry, not live GIS or GPS. See [Operations Map](../300_UX/310_Screen_Specifications/321_Operations_Map.md).
 
 ## GIS Role
 
@@ -174,7 +174,7 @@ Frontend map displays should avoid exposing unnecessary critical infrastructure 
 | --- | --- |
 | `Topology.csv` | GIS topology or network model adapter |
 | `CriticalFacilities.csv` | GIS or enterprise facility source |
-| No map | Controlled map and geospatial context |
+| Synthetic incident / approximate crew map | Controlled GIS and geospatial context |
 | Static feeder fields | Validated feeder and asset relationships |
 | No geometry validation | Geospatial validation and source metadata |
 
