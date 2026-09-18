@@ -9,7 +9,8 @@
 .operations-map-controls { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-top: 20px; }
 .operations-map-controls label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
 .operations-map-controls input[type=search], .operations-map-controls select { padding: 9px 10px; border: 1px solid #bdcbd8; border-radius: 5px; font: inherit; background: white; min-width: 0; width: 100%; }
-.operations-map-search { flex: 1 1 220px; }
+.operations-map-search { flex: 1 1 220px; min-width: 0; }
+.operations-map-search .autocomplete-field { display: grid; gap: 6px; min-width: 0; }
 .operations-map-controls .operations-map-toggle { display: flex; align-items: center; min-height: 38px; }
 .operations-map-summary { padding: 14px 0; color: #465e73; font-size: 13px; }
 .operations-map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }

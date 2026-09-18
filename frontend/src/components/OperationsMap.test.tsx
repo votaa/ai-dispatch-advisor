@@ -55,13 +55,32 @@ describe("Operations Map", () => {
     const many = Array.from({length: 25}, (_, i) => ({...incident, incident_id: `INC-${i}`}));
     render(<OperationsMap incidents={many} crews={[{...crew, map_location: null}]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
     expect(screen.queryByRole("button", { name: /! · INC-24/ })).toBeNull();
-    fireEvent.change(screen.getByRole("searchbox"), {target: {value: "INC-24"}});
+    fireEvent.change(screen.getByRole("combobox", {name: "Search records"}), {target: {value: "INC-24"}});
     expect(screen.getByRole("button", { name: /! · INC-24/ })).toBeTruthy();
-    fireEvent.change(screen.getByRole("searchbox"), {target: {value: ""}});
+    fireEvent.change(screen.getByRole("combobox", {name: "Search records"}), {target: {value: ""}});
     fireEvent.click(screen.getByRole("checkbox", { name: "Unmapped only" }));
     fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+  });
+
+  it("offers grouped typeahead suggestions with filter-scoped match counts", () => {
+    const incidents = [
+      incident,
+      { ...incident, incident_id: "INC-2", municipality: "Hicksville" },
+      { ...incident, incident_id: "INC-3", municipality: "Riverhead", region: "Eastern-Suffolk" }
+    ];
+    render(<OperationsMap incidents={incidents} crews={[crew]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
+
+    const search = screen.getByRole("combobox", { name: "Search records" });
+    fireEvent.change(search, { target: { value: "Hick" } });
+    expect(screen.getByRole("option", { name: "Hicksville, Municipality, 2 matches" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "Hicksville, Location, 1 match" })).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Operating region"), { target: { value: "Eastern-Suffolk" } });
+    fireEvent.change(search, { target: { value: "River" } });
+    expect(screen.getByRole("option", { name: "Riverhead, Municipality, 1 match" })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Location" })).toBeNull();
   });
   it("reports basemap failure and offers retry while keeping records available", () => {
     const tileLayer = vi.spyOn(L, "tileLayer");

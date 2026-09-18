@@ -4,6 +4,8 @@ import "leaflet.markercluster";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import type { Crew, Incident } from "../types";
+import { AutocompleteSearch, buildAutocompleteSuggestions } from "./AutocompleteSearch";
+import type { AutocompleteField } from "./AutocompleteSearch";
 import "./OperationsMap.css";
 
 // Initial framing only: panning remains unrestricted, including surrounding NYC.
@@ -22,6 +24,19 @@ export type MapRecord = {
   incident?: Incident;
   crew?: Crew;
 };
+
+const mapAutocompleteFields: AutocompleteField<MapRecord>[] = [
+  { group: "Incident ID", values: (record) => record.incident?.incident_id ?? "" },
+  { group: "Feeder", values: (record) => record.incident?.feeder ?? "" },
+  { group: "Municipality", values: (record) => record.incident?.municipality ?? "" },
+  { group: "Hazard", values: (record) => record.incident?.hazard ?? "" },
+  { group: "Crew ID", values: (record) => record.crew?.crew_id ?? "" },
+  { group: "Crew Name", values: (record) => record.crew?.crew_name ?? "" },
+  { group: "Location", values: (record) => record.crew?.current_location ?? "" },
+  { group: "Capability", values: (record) => record.crew?.capability ?? "" },
+  { group: "Region", values: (record) => record.crew?.home_region ?? "" },
+  { group: "Assigned Incident", values: (record) => record.crew?.assigned_incidents.map((assignment) => assignment.incident_id) ?? [] }
+];
 
 function coordinates(latitude: unknown, longitude: unknown): [number, number] | null {
   return typeof latitude === "number" && typeof longitude === "number" &&
@@ -148,6 +163,14 @@ export default function OperationsMap({ incidents, crews, onOpenIncident, onOpen
   const [homeRequest, setHomeRequest] = useState(0);
   const all = useMemo(() => mapRecords(incidents, crews), [incidents, crews]);
   const regions = useMemo(() => Array.from(new Set(all.map((r) => r.region))).sort(), [all]);
+  const suggestionRecords = useMemo(() => all.filter((record) =>
+    (record.kind === "incident" ? showIncidents : showCrews) &&
+    (region === "all" || record.region === region)
+  ), [all, region, showIncidents, showCrews]);
+  const autocompleteSuggestions = useMemo(
+    () => buildAutocompleteSuggestions(suggestionRecords, mapAutocompleteFields, query),
+    [query, suggestionRecords]
+  );
   const filtered = useMemo(() => {
     const search = query.toLowerCase().trim();
     return all.filter((r) => (r.kind === "incident" ? showIncidents : showCrews) &&
@@ -170,7 +193,16 @@ export default function OperationsMap({ incidents, crews, onOpenIncident, onOpen
       <button type="button" onClick={() => { setSelected(null); setHomeRequest((n) => n + 1); }}>Reset to Long Island</button>
     </div>
     <div className="operations-map-controls" role="group" aria-label="Map filters">
-      <label className="operations-map-search">Search records<input type="search" value={query} placeholder="Incident, crew, village…" onChange={(e) => setQuery(e.target.value)} /></label>
+      <div className="operations-map-search">
+        <AutocompleteSearch
+          accessibleLabel="Search records"
+          label="Search records"
+          onChange={setQuery}
+          placeholder="Incident, crew, village…"
+          suggestions={autocompleteSuggestions}
+          value={query}
+        />
+      </div>
       <label>Operating region<select value={region} onChange={(e) => setRegion(e.target.value)}><option value="all">All regions</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></label>
       <label className="operations-map-toggle"><input type="checkbox" checked={showIncidents} onChange={(e) => setShowIncidents(e.target.checked)} />Incidents</label>
       <label className="operations-map-toggle"><input type="checkbox" checked={showCrews} onChange={(e) => setShowCrews(e.target.checked)} />Crews</label>
