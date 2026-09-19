@@ -8,6 +8,7 @@ import { AutocompleteSearch, buildAutocompleteSuggestions } from "./Autocomplete
 import type { AutocompleteField } from "./AutocompleteSearch";
 import { ContextualNavigationPanel, EntityNavigationActions } from "./ContextualNavigation";
 import type { NavigationResolverContext, OperationalNavigationCommand } from "./ContextualNavigation";
+import type { MapViewportState, MapWorkspaceState } from "../navigationState";
 import "./OperationsMap.css";
 
 // Initial framing only: panning remains unrestricted, including surrounding NYC.
@@ -77,14 +78,21 @@ function markerIcon(kind: MapRecord["kind"]) {
   });
 }
 
-function MapCanvas({ records, selected, onSelect, homeRequest }: {
-  records: MapRecord[]; selected: string | null; onSelect: (key: string) => void; homeRequest: number;
+function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport, onViewportChange }: {
+  records: MapRecord[];
+  selected: string | null;
+  onSelect: (key: string) => void;
+  homeRequest: number;
+  restoredViewport?: MapViewportState | null;
+  onViewportChange?: (viewport: MapViewportState) => void;
 }) {
   const element = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const clusters = useRef<L.MarkerClusterGroup | null>(null);
   const markers = useRef(new Map<string, L.Marker>());
   const tiles = useRef<L.TileLayer | null>(null);
+  const skipInitialSelectionReveal = useRef(Boolean(restoredViewport && selected));
+  const homeRequestMounted = useRef(false);
   const [tileError, setTileError] = useState(false);
 
   useEffect(() => {
@@ -105,11 +113,18 @@ function MapCanvas({ records, selected, onSelect, homeRequest }: {
       })
     }).addTo(instance);
     L.control.scale({ imperial: true, metric: false }).addTo(instance);
+    if (restoredViewport) instance.setView(restoredViewport.center, restoredViewport.zoom, { animate: false });
+    const reportViewport = () => {
+      const center = instance.getCenter();
+      onViewportChange?.({ center: [center.lat, center.lng], zoom: instance.getZoom() });
+    };
+    instance.on("moveend", reportViewport);
+    reportViewport();
     map.current = instance; clusters.current = group; tiles.current = tileLayer;
     const observer = new ResizeObserver(() => instance.invalidateSize({ pan: false }));
     observer.observe(element.current);
     return () => {
-      observer.disconnect(); instance.remove();
+      observer.disconnect(); instance.off("moveend", reportViewport); instance.remove();
       map.current = null; clusters.current = null; tiles.current = null; markers.current.clear();
     };
   }, []);
@@ -141,11 +156,19 @@ function MapCanvas({ records, selected, onSelect, homeRequest }: {
 
   useEffect(() => {
     if (!selected) return;
+    if (skipInitialSelectionReveal.current) {
+      skipInitialSelectionReveal.current = false;
+      return;
+    }
     const marker = markers.current.get(selected);
     if (marker) clusters.current?.zoomToShowLayer(marker, () => marker.openTooltip());
   }, [selected, records]);
 
   useEffect(() => {
+    if (!homeRequestMounted.current) {
+      homeRequestMounted.current = true;
+      return;
+    }
     map.current?.fitBounds(LONG_ISLAND_BOUNDS, { padding: [24, 24] });
   }, [homeRequest]);
 
@@ -164,23 +187,29 @@ export default function OperationsMap({
   navigationTarget,
   navigationContext,
   onNavigate,
-  onNavigationHandled
+  onNavigationHandled,
+  restoredState,
+  onStateChange
 }: {
   incidents: Incident[]; crews: Crew[];
   navigationTarget?: MapNavigationTarget | null;
   navigationContext?: NavigationResolverContext;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
   onNavigationHandled?: (requestId: number) => void;
+  restoredState?: MapWorkspaceState;
+  onStateChange?: (state: MapWorkspaceState) => void;
 }) {
-  const [showIncidents, setShowIncidents] = useState(true);
-  const [showCrews, setShowCrews] = useState(true);
-  const [query, setQuery] = useState("");
-  const [region, setRegion] = useState("all");
-  const [unmappedOnly, setUnmappedOnly] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
+  const [showIncidents, setShowIncidents] = useState(restoredState?.showIncidents ?? true);
+  const [showCrews, setShowCrews] = useState(restoredState?.showCrews ?? true);
+  const [query, setQuery] = useState(restoredState?.query ?? "");
+  const [region, setRegion] = useState(restoredState?.region ?? "all");
+  const [unmappedOnly, setUnmappedOnly] = useState(restoredState?.unmappedOnly ?? false);
+  const [selected, setSelected] = useState<string | null>(restoredState?.selected ?? null);
+  const [page, setPage] = useState(restoredState?.page ?? 0);
+  const [viewport, setViewport] = useState<MapViewportState | null>(restoredState?.viewport ?? null);
   const [homeRequest, setHomeRequest] = useState(0);
   const [navigationNotice, setNavigationNotice] = useState("");
+  const skipInitialFilterReset = useRef(Boolean(restoredState));
   const all = useMemo(() => mapRecords(incidents, crews), [incidents, crews]);
   const regions = useMemo(
     () => Array.from(new Set(all.map((record) => record.region).filter((region): region is string => Boolean(region)))).sort(),
@@ -217,10 +246,27 @@ export default function OperationsMap({
     setSelected(key);
   }, []);
   useEffect(() => {
+    if (skipInitialFilterReset.current) {
+      skipInitialFilterReset.current = false;
+      return;
+    }
     setPage(0);
     setSelected((current) => current && filtered.some((record) => record.key === current) ? current : null);
     setNavigationNotice("");
   }, [filtered, query, region, showIncidents, showCrews, unmappedOnly]);
+
+  useEffect(() => {
+    onStateChange?.({
+      showIncidents,
+      showCrews,
+      query,
+      region,
+      unmappedOnly,
+      selected: selection?.key ?? null,
+      page: currentPage,
+      viewport
+    });
+  }, [currentPage, onStateChange, query, region, selection?.key, showCrews, showIncidents, unmappedOnly, viewport]);
 
   useEffect(() => {
     if (!navigationTarget) return;
@@ -276,7 +322,14 @@ export default function OperationsMap({
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">
       <div>
-        <MapCanvas records={filtered} selected={selection?.key ?? null} onSelect={select} homeRequest={homeRequest} />
+        <MapCanvas
+          records={filtered}
+          selected={selection?.key ?? null}
+          onSelect={select}
+          homeRequest={homeRequest}
+          restoredViewport={restoredState?.viewport}
+          onViewportChange={setViewport}
+        />
         <div className="operations-map-legend"><span><b className="operations-legend-incident">!</b> Incident</span><span><b className="operations-legend-crew">C</b> Crew</span><span><b className="operations-legend-cluster">#</b> Grouped records — click to expand</span></div>
         <p className="operations-map-note">Crew pins are approximate village centers, not live GPS. Incident pins use synthetic scenario coordinates. Multiple records can share a location.</p>
       </div>

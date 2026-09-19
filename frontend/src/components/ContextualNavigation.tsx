@@ -216,6 +216,7 @@ export function NavigationActions({
       <button
         aria-label={variant === "icon" ? accessibleNameOverrides?.[action.kind] ?? action.description : undefined}
         className={variant === "icon" && action.kind === "show_on_map" ? "show-on-map-action" : undefined}
+        data-navigation-origin={action.id}
         key={action.id}
         onClick={(event) => {
           event.stopPropagation();

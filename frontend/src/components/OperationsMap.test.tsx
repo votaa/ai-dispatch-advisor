@@ -126,6 +126,38 @@ describe("Operations Map", () => {
     expect(onNavigationHandled).toHaveBeenCalledWith(8);
   });
 
+  it("restores list position, selection, layer filters, and map extent from a return snapshot", async () => {
+    const setView = vi.spyOn(L.Map.prototype, "setView");
+    const many = Array.from({ length: 25 }, (_, index) => ({
+      ...incident,
+      incident_id: `INC-${index}`,
+      latitude: 40.7 + index / 1000
+    }));
+    render(
+      <OperationsMap
+        incidents={many}
+        crews={[crew]}
+        onNavigate={vi.fn()}
+        restoredState={{
+          showIncidents: true,
+          showCrews: false,
+          query: "",
+          region: "all",
+          unmappedOnly: false,
+          selected: "incident:INC-24",
+          page: 1,
+          viewport: { center: [40.81, -73.2], zoom: 10 }
+        }}
+      />
+    );
+
+    expect(await screen.findByText("2 / 2")).toBeTruthy();
+    expect((screen.getByRole("checkbox", { name: "Crews" }) as HTMLInputElement).checked).toBe(false);
+    expect(screen.getByRole("button", { name: "Open incident details" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /! · INC-24/ }).getAttribute("aria-pressed")).toBe("true");
+    expect(setView).toHaveBeenCalledWith([40.81, -73.2], 10, expect.objectContaining({ animate: false }));
+  });
+
   it("offers grouped typeahead suggestions with filter-scoped match counts", () => {
     const incidents = [
       incident,

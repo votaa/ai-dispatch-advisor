@@ -1594,6 +1594,83 @@ describe("application states and scenario switching", () => {
     }
   });
 
+  it("returns to an entity-navigation source with filters, page, selection, and focus restored", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    const manyIncidents = Array.from({ length: 55 }, (_, index) => ({
+      ...baseIncident,
+      incident_id: `INC-${String(1001 + index)}`,
+      municipality: `Municipality ${index + 1}`,
+      region: index % 2 === 0 ? "North" : "South",
+      customers_out: 55 - index,
+      latitude: 40.7 + index / 1000,
+      longitude: -73.5
+    }));
+    apiMocks.incidents.mockResolvedValue(manyIncidents);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), active_incidents: 55, top_incidents: manyIncidents.slice(0, 5) });
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Next Active incidents page" }));
+    expect(screen.getByText("Page 2 of 2")).toBeTruthy();
+
+    const mapAction = screen.getAllByRole("button", { name: /Show incident .* on map/ })[0];
+    const accessibleName = mapAction.getAttribute("aria-label")!;
+    fireEvent.click(mapAction);
+
+    expect(await screen.findByRole("button", { name: "Return to Incidents" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Return to Incidents" }));
+
+    expect(await screen.findByText("Page 2 of 2")).toBeTruthy();
+    const restoredAction = screen.getByRole("button", { name: accessibleName });
+    await waitFor(() => expect(document.activeElement).toBe(restoredAction));
+  });
+
+  it("restores a non-default Dashboard selection and its open detail context", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    const secondIncident = {
+      ...baseIncident,
+      incident_id: "INC-1002",
+      municipality: "Riverhead",
+      region: "East",
+      latitude: 40.92,
+      longitude: -72.66
+    };
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, region: "North", latitude: 40.77, longitude: -73.52 }, secondIncident]);
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 2,
+      customers_out: 200,
+      top_incidents: [{ ...baseIncident, region: "North", latitude: 40.77, longitude: -73.52 }, secondIncident]
+    });
+    render(<App />);
+
+    fireEvent.change(await screen.findByRole("combobox", { name: "Dashboard incidents shown" }), { target: { value: "100" } });
+    fireEvent.click(await screen.findByRole("row", { name: "Open incident details for INC-1002" }));
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1002" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Show incident INC-1002 on map" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Return to Dashboard" }));
+
+    expect(await screen.findByRole("complementary", { name: "Incident details INC-1002" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "INC-1002" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("discards the return snapshot when the active scenario changes", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, region: "North", latitude: 40.77, longitude: -73.52 }]);
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Show incident INC-1001 on map" }));
+    expect(await screen.findByRole("button", { name: "Return to Dashboard" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Active synthetic scenario"), { target: { value: "storm" } });
+
+    await screen.findByText("Major Storm activated.");
+    expect(screen.queryByRole("button", { name: "Return to Dashboard" })).toBeNull();
+  });
+
   it("shows mapped and unmapped crews on the map from Crew Board", async () => {
     vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
     const mappedCrew = {
@@ -1666,6 +1743,29 @@ describe("application states and scenario switching", () => {
 
     expect(await screen.findByText("Related records · Assigned to INC-1001")).toBeTruthy();
     expect(screen.getByRole("button", { name: /North Line Alpha/ })).toBeTruthy();
+  });
+
+  it("restores state for same-view related-record navigation", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.incidents.mockResolvedValue([
+      { ...baseIncident, region: "North" },
+      { ...baseIncident, incident_id: "INC-1002", region: "North", feeder: "FDR-2" }
+    ]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    const search = await screen.findByRole("combobox", { name: "Active incidents search" });
+    fireEvent.change(search, { target: { value: "INC-1001" } });
+    const municipalityAction = screen.getByRole("button", { name: "Millbrook" });
+    fireEvent.click(municipalityAction);
+
+    expect(await screen.findByText("Related records · Municipality: Millbrook")).toBeTruthy();
+    expect((search as HTMLInputElement).value).toBe("");
+    fireEvent.click(screen.getByRole("button", { name: "Return to Incidents" }));
+
+    await waitFor(() => expect((screen.getByRole("combobox", { name: "Active incidents search" }) as HTMLInputElement).value).toBe("INC-1001"));
+    expect(screen.queryByText("Related records · Municipality: Millbrook")).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Millbrook" })));
   });
 
 });

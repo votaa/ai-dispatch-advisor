@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   AlertTriangle,
   BarChart3,
   Bot,
@@ -40,6 +41,7 @@ import { ShowOnMapButton } from "./components/ShowOnMapButton";
 import type { MapEntityKind } from "./components/ShowOnMapButton";
 import type { MapNavigationTarget } from "./components/OperationsMap";
 import { useFittedPageSize } from "./hooks/useFittedPageSize";
+import type { CrewWorkspaceState, IncidentWorkspaceState, MapWorkspaceState } from "./navigationState";
 import type {
   Assignment,
   CopilotResponse,
@@ -65,6 +67,21 @@ type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFac
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
 type ExpandableWorkspaceKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm";
+type NavigationFocusOrigin = { id: string; occurrence: number };
+type ReturnNavigationContext = {
+  scenarioId: string;
+  sourceView: ViewKey;
+  selectedIncidentId?: string;
+  selectedCrewId?: string;
+  expandedWorkspace: ExpandableWorkspaceKey | null;
+  recommendationsOpen: boolean;
+  incidentDetailOpen: boolean;
+  dashboardDisplayPercentage: number;
+  focusOrigin: NavigationFocusOrigin | null;
+  incidentState?: IncidentWorkspaceState;
+  crewState?: CrewWorkspaceState;
+  mapState?: MapWorkspaceState;
+};
 
 const incidentSortOptions: Array<[IncidentSortKey, string]> = [
   ["id", "Incident"],
@@ -165,6 +182,8 @@ function App() {
   const [mapNavigationTarget, setMapNavigationTarget] = useState<MapNavigationTarget | null>(null);
   const [incidentNavigationFilter, setIncidentNavigationFilter] = useState<{ requestId: number; filter: IncidentNavigationFilter } | null>(null);
   const [crewNavigationFilter, setCrewNavigationFilter] = useState<{ requestId: number; filter: CrewNavigationFilter } | null>(null);
+  const [returnNavigation, setReturnNavigation] = useState<ReturnNavigationContext | null>(null);
+  const [restoringNavigation, setRestoringNavigation] = useState<ReturnNavigationContext | null>(null);
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -185,6 +204,9 @@ function App() {
   const incidentDetailTriggerRef = useRef<HTMLElement>(null);
   const mapNavigationRequestRef = useRef(0);
   const inventoryNavigationRequestRef = useRef(0);
+  const incidentWorkspaceStatesRef = useRef<Partial<Record<ViewKey, IncidentWorkspaceState>>>({});
+  const crewWorkspaceStateRef = useRef<CrewWorkspaceState | undefined>(undefined);
+  const mapWorkspaceStateRef = useRef<MapWorkspaceState | undefined>(undefined);
 
   useEffect(() => {
     loadApplication();
@@ -193,6 +215,26 @@ function App() {
   useEffect(() => {
     pageHeadingRef.current?.focus();
   }, [view]);
+
+  useEffect(() => {
+    if (!restoringNavigation || view !== restoringNavigation.sourceView) return;
+    let secondFrame: number | undefined;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        const origin = restoringNavigation.focusOrigin;
+        const candidates = origin
+          ? Array.from(document.querySelectorAll<HTMLElement>("[data-navigation-origin]"))
+              .filter((element) => element.dataset.navigationOrigin === origin.id)
+          : [];
+        (candidates[origin?.occurrence ?? -1] ?? candidates[0] ?? pageHeadingRef.current)?.focus();
+        setRestoringNavigation(null);
+      });
+    });
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      if (secondFrame !== undefined) window.cancelAnimationFrame(secondFrame);
+    };
+  }, [restoringNavigation, view]);
 
   useEffect(() => {
     try {
@@ -352,6 +394,8 @@ function App() {
       setMapNavigationTarget(null);
       setIncidentNavigationFilter(null);
       setCrewNavigationFilter(null);
+      setReturnNavigation(null);
+      setRestoringNavigation(null);
       setRecommendation(null);
       setRecommendationError("");
       setActionMessage("");
@@ -375,7 +419,11 @@ function App() {
     setChatMessage(prompt);
   }
 
-  function selectView(nextView: ViewKey) {
+  function selectView(nextView: ViewKey, clearReturnNavigation = false) {
+    if (clearReturnNavigation) {
+      setReturnNavigation(null);
+      setRestoringNavigation(null);
+    }
     setExpandedWorkspace(null);
     if (nextView !== "dashboard" && nextView !== "dispatch") {
       setRecommendationsOpen(false);
@@ -384,6 +432,52 @@ function App() {
       setIncidentDetailOpen(false);
     }
     setView(nextView);
+  }
+
+  function navigationFocusOrigin(trigger?: HTMLElement): NavigationFocusOrigin | null {
+    const id = trigger?.dataset.navigationOrigin;
+    if (!id || !trigger) return null;
+    const matches = Array.from(document.querySelectorAll<HTMLElement>("[data-navigation-origin]"))
+      .filter((element) => element.dataset.navigationOrigin === id);
+    return { id, occurrence: Math.max(0, matches.indexOf(trigger)) };
+  }
+
+  function captureReturnNavigation(trigger?: HTMLElement) {
+    if (!activeScenario) return;
+    setReturnNavigation({
+      scenarioId: activeScenario.scenario_id,
+      sourceView: view,
+      selectedIncidentId,
+      selectedCrewId,
+      expandedWorkspace,
+      recommendationsOpen,
+      incidentDetailOpen,
+      dashboardDisplayPercentage,
+      focusOrigin: navigationFocusOrigin(trigger),
+      incidentState: incidentWorkspaceStatesRef.current[view],
+      crewState: view === "crews" ? crewWorkspaceStateRef.current : undefined,
+      mapState: view === "map" ? mapWorkspaceStateRef.current : undefined
+    });
+  }
+
+  function returnToPreviousView() {
+    if (!returnNavigation || returnNavigation.scenarioId !== activeScenario?.scenario_id) {
+      setReturnNavigation(null);
+      return;
+    }
+    const context = returnNavigation;
+    setMapNavigationTarget(null);
+    setIncidentNavigationFilter(null);
+    setCrewNavigationFilter(null);
+    selectView(context.sourceView);
+    setSelectedIncidentId(context.selectedIncidentId);
+    setSelectedCrewId(context.selectedCrewId);
+    setExpandedWorkspace(context.expandedWorkspace);
+    setRecommendationsOpen(context.recommendationsOpen);
+    setIncidentDetailOpen(context.incidentDetailOpen);
+    setDashboardDisplayPercentage(context.dashboardDisplayPercentage);
+    setRestoringNavigation(context);
+    setReturnNavigation(null);
   }
 
   function openCrewDetails(crewId: string) {
@@ -409,6 +503,7 @@ function App() {
   }
 
   function navigateOperationally(command: OperationalNavigationCommand, trigger?: HTMLElement) {
+    captureReturnNavigation(trigger);
     if (command.type === "open_incident") {
       openIncidentDetails(command.incidentId, trigger);
       return;
@@ -486,7 +581,7 @@ function App() {
                 key={item.key}
                 aria-current={view === item.key ? "page" : undefined}
                 className={view === item.key ? "nav-item active" : "nav-item"}
-                onClick={() => selectView(item.key)}
+                onClick={() => selectView(item.key, true)}
                 type="button"
               >
                 <Icon size={18} />
@@ -532,6 +627,16 @@ function App() {
             <ScenarioFreshnessLabel scenario={activeScenario} />
           </div>
         </header>
+
+        {returnNavigation && returnNavigation.scenarioId === activeScenario?.scenario_id ? (
+          <nav aria-label="Return navigation" className="return-navigation">
+            <button onClick={returnToPreviousView} type="button">
+              <ArrowLeft aria-hidden="true" size={16} />
+              Return to {navItems.find((item) => item.key === returnNavigation.sourceView)?.label}
+            </button>
+            <span>Restores your prior filters, result position, selection, and focus.</span>
+          </nav>
+        ) : null}
 
         {scenarioLoading ? (
           <div aria-live="polite" className="loading-banner" role="status">
@@ -643,6 +748,8 @@ function App() {
                   navigationContext={navigationContext}
                   syncSelectionToFirst
                   tableLabel="Priority dispatch queue"
+                  restoredState={restoringNavigation?.sourceView === "dashboard" ? restoringNavigation.incidentState : undefined}
+                  onStateChange={(state) => { incidentWorkspaceStatesRef.current.dashboard = state; }}
                   onSelect={setSelectedIncidentId}
                   onActivate={showIncidentDetails}
                   onNavigate={navigateOperationally}
@@ -693,6 +800,8 @@ function App() {
                 selectedIncidentId={selectedIncidentId}
                 syncSelectionToFirst
                 tableLabel="Dispatch incident queue"
+                restoredState={restoringNavigation?.sourceView === "dispatch" ? restoringNavigation.incidentState : undefined}
+                onStateChange={(state) => { incidentWorkspaceStatesRef.current.dispatch = state; }}
                 onSelect={setSelectedIncidentId}
                 onActivate={showIncidentDetails}
                 onNavigate={navigateOperationally}
@@ -728,6 +837,8 @@ function App() {
               key={`active-incidents-${activeScenario?.scenario_id ?? "loading"}`}
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
+              restoredState={restoringNavigation?.sourceView === "incidents" ? restoringNavigation.incidentState : undefined}
+              onStateChange={(state) => { incidentWorkspaceStatesRef.current.incidents = state; }}
               onSelect={openIncidentDetails}
               onNavigate={navigateOperationally}
             />
@@ -748,6 +859,8 @@ function App() {
               navigationContext={navigationContext}
               onNavigate={navigateOperationally}
               onNavigationHandled={handleMapNavigation}
+              restoredState={restoringNavigation?.sourceView === "map" ? restoringNavigation.mapState : undefined}
+              onStateChange={(state) => { mapWorkspaceStateRef.current = state; }}
             />
           </Suspense>
         ))}
@@ -784,6 +897,8 @@ function App() {
                 onNavigate={navigateOperationally}
                 selectedCrew={selectedCrew}
                 selectedCrewId={selectedCrewId}
+                restoredState={restoringNavigation?.sourceView === "crews" ? restoringNavigation.crewState : undefined}
+                onStateChange={(state) => { crewWorkspaceStateRef.current = state; }}
               />
             )}
           </ExpandableWorkspace>
@@ -821,6 +936,8 @@ function App() {
                 key={`storm-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Storm exceptions"
+                restoredState={restoringNavigation?.sourceView === "storm" ? restoringNavigation.incidentState : undefined}
+                onStateChange={(state) => { incidentWorkspaceStatesRef.current.storm = state; }}
                 onSelect={setSelectedIncidentId}
                 onNavigate={navigateOperationally}
               />
@@ -1367,7 +1484,9 @@ function CrewBoard({
   onNavigate,
   onSelectCrew,
   selectedCrew,
-  selectedCrewId
+  selectedCrewId,
+  restoredState,
+  onStateChange
 }: {
   crews: Crew[];
   layoutKey?: string;
@@ -1378,17 +1497,21 @@ function CrewBoard({
   onSelectCrew: (crewId: string) => void;
   selectedCrew?: Crew;
   selectedCrewId?: string;
+  restoredState?: CrewWorkspaceState;
+  onStateChange?: (state: CrewWorkspaceState) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("all");
-  const [capability, setCapability] = useState("all");
-  const [region, setRegion] = useState("all");
-  const [stormReady, setStormReady] = useState("all");
-  const [relatedFilter, setRelatedFilter] = useState<CrewNavigationFilter | null>(null);
-  const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>({ key: "name", direction: "asc" });
-  const [page, setPage] = useState(0);
+  const [query, setQuery] = useState(restoredState?.query ?? "");
+  const [status, setStatus] = useState(restoredState?.status ?? "all");
+  const [capability, setCapability] = useState(restoredState?.capability ?? "all");
+  const [region, setRegion] = useState(restoredState?.region ?? "all");
+  const [stormReady, setStormReady] = useState(restoredState?.stormReady ?? "all");
+  const [relatedFilter, setRelatedFilter] = useState<CrewNavigationFilter | null>(restoredState?.relatedFilter ?? null);
+  const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>(restoredState?.sort ?? { key: "name", direction: "asc" });
+  const [page, setPage] = useState(restoredState?.page ?? 0);
   const previousPageSizeRef = useRef(24);
   const handledNavigationRequestRef = useRef<number | null>(null);
+  const skipInitialFilterReset = useRef(Boolean(restoredState));
+  const handledRestoredStateRef = useRef(restoredState);
   const boardNavigationContext: NavigationResolverContext = {
     ...navigationContext,
     currentView: "crews"
@@ -1405,6 +1528,20 @@ function CrewBoard({
     setStormReady("all");
     setPage(0);
   }, [navigationFilterRequest]);
+
+  useEffect(() => {
+    if (!restoredState || handledRestoredStateRef.current === restoredState) return;
+    handledRestoredStateRef.current = restoredState;
+    skipInitialFilterReset.current = true;
+    setQuery(restoredState.query);
+    setStatus(restoredState.status);
+    setCapability(restoredState.capability);
+    setRegion(restoredState.region);
+    setStormReady(restoredState.stormReady);
+    setRelatedFilter(restoredState.relatedFilter);
+    setSort(restoredState.sort);
+    setPage(restoredState.page);
+  }, [restoredState]);
 
   const statuses = useMemo(
     () => Array.from(new Set([...crews.map((crew) => crew.status), ...(status !== "all" ? [status] : [])])).sort(),
@@ -1485,6 +1622,10 @@ function CrewBoard({
   const visibleCrews = filteredCrews.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   useEffect(() => {
+    if (skipInitialFilterReset.current) {
+      skipInitialFilterReset.current = false;
+      return;
+    }
     setPage(0);
   }, [capability, query, region, relatedFilter, sort, status, stormReady, crews.length]);
 
@@ -1498,6 +1639,10 @@ function CrewBoard({
     if (previousPageSize === pageSize) return;
     setPage((current) => Math.floor((current * previousPageSize) / pageSize));
   }, [pageSize]);
+
+  useEffect(() => {
+    onStateChange?.({ query, status, capability, region, stormReady, relatedFilter, sort, page: currentPage });
+  }, [capability, currentPage, onStateChange, query, region, relatedFilter, sort, status, stormReady]);
 
   const toggleSortDirection = () => {
     setSort((current) => ({ ...current, direction: current.direction === "asc" ? "desc" : "asc" }));
@@ -1644,7 +1789,9 @@ function IncidentTable({
   tableLabel,
   onActivate,
   onSelect,
-  onNavigate
+  onNavigate,
+  restoredState,
+  onStateChange
 }: {
   emptyMessage: string;
   incidents: Incident[];
@@ -1659,17 +1806,22 @@ function IncidentTable({
   onActivate?: (incidentId: string, trigger?: HTMLElement) => void;
   onSelect: (incidentId: string, trigger?: HTMLElement) => void;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+  restoredState?: IncidentWorkspaceState;
+  onStateChange?: (state: IncidentWorkspaceState) => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [severity, setSeverity] = useState("all");
-  const [region, setRegion] = useState("all");
-  const [criticalFacility, setCriticalFacility] = useState("all");
-  const [relatedFilter, setRelatedFilter] = useState<IncidentNavigationFilter | null>(null);
-  const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
-  const [page, setPage] = useState(0);
+  const [query, setQuery] = useState(restoredState?.query ?? "");
+  const [severity, setSeverity] = useState(restoredState?.severity ?? "all");
+  const [region, setRegion] = useState(restoredState?.region ?? "all");
+  const [criticalFacility, setCriticalFacility] = useState(restoredState?.criticalFacility ?? "all");
+  const [relatedFilter, setRelatedFilter] = useState<IncidentNavigationFilter | null>(restoredState?.relatedFilter ?? null);
+  const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(restoredState?.sort ?? null);
+  const [page, setPage] = useState(restoredState?.page ?? 0);
   const previousPageSizeRef = useRef(50);
   const lastSyncedFirstIncidentRef = useRef<string | undefined>(undefined);
   const handledNavigationRequestRef = useRef<number | null>(null);
+  const skipInitialFilterReset = useRef(Boolean(restoredState));
+  const handledRestoredStateRef = useRef(restoredState);
+  const suppressSelectionSyncRef = useRef(Boolean(restoredState));
   const tableNavigationContext: NavigationResolverContext = {
     ...navigationContext,
     currentView: "incidents"
@@ -1685,6 +1837,20 @@ function IncidentTable({
     setCriticalFacility("all");
     setPage(0);
   }, [navigationFilterRequest]);
+
+  useEffect(() => {
+    if (!restoredState || handledRestoredStateRef.current === restoredState) return;
+    handledRestoredStateRef.current = restoredState;
+    skipInitialFilterReset.current = true;
+    suppressSelectionSyncRef.current = true;
+    setQuery(restoredState.query);
+    setSeverity(restoredState.severity);
+    setRegion(restoredState.region);
+    setCriticalFacility(restoredState.criticalFacility);
+    setRelatedFilter(restoredState.relatedFilter);
+    setSort(restoredState.sort);
+    setPage(restoredState.page);
+  }, [restoredState]);
 
   const regions = useMemo(
     () => Array.from(new Set([...incidents.map((incident) => incident.region), ...(region !== "all" ? [region] : [])])).sort(),
@@ -1773,6 +1939,11 @@ function IncidentTable({
     const firstVisibleIncident = filteredIncidents.find(
       (incident) => incident.ranking_status !== "withheld"
     );
+    if (suppressSelectionSyncRef.current) {
+      suppressSelectionSyncRef.current = false;
+      lastSyncedFirstIncidentRef.current = firstVisibleIncident?.incident_id;
+      return;
+    }
     if (syncSelectionToFirst && firstVisibleIncident && lastSyncedFirstIncidentRef.current !== firstVisibleIncident.incident_id) {
       lastSyncedFirstIncidentRef.current = firstVisibleIncident.incident_id;
       onSelect(firstVisibleIncident.incident_id);
@@ -1792,8 +1963,12 @@ function IncidentTable({
   const visibleIncidents = filteredIncidents.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   useEffect(() => {
+    if (skipInitialFilterReset.current) {
+      skipInitialFilterReset.current = false;
+      return;
+    }
     setPage(0);
-    }, [criticalFacility, query, region, relatedFilter, severity, sort, incidents.length]);
+  }, [criticalFacility, query, region, relatedFilter, severity, sort, incidents.length]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1805,6 +1980,10 @@ function IncidentTable({
     if (previousPageSize === pageSize) return;
     setPage((current) => Math.floor((current * previousPageSize) / pageSize));
   }, [pageSize]);
+
+  useEffect(() => {
+    onStateChange?.({ query, severity, region, criticalFacility, relatedFilter, sort, page: currentPage });
+  }, [criticalFacility, currentPage, onStateChange, query, region, relatedFilter, severity, sort]);
 
   const toggleSort = (key: IncidentSortKey) => {
     setSort((current) => current?.key === key
