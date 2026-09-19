@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import L from "leaflet";
 import OperationsMap, { mapRecords } from "./OperationsMap";
@@ -62,6 +62,71 @@ describe("Operations Map", () => {
     fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+  });
+
+  it("consumes a mapped cross-view target, selects it, and reveals its clustered marker", async () => {
+    const onNavigationHandled = vi.fn();
+    const zoomToShowLayer = vi.spyOn(L.MarkerClusterGroup.prototype, "zoomToShowLayer");
+    render(
+      <OperationsMap
+        incidents={[incident]}
+        crews={[crew]}
+        navigationTarget={{ entityKind: "incident", entityId: "INC-1", requestId: 7 }}
+        onNavigationHandled={onNavigationHandled}
+        onOpenIncident={vi.fn()}
+        onOpenCrew={vi.fn()}
+      />
+    );
+
+    expect(await screen.findByText("Showing incident INC-1 on the map.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+    await waitFor(() => expect(zoomToShowLayer).toHaveBeenCalled());
+    expect(onNavigationHandled).toHaveBeenCalledWith(7);
+  });
+
+  it("clears hiding filters and enables the targeted entity layer", async () => {
+    const onNavigationHandled = vi.fn();
+    const view = render(
+      <OperationsMap incidents={[incident]} crews={[crew]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />
+    );
+    fireEvent.click(screen.getByRole("checkbox", { name: "Incidents" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Search records" }), { target: { value: "no match" } });
+
+    view.rerender(
+      <OperationsMap
+        incidents={[incident]}
+        crews={[crew]}
+        navigationTarget={{ entityKind: "incident", entityId: "INC-1", requestId: 9 }}
+        onNavigationHandled={onNavigationHandled}
+        onOpenIncident={vi.fn()}
+        onOpenCrew={vi.fn()}
+      />
+    );
+
+    expect(await screen.findByText("Showing incident INC-1 on the map.")).toBeTruthy();
+    expect((screen.getByRole("checkbox", { name: "Incidents" }) as HTMLInputElement).checked).toBe(true);
+    expect((screen.getByRole("combobox", { name: "Search records" }) as HTMLInputElement).value).toBe("");
+    expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+    expect(onNavigationHandled).toHaveBeenCalledWith(9);
+  });
+
+  it("selects a targeted unmapped record and reports that no location is available", async () => {
+    const onNavigationHandled = vi.fn();
+    render(
+      <OperationsMap
+        incidents={[incident]}
+        crews={[{ ...crew, map_location: null }]}
+        navigationTarget={{ entityKind: "crew", entityId: "C1", requestId: 8 }}
+        onNavigationHandled={onNavigationHandled}
+        onOpenIncident={vi.fn()}
+        onOpenCrew={vi.fn()}
+      />
+    );
+
+    expect(await screen.findByText("Crew C1 is selected, but no map location is available.")).toBeTruthy();
+    expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+    expect(onNavigationHandled).toHaveBeenCalledWith(8);
   });
 
   it("offers grouped typeahead suggestions with filter-scoped match counts", () => {

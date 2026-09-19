@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Users
 } from "lucide-react";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
@@ -26,6 +26,9 @@ import {
   SIDEBAR_MIN_WIDTH
 } from "./components/ResizableSidebar";
 import { SideSheet } from "./components/SideSheet";
+import { ShowOnMapButton } from "./components/ShowOnMapButton";
+import type { MapEntityKind } from "./components/ShowOnMapButton";
+import type { MapNavigationTarget } from "./components/OperationsMap";
 import { useFittedPageSize } from "./hooks/useFittedPageSize";
 import type {
   Assignment,
@@ -149,6 +152,7 @@ function App() {
   const [recommendationActions, setRecommendationActions] = useState<RecommendationAction[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | undefined>();
   const [selectedCrewId, setSelectedCrewId] = useState<string | undefined>();
+  const [mapNavigationTarget, setMapNavigationTarget] = useState<MapNavigationTarget | null>(null);
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -167,6 +171,7 @@ function App() {
   const pageHeadingRef = useRef<HTMLHeadingElement>(null);
   const recommendationTriggerRef = useRef<HTMLButtonElement>(null);
   const incidentDetailTriggerRef = useRef<HTMLElement>(null);
+  const mapNavigationRequestRef = useRef(0);
 
   useEffect(() => {
     loadApplication();
@@ -327,6 +332,7 @@ function App() {
       );
       setSelectedIncidentId(undefined);
       setSelectedCrewId(undefined);
+      setMapNavigationTarget(null);
       setRecommendation(null);
       setRecommendationError("");
       setActionMessage("");
@@ -376,6 +382,16 @@ function App() {
     showIncidentDetails(incidentId, trigger);
     selectView("incidents");
   }
+
+  function showOnMap(entityKind: MapEntityKind, entityId: string) {
+    mapNavigationRequestRef.current += 1;
+    setMapNavigationTarget({ entityKind, entityId, requestId: mapNavigationRequestRef.current });
+    selectView("map");
+  }
+
+  const handleMapNavigation = useCallback((requestId: number) => {
+    setMapNavigationTarget((current) => current?.requestId === requestId ? null : current);
+  }, []);
 
   async function recordRecommendationAction(action: RecommendationActionType, note?: string, selectedCrewId?: string) {
     if (!recommendation) return;
@@ -578,6 +594,7 @@ function App() {
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
                   onActivate={showIncidentDetails}
+                  onShowOnMap={showOnMap}
                 />
               </ExpandableWorkspace>
             </div>
@@ -626,6 +643,7 @@ function App() {
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
                 onActivate={showIncidentDetails}
+                onShowOnMap={showOnMap}
               />
             </ExpandableWorkspace>
           </section>
@@ -657,6 +675,7 @@ function App() {
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
               onSelect={openIncidentDetails}
+              onShowOnMap={showOnMap}
             />
           </ExpandableWorkspace>
         ))}
@@ -671,6 +690,8 @@ function App() {
               key={`operations-map-${activeScenario?.scenario_id ?? "loading"}`}
               incidents={incidents}
               crews={crews}
+              navigationTarget={mapNavigationTarget}
+              onNavigationHandled={handleMapNavigation}
               onOpenIncident={openIncidentDetails}
               onOpenCrew={openCrewDetails}
             />
@@ -705,6 +726,7 @@ function App() {
                 onCloseDetails={() => setSelectedCrewId(undefined)}
                 onOpenIncident={openIncidentDetails}
                 onSelectCrew={setSelectedCrewId}
+                onShowOnMap={showOnMap}
                 selectedCrew={selectedCrew}
                 selectedCrewId={selectedCrewId}
               />
@@ -744,6 +766,7 @@ function App() {
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Storm exceptions"
                 onSelect={setSelectedIncidentId}
+                onShowOnMap={showOnMap}
               />
             </ExpandableWorkspace>
           </section>
@@ -1194,6 +1217,7 @@ function CrewBoard({
   onCloseDetails,
   onOpenIncident,
   onSelectCrew,
+  onShowOnMap,
   selectedCrew,
   selectedCrewId
 }: {
@@ -1202,6 +1226,7 @@ function CrewBoard({
   onCloseDetails: () => void;
   onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void;
   onSelectCrew: (crewId: string) => void;
+  onShowOnMap: (entityKind: MapEntityKind, entityId: string) => void;
   selectedCrew?: Crew;
   selectedCrewId?: string;
 }) {
@@ -1406,6 +1431,7 @@ function CrewBoard({
                   ))}
                 </div>
               ) : null}
+              <ShowOnMapButton entityId={crew.crew_id} entityKind="crew" onShowOnMap={onShowOnMap} />
             </article>
           ))}
         </div>
@@ -1425,7 +1451,8 @@ function IncidentTable({
   syncSelectionToFirst = false,
   tableLabel,
   onActivate,
-  onSelect
+  onSelect,
+  onShowOnMap
 }: {
   emptyMessage: string;
   incidents: Incident[];
@@ -1437,6 +1464,7 @@ function IncidentTable({
   tableLabel: string;
   onActivate?: (incidentId: string, trigger?: HTMLElement) => void;
   onSelect: (incidentId: string, trigger?: HTMLElement) => void;
+  onShowOnMap: (entityKind: MapEntityKind, entityId: string) => void;
 }) {
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState("all");
@@ -1693,6 +1721,7 @@ function IncidentTable({
                   {incident.incident_id}
                 </button>
                 <span>{incident.municipality} / {incident.feeder}</span>
+                <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" onShowOnMap={onShowOnMap} />
               </td>
               <td><span className="compact-cell-label">Region</span>{incident.region}</td>
               <td><span className="compact-cell-label">Customers</span>{incident.customers_out.toLocaleString()}</td>

@@ -1617,6 +1617,26 @@ tbody tr:focus-visible {
   box-shadow: 0 0 0 2px rgba(47, 111, 159, 0.15);
 }
 
+.show-on-map-action {
+  background: #eef6fb;
+  border: 1px solid #9abbd3;
+  border-radius: 6px;
+  color: #225d87;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 7px;
+  min-height: 32px;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.show-on-map-action:hover,
+.show-on-map-action:focus-visible {
+  background: #dcecf7;
+  border-color: #2f6f9f;
+}
+
 .crew-card-select {
   background: transparent;
   border: 0;

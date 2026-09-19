@@ -1575,4 +1575,48 @@ describe("application states and scenario switching", () => {
     expect(apiMocks.recordRecommendationAction).not.toHaveBeenCalled();
   });
 
+  it("shows incidents on the map from every operational incident view", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, region: "North", latitude: 40.77, longitude: -73.52 }]);
+    render(<App />);
+
+    for (const viewName of ["Dashboard", "Dispatch", "Incidents", "Storm Mode"]) {
+      if (viewName !== "Dashboard") fireEvent.click(screen.getByRole("button", { name: viewName }));
+      const showOnMap = await screen.findByRole("button", { name: "Show incident INC-1001 on map" });
+      fireEvent.click(showOnMap);
+      expect(await screen.findByText("Showing incident INC-1001 on the map.")).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+      expect(screen.queryByRole("complementary", { name: "Incident details INC-1001" })).toBeNull();
+    }
+  });
+
+  it("shows mapped and unmapped crews on the map from Crew Board", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    const mappedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "available",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: [],
+      map_location: { latitude: 40.77, longitude: -73.52, village: "Millbrook", reference_id: "village-1", precision: "village_center" }
+    };
+    apiMocks.crews.mockResolvedValue([mappedCrew, { ...mappedCrew, crew_id: "CR-02", crew_name: "Unmapped Crew", map_location: null }]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Show crew CR-01 on map" }));
+    expect(await screen.findByText("Showing crew CR-01 on the map.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Show crew CR-02 on map" }));
+    expect(await screen.findByText("Crew CR-02 is selected, but no map location is available.")).toBeTruthy();
+    expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
+  });
+
 });

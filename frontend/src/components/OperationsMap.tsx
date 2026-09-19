@@ -25,6 +25,12 @@ export type MapRecord = {
   crew?: Crew;
 };
 
+export type MapNavigationTarget = {
+  entityKind: MapRecord["kind"];
+  entityId: string;
+  requestId: number;
+};
+
 const mapAutocompleteFields: AutocompleteField<MapRecord>[] = [
   { group: "Incident ID", values: (record) => record.incident?.incident_id ?? "" },
   { group: "Feeder", values: (record) => record.incident?.feeder ?? "" },
@@ -150,8 +156,17 @@ function MapCanvas({ records, selected, onSelect, homeRequest }: {
   </div>;
 }
 
-export default function OperationsMap({ incidents, crews, onOpenIncident, onOpenCrew }: {
+export default function OperationsMap({
+  incidents,
+  crews,
+  navigationTarget,
+  onNavigationHandled,
+  onOpenIncident,
+  onOpenCrew
+}: {
   incidents: Incident[]; crews: Crew[]; onOpenIncident: (id: string) => void; onOpenCrew: (id: string) => void;
+  navigationTarget?: MapNavigationTarget | null;
+  onNavigationHandled?: (requestId: number) => void;
 }) {
   const [showIncidents, setShowIncidents] = useState(true);
   const [showCrews, setShowCrews] = useState(true);
@@ -161,8 +176,12 @@ export default function OperationsMap({ incidents, crews, onOpenIncident, onOpen
   const [selected, setSelected] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [homeRequest, setHomeRequest] = useState(0);
+  const [navigationNotice, setNavigationNotice] = useState("");
   const all = useMemo(() => mapRecords(incidents, crews), [incidents, crews]);
-  const regions = useMemo(() => Array.from(new Set(all.map((r) => r.region))).sort(), [all]);
+  const regions = useMemo(
+    () => Array.from(new Set(all.map((record) => record.region).filter((region): region is string => Boolean(region)))).sort(),
+    [all]
+  );
   const suggestionRecords = useMemo(() => all.filter((record) =>
     (record.kind === "incident" ? showIncidents : showCrews) &&
     (region === "all" || record.region === region)
@@ -184,13 +203,50 @@ export default function OperationsMap({ incidents, crews, onOpenIncident, onOpen
   const pageCount = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const selection = filtered.find((r) => r.key === selected);
-  const select = useCallback((key: string) => setSelected(key), []);
-  useEffect(() => { setPage(0); setSelected(null); }, [query, region, showIncidents, showCrews, unmappedOnly]);
+  const select = useCallback((key: string) => {
+    setNavigationNotice("");
+    setSelected(key);
+  }, []);
+  useEffect(() => {
+    setPage(0);
+    setSelected((current) => current && filtered.some((record) => record.key === current) ? current : null);
+    setNavigationNotice("");
+  }, [filtered, query, region, showIncidents, showCrews, unmappedOnly]);
+
+  useEffect(() => {
+    if (!navigationTarget) return;
+    const targetKey = `${navigationTarget.entityKind}:${navigationTarget.entityId}`;
+    const targetRecord = all.find((record) => record.key === targetKey);
+    if (!targetRecord) {
+      setSelected(null);
+      setNavigationNotice(`${navigationTarget.entityKind === "incident" ? "Incident" : "Crew"} ${navigationTarget.entityId} is not available in the active scenario.`);
+      onNavigationHandled?.(navigationTarget.requestId);
+      return;
+    }
+
+    const targetLayerVisible = targetRecord.kind === "incident" ? showIncidents : showCrews;
+    if (query || region !== "all" || unmappedOnly || !targetLayerVisible) {
+      setQuery("");
+      setRegion("all");
+      setUnmappedOnly(false);
+      if (targetRecord.kind === "incident") setShowIncidents(true);
+      if (targetRecord.kind === "crew") setShowCrews(true);
+      return;
+    }
+
+    const targetIndex = filtered.findIndex((record) => record.key === targetKey);
+    setPage(Math.floor(Math.max(0, targetIndex) / PAGE_SIZE));
+    setSelected(targetRecord.key);
+    setNavigationNotice(targetRecord.coordinates
+      ? `Showing ${targetRecord.kind} ${targetRecord.id} on the map.`
+      : `${targetRecord.kind === "incident" ? "Incident" : "Crew"} ${targetRecord.id} is selected, but no map location is available.`);
+    onNavigationHandled?.(navigationTarget.requestId);
+  }, [all, filtered, navigationTarget, onNavigationHandled, query, region, showCrews, showIncidents, unmappedOnly]);
 
   return <section className="operations-map panel" aria-label="Operations Map workspace">
     <div className="operations-map-intro">
       <div><h2>Long Island operations</h2><p>Active scenario incidents and crew locations</p></div>
-      <button type="button" onClick={() => { setSelected(null); setHomeRequest((n) => n + 1); }}>Reset to Long Island</button>
+      <button type="button" onClick={() => { setSelected(null); setNavigationNotice(""); setHomeRequest((n) => n + 1); }}>Reset to Long Island</button>
     </div>
     <div className="operations-map-controls" role="group" aria-label="Map filters">
       <div className="operations-map-search">
@@ -208,6 +264,7 @@ export default function OperationsMap({ incidents, crews, onOpenIncident, onOpen
       <label className="operations-map-toggle"><input type="checkbox" checked={showCrews} onChange={(e) => setShowCrews(e.target.checked)} />Crews</label>
     </div>
     <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records</p>
+    {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">
       <div>
         <MapCanvas records={filtered} selected={selection?.key ?? null} onSelect={select} homeRequest={homeRequest} />
