@@ -37,15 +37,15 @@ describe("Operations Map", () => {
   });
 
   it("links selected incidents and crews to existing workflows and filters layers", () => {
-    const onOpenIncident = vi.fn(); const onOpenCrew = vi.fn();
-    render(<OperationsMap incidents={[incident]} crews={[crew]} onOpenIncident={onOpenIncident} onOpenCrew={onOpenCrew} />);
+    const onNavigate = vi.fn();
+    render(<OperationsMap incidents={[incident]} crews={[crew]} onNavigate={onNavigate} />);
     expect(screen.getByRole("status").textContent).toContain("1 incidents mapped · 1 crews mapped");
     fireEvent.click(screen.getByRole("button", { name: /! · INC-1/ }));
-    fireEvent.click(screen.getByRole("button", { name: "Open incident" }));
-    expect(onOpenIncident).toHaveBeenCalledWith("INC-1");
+    fireEvent.click(screen.getByRole("button", { name: "Open incident details" }));
+    expect(onNavigate).toHaveBeenLastCalledWith({ type: "open_incident", incidentId: "INC-1" }, expect.any(HTMLElement));
     fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
-    fireEvent.click(screen.getByRole("button", { name: "Open crew board" }));
-    expect(onOpenCrew).toHaveBeenCalledWith("C1");
+    fireEvent.click(screen.getByRole("button", { name: "Open crew details" }));
+    expect(onNavigate).toHaveBeenLastCalledWith({ type: "open_crew", crewId: "C1" }, expect.any(HTMLElement));
     fireEvent.click(screen.getByRole("checkbox", { name: "Incidents" }));
     expect(screen.getByRole("status").textContent).toContain("0 incidents mapped · 1 crews mapped");
     expect(screen.queryByRole("button", { name: /! · INC-1/ })).toBeNull();
@@ -53,7 +53,7 @@ describe("Operations Map", () => {
 
   it("keeps unmapped records accessible and searches the complete inventory across pages", () => {
     const many = Array.from({length: 25}, (_, i) => ({...incident, incident_id: `INC-${i}`}));
-    render(<OperationsMap incidents={many} crews={[{...crew, map_location: null}]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
+    render(<OperationsMap incidents={many} crews={[{...crew, map_location: null}]} onNavigate={vi.fn()} />);
     expect(screen.queryByRole("button", { name: /! · INC-24/ })).toBeNull();
     fireEvent.change(screen.getByRole("combobox", {name: "Search records"}), {target: {value: "INC-24"}});
     expect(screen.getByRole("button", { name: /! · INC-24/ })).toBeTruthy();
@@ -61,7 +61,7 @@ describe("Operations Map", () => {
     fireEvent.click(screen.getByRole("checkbox", { name: "Unmapped only" }));
     fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open crew details" })).toBeTruthy();
   });
 
   it("consumes a mapped cross-view target, selects it, and reveals its clustered marker", async () => {
@@ -73,13 +73,12 @@ describe("Operations Map", () => {
         crews={[crew]}
         navigationTarget={{ entityKind: "incident", entityId: "INC-1", requestId: 7 }}
         onNavigationHandled={onNavigationHandled}
-        onOpenIncident={vi.fn()}
-        onOpenCrew={vi.fn()}
+        onNavigate={vi.fn()}
       />
     );
 
     expect(await screen.findByText("Showing incident INC-1 on the map.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open incident details" })).toBeTruthy();
     await waitFor(() => expect(zoomToShowLayer).toHaveBeenCalled());
     expect(onNavigationHandled).toHaveBeenCalledWith(7);
   });
@@ -87,7 +86,7 @@ describe("Operations Map", () => {
   it("clears hiding filters and enables the targeted entity layer", async () => {
     const onNavigationHandled = vi.fn();
     const view = render(
-      <OperationsMap incidents={[incident]} crews={[crew]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />
+      <OperationsMap incidents={[incident]} crews={[crew]} onNavigate={vi.fn()} />
     );
     fireEvent.click(screen.getByRole("checkbox", { name: "Incidents" }));
     fireEvent.change(screen.getByRole("combobox", { name: "Search records" }), { target: { value: "no match" } });
@@ -98,15 +97,14 @@ describe("Operations Map", () => {
         crews={[crew]}
         navigationTarget={{ entityKind: "incident", entityId: "INC-1", requestId: 9 }}
         onNavigationHandled={onNavigationHandled}
-        onOpenIncident={vi.fn()}
-        onOpenCrew={vi.fn()}
+        onNavigate={vi.fn()}
       />
     );
 
     expect(await screen.findByText("Showing incident INC-1 on the map.")).toBeTruthy();
     expect((screen.getByRole("checkbox", { name: "Incidents" }) as HTMLInputElement).checked).toBe(true);
     expect((screen.getByRole("combobox", { name: "Search records" }) as HTMLInputElement).value).toBe("");
-    expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open incident details" })).toBeTruthy();
     expect(onNavigationHandled).toHaveBeenCalledWith(9);
   });
 
@@ -118,14 +116,13 @@ describe("Operations Map", () => {
         crews={[{ ...crew, map_location: null }]}
         navigationTarget={{ entityKind: "crew", entityId: "C1", requestId: 8 }}
         onNavigationHandled={onNavigationHandled}
-        onOpenIncident={vi.fn()}
-        onOpenCrew={vi.fn()}
+        onNavigate={vi.fn()}
       />
     );
 
     expect(await screen.findByText("Crew C1 is selected, but no map location is available.")).toBeTruthy();
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open crew details" })).toBeTruthy();
     expect(onNavigationHandled).toHaveBeenCalledWith(8);
   });
 
@@ -135,7 +132,7 @@ describe("Operations Map", () => {
       { ...incident, incident_id: "INC-2", municipality: "Hicksville" },
       { ...incident, incident_id: "INC-3", municipality: "Riverhead", region: "Eastern-Suffolk" }
     ];
-    render(<OperationsMap incidents={incidents} crews={[crew]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
+    render(<OperationsMap incidents={incidents} crews={[crew]} onNavigate={vi.fn()} />);
 
     const search = screen.getByRole("combobox", { name: "Search records" });
     fireEvent.change(search, { target: { value: "Hick" } });
@@ -150,7 +147,7 @@ describe("Operations Map", () => {
   it("reports basemap failure and offers retry while keeping records available", () => {
     const tileLayer = vi.spyOn(L, "tileLayer");
     const redraw = vi.spyOn(L.TileLayer.prototype, "redraw");
-    render(<OperationsMap incidents={[incident]} crews={[]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
+    render(<OperationsMap incidents={[incident]} crews={[]} onNavigate={vi.fn()} />);
     act(() => { tileLayer.mock.results[0].value.fire("tileerror"); });
     expect(screen.getByText(/Some basemap tiles could not load/)).toBeTruthy();
     expect(screen.getByRole("button", {name: /! · INC-1/})).toBeTruthy();
@@ -159,9 +156,9 @@ describe("Operations Map", () => {
   });
 
   it("selects a visible crew marker using the keyboard", () => {
-    render(<OperationsMap incidents={[]} crews={[crew]} onOpenIncident={vi.fn()} onOpenCrew={vi.fn()} />);
+    render(<OperationsMap incidents={[]} crews={[crew]} onNavigate={vi.fn()} />);
     fireEvent.keyDown(screen.getByRole("button", {name: "Crew Line crew 1 · Hicksville"}), {key: "Enter"});
-    expect(screen.getByRole("button", {name: "Open crew board"})).toBeTruthy();
+    expect(screen.getByRole("button", {name: "Open crew details"})).toBeTruthy();
   });
 
 });

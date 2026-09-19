@@ -20,6 +20,16 @@ import { AutocompleteSearch, buildAutocompleteSuggestions } from "./components/A
 import type { AutocompleteField } from "./components/AutocompleteSearch";
 import { ExpandableWorkspace } from "./components/ExpandableWorkspace";
 import {
+  ContextualNavigationPanel,
+  EntityNavigationActions
+} from "./components/ContextualNavigation";
+import type {
+  CrewNavigationFilter,
+  IncidentNavigationFilter,
+  NavigationResolverContext,
+  OperationalNavigationCommand
+} from "./components/ContextualNavigation";
+import {
   ResizableSidebar,
   SIDEBAR_DEFAULT_WIDTH,
   SIDEBAR_MAX_WIDTH,
@@ -153,6 +163,8 @@ function App() {
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | undefined>();
   const [selectedCrewId, setSelectedCrewId] = useState<string | undefined>();
   const [mapNavigationTarget, setMapNavigationTarget] = useState<MapNavigationTarget | null>(null);
+  const [incidentNavigationFilter, setIncidentNavigationFilter] = useState<{ requestId: number; filter: IncidentNavigationFilter } | null>(null);
+  const [crewNavigationFilter, setCrewNavigationFilter] = useState<{ requestId: number; filter: CrewNavigationFilter } | null>(null);
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
@@ -172,6 +184,7 @@ function App() {
   const recommendationTriggerRef = useRef<HTMLButtonElement>(null);
   const incidentDetailTriggerRef = useRef<HTMLElement>(null);
   const mapNavigationRequestRef = useRef(0);
+  const inventoryNavigationRequestRef = useRef(0);
 
   useEffect(() => {
     loadApplication();
@@ -228,6 +241,10 @@ function App() {
     [crews, selectedCrewId]
   );
   const selectedCrewContext = selectedCrew ?? selectedIncident?.assigned_crews[0];
+  const navigationContext = useMemo<NavigationResolverContext>(
+    () => ({ incidents, crews }),
+    [crews, incidents]
+  );
 
   const criticalIncidents = incidents.filter((incident) => incident.critical_facility);
   const withheldIncidents = incidents.filter((incident) => incident.ranking_status === "withheld");
@@ -333,6 +350,8 @@ function App() {
       setSelectedIncidentId(undefined);
       setSelectedCrewId(undefined);
       setMapNavigationTarget(null);
+      setIncidentNavigationFilter(null);
+      setCrewNavigationFilter(null);
       setRecommendation(null);
       setRecommendationError("");
       setActionMessage("");
@@ -387,6 +406,37 @@ function App() {
     mapNavigationRequestRef.current += 1;
     setMapNavigationTarget({ entityKind, entityId, requestId: mapNavigationRequestRef.current });
     selectView("map");
+  }
+
+  function navigateOperationally(command: OperationalNavigationCommand, trigger?: HTMLElement) {
+    if (command.type === "open_incident") {
+      openIncidentDetails(command.incidentId, trigger);
+      return;
+    }
+    if (command.type === "open_crew") {
+      openCrewDetails(command.crewId);
+      return;
+    }
+    if (command.type === "show_on_map") {
+      showOnMap(command.entityKind, command.entityId);
+      return;
+    }
+
+    inventoryNavigationRequestRef.current += 1;
+    if (command.type === "filter_incidents") {
+      setIncidentDetailOpen(false);
+      setIncidentNavigationFilter({
+        requestId: inventoryNavigationRequestRef.current,
+        filter: command.filter
+      });
+      selectView("incidents");
+      return;
+    }
+    setCrewNavigationFilter({
+      requestId: inventoryNavigationRequestRef.current,
+      filter: command.filter
+    });
+    selectView("crews");
   }
 
   const handleMapNavigation = useCallback((requestId: number) => {
@@ -590,11 +640,12 @@ function App() {
                   searchLabel={`Search Top ${dashboardIncidentLimit} Incidents Shown`}
                   preserveOrder
                   layoutKey={expandedWorkspace === "dashboard" ? "expanded" : "embedded"}
+                  navigationContext={navigationContext}
                   syncSelectionToFirst
                   tableLabel="Priority dispatch queue"
                   onSelect={setSelectedIncidentId}
                   onActivate={showIncidentDetails}
-                  onShowOnMap={showOnMap}
+                  onNavigate={navigateOperationally}
                 />
               </ExpandableWorkspace>
             </div>
@@ -637,13 +688,14 @@ function App() {
                 emptyMessage="No active incidents are available for dispatch."
                 incidents={incidents}
                 layoutKey={expandedWorkspace === "dispatch" ? "expanded" : "embedded"}
+                navigationContext={navigationContext}
                 key={`dispatch-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 syncSelectionToFirst
                 tableLabel="Dispatch incident queue"
                 onSelect={setSelectedIncidentId}
                 onActivate={showIncidentDetails}
-                onShowOnMap={showOnMap}
+                onNavigate={navigateOperationally}
               />
             </ExpandableWorkspace>
           </section>
@@ -671,11 +723,13 @@ function App() {
               emptyMessage="No active incidents are available in this scenario."
               incidents={incidents}
               layoutKey={expandedWorkspace === "incidents" ? "expanded" : "embedded"}
+              navigationContext={navigationContext}
+              navigationFilterRequest={incidentNavigationFilter}
               key={`active-incidents-${activeScenario?.scenario_id ?? "loading"}`}
               selectedIncidentId={selectedIncidentId}
               tableLabel="Active incidents"
               onSelect={openIncidentDetails}
-              onShowOnMap={showOnMap}
+              onNavigate={navigateOperationally}
             />
           </ExpandableWorkspace>
         ))}
@@ -691,9 +745,9 @@ function App() {
               incidents={incidents}
               crews={crews}
               navigationTarget={mapNavigationTarget}
+              navigationContext={navigationContext}
+              onNavigate={navigateOperationally}
               onNavigationHandled={handleMapNavigation}
-              onOpenIncident={openIncidentDetails}
-              onOpenCrew={openCrewDetails}
             />
           </Suspense>
         ))}
@@ -723,10 +777,11 @@ function App() {
                 crews={crews}
                 key={`crew-board-${activeScenario?.scenario_id ?? "loading"}`}
                 layoutKey={expandedWorkspace === "crews" ? "expanded" : "embedded"}
+                navigationContext={navigationContext}
+                navigationFilterRequest={crewNavigationFilter}
                 onCloseDetails={() => setSelectedCrewId(undefined)}
-                onOpenIncident={openIncidentDetails}
                 onSelectCrew={setSelectedCrewId}
-                onShowOnMap={showOnMap}
+                onNavigate={navigateOperationally}
                 selectedCrew={selectedCrew}
                 selectedCrewId={selectedCrewId}
               />
@@ -762,11 +817,12 @@ function App() {
                 emptyMessage="No storm exceptions are active in this scenario."
                 incidents={criticalIncidents.length ? criticalIncidents : incidents.slice(0, 4)}
                 layoutKey={expandedWorkspace === "storm" ? "expanded" : "embedded"}
+                navigationContext={navigationContext}
                 key={`storm-incidents-${activeScenario?.scenario_id ?? "loading"}`}
                 selectedIncidentId={selectedIncidentId}
                 tableLabel="Storm exceptions"
                 onSelect={setSelectedIncidentId}
-                onShowOnMap={showOnMap}
+                onNavigate={navigateOperationally}
               />
             </ExpandableWorkspace>
           </section>
@@ -815,7 +871,8 @@ function App() {
               actionLoading={actionLoading}
               actionFailed={actionFailed}
               actionMessage={actionMessage}
-              onOpenCrew={openCrewDetails}
+              navigationContext={navigationContext}
+              onNavigate={navigateOperationally}
               onRecordAction={recordRecommendationAction}
               recentActions={recommendationActions}
               recommendation={recommendation}
@@ -925,7 +982,8 @@ function App() {
             actionLoading={actionLoading}
             actionFailed={actionFailed}
             actionMessage={actionMessage}
-            onOpenCrew={openCrewDetails}
+            navigationContext={navigationContext}
+            onNavigate={navigateOperationally}
             onRecordAction={recordRecommendationAction}
             recentActions={recommendationActions}
             recommendation={recommendation}
@@ -943,7 +1001,13 @@ function App() {
           returnFocusRef={incidentDetailTriggerRef}
           title="Incident details"
         >
-          {incidentDetail ? <IncidentDetail incident={incidentDetail} onOpenCrew={openCrewDetails} /> : null}
+          {incidentDetail ? (
+            <IncidentDetail
+              incident={incidentDetail}
+              navigationContext={navigationContext}
+              onNavigate={navigateOperationally}
+            />
+          ) : null}
         </SideSheet>
       </main>
     </div>
@@ -1132,7 +1196,20 @@ function RecommendationComparison({
   );
 }
 
-function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCrew: (crewId: string) => void }) {
+function IncidentDetail({
+  incident,
+  navigationContext,
+  onNavigate
+}: {
+  incident: Incident;
+  navigationContext: NavigationResolverContext;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+}) {
+  const detailNavigationContext: NavigationResolverContext = {
+    ...navigationContext,
+    currentView: "incidents",
+    currentEntity: { kind: "incident", id: incident.incident_id }
+  };
   return (
     <div className="detail-panel incident-detail">
       <div className="detail-heading">
@@ -1144,7 +1221,22 @@ function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCr
       </div>
       <dl className="detail-grid">
         <div><dt>Region</dt><dd>{incident.region}</dd></div>
-        <div><dt>Feeder</dt><dd>{incident.feeder}</dd></div>
+        <div><dt>Municipality</dt><dd><EntityNavigationActions
+          accessibleLabel={`${incident.municipality} destinations`}
+          context={detailNavigationContext}
+          destinationKinds={["related_records"]}
+          labelOverrides={{ related_records: incident.municipality }}
+          onNavigate={onNavigate}
+          reference={{ kind: "municipality", name: incident.municipality }}
+        /></dd></div>
+        <div><dt>Feeder</dt><dd><EntityNavigationActions
+          accessibleLabel={`${incident.feeder} destinations`}
+          context={detailNavigationContext}
+          destinationKinds={["related_records"]}
+          labelOverrides={{ related_records: incident.feeder }}
+          onNavigate={onNavigate}
+          reference={{ kind: "feeder", id: incident.feeder }}
+        /></dd></div>
         <div><dt>Customers out</dt><dd>{incident.customers_out.toLocaleString()}</dd></div>
         <div><dt>Status</dt><dd>{formatCrewStatus(incident.status)}</dd></div>
         <div><dt>Hazard</dt><dd>{incident.hazard}</dd></div>
@@ -1154,14 +1246,38 @@ function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCr
         <div><dt>Incident age</dt><dd>{incident.age_minutes} min</dd></div>
         <div><dt>ETR</dt><dd>{incident.etr}</dd></div>
       </dl>
+      {incident.matched_critical_facility_ids?.length ? (
+        <div className="detail-section">
+          <h4>Critical-facility references</h4>
+          <div className="detail-link-list">
+            {incident.matched_critical_facility_ids.map((facilityId) => (
+              <EntityNavigationActions
+                accessibleLabel={`${facilityId} destinations`}
+                context={detailNavigationContext}
+                destinationKinds={["related_records"]}
+                key={facilityId}
+                labelOverrides={{ related_records: facilityId }}
+                onNavigate={onNavigate}
+                reference={{ kind: "critical_facility", id: facilityId }}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
       <div className="detail-section">
         <h4>Assigned crews</h4>
         {incident.assigned_crews.length ? (
           <div className="detail-link-list">
             {incident.assigned_crews.map((crew) => (
-              <button key={crew.assignment_id} onClick={() => onOpenCrew(crew.crew_id)} type="button">
-                {crew.crew_name} <span>({crew.crew_id})</span>
-              </button>
+              <EntityNavigationActions
+                accessibleLabel={`${crew.crew_name} destinations`}
+                context={detailNavigationContext}
+                destinationKinds={["full_detail"]}
+                key={crew.assignment_id}
+                labelOverrides={{ full_detail: `${crew.crew_name} (${crew.crew_id})` }}
+                onNavigate={onNavigate}
+                reference={{ kind: "crew", id: crew.crew_id }}
+              />
             ))}
           </div>
         ) : <p>No crews assigned.</p>}
@@ -1171,11 +1287,31 @@ function IncidentDetail({ incident, onOpenCrew }: { incident: Incident; onOpenCr
         <p>{incident.current_decision ? formatAction(incident.current_decision.action) : "No decision recorded."}</p>
         {incident.current_decision?.reason ? <small>{incident.current_decision.reason}</small> : null}
       </div>
+      <ContextualNavigationPanel
+        context={detailNavigationContext}
+        onNavigate={onNavigate}
+        reference={{ kind: "incident", id: incident.incident_id }}
+      />
     </div>
   );
 }
 
-function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: () => void; onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void }) {
+function CrewDetail({
+  crew,
+  navigationContext,
+  onClose,
+  onNavigate
+}: {
+  crew: Crew;
+  navigationContext: NavigationResolverContext;
+  onClose: () => void;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+}) {
+  const detailNavigationContext: NavigationResolverContext = {
+    ...navigationContext,
+    currentView: "crews",
+    currentEntity: { kind: "crew", id: crew.crew_id }
+  };
   return (
     <aside aria-label={`Crew details ${crew.crew_id}`} className="detail-panel crew-detail">
       <div className="detail-heading">
@@ -1200,13 +1336,24 @@ function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: ()
         {crew.assigned_incidents.length ? (
           <div className="detail-link-list">
             {crew.assigned_incidents.map((assignment) => (
-              <button key={assignment.assignment_id} onClick={(event) => onOpenIncident(assignment.incident_id, event.currentTarget)} type="button">
-                {assignment.incident_id}{assignment.municipality ? ` · ${assignment.municipality}` : ""}
-              </button>
+              <EntityNavigationActions
+                accessibleLabel={`${assignment.incident_id} destinations`}
+                context={detailNavigationContext}
+                destinationKinds={["full_detail"]}
+                key={assignment.assignment_id}
+                labelOverrides={{ full_detail: `${assignment.incident_id}${assignment.municipality ? ` · ${assignment.municipality}` : ""}` }}
+                onNavigate={onNavigate}
+                reference={{ kind: "incident", id: assignment.incident_id }}
+              />
             ))}
           </div>
         ) : <p>No active incident assignments.</p>}
       </div>
+      <ContextualNavigationPanel
+        context={detailNavigationContext}
+        onNavigate={onNavigate}
+        reference={{ kind: "crew", id: crew.crew_id }}
+      />
     </aside>
   );
 }
@@ -1214,19 +1361,21 @@ function CrewDetail({ crew, onClose, onOpenIncident }: { crew: Crew; onClose: ()
 function CrewBoard({
   crews,
   layoutKey,
+  navigationContext,
+  navigationFilterRequest,
   onCloseDetails,
-  onOpenIncident,
+  onNavigate,
   onSelectCrew,
-  onShowOnMap,
   selectedCrew,
   selectedCrewId
 }: {
   crews: Crew[];
   layoutKey?: string;
+  navigationContext: NavigationResolverContext;
+  navigationFilterRequest?: { requestId: number; filter: CrewNavigationFilter } | null;
   onCloseDetails: () => void;
-  onOpenIncident: (incidentId: string, trigger?: HTMLButtonElement) => void;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
   onSelectCrew: (crewId: string) => void;
-  onShowOnMap: (entityKind: MapEntityKind, entityId: string) => void;
   selectedCrew?: Crew;
   selectedCrewId?: string;
 }) {
@@ -1235,9 +1384,27 @@ function CrewBoard({
   const [capability, setCapability] = useState("all");
   const [region, setRegion] = useState("all");
   const [stormReady, setStormReady] = useState("all");
+  const [relatedFilter, setRelatedFilter] = useState<CrewNavigationFilter | null>(null);
   const [sort, setSort] = useState<{ key: CrewSortKey; direction: SortDirection }>({ key: "name", direction: "asc" });
   const [page, setPage] = useState(0);
   const previousPageSizeRef = useRef(24);
+  const handledNavigationRequestRef = useRef<number | null>(null);
+  const boardNavigationContext: NavigationResolverContext = {
+    ...navigationContext,
+    currentView: "crews"
+  };
+
+  useEffect(() => {
+    if (!navigationFilterRequest || handledNavigationRequestRef.current === navigationFilterRequest.requestId) return;
+    handledNavigationRequestRef.current = navigationFilterRequest.requestId;
+    setRelatedFilter(navigationFilterRequest.filter);
+    setQuery("");
+    setStatus("all");
+    setCapability("all");
+    setRegion("all");
+    setStormReady("all");
+    setPage(0);
+  }, [navigationFilterRequest]);
 
   const statuses = useMemo(
     () => Array.from(new Set([...crews.map((crew) => crew.status), ...(status !== "all" ? [status] : [])])).sort(),
@@ -1270,6 +1437,7 @@ function CrewBoard({
       ].join(" ").toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
+        (!relatedFilter || relatedFilter.ids.includes(crew.crew_id)) &&
         matchesFacets(crew, excludedFacet)
       );
     };
@@ -1299,7 +1467,7 @@ function CrewBoard({
         stormReady: facetCountsFor(stormReadyEligible, (crew) => crew.storm_ready ? "ready" : "not-ready")
       }
     };
-  }, [capability, crews, query, region, sort, status, stormReady]);
+  }, [capability, crews, query, region, relatedFilter, sort, status, stormReady]);
   const autocompleteSuggestions = useMemo(
     () => buildAutocompleteSuggestions(suggestionCrews, crewAutocompleteFields, query),
     [query, suggestionCrews]
@@ -1310,7 +1478,7 @@ function CrewBoard({
     itemCount: filteredCrews.length,
     itemSelector: ".crew-card",
     layout: "grid",
-    measurementKey: `${capability}|${layoutKey ?? "embedded"}|${page}|${query}|${region}|${sort.key}|${sort.direction}|${status}|${stormReady}`
+    measurementKey: `${capability}|${layoutKey ?? "embedded"}|${page}|${query}|${region}|${relatedFilter?.label ?? "all-related"}|${sort.key}|${sort.direction}|${status}|${stormReady}`
   });
   const pageCount = Math.max(1, Math.ceil(filteredCrews.length / pageSize));
   const currentPage = Math.min(page, pageCount - 1);
@@ -1318,7 +1486,7 @@ function CrewBoard({
 
   useEffect(() => {
     setPage(0);
-  }, [capability, query, region, sort, status, stormReady, crews.length]);
+  }, [capability, query, region, relatedFilter, sort, status, stormReady, crews.length]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1403,6 +1571,12 @@ function CrewBoard({
           </div>
         ) : null}
       </div>
+      {relatedFilter ? (
+        <div className="navigation-filter-banner" role="status">
+          <span>Related records · {relatedFilter.label}</span>
+          <button onClick={() => setRelatedFilter(null)} type="button">Clear related filter</button>
+        </div>
+      ) : null}
       {visibleCrews.length === 0 ? <EmptyState message="No crews match the current filters." /> : (
         <div className="crew-grid">
           {visibleCrews.map((crew) => (
@@ -1422,15 +1596,22 @@ function CrewBoard({
                   <span className="crew-location">{crew.current_location}</span>
                   <small>{crew.shift_remaining_hours} shift hours remaining</small>
                 </button>
-                <ShowOnMapButton entityId={crew.crew_id} entityKind="crew" onShowOnMap={onShowOnMap} />
+                <ShowOnMapButton entityId={crew.crew_id} entityKind="crew" navigationContext={boardNavigationContext} onNavigate={onNavigate} />
               </div>
               {crew.assigned_incidents.length ? (
                 <div className="assignment-list">
                   {crew.assigned_incidents.map((assignment) => (
-                    <span key={assignment.assignment_id}>
-                      Assigned to {assignment.incident_id}
-                      {assignment.municipality ? ` in ${assignment.municipality}` : ""}
-                    </span>
+                    <div className="assignment-navigation" key={assignment.assignment_id}>
+                      <span>Assigned to</span>
+                      <EntityNavigationActions
+                        accessibleLabel={`${assignment.incident_id} destinations`}
+                        context={boardNavigationContext}
+                        destinationKinds={["full_detail"]}
+                        labelOverrides={{ full_detail: `${assignment.incident_id}${assignment.municipality ? ` in ${assignment.municipality}` : ""}` }}
+                        onNavigate={onNavigate}
+                        reference={{ kind: "incident", id: assignment.incident_id }}
+                      />
+                    </div>
                   ))}
                 </div>
               ) : null}
@@ -1438,7 +1619,14 @@ function CrewBoard({
           ))}
         </div>
       )}
-      {selectedCrew ? <CrewDetail crew={selectedCrew} onClose={onCloseDetails} onOpenIncident={onOpenIncident} /> : null}
+      {selectedCrew ? (
+        <CrewDetail
+          crew={selectedCrew}
+          navigationContext={navigationContext}
+          onClose={onCloseDetails}
+          onNavigate={onNavigate}
+        />
+      ) : null}
     </div>
   );
 }
@@ -1447,6 +1635,8 @@ function IncidentTable({
   emptyMessage,
   incidents,
   layoutKey,
+  navigationContext,
+  navigationFilterRequest,
   preserveOrder = false,
   searchLabel,
   selectedIncidentId,
@@ -1454,11 +1644,13 @@ function IncidentTable({
   tableLabel,
   onActivate,
   onSelect,
-  onShowOnMap
+  onNavigate
 }: {
   emptyMessage: string;
   incidents: Incident[];
   layoutKey?: string;
+  navigationContext: NavigationResolverContext;
+  navigationFilterRequest?: { requestId: number; filter: IncidentNavigationFilter } | null;
   preserveOrder?: boolean;
   searchLabel?: string;
   selectedIncidentId?: string;
@@ -1466,16 +1658,33 @@ function IncidentTable({
   tableLabel: string;
   onActivate?: (incidentId: string, trigger?: HTMLElement) => void;
   onSelect: (incidentId: string, trigger?: HTMLElement) => void;
-  onShowOnMap: (entityKind: MapEntityKind, entityId: string) => void;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
 }) {
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState("all");
   const [region, setRegion] = useState("all");
   const [criticalFacility, setCriticalFacility] = useState("all");
+  const [relatedFilter, setRelatedFilter] = useState<IncidentNavigationFilter | null>(null);
   const [sort, setSort] = useState<{ key: IncidentSortKey; direction: SortDirection } | null>(null);
   const [page, setPage] = useState(0);
   const previousPageSizeRef = useRef(50);
   const lastSyncedFirstIncidentRef = useRef<string | undefined>(undefined);
+  const handledNavigationRequestRef = useRef<number | null>(null);
+  const tableNavigationContext: NavigationResolverContext = {
+    ...navigationContext,
+    currentView: "incidents"
+  };
+
+  useEffect(() => {
+    if (!navigationFilterRequest || handledNavigationRequestRef.current === navigationFilterRequest.requestId) return;
+    handledNavigationRequestRef.current = navigationFilterRequest.requestId;
+    setRelatedFilter(navigationFilterRequest.filter);
+    setQuery("");
+    setSeverity("all");
+    setRegion("all");
+    setCriticalFacility("all");
+    setPage(0);
+  }, [navigationFilterRequest]);
 
   const regions = useMemo(
     () => Array.from(new Set([...incidents.map((incident) => incident.region), ...(region !== "all" ? [region] : [])])).sort(),
@@ -1504,6 +1713,12 @@ function IncidentTable({
         .toLowerCase();
       return (
         (!normalizedQuery || searchable.includes(normalizedQuery)) &&
+        (!relatedFilter || (
+          (relatedFilter.kind === "incident_ids" && relatedFilter.ids.includes(incident.incident_id)) ||
+          (relatedFilter.kind === "municipality" && incident.municipality === relatedFilter.value) ||
+          (relatedFilter.kind === "feeder" && incident.feeder === relatedFilter.value) ||
+          (relatedFilter.kind === "critical_facility" && incident.matched_critical_facility_ids?.includes(relatedFilter.value))
+        )) &&
         matchesFacets(incident, excludedFacet)
       );
     };
@@ -1548,7 +1763,7 @@ function IncidentTable({
         criticalFacility: facetCountsFor(criticalFacilityEligible, (incident) => incident.critical_facility ? "yes" : "no")
       }
     };
-  }, [criticalFacility, incidents, preserveOrder, query, region, severity, sort]);
+  }, [criticalFacility, incidents, preserveOrder, query, region, relatedFilter, severity, sort]);
   const autocompleteSuggestions = useMemo(
     () => buildAutocompleteSuggestions(suggestionIncidents, incidentAutocompleteFields, query),
     [query, suggestionIncidents]
@@ -1570,7 +1785,7 @@ function IncidentTable({
     itemCount: filteredIncidents.length,
     itemSelector: "tbody tr",
     layout: "rows",
-    measurementKey: `${layoutKey ?? "embedded"}|${page}|${query}|${region}|${severity}|${sort?.key ?? "default"}|${sort?.direction ?? "default"}`
+    measurementKey: `${layoutKey ?? "embedded"}|${page}|${query}|${region}|${relatedFilter?.label ?? "all-related"}|${severity}|${sort?.key ?? "default"}|${sort?.direction ?? "default"}`
   });
   const pageCount = Math.max(1, Math.ceil(filteredIncidents.length / pageSize));
   const currentPage = Math.min(page, pageCount - 1);
@@ -1578,7 +1793,7 @@ function IncidentTable({
 
   useEffect(() => {
     setPage(0);
-    }, [criticalFacility, query, region, severity, sort, incidents.length]);
+    }, [criticalFacility, query, region, relatedFilter, severity, sort, incidents.length]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, pageCount - 1));
@@ -1675,6 +1890,12 @@ function IncidentTable({
           </div>
         ) : null}
       </div>
+      {relatedFilter ? (
+        <div className="navigation-filter-banner" role="status">
+          <span>Related records · {relatedFilter.label}</span>
+          <button onClick={() => setRelatedFilter(null)} type="button">Clear related filter</button>
+        </div>
+      ) : null}
       {visibleIncidents.length === 0 ? (
         <EmptyState message="No incidents match the current filters." />
       ) : (
@@ -1723,9 +1944,27 @@ function IncidentTable({
                   >
                     {incident.incident_id}
                   </button>
-                  <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" onShowOnMap={onShowOnMap} />
+                  <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" navigationContext={tableNavigationContext} onNavigate={onNavigate} />
                 </span>
-                <span className="incident-location">{incident.municipality} / {incident.feeder}</span>
+                <span className="incident-location incident-related-location">
+                  <EntityNavigationActions
+                    accessibleLabel={`${incident.municipality} destinations`}
+                    context={tableNavigationContext}
+                    destinationKinds={["related_records"]}
+                    labelOverrides={{ related_records: incident.municipality }}
+                    onNavigate={onNavigate}
+                    reference={{ kind: "municipality", name: incident.municipality }}
+                  />
+                  <span aria-hidden="true">/</span>
+                  <EntityNavigationActions
+                    accessibleLabel={`${incident.feeder} destinations`}
+                    context={tableNavigationContext}
+                    destinationKinds={["related_records"]}
+                    labelOverrides={{ related_records: incident.feeder }}
+                    onNavigate={onNavigate}
+                    reference={{ kind: "feeder", id: incident.feeder }}
+                  />
+                </span>
               </td>
               <td><span className="compact-cell-label">Region</span>{incident.region}</td>
               <td><span className="compact-cell-label">Customers</span>{incident.customers_out.toLocaleString()}</td>
@@ -1741,7 +1980,15 @@ function IncidentTable({
                 <span className="compact-cell-label">Assigned Crews</span>
                 {incident.assigned_crews.length ? (
                   incident.assigned_crews.map((crew) => (
-                    <span className="assignment-chip" key={crew.assignment_id}>{crew.crew_name}</span>
+                    <EntityNavigationActions
+                      accessibleLabel={`${crew.crew_name} destinations`}
+                      context={tableNavigationContext}
+                      destinationKinds={["full_detail"]}
+                      key={crew.assignment_id}
+                      labelOverrides={{ full_detail: crew.crew_name }}
+                      onNavigate={onNavigate}
+                      reference={{ kind: "crew", id: crew.crew_id }}
+                    />
                   ))
                 ) : (
                   <span>Unassigned</span>
@@ -1780,7 +2027,8 @@ function RecommendationPanel({
   actionFailed,
   actionLoading,
   actionMessage,
-  onOpenCrew,
+  navigationContext,
+  onNavigate,
   onRecordAction,
   onRetryRecommendation,
   recentActions,
@@ -1792,7 +2040,8 @@ function RecommendationPanel({
   actionFailed: boolean;
   actionLoading: RecommendationActionType | null;
   actionMessage: string;
-  onOpenCrew: (crewId: string) => void;
+  navigationContext: NavigationResolverContext;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
   onRecordAction: (action: RecommendationActionType, note?: string, selectedCrewId?: string) => Promise<void>;
   onRetryRecommendation: () => void;
   recentActions: RecommendationAction[];
@@ -1890,9 +2139,14 @@ function RecommendationPanel({
             </small>
           </div>
           {recommendation.recommended_crew ? (
-            <button className="detail-link" onClick={() => onOpenCrew(recommendation.recommended_crew!.crew_id)} type="button">
-              View recommended crew details
-            </button>
+            <EntityNavigationActions
+              accessibleLabel="Recommended crew destinations"
+              context={navigationContext}
+              destinationKinds={["full_detail"]}
+              labelOverrides={{ full_detail: "View recommended crew details" }}
+              onNavigate={onNavigate}
+              reference={{ kind: "crew", id: recommendation.recommended_crew.crew_id }}
+            />
           ) : null}
           <div className="decision-status">
             <span>Current decision</span>
@@ -1904,9 +2158,15 @@ function RecommendationPanel({
               <span>Assigned crew{selectedIncident.assigned_crews.length > 1 ? "s" : ""}</span>
               <div className="detail-link-list compact">
                 {selectedIncident.assigned_crews.map((crew) => (
-                  <button key={crew.assignment_id} onClick={() => onOpenCrew(crew.crew_id)} type="button">
-                    {crew.crew_name} ({crew.crew_id})
-                  </button>
+                  <EntityNavigationActions
+                    accessibleLabel={`${crew.crew_name} destinations`}
+                    context={navigationContext}
+                    destinationKinds={["full_detail"]}
+                    key={crew.assignment_id}
+                    labelOverrides={{ full_detail: `${crew.crew_name} (${crew.crew_id})` }}
+                    onNavigate={onNavigate}
+                    reference={{ kind: "crew", id: crew.crew_id }}
+                  />
                 ))}
               </div>
             </div>

@@ -6,6 +6,8 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import type { Crew, Incident } from "../types";
 import { AutocompleteSearch, buildAutocompleteSuggestions } from "./AutocompleteSearch";
 import type { AutocompleteField } from "./AutocompleteSearch";
+import { ContextualNavigationPanel, EntityNavigationActions } from "./ContextualNavigation";
+import type { NavigationResolverContext, OperationalNavigationCommand } from "./ContextualNavigation";
 import "./OperationsMap.css";
 
 // Initial framing only: panning remains unrestricted, including surrounding NYC.
@@ -160,12 +162,14 @@ export default function OperationsMap({
   incidents,
   crews,
   navigationTarget,
-  onNavigationHandled,
-  onOpenIncident,
-  onOpenCrew
+  navigationContext,
+  onNavigate,
+  onNavigationHandled
 }: {
-  incidents: Incident[]; crews: Crew[]; onOpenIncident: (id: string) => void; onOpenCrew: (id: string) => void;
+  incidents: Incident[]; crews: Crew[];
   navigationTarget?: MapNavigationTarget | null;
+  navigationContext?: NavigationResolverContext;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
   onNavigationHandled?: (requestId: number) => void;
 }) {
   const [showIncidents, setShowIncidents] = useState(true);
@@ -203,6 +207,11 @@ export default function OperationsMap({
   const pageCount = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const selection = filtered.find((r) => r.key === selected);
+  const mapNavigationContext: NavigationResolverContext = {
+    ...(navigationContext ?? { incidents, crews }),
+    currentView: "map",
+    currentEntity: selection ? { kind: selection.kind, id: selection.id } : undefined
+  };
   const select = useCallback((key: string) => {
     setNavigationNotice("");
     setSelected(key);
@@ -276,11 +285,11 @@ export default function OperationsMap({
           <div className="operations-map-detail-heading"><h3>{selection.title}</h3><button aria-label="Clear map selection" type="button" onClick={() => setSelected(null)}>×</button></div>
           <p>{selection.kind === "incident" ? "Incident" : "Crew"} · {selection.status.replace(/_/g, " ")}</p>
           <dl><dt>Location</dt><dd>{selection.location}</dd><dt>Region</dt><dd>{selection.region}</dd>
-            {selection.incident && <><dt>Customers out</dt><dd>{selection.incident.customers_out.toLocaleString()}</dd><dt>Severity / hazard</dt><dd>{selection.detail}</dd><dt>Assigned crews</dt><dd>{selection.incident.assigned_crews.length}</dd></>}
-            {selection.crew && <><dt>Capability</dt><dd>{selection.crew.capability}</dd><dt>Assigned incidents</dt><dd>{selection.crew.assigned_incidents.map((r) => r.incident_id).join(", ") || "None"}</dd></>}
+            {selection.incident && <><dt>Customers out</dt><dd>{selection.incident.customers_out.toLocaleString()}</dd><dt>Severity / hazard</dt><dd>{selection.detail}</dd><dt>Assigned crews</dt><dd>{selection.incident.assigned_crews.length ? <div className="map-related-actions">{selection.incident.assigned_crews.map((crew) => <EntityNavigationActions accessibleLabel={`${crew.crew_name} destinations`} context={mapNavigationContext} destinationKinds={["full_detail"]} key={crew.assignment_id} labelOverrides={{ full_detail: crew.crew_name }} onNavigate={onNavigate} reference={{ kind: "crew", id: crew.crew_id }} />)}</div> : "None"}</dd></>}
+            {selection.crew && <><dt>Capability</dt><dd>{selection.crew.capability}</dd><dt>Assigned incidents</dt><dd>{selection.crew.assigned_incidents.length ? <div className="map-related-actions">{selection.crew.assigned_incidents.map((assignment) => <EntityNavigationActions accessibleLabel={`${assignment.incident_id} destinations`} context={mapNavigationContext} destinationKinds={["full_detail"]} key={assignment.assignment_id} labelOverrides={{ full_detail: assignment.incident_id }} onNavigate={onNavigate} reference={{ kind: "incident", id: assignment.incident_id }} />)}</div> : "None"}</dd></>}
           </dl>
           <p>{!selection.coordinates ? "Location unavailable — this record is not plotted." : selection.kind === "crew" ? `Approximate center: ${selection.crew?.map_location?.village}` : "Synthetic incident location"}</p>
-          <button type="button" onClick={() => selection.kind === "incident" ? onOpenIncident(selection.id) : onOpenCrew(selection.id)}>{selection.kind === "incident" ? "Open incident" : "Open crew board"}</button>
+          <ContextualNavigationPanel context={mapNavigationContext} onNavigate={onNavigate} reference={{ kind: selection.kind, id: selection.id }} />
         </div> : <div className="operations-map-help"><h3>Explore the scenario</h3><p>Select a marker or record for details. Open its incident or crew screen to continue the existing workflow.</p></div>}
         <div className="operations-map-list-heading"><h3>Records ({listed.length.toLocaleString()})</h3><label><input type="checkbox" checked={unmappedOnly} onChange={(e) => setUnmappedOnly(e.target.checked)} /> Unmapped only</label></div>
         <ul className="operations-map-records" aria-label="Map record list">{listed.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE).map((r) => <li key={r.key}><button type="button" aria-pressed={selection?.key === r.key} onClick={() => select(r.key)}><strong>{r.kind === "incident" ? "!" : "C"} · {r.title}</strong><span>{r.location} · {r.status.replace(/_/g, " ")}{!r.coordinates ? " · Unmapped" : ""}</span></button></li>)}</ul>

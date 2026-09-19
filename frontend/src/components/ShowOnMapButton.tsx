@@ -1,28 +1,38 @@
-import { Map as MapIcon } from "lucide-react";
+import {
+  NavigationActions,
+  resolveNavigationDestinations
+} from "./ContextualNavigation";
+import type {
+  NavigationResolverContext,
+  OperationalNavigationCommand
+} from "./ContextualNavigation";
 
 export type MapEntityKind = "incident" | "crew";
 
 export function ShowOnMapButton({
   entityId,
   entityKind,
-  onShowOnMap
+  navigationContext,
+  onNavigate
 }: {
   entityId: string;
   entityKind: MapEntityKind;
-  onShowOnMap: (entityKind: MapEntityKind, entityId: string) => void;
+  navigationContext: NavigationResolverContext;
+  onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
 }) {
+  const actions = resolveNavigationDestinations(
+    { kind: entityKind, id: entityId },
+    navigationContext
+  ).filter((action) => action.kind === "show_on_map");
+
   return (
-    <button
-      aria-label={`Show ${entityKind} ${entityId} on map`}
-      className="show-on-map-action"
-      onClick={(event) => {
-        event.stopPropagation();
-        onShowOnMap(entityKind, entityId);
-      }}
-      title="Show on map"
-      type="button"
-    >
-      <MapIcon aria-hidden="true" size={16} strokeWidth={2} />
-    </button>
+    <NavigationActions
+      accessibleLabel={`${entityKind} ${entityId} map destination`}
+      accessibleNameOverrides={{ show_on_map: `Show ${entityKind} ${entityId} on map` }}
+      actions={actions}
+      labelOverrides={{ show_on_map: "Show on map" }}
+      onNavigate={onNavigate}
+      variant="icon"
+    />
   );
 }

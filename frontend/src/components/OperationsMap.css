@@ -38,6 +38,7 @@
 .operations-map-detail dl { display: grid; grid-template-columns: 100px minmax(0, 1fr); font-size: 12px; gap: 8px; }
 .operations-map-detail dt { color: #526578; }
 .operations-map-detail dd { margin: 0; }
+.map-related-actions { display: flex; flex-wrap: wrap; gap: 4px; }
 .operations-map-list-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 16px 0 10px; }
 .operations-map-list-heading label { font-size: 12px; }
 .operations-map-records { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }

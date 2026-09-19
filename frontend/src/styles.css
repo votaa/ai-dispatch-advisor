@@ -1653,6 +1653,130 @@ tbody tr:focus-visible {
   outline-offset: 2px;
 }
 
+.navigation-actions-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.navigation-actions-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.navigation-actions-inline button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #145b86;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  gap: 4px;
+  max-width: 100%;
+  padding: 1px 2px;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.navigation-actions-inline button:hover,
+.navigation-actions-inline button:focus-visible {
+  color: #0a3f60;
+  text-decoration-thickness: 2px;
+}
+
+.navigation-actions-inline button:focus-visible,
+.navigation-actions-panel button:focus-visible,
+.navigation-filter-banner button:focus-visible {
+  outline: 3px solid rgba(47, 111, 159, 0.35);
+  outline-offset: 2px;
+}
+
+.contextual-navigation {
+  border-top: 1px solid #c8d7e2;
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+.contextual-navigation-label {
+  color: #526578;
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.navigation-actions-panel {
+  display: grid;
+  gap: 7px;
+}
+
+.navigation-actions-panel button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #9fb8ca;
+  border-radius: 6px;
+  color: #184d70;
+  display: flex;
+  font-weight: 750;
+  gap: 7px;
+  justify-content: flex-start;
+  min-height: 34px;
+  padding: 7px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.navigation-actions-panel button:hover {
+  background: #e9f3f9;
+  border-color: #2f6f9f;
+}
+
+.navigation-filter-banner {
+  align-items: center;
+  background: #eef6fb;
+  border: 1px solid #a9c3d6;
+  border-radius: 6px;
+  color: #244d68;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 8px;
+  justify-content: space-between;
+  margin: 0 0 10px;
+  padding: 7px 9px;
+}
+
+.navigation-filter-banner button {
+  background: #ffffff;
+  border: 1px solid #8eacbf;
+  border-radius: 5px;
+  color: #184d70;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 7px;
+}
+
+.incident-related-location {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.assignment-navigation {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .incident-map-link {
   align-items: center;
   display: inline-flex;

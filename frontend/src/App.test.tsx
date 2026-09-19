@@ -866,9 +866,9 @@ describe("application states and scenario switching", () => {
     expect(screen.queryByRole("complementary", { name: "Incident details INC-1001" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "INC-1001" }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /North Line Alpha/ }));
-    expect(await screen.findByLabelText("Crew details CR-01")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /INC-1001/ }));
+    fireEvent.click(screen.getByRole("button", { name: "North Line Alpha (CR-01)" }));
+    const crewDetails = await screen.findByLabelText("Crew details CR-01");
+    fireEvent.click(within(crewDetails).getByRole("button", { name: "INC-1001 · Millbrook" }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
   });
 
@@ -1562,7 +1562,7 @@ describe("application states and scenario switching", () => {
     await screen.findByRole("button", {name: "Open recommendations"});
     fireEvent.click(screen.getByRole("button", {name: "Operations Map"}));
     fireEvent.click(await screen.findByRole("button", {name: /! · INC-1001/}));
-    fireEvent.click(screen.getByRole("button", {name: "Open incident"}));
+    fireEvent.click(screen.getByRole("button", {name: "Open incident details"}));
     expect(await screen.findByRole("complementary", {name: "Incident details INC-1001"})).toBeTruthy();
     fireEvent.click(screen.getByRole("button", {name: "Operations Map"}));
     fireEvent.change(await screen.findByRole("combobox", {name: "Search records"}), {target: {value: "no match"}});
@@ -1589,7 +1589,7 @@ describe("application states and scenario switching", () => {
       expect(showOnMap.closest(".incident-map-link")?.querySelector(".incident-select-button")?.textContent).toBe("INC-1001");
       fireEvent.click(showOnMap);
       expect(await screen.findByText("Showing incident INC-1001 on the map.")).toBeTruthy();
-      expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
+      expect(screen.getByRole("button", { name: "Open incident details" })).toBeTruthy();
       expect(screen.queryByRole("complementary", { name: "Incident details INC-1001" })).toBeNull();
     }
   });
@@ -1620,12 +1620,52 @@ describe("application states and scenario switching", () => {
     expect(mappedAction.querySelector("svg")).toBeTruthy();
     fireEvent.click(mappedAction);
     expect(await screen.findByText("Showing crew CR-01 on the map.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open crew details" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
     fireEvent.click(await screen.findByRole("button", { name: "Show crew CR-02 on map" }));
     expect(await screen.findByText("Crew CR-02 is selected, but no map location is available.")).toBeTruthy();
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
+  });
+
+  it("uses contextual destinations for exact related-record filters", async () => {
+    const assignedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "assigned",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: [{ incident_id: "INC-1001", assignment_id: "a-1", assigned_at: "2026-09-19T10:00:00Z", municipality: "Millbrook", severity: "critical" }],
+      map_location: null
+    };
+    const assignedSummary = { crew_id: "CR-01", crew_name: "North Line Alpha", assignment_id: "a-1", assigned_at: "2026-09-19T10:00:00Z" };
+    apiMocks.crews.mockResolvedValue([assignedCrew]);
+    apiMocks.incidents.mockResolvedValue([
+      { ...baseIncident, region: "North", assigned_crews: [assignedSummary], matched_critical_facility_ids: ["CF-1"] },
+      { ...baseIncident, incident_id: "INC-1002", region: "North", feeder: "FDR-2", assigned_crews: [] },
+      { ...baseIncident, incident_id: "INC-1003", region: "North", municipality: "Millbrook Heights", feeder: "FDR-1A", assigned_crews: [] }
+    ]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "INC-1001" }));
+    const incidentDetails = await screen.findByRole("complementary", { name: "Incident details INC-1001" });
+    fireEvent.click(within(incidentDetails).getByRole("button", { name: "Millbrook" }));
+
+    expect(await screen.findByText("Related records · Municipality: Millbrook")).toBeTruthy();
+    expect(screen.getByText(/of 2 matching incidents \(3 total\)/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Clear related filter" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "INC-1001" }));
+    const reopenedDetails = await screen.findByRole("complementary", { name: "Incident details INC-1001" });
+    fireEvent.click(within(reopenedDetails).getByRole("button", { name: "View assigned crew (1)" }));
+
+    expect(await screen.findByText("Related records · Assigned to INC-1001")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /North Line Alpha/ })).toBeTruthy();
   });
 
 });
