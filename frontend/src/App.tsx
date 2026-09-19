@@ -1407,20 +1407,23 @@ function CrewBoard({
         <div className="crew-grid">
           {visibleCrews.map((crew) => (
             <article className={`crew-card ${selectedCrewId === crew.crew_id ? "selected-card" : ""}`} key={crew.crew_id}>
-              <button
-                aria-pressed={selectedCrewId === crew.crew_id}
-                className="crew-card-select"
-                onClick={() => onSelectCrew(crew.crew_id)}
-                type="button"
-              >
-                <span className="crew-card-name">
-                  <strong>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></strong>
-                  <span>{crew.capability}</span>
-                </span>
-                <span className={`crew-status ${crew.status}`}>{formatCrewStatus(crew.status)}</span>
-                <span className="crew-location">{crew.current_location}</span>
-                <small>{crew.shift_remaining_hours} shift hours remaining</small>
-              </button>
+              <div className="crew-card-primary">
+                <button
+                  aria-pressed={selectedCrewId === crew.crew_id}
+                  className="crew-card-select"
+                  onClick={() => onSelectCrew(crew.crew_id)}
+                  type="button"
+                >
+                  <span className="crew-card-name">
+                    <strong>{crew.crew_name} <span className="crew-id">({crew.crew_id})</span></strong>
+                    <span>{crew.capability}</span>
+                  </span>
+                  <span className={`crew-status ${crew.status}`}>{formatCrewStatus(crew.status)}</span>
+                  <span className="crew-location">{crew.current_location}</span>
+                  <small>{crew.shift_remaining_hours} shift hours remaining</small>
+                </button>
+                <ShowOnMapButton entityId={crew.crew_id} entityKind="crew" onShowOnMap={onShowOnMap} />
+              </div>
               {crew.assigned_incidents.length ? (
                 <div className="assignment-list">
                   {crew.assigned_incidents.map((assignment) => (
@@ -1431,7 +1434,6 @@ function CrewBoard({
                   ))}
                 </div>
               ) : null}
-              <ShowOnMapButton entityId={crew.crew_id} entityKind="crew" onShowOnMap={onShowOnMap} />
             </article>
           ))}
         </div>
@@ -1709,19 +1711,21 @@ function IncidentTable({
             >
               <td>
                 <span className="compact-cell-label">Incident</span>
-                <button
-                  aria-pressed={selectedIncidentId === incident.incident_id}
-                  className="incident-select-button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onSelect(incident.incident_id, event.currentTarget);
-                  }}
-                  type="button"
-                >
-                  {incident.incident_id}
-                </button>
-                <span>{incident.municipality} / {incident.feeder}</span>
-                <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" onShowOnMap={onShowOnMap} />
+                <span className="incident-map-link">
+                  <button
+                    aria-pressed={selectedIncidentId === incident.incident_id}
+                    className="incident-select-button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSelect(incident.incident_id, event.currentTarget);
+                    }}
+                    type="button"
+                  >
+                    {incident.incident_id}
+                  </button>
+                  <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" onShowOnMap={onShowOnMap} />
+                </span>
+                <span className="incident-location">{incident.municipality} / {incident.feeder}</span>
               </td>
               <td><span className="compact-cell-label">Region</span>{incident.region}</td>
               <td><span className="compact-cell-label">Customers</span>{incident.customers_out.toLocaleString()}</td>

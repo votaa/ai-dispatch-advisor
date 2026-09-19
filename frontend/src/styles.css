@@ -1618,23 +1618,67 @@ tbody tr:focus-visible {
 }
 
 .show-on-map-action {
+  align-items: center;
   background: #eef6fb;
   border: 1px solid #9abbd3;
   border-radius: 6px;
   color: #225d87;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 7px;
-  min-height: 32px;
-  padding: 5px 9px;
-  white-space: nowrap;
+  display: inline-flex;
+  flex: 0 0 24px;
+  height: 24px;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+  padding: 3px;
+  position: relative;
+  vertical-align: middle;
+  width: 24px;
+}
+
+.show-on-map-action::before {
+  content: "";
+  inset: -4px;
+  position: absolute;
 }
 
 .show-on-map-action:hover,
 .show-on-map-action:focus-visible {
   background: #dcecf7;
   border-color: #2f6f9f;
+}
+
+.show-on-map-action:focus-visible {
+  outline: 3px solid rgba(47, 111, 159, 0.35);
+  outline-offset: 2px;
+}
+
+.incident-map-link {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.incident-map-link .incident-select-button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.incident-location {
+  margin-left: 4px;
+}
+
+.crew-card-primary {
+  align-items: flex-start;
+  display: flex;
+  gap: 4px;
+}
+
+.crew-card-primary .crew-card-select {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .crew-card-select {

@@ -1,3 +1,5 @@
+import { Map as MapIcon } from "lucide-react";
+
 export type MapEntityKind = "incident" | "crew";
 
 export function ShowOnMapButton({
@@ -17,9 +19,10 @@ export function ShowOnMapButton({
         event.stopPropagation();
         onShowOnMap(entityKind, entityId);
       }}
+      title="Show on map"
       type="button"
     >
-      Show on map
+      <MapIcon aria-hidden="true" size={16} strokeWidth={2} />
     </button>
   );
 }

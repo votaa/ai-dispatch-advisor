@@ -1583,6 +1583,10 @@ describe("application states and scenario switching", () => {
     for (const viewName of ["Dashboard", "Dispatch", "Incidents", "Storm Mode"]) {
       if (viewName !== "Dashboard") fireEvent.click(screen.getByRole("button", { name: viewName }));
       const showOnMap = await screen.findByRole("button", { name: "Show incident INC-1001 on map" });
+      expect(showOnMap.getAttribute("title")).toBe("Show on map");
+      expect(showOnMap.textContent).toBe("");
+      expect(showOnMap.querySelector("svg")).toBeTruthy();
+      expect(showOnMap.closest(".incident-map-link")?.querySelector(".incident-select-button")?.textContent).toBe("INC-1001");
       fireEvent.click(showOnMap);
       expect(await screen.findByText("Showing incident INC-1001 on the map.")).toBeTruthy();
       expect(screen.getByRole("button", { name: "Open incident" })).toBeTruthy();
@@ -1609,7 +1613,12 @@ describe("application states and scenario switching", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Crew Board" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Show crew CR-01 on map" }));
+    const mappedAction = await screen.findByRole("button", { name: "Show crew CR-01 on map" });
+    expect(mappedAction.closest(".crew-card-primary")).toBeTruthy();
+    expect(mappedAction.getAttribute("title")).toBe("Show on map");
+    expect(mappedAction.textContent).toBe("");
+    expect(mappedAction.querySelector("svg")).toBeTruthy();
+    fireEvent.click(mappedAction);
     expect(await screen.findByText("Showing crew CR-01 on the map.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Open crew board" })).toBeTruthy();
 
