@@ -4,6 +4,10 @@
 
 A single read-only geographic view of the active synthetic scenario. The default bounding box is southwest `(40.48, -74.12)` to northeast `(41.19, -71.80)`, with padding. It covers Long Island, Nassau, Suffolk, and the Rockaway Peninsula, with surrounding NYC and coastal context. Users can pan freely and reset to this extent.
 
+## Review status
+
+POC-035 review closed on 2026-09-20. The implemented baseline is accepted for its documented read-only scope, synthetic/approximate geography disclosure, unmapped-record handling, existing workflow links, and deferred live-GIS capabilities. Focused closure checks passed with 63 frontend tests and 6 geography tests. Follow-on map enhancements remain separately tracked as POC-036 through POC-045.
+
 ## Behavior
 
 - Incident pins use the scenario latitude/longitude generated from the complete stable-ID municipality-coordinate reference. Crew pins use the village center resolved by the backend's shared geography registry from `current_location`, including approved aliases. Crew home region remains the operating-region filter; it is not used to infer physical location.
