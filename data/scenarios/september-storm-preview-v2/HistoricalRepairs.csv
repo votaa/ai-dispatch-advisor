@@ -1,0 +1,41 @@
+repair_id,incident_type,region,average_duration_minutes,crew_type,notes
+REP-001,downed wire,Queens-Nassau,113,line,Requires safety isolation before repair
+REP-002,burning wire,Queens-Nassau,153,line,Requires isolation and damaged-conductor replacement
+REP-003,tree on primary,Queens-Nassau,128,vegetation,Vegetation removal normally precedes line repair
+REP-004,tree limb,Queens-Nassau,80,vegetation,Often resolved by a vegetation crew
+REP-005,transformer fire,Queens-Nassau,219,line,May require equipment replacement
+REP-006,feeder lockout,Queens-Nassau,168,line,Includes patrol isolation and restoration switching
+REP-007,broken crossarm,Queens-Nassau,139,line,Requires pole-top hardware repair
+REP-008,underground cable fault,Queens-Nassau,192,underground,Includes fault location and cable isolation
+REP-009,damaged service drop,Queens-Nassau,63,low_voltage,Normally affects a single customer
+REP-010,partial outage,Queens-Nassau,60,general,Troubleshooter diagnosis may precede repair
+REP-011,downed wire,Central-Nassau,122,line,Requires safety isolation before repair
+REP-012,burning wire,Central-Nassau,146,line,Requires isolation and damaged-conductor replacement
+REP-013,tree on primary,Central-Nassau,156,vegetation,Vegetation removal normally precedes line repair
+REP-014,tree limb,Central-Nassau,107,vegetation,Often resolved by a vegetation crew
+REP-015,transformer fire,Central-Nassau,214,line,May require equipment replacement
+REP-016,feeder lockout,Central-Nassau,170,line,Includes patrol isolation and restoration switching
+REP-017,broken crossarm,Central-Nassau,158,line,Requires pole-top hardware repair
+REP-018,underground cable fault,Central-Nassau,188,underground,Includes fault location and cable isolation
+REP-019,damaged service drop,Central-Nassau,89,low_voltage,Normally affects a single customer
+REP-020,partial outage,Central-Nassau,57,general,Troubleshooter diagnosis may precede repair
+REP-021,downed wire,Western Suffolk,121,line,Requires safety isolation before repair
+REP-022,burning wire,Western Suffolk,146,line,Requires isolation and damaged-conductor replacement
+REP-023,tree on primary,Western Suffolk,162,vegetation,Vegetation removal normally precedes line repair
+REP-024,tree limb,Western Suffolk,101,vegetation,Often resolved by a vegetation crew
+REP-025,transformer fire,Western Suffolk,197,line,May require equipment replacement
+REP-026,feeder lockout,Western Suffolk,181,line,Includes patrol isolation and restoration switching
+REP-027,broken crossarm,Western Suffolk,166,line,Requires pole-top hardware repair
+REP-028,underground cable fault,Western Suffolk,192,underground,Includes fault location and cable isolation
+REP-029,damaged service drop,Western Suffolk,79,low_voltage,Normally affects a single customer
+REP-030,partial outage,Western Suffolk,60,general,Troubleshooter diagnosis may precede repair
+REP-031,downed wire,Eastern Suffolk,131,line,Requires safety isolation before repair
+REP-032,burning wire,Eastern Suffolk,155,line,Requires isolation and damaged-conductor replacement
+REP-033,tree on primary,Eastern Suffolk,160,vegetation,Vegetation removal normally precedes line repair
+REP-034,tree limb,Eastern Suffolk,105,vegetation,Often resolved by a vegetation crew
+REP-035,transformer fire,Eastern Suffolk,226,line,May require equipment replacement
+REP-036,feeder lockout,Eastern Suffolk,181,line,Includes patrol isolation and restoration switching
+REP-037,broken crossarm,Eastern Suffolk,139,line,Requires pole-top hardware repair
+REP-038,underground cable fault,Eastern Suffolk,191,underground,Includes fault location and cable isolation
+REP-039,damaged service drop,Eastern Suffolk,62,low_voltage,Normally affects a single customer
+REP-040,partial outage,Eastern Suffolk,62,general,Troubleshooter diagnosis may precede repair

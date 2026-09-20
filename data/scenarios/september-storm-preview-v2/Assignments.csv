@@ -1,0 +1,91 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-20260919-0001,ESD-20260919-0054,MUA-3864,active,2026-09-19T08:28:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0002,ESD-20260919-0054,TREE-3219,active,2026-09-19T08:01:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0003,ESD-20260919-0123,LKP-4681,active,2026-09-19T08:26:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260919-0004,ESD-20260919-0136,CNTR-1784,active,2026-09-19T08:28:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0005,ESD-20260919-0136,TREE-1563,active,2026-09-19T08:35:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0006,ESD-20260919-0167,4348,active,2026-09-19T08:13:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260919-0007,ESD-20260919-0224,CNTR-1409,active,2026-09-19T08:49:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0008,ESD-20260919-0256,MUA-3885,active,2026-09-19T08:03:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0009,ESD-20260919-0273,CNTR-2706,active,2026-09-19T08:06:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0010,ESD-20260919-0273,TREE-2786,active,2026-09-19T08:51:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0011,ESD-20260919-0278,CNTR-4297,active,2026-09-19T08:56:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0012,ESD-20260919-0284,CNTR-4870,active,2026-09-19T08:06:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0013,ESD-20260919-0286,MUA-4155,active,2026-09-19T08:48:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0014,ESD-20260919-0286,TREE-4302,active,2026-09-19T08:32:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0015,ESD-20260919-0288,MUA-2028,active,2026-09-19T08:41:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0016,ESD-20260919-0288,TREE-2020,active,2026-09-19T08:34:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0017,ESD-20260919-0345,MUA-4542,active,2026-09-19T08:31:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0018,ESD-20260919-0345,TREE-4410,active,2026-09-19T08:44:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0019,ESD-20260919-0350,LKP-2723,active,2026-09-19T08:04:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260919-0020,ESD-20260919-0396,3302,active,2026-09-19T08:31:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260919-0021,ESD-20260919-0402,7660,active,2026-09-19T08:39:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260919-0022,ESD-20260919-0427,5478,active,2026-09-19T08:54:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260919-0023,ESD-20260919-0453,MUA-1850,active,2026-09-19T08:01:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0024,ESD-20260919-0464,3493,active,2026-09-19T08:49:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260919-0025,ESD-20260919-0469,CNTR-3583,active,2026-09-19T08:03:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0026,ESD-20260919-0469,TREE-3119,active,2026-09-19T08:41:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0027,ESD-20260919-0479,6237,active,2026-09-19T08:55:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260919-0028,ESD-20260919-0518,CNTR-3188,active,2026-09-19T08:30:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0029,ESD-20260919-0518,TREE-3683,active,2026-09-19T08:44:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0030,ESD-20260919-0521,MUA-4957,active,2026-09-19T08:03:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0031,ESD-20260919-0541,CNTR-4187,active,2026-09-19T08:57:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260919-0032,ESD-20260919-0541,TREE-4090,active,2026-09-19T08:39:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260919-0033,ESD-20260919-0552,MUA-4541,active,2026-09-19T08:49:00-04:00,Repair crew assigned to primary restoration
+ASG-20260919-0034,ESD-20260919-0572,LKP-4460,active,2026-09-19T08:51:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260920-0001,ESD-20260920-0016,MUA-4093,active,2026-09-20T08:47:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0002,ESD-20260920-0016,TREE-4848,active,2026-09-20T08:16:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0003,ESD-20260920-0029,CNTR-2586,active,2026-09-20T08:48:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0004,ESD-20260920-0029,TREE-2437,active,2026-09-20T08:59:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0005,ESD-20260920-0058,CNTR-4718,active,2026-09-20T08:46:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0006,ESD-20260920-0058,TREE-4015,active,2026-09-20T08:06:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0007,ESD-20260920-0087,CNTR-1494,active,2026-09-20T08:02:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0008,ESD-20260920-0087,TREE-1657,active,2026-09-20T08:28:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0009,ESD-20260920-0099,MUA-1727,active,2026-09-20T08:31:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0010,ESD-20260920-0099,TREE-1997,active,2026-09-20T08:20:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0011,ESD-20260920-0116,CNTR-1813,active,2026-09-20T08:15:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0012,ESD-20260920-0116,TREE-1921,active,2026-09-20T08:36:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0013,ESD-20260920-0140,MUA-3875,active,2026-09-20T08:41:00-04:00,Repair crew assigned to primary restoration
+ASG-20260920-0014,ESD-20260920-0165,CNTR-2686,active,2026-09-20T08:15:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0015,ESD-20260920-0165,TREE-2143,active,2026-09-20T08:58:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0016,ESD-20260920-0169,CNTR-3361,active,2026-09-20T08:25:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0017,ESD-20260920-0169,TREE-3576,active,2026-09-20T08:43:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0018,ESD-20260920-0180,CNTR-1528,active,2026-09-20T08:39:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0019,ESD-20260920-0180,TREE-1020,active,2026-09-20T08:25:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0020,ESD-20260920-0213,MUA-4590,active,2026-09-20T08:47:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0021,ESD-20260920-0213,TREE-4654,active,2026-09-20T08:17:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0022,ESD-20260920-0244,CNTR-2879,active,2026-09-20T08:09:00-04:00,Repair crew assigned to primary restoration
+ASG-20260920-0023,ESD-20260920-0245,CNTR-3916,active,2026-09-20T08:33:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0024,ESD-20260920-0245,TREE-3342,active,2026-09-20T08:18:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0025,ESD-20260920-0278,MUA-1440,active,2026-09-20T08:17:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0026,ESD-20260920-0278,TREE-1046,active,2026-09-20T08:02:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0027,ESD-20260920-0308,LKP-3466,active,2026-09-20T08:05:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260920-0028,ESD-20260920-0320,6037,active,2026-09-20T08:14:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260920-0029,ESD-20260920-0324,MUA-3730,active,2026-09-20T08:17:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0030,ESD-20260920-0324,TREE-3344,active,2026-09-20T08:43:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0031,ESD-20260920-0343,CNTR-2810,active,2026-09-20T08:20:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0032,ESD-20260920-0343,TREE-2489,active,2026-09-20T08:23:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0033,ESD-20260920-0348,MUA-3334,active,2026-09-20T08:21:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0034,ESD-20260920-0348,TREE-3404,active,2026-09-20T08:32:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0035,ESD-20260920-0368,CNTR-2459,active,2026-09-20T08:23:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0036,ESD-20260920-0368,TREE-2435,active,2026-09-20T08:37:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0037,ESD-20260920-0374,LKP-1320,active,2026-09-20T08:42:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260920-0038,ESD-20260920-0392,1253,active,2026-09-20T08:00:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260920-0039,ESD-20260920-0476,7159,active,2026-09-20T08:25:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260920-0040,ESD-20260920-0481,6944,active,2026-09-20T08:56:00-04:00,Internal line crew assigned to high-voltage repair
+ASG-20260920-0041,ESD-20260920-0482,5845,active,2026-09-20T08:12:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260920-0042,ESD-20260920-0487,MUA-2403,active,2026-09-20T08:21:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0043,ESD-20260920-0487,TREE-2549,active,2026-09-20T08:35:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0044,ESD-20260920-0489,5028,active,2026-09-20T08:58:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260920-0045,ESD-20260920-0517,3370,active,2026-09-20T08:59:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260920-0046,ESD-20260920-0525,MUA-1358,active,2026-09-20T08:58:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0047,ESD-20260920-0525,TREE-1260,active,2026-09-20T08:15:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0048,ESD-20260920-0536,1861,active,2026-09-20T08:00:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260920-0049,ESD-20260920-0544,CNTR-2206,active,2026-09-20T08:36:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0050,ESD-20260920-0544,TREE-2917,active,2026-09-20T08:03:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0051,ESD-20260920-0554,5044,active,2026-09-20T08:14:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260920-0052,ESD-20260920-0575,MUA-1659,active,2026-09-20T08:23:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0053,ESD-20260920-0575,TREE-1372,active,2026-09-20T08:12:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0054,ESD-20260920-0579,CNTR-4708,active,2026-09-20T08:28:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260920-0055,ESD-20260920-0579,TREE-4786,active,2026-09-20T08:31:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260920-0056,ESD-20260920-0590,CG-4840,active,2026-09-20T08:49:00-04:00,Crew guide assigned to lead repair resources to the incident

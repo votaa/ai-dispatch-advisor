@@ -1,11 +1,11 @@
 {
   "schema_version": "1.0",
-  "scenario_id": "september-storm-preview-v1",
-  "name": "Generated Scenario september-storm-preview-v1",
+  "scenario_id": "september-storm-preview-v2",
+  "name": "Generated Scenario september-storm-preview-v2",
   "description": "Synthetic Long Island outage dispatch scenario generated from approved seed rules.",
   "event_type": "storm",
   "freshness": {
-    "updated_at": "2026-09-18T12:20:00.287384-04:00",
+    "updated_at": "2026-09-20T08:17:16.316135-04:00",
     "source": "scenario_generation",
     "provenance": "AI Dispatch Advisor synthetic scenario generator"
   },
