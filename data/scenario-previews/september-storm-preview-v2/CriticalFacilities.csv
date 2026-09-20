@@ -1,0 +1,101 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-QN-01,North Bellmore Regional Medical Center,hospital,Queens-Nassau,North Bellmore,FDR-QN-12,critical
+FAC-QN-02,North Merrick Emergency Services Center,emergency_services,Queens-Nassau,North Merrick,FDR-QN-40,critical
+FAC-QN-03,North Bellmore Emergency Shelter,shelter,Queens-Nassau,North Bellmore,FDR-QN-79,critical
+FAC-QN-04,North Merrick Fire District Headquarters,emergency_services,Queens-Nassau,North Merrick,FDR-QN-38,critical
+FAC-QN-05,Bellmore Police Precinct,emergency_services,Queens-Nassau,Bellmore,FDR-QN-83,critical
+FAC-QN-06,Bellmore Water Treatment Facility,water,Queens-Nassau,Bellmore,FDR-QN-06,critical
+FAC-QN-07,Inwood Water Pumping Station,water,Queens-Nassau,Inwood,FDR-QN-19,critical
+FAC-QN-08,Island Park Wastewater Treatment Facility,water,Queens-Nassau,Island Park,FDR-QN-37,critical
+FAC-QN-09,Roxbury Wastewater Pump Station,water,Queens-Nassau,Roxbury,FDR-QN-89,critical
+FAC-QN-10,North Bellmore Transit Operations Center,transportation,Queens-Nassau,North Bellmore,FDR-QN-98,critical
+FAC-QN-11,North Bellmore Public Safety Communications Center,communications,Queens-Nassau,North Bellmore,FDR-QN-88,critical
+FAC-QN-12,North Bellmore Nursing Home,healthcare,Queens-Nassau,North Bellmore,FDR-QN-41,high
+FAC-QN-13,Woodmere Dialysis Center,healthcare,Queens-Nassau,Woodmere,FDR-QN-58,high
+FAC-QN-14,Hewlett Correctional Facility,public_services,Queens-Nassau,Hewlett,FDR-QN-18,high
+FAC-QN-15,North Bellmore Broadcast Communications Facility,communications,Queens-Nassau,North Bellmore,FDR-QN-91,high
+FAC-QN-16,North Bellmore Senior Care Center,healthcare,Queens-Nassau,North Bellmore,FDR-QN-30,medium
+FAC-QN-17,Bellerose Terrace Health Related Facility,healthcare,Queens-Nassau,Bellerose Terrace,FDR-QN-73,medium
+FAC-QN-18,Seaford Private Health Device (LSE),healthcare,Queens-Nassau,Seaford,FDR-QN-05,medium
+FAC-QN-19,Salisbury Regional Medical Center,hospital,Queens-Nassau,Salisbury,FDR-QN-24,critical
+FAC-QN-20,Salisbury Emergency Services Center,emergency_services,Queens-Nassau,Salisbury,FDR-QN-82,critical
+FAC-QN-21,Roxbury Emergency Shelter,shelter,Queens-Nassau,Roxbury,FDR-QN-13,critical
+FAC-QN-22,Bellmore Fire District Headquarters,emergency_services,Queens-Nassau,Bellmore,FDR-QN-75,critical
+FAC-QN-23,Far Rockaway Police Precinct,emergency_services,Queens-Nassau,Far Rockaway,FDR-QN-47,critical
+FAC-QN-24,Seaford Water Treatment Facility,water,Queens-Nassau,Seaford,FDR-QN-48,critical
+FAC-QN-25,North Bellmore Water Pumping Station,water,Queens-Nassau,North Bellmore,FDR-QN-01,critical
+FAC-CN-01,Baxter Estates Regional Medical Center,hospital,Central-Nassau,Baxter Estates,FDR-CN-44,critical
+FAC-CN-02,Syosset Emergency Services Center,emergency_services,Central-Nassau,Syosset,FDR-CN-37,critical
+FAC-CN-03,Oyster Bay Cove Emergency Shelter,shelter,Central-Nassau,Oyster Bay Cove,FDR-CN-03,critical
+FAC-CN-04,Sea Cliff Fire District Headquarters,emergency_services,Central-Nassau,Sea Cliff,FDR-CN-09,critical
+FAC-CN-05,Albertson Police Precinct,emergency_services,Central-Nassau,Albertson,FDR-CN-29,critical
+FAC-CN-06,Port Washington Water Treatment Facility,water,Central-Nassau,Port Washington,FDR-CN-62,critical
+FAC-CN-07,Syosset Water Pumping Station,water,Central-Nassau,Syosset,FDR-CN-12,critical
+FAC-CN-08,Syosset Wastewater Treatment Facility,water,Central-Nassau,Syosset,FDR-CN-91,critical
+FAC-CN-09,East Norwich Wastewater Pump Station,water,Central-Nassau,East Norwich,FDR-CN-64,critical
+FAC-CN-10,Uniondale Transit Operations Center,transportation,Central-Nassau,Uniondale,FDR-CN-63,critical
+FAC-CN-11,North New Hyde Park Public Safety Communications Center,communications,Central-Nassau,North New Hyde Park,FDR-CN-24,critical
+FAC-CN-12,Uniondale Nursing Home,healthcare,Central-Nassau,Uniondale,FDR-CN-46,high
+FAC-CN-13,Great Neck Plaza Dialysis Center,healthcare,Central-Nassau,Great Neck Plaza,FDR-CN-21,high
+FAC-CN-14,Brookville Correctional Facility,public_services,Central-Nassau,Brookville,FDR-CN-02,high
+FAC-CN-15,South Farmingdale Broadcast Communications Facility,communications,Central-Nassau,South Farmingdale,FDR-CN-51,high
+FAC-CN-16,Port Washington Senior Care Center,healthcare,Central-Nassau,Port Washington,FDR-CN-14,medium
+FAC-CN-17,Port Washington Health Related Facility,healthcare,Central-Nassau,Port Washington,FDR-CN-88,medium
+FAC-CN-18,Roslyn Heights Private Health Device (LSE),healthcare,Central-Nassau,Roslyn Heights,FDR-CN-86,medium
+FAC-CN-19,Great Neck Regional Medical Center,hospital,Central-Nassau,Great Neck,FDR-CN-74,critical
+FAC-CN-20,Carle Place Emergency Services Center,emergency_services,Central-Nassau,Carle Place,FDR-CN-34,critical
+FAC-CN-21,Massapequa Park Emergency Shelter,shelter,Central-Nassau,Massapequa Park,FDR-CN-89,critical
+FAC-CN-22,Syosset Fire District Headquarters,emergency_services,Central-Nassau,Syosset,FDR-CN-04,critical
+FAC-CN-23,Syosset Police Precinct,emergency_services,Central-Nassau,Syosset,FDR-CN-17,critical
+FAC-CN-24,Greenvale-North Hempstead Water Treatment Facility,water,Central-Nassau,Greenvale-North Hempstead,FDR-CN-33,critical
+FAC-CN-25,Old Westbury-Oyster Bay Private Health Device (LSE),healthcare,Central-Nassau,Old Westbury-Oyster Bay,FDR-CN-99,medium
+FAC-WS-01,Sayville Regional Medical Center,hospital,Western Suffolk,Sayville,FDR-WS-59,critical
+FAC-WS-02,Northport Emergency Services Center,emergency_services,Western Suffolk,Northport,FDR-WS-97,critical
+FAC-WS-03,Nesconset Emergency Shelter,shelter,Western Suffolk,Nesconset,FDR-WS-37,critical
+FAC-WS-04,Commack-Huntington Fire District Headquarters,emergency_services,Western Suffolk,Commack-Huntington,FDR-WS-81,critical
+FAC-WS-05,South Huntington Police Precinct,emergency_services,Western Suffolk,South Huntington,FDR-WS-23,critical
+FAC-WS-06,Kings Park Water Treatment Facility,water,Western Suffolk,Kings Park,FDR-WS-58,critical
+FAC-WS-07,Sayville Water Pumping Station,water,Western Suffolk,Sayville,FDR-WS-60,critical
+FAC-WS-08,Elwood Wastewater Treatment Facility,water,Western Suffolk,Elwood,FDR-WS-32,critical
+FAC-WS-09,North Bay Shore Wastewater Pump Station,water,Western Suffolk,North Bay Shore,FDR-WS-15,critical
+FAC-WS-10,Saint James Transit Operations Center,transportation,Western Suffolk,Saint James,FDR-WS-22,critical
+FAC-WS-11,Saint James Public Safety Communications Center,communications,Western Suffolk,Saint James,FDR-WS-78,critical
+FAC-WS-12,Amityville Nursing Home,healthcare,Western Suffolk,Amityville,FDR-WS-25,high
+FAC-WS-13,North Amityville Dialysis Center,healthcare,Western Suffolk,North Amityville,FDR-WS-80,high
+FAC-WS-14,Wheatley Heights Correctional Facility,public_services,Western Suffolk,Wheatley Heights,FDR-WS-52,high
+FAC-WS-15,Babylon Broadcast Communications Facility,communications,Western Suffolk,Babylon,FDR-WS-55,high
+FAC-WS-16,Wyandanch Senior Care Center,healthcare,Western Suffolk,Wyandanch,FDR-WS-67,medium
+FAC-WS-17,Ocean Beach Health Related Facility,healthcare,Western Suffolk,Ocean Beach,FDR-WS-86,medium
+FAC-WS-18,Halesite Private Health Device (LSE),healthcare,Western Suffolk,Halesite,FDR-WS-26,medium
+FAC-WS-19,Ronkonkoma Regional Medical Center,hospital,Western Suffolk,Ronkonkoma,FDR-WS-29,critical
+FAC-WS-20,Saint James Emergency Services Center,emergency_services,Western Suffolk,Saint James,FDR-WS-49,critical
+FAC-WS-21,Nesconset Emergency Shelter,shelter,Western Suffolk,Nesconset,FDR-WS-10,critical
+FAC-WS-22,North Great River Fire District Headquarters,emergency_services,Western Suffolk,North Great River,FDR-WS-91,critical
+FAC-WS-23,Saint James Police Precinct,emergency_services,Western Suffolk,Saint James,FDR-WS-66,critical
+FAC-WS-24,Kings Park Water Treatment Facility,water,Western Suffolk,Kings Park,FDR-WS-95,critical
+FAC-WS-25,Babylon Water Pumping Station,water,Western Suffolk,Babylon,FDR-WS-50,critical
+FAC-ES-01,Stony Brook Regional Medical Center,hospital,Eastern Suffolk,Stony Brook,FDR-ES-72,critical
+FAC-ES-02,Shinnecock Hills Emergency Services Center,emergency_services,Eastern Suffolk,Shinnecock Hills,FDR-ES-53,critical
+FAC-ES-03,Shinnecock Hills Emergency Shelter,shelter,Eastern Suffolk,Shinnecock Hills,FDR-ES-34,critical
+FAC-ES-04,Port Jefferson Fire District Headquarters,emergency_services,Eastern Suffolk,Port Jefferson,FDR-ES-96,critical
+FAC-ES-05,Southold Police Precinct,emergency_services,Eastern Suffolk,Southold,FDR-ES-04,critical
+FAC-ES-06,Shinnecock Indian Res Water Treatment Facility,water,Eastern Suffolk,Shinnecock Indian Res,FDR-ES-43,critical
+FAC-ES-07,Patchogue Water Pumping Station,water,Eastern Suffolk,Patchogue,FDR-ES-93,critical
+FAC-ES-08,North Haven Wastewater Treatment Facility,water,Eastern Suffolk,North Haven,FDR-ES-36,critical
+FAC-ES-09,Sag Harbor-Southampton Wastewater Pump Station,water,Eastern Suffolk,Sag Harbor-Southampton,FDR-ES-88,critical
+FAC-ES-10,Calverton-Riverhead Transit Operations Center,transportation,Eastern Suffolk,Calverton-Riverhead,FDR-ES-61,critical
+FAC-ES-11,Springs Public Safety Communications Center,communications,Eastern Suffolk,Springs,FDR-ES-56,critical
+FAC-ES-12,Quiogue Nursing Home,healthcare,Eastern Suffolk,Quiogue,FDR-ES-06,high
+FAC-ES-13,Water Mill Dialysis Center,healthcare,Eastern Suffolk,Water Mill,FDR-ES-08,high
+FAC-ES-14,Cutchogue Correctional Facility,public_services,Eastern Suffolk,Cutchogue,FDR-ES-31,high
+FAC-ES-15,Mastic Beach Broadcast Communications Facility,communications,Eastern Suffolk,Mastic Beach,FDR-ES-19,high
+FAC-ES-16,Patchogue Senior Care Center,healthcare,Eastern Suffolk,Patchogue,FDR-ES-41,medium
+FAC-ES-17,Mount Sinai Health Related Facility,healthcare,Eastern Suffolk,Mount Sinai,FDR-ES-51,medium
+FAC-ES-18,Peconic Private Health Device (LSE),healthcare,Eastern Suffolk,Peconic,FDR-ES-52,medium
+FAC-ES-19,Sag Harbor-Southampton Regional Medical Center,hospital,Eastern Suffolk,Sag Harbor-Southampton,FDR-ES-80,critical
+FAC-ES-20,Patchogue Emergency Services Center,emergency_services,Eastern Suffolk,Patchogue,FDR-ES-47,critical
+FAC-ES-21,Ridge Emergency Shelter,shelter,Eastern Suffolk,Ridge,FDR-ES-48,critical
+FAC-ES-22,Patchogue Fire District Headquarters,emergency_services,Eastern Suffolk,Patchogue,FDR-ES-67,critical
+FAC-ES-23,Patchogue Police Precinct,emergency_services,Eastern Suffolk,Patchogue,FDR-ES-79,critical
+FAC-ES-24,Coram Water Treatment Facility,water,Eastern Suffolk,Coram,FDR-ES-77,critical
+FAC-ES-25,Ridge Water Pumping Station,water,Eastern Suffolk,Ridge,FDR-ES-23,critical
