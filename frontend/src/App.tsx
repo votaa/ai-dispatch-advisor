@@ -2079,7 +2079,7 @@ function IncidentTable({
         <EmptyState message="No incidents match the current filters." />
       ) : (
         <ResponsiveTable label={tableLabel}>
-          <table>
+          <table className="incident-data-table">
         <thead>
           <tr>
             {incidentSortOptions.map(([key, label]) => (
@@ -2109,7 +2109,7 @@ function IncidentTable({
               }}
               tabIndex={0}
             >
-              <td>
+              <td className="incident-identity-cell">
                 <span className="compact-cell-label">Incident</span>
                 <span className="incident-map-link">
                   <button
@@ -2125,7 +2125,11 @@ function IncidentTable({
                   </button>
                   <ShowOnMapButton entityId={incident.incident_id} entityKind="incident" navigationContext={tableNavigationContext} onNavigate={onNavigate} />
                 </span>
-                <span className="incident-location incident-related-location">
+                <span
+                  aria-label={`Municipality and feeder for ${incident.incident_id}`}
+                  className="incident-location incident-related-location"
+                  role="group"
+                >
                   <EntityNavigationActions
                     accessibleLabel={`${incident.municipality} destinations`}
                     context={tableNavigationContext}
@@ -2142,6 +2146,7 @@ function IncidentTable({
                     labelOverrides={{ related_records: incident.feeder }}
                     onNavigate={onNavigate}
                     reference={{ kind: "feeder", id: incident.feeder }}
+                    showIcon={false}
                   />
                 </span>
               </td>

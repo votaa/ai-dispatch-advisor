@@ -1594,6 +1594,53 @@ describe("application states and scenario switching", () => {
     }
   });
 
+  it("keeps municipality and feeder actions grouped across incident views and populated states", async () => {
+    const assignedCrew = {
+      crew_id: "CR-048",
+      crew_name: "Eastern Suffolk Contractor Crew With A Long Name",
+      assignment_id: "assignment-048",
+      assigned_at: "2026-09-20T12:00:00Z"
+    };
+    const populatedIncident = {
+      ...baseIncident,
+      incident_id: "INC-048-A",
+      municipality: "Westhampton Beach-Southampton",
+      feeder: "FDR-EASTERN-SUFFOLK-048",
+      assigned_crews: [assignedCrew],
+      current_decision: recordedDecision
+    };
+    const sparseIncident = {
+      ...baseIncident,
+      incident_id: "INC-048-B",
+      municipality: "East Farmingdale",
+      feeder: "FDR-048",
+      assigned_crews: [],
+      current_decision: null
+    };
+    const incidents = [populatedIncident, sparseIncident];
+    apiMocks.incidents.mockResolvedValue(incidents);
+    apiMocks.dashboard.mockResolvedValue({
+      ...dashboard("base"),
+      active_incidents: 8,
+      top_incidents: incidents
+    });
+    render(<App />);
+
+    for (const viewName of ["Dashboard", "Dispatch", "Incidents", "Storm Mode"]) {
+      if (viewName !== "Dashboard") fireEvent.click(screen.getByRole("button", { name: viewName }));
+
+      for (const incident of incidents) {
+        const group = await screen.findByRole("group", {
+          name: `Municipality and feeder for ${incident.incident_id}`
+        });
+        expect(group.classList.contains("incident-related-location")).toBe(true);
+        expect(within(group).getByRole("button", { name: incident.municipality })).toBeTruthy();
+        expect(within(group).getByRole("button", { name: incident.feeder })).toBeTruthy();
+        expect(group.querySelectorAll("svg")).toHaveLength(1);
+      }
+    }
+  });
+
   it("returns to an entity-navigation source with filters, page, selection, and focus restored", async () => {
     vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
     const manyIncidents = Array.from({ length: 55 }, (_, index) => ({

@@ -197,6 +197,7 @@ export function NavigationActions({
   className = "",
   labelOverrides,
   onNavigate,
+  showIcon = true,
   variant = "panel"
 }: {
   actions: NavigationDestination[];
@@ -205,6 +206,7 @@ export function NavigationActions({
   className?: string;
   labelOverrides?: Partial<Record<NavigationDestinationKind, string>>;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+  showIcon?: boolean;
   variant?: "panel" | "inline" | "icon";
 }) {
   if (!actions.length) return null;
@@ -225,7 +227,7 @@ export function NavigationActions({
         title={variant === "icon" ? label : action.description}
         type="button"
       >
-        <Icon aria-hidden="true" size={variant === "icon" ? 16 : 15} strokeWidth={2} />
+        {showIcon ? <Icon aria-hidden="true" size={variant === "icon" ? 16 : 15} strokeWidth={2} /> : null}
         {variant === "icon" ? null : <span>{label}</span>}
       </button>
     );
@@ -247,6 +249,7 @@ export function EntityNavigationActions({
   labelOverrides,
   onNavigate,
   reference,
+  showIcon = true,
   variant = "inline"
 }: {
   accessibleLabel: string;
@@ -256,6 +259,7 @@ export function EntityNavigationActions({
   labelOverrides?: Partial<Record<NavigationDestinationKind, string>>;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
   reference: OperationalEntityReference;
+  showIcon?: boolean;
   variant?: "panel" | "inline" | "icon";
 }) {
   const actions = resolveNavigationDestinations(reference, context).filter(
@@ -268,6 +272,7 @@ export function EntityNavigationActions({
       actions={actions}
       labelOverrides={labelOverrides}
       onNavigate={onNavigate}
+      showIcon={showIcon}
       variant={variant}
     />
   );
