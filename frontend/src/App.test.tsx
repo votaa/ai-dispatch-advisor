@@ -153,6 +153,7 @@ describe("application states and scenario switching", () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
@@ -1553,6 +1554,23 @@ describe("application states and scenario switching", () => {
     await waitFor(() => expect(apiMocks.activateScenario).toHaveBeenCalledWith("storm"));
     await waitFor(() => expect(selector.value).toBe("storm"));
     expect(await screen.findByText("Major Storm activated.")).toBeTruthy();
+  });
+
+  it("shows activation success beside freshness and dismisses it on navigation", async () => {
+    apiMocks.auditEvents.mockResolvedValue([]);
+    render(<App />);
+
+    const selector = await screen.findByLabelText("Active synthetic scenario") as HTMLSelectElement;
+    await waitFor(() => expect(selector.value).toBe("base"));
+    fireEvent.change(selector, { target: { value: "storm" } });
+
+    const confirmation = await screen.findByText("Major Storm activated.");
+    expect(confirmation.className).toContain("scenario-feedback");
+    expect(confirmation.closest(".scenario-meta")).toBeTruthy();
+    expect(screen.queryByText("Major Storm activated.", { selector: ".success-banner" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Dispatch" }));
+    expect(screen.queryByText("Major Storm activated.")).toBeNull();
   });
   it("opens map incidents in the existing detail view and clears map filters on scenario change", async () => {
     vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });

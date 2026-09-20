@@ -307,6 +307,24 @@ h1 {
   line-height: 1.3;
 }
 
+.scenario-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  justify-content: flex-end;
+}
+
+.scenario-feedback {
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.scenario-feedback.success {
+  color: #17652a;
+}
+
 .scenario-freshness-detail {
   background: #f7f9fb;
   border: 1px solid #d8e0e8;
@@ -409,15 +427,6 @@ h1 {
 .system-banner button:disabled {
   cursor: wait;
   opacity: 0.65;
-}
-
-.success-banner {
-  background: #e8f7ec;
-  border: 1px solid #a8ddb5;
-  border-radius: 8px;
-  color: #17652a;
-  margin-bottom: 18px;
-  padding: 12px 14px;
 }
 
 .loading-banner {
@@ -2118,6 +2127,10 @@ tbody tr:focus-visible {
 
   .scenario-control {
     align-items: stretch;
+  }
+
+  .scenario-meta {
+    justify-content: flex-start;
   }
 }
 

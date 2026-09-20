@@ -63,6 +63,10 @@ type ChatTurn = {
   error?: boolean;
   metadata?: Omit<CopilotResponse, "answer">;
 };
+type ScenarioFeedback = {
+  kind: "success" | "error";
+  message: string;
+};
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
@@ -193,7 +197,7 @@ function App() {
   const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
   const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
   const [scenarioLoading, setScenarioLoading] = useState(false);
-  const [scenarioMessage, setScenarioMessage] = useState("");
+  const [scenarioFeedback, setScenarioFeedback] = useState<ScenarioFeedback | null>(null);
   const [error, setError] = useState<string>("");
   const [initialLoading, setInitialLoading] = useState(true);
   const [recommendationLoading, setRecommendationLoading] = useState(false);
@@ -215,6 +219,12 @@ function App() {
   useEffect(() => {
     pageHeadingRef.current?.focus();
   }, [view]);
+
+  useEffect(() => {
+    if (scenarioFeedback?.kind !== "success") return;
+    const timeoutId = window.setTimeout(() => setScenarioFeedback(null), 5000);
+    return () => window.clearTimeout(timeoutId);
+  }, [scenarioFeedback]);
 
   useEffect(() => {
     if (!restoringNavigation || view !== restoringNavigation.sourceView) return;
@@ -378,7 +388,7 @@ function App() {
     }
 
     setScenarioLoading(true);
-    setScenarioMessage("");
+    setScenarioFeedback(null);
     setError("");
     try {
       setExpandedWorkspace(null);
@@ -406,10 +416,10 @@ function App() {
       setSelectedIncidentId(
         incidentData.find((incident) => incident.ranking_status !== "withheld")?.incident_id
       );
-      setScenarioMessage(`${activatedScenario.name} activated.`);
+      setScenarioFeedback({ kind: "success", message: `${activatedScenario.name} activated.` });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Scenario activation failed";
-      setScenarioMessage(message);
+      setScenarioFeedback({ kind: "error", message });
     } finally {
       setScenarioLoading(false);
     }
@@ -420,6 +430,9 @@ function App() {
   }
 
   function selectView(nextView: ViewKey, clearReturnNavigation = false) {
+    if (scenarioFeedback?.kind === "success") {
+      setScenarioFeedback(null);
+    }
     if (clearReturnNavigation) {
       setReturnNavigation(null);
       setRestoringNavigation(null);
@@ -624,7 +637,14 @@ function App() {
                 ))}
               </select>
             </div>
-            <ScenarioFreshnessLabel scenario={activeScenario} />
+            <div className="scenario-meta">
+              <ScenarioFreshnessLabel scenario={activeScenario} />
+              {scenarioFeedback?.kind === "success" ? (
+                <span aria-live="polite" className="scenario-feedback success" role="status">
+                  {scenarioFeedback.message}
+                </span>
+              ) : null}
+            </div>
           </div>
         </header>
 
@@ -645,13 +665,9 @@ function App() {
               {scenarios.find((scenario) => scenario.scenario_id === activeScenario?.scenario_id)?.name ?? "Selected scenario"} is being refreshed. Large scenarios may take longer to rank.
             </span>
           </div>
-        ) : scenarioMessage ? (
-          <div
-            aria-live={scenarioMessage.endsWith("activated.") ? "polite" : "assertive"}
-            className={scenarioMessage.endsWith("activated.") ? "success-banner" : "error-banner"}
-            role={scenarioMessage.endsWith("activated.") ? "status" : "alert"}
-          >
-            {scenarioMessage}
+        ) : scenarioFeedback?.kind === "error" ? (
+          <div aria-live="assertive" className="error-banner" role="alert">
+            {scenarioFeedback.message}
           </div>
         ) : null}
 
