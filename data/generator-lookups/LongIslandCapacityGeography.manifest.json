@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "long-island-capacity-geography",
+  "generated_at": "2026-09-19T22:25:27.503186+00:00",
+  "artifact": {
+    "file_name": "LongIslandCapacityGeography.csv",
+    "sha256": "d876ca6205d24767c505c054c25e2e1dca896f422d3c96c9138f6a30a5508c54"
+  },
+  "counts": {
+    "geographies": 347,
+    "sources": {
+      "NPS community-order interpolation": 2,
+      "National Park Service": 1,
+      "OpenStreetMap Nominatim": 7,
+      "US Census Bureau 2025 Gazetteer": 302,
+      "USGS GNIS": 6,
+      "USGS GNIS Domestic Names 2026-08-28": 29
+    },
+    "precision": {
+      "approved_alias_point": 3,
+      "historical_census_internal_point": 1,
+      "internal_point": 301,
+      "locality_estimate": 2,
+      "named_feature_point": 36,
+      "representative_point": 4
+    }
+  },
+  "sources": [
+    {
+      "name": "U.S. Census Bureau 2025 Gazetteer Files",
+      "url": "https://www.census.gov/geographies/reference-files/time-series/geo/gazetteer-files.2025.html"
+    },
+    {
+      "name": "USGS GNIS Domestic Names",
+      "url": "https://www.usgs.gov/us-board-on-geographic-names/download-gnis-data"
+    },
+    {
+      "name": "OpenStreetMap Nominatim",
+      "url": "https://nominatim.openstreetmap.org/"
+    },
+    {
+      "name": "National Park Service Fire Island National Seashore",
+      "url": "https://www.nps.gov/fiis/"
+    }
+  ],
+  "limitations": [
+    "Coordinates are representative planning points, not outage equipment, customer, or live GPS positions.",
+    "Oakleyville and Corneille Estates use locality estimates interpolated from documented neighboring communities because no exact Census, GNIS, or OpenStreetMap named feature was available."
+  ]
+}

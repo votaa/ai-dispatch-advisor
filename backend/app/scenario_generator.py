@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import random
 import re
@@ -22,6 +23,9 @@ from .services.reference_service import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "scenario-previews"
 DEFAULT_LOOKUP_PATH = REPO_ROOT / "data" / "generator-lookups" / "LongIslandMunicipalities.csv"
+DEFAULT_CAPACITY_GEOGRAPHY_PATH = (
+    REPO_ROOT / "data" / "generator-lookups" / "LongIslandCapacityGeography.csv"
+)
 DEFAULT_GEOGRAPHY_COVERAGE_PER_INCIDENTS = 6
 LOCAL_TIMEZONE = ZoneInfo("America/New_York")
 
@@ -207,6 +211,9 @@ class CapacityGeography:
     latitude: float
     longitude: float
     customers_served: int
+    coordinate_source: str
+    coordinate_source_reference: str
+    coordinate_precision: str
 
 
 FACILITY_CATALOG = (
@@ -340,27 +347,11 @@ def _capacity_region(
     return "Eastern Suffolk"
 
 
-def _synthetic_reference_coordinates(
-    reference_id: str,
-    region: str,
-) -> tuple[float, float]:
-    centers = {
-        "Queens-Nassau": (40.6650, -73.7200),
-        "Central-Nassau": (40.7500, -73.5600),
-        "Western Suffolk": (40.7900, -73.2200),
-        "Eastern Suffolk": (40.9100, -72.6100),
-    }
-    latitude, longitude = centers[region]
-    value = int(reference_id.removeprefix("pseg-li-")[:12], 16)
-    latitude += ((value % 2001) - 1000) / 100_000
-    longitude += (((value // 2001) % 3001) - 1500) / 100_000
-    return round(latitude, 5), round(longitude, 5)
-
-
 def load_capacity_geographies(
     *,
     reference_root: Path = DEFAULT_REFERENCE_ROOT,
     geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
+    coordinate_path: Path = DEFAULT_CAPACITY_GEOGRAPHY_PATH,
 ) -> list[CapacityGeography]:
     snapshot = PsegLongIslandReferenceService(reference_root).snapshot()
     if snapshot.validation.reference_status != "current":
@@ -378,23 +369,116 @@ def load_capacity_geographies(
     approved_by_id = {
         record.reference_id: record for record in approved_registry.records
     }
+    coordinate_headers = [
+        "reference_id",
+        "county",
+        "township",
+        "village",
+        "latitude",
+        "longitude",
+        "coordinate_source",
+        "source_reference",
+        "precision",
+    ]
+    coordinates_by_id: dict[str, dict[str, str]] = {}
+    with coordinate_path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames != coordinate_headers:
+            raise ValueError(
+                "Capacity geography coordinate headers must be "
+                f"{coordinate_headers}"
+            )
+        for coordinate in reader:
+            reference_id = coordinate["reference_id"].strip()
+            if not reference_id:
+                raise ValueError("Capacity geography coordinate reference IDs must not be blank")
+            if reference_id in coordinates_by_id:
+                raise ValueError(
+                    "Capacity geography coordinate reference ID is duplicated: "
+                    f"{reference_id}"
+                )
+            try:
+                latitude = float(coordinate["latitude"])
+                longitude = float(coordinate["longitude"])
+            except ValueError as error:
+                raise ValueError(
+                    f"Capacity geography coordinate is invalid: {reference_id}"
+                ) from error
+            if not 40.45 <= latitude <= 41.35 or not -74.15 <= longitude <= -71.75:
+                raise ValueError(
+                    "Capacity geography coordinate is outside the Long Island "
+                    f"planning extent: {reference_id} ({latitude}, {longitude})"
+                )
+            if not all(
+                (
+                    coordinate["coordinate_source"].strip(),
+                    coordinate["source_reference"].strip(),
+                    coordinate["precision"].strip(),
+                )
+            ):
+                raise ValueError(
+                    "Capacity geography coordinate provenance is incomplete: "
+                    f"{reference_id}"
+                )
+            coordinates_by_id[reference_id] = coordinate
+
+    reference_ids = {row.reference_id for row in snapshot.rows}
+    coordinate_ids = set(coordinates_by_id)
+    missing_coordinates = sorted(reference_ids - coordinate_ids)
+    extra_coordinates = sorted(coordinate_ids - reference_ids)
+    if missing_coordinates or extra_coordinates:
+        details: list[str] = []
+        if missing_coordinates:
+            details.append("missing " + ", ".join(missing_coordinates[:10]))
+        if extra_coordinates:
+            details.append("unknown " + ", ".join(extra_coordinates[:10]))
+        raise ValueError(
+            "Capacity geography coordinate coverage must exactly match the "
+            "approved customers-served reference: " + "; ".join(details)
+        )
+    manifest_path = coordinate_path.with_suffix(".manifest.json")
+    if not manifest_path.is_file():
+        raise ValueError(
+            "Capacity geography coordinate manifest is missing: "
+            f"{manifest_path}"
+        )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    artifact = manifest.get("artifact", {})
+    expected_hash = str(artifact.get("sha256", "")).strip()
+    digest = hashlib.sha256(coordinate_path.read_bytes()).hexdigest()
+    if artifact.get("file_name") != coordinate_path.name or digest != expected_hash:
+        raise ValueError(
+            "Capacity geography coordinate artifact does not match its manifest"
+        )
+    if int(manifest.get("counts", {}).get("geographies", -1)) != len(coordinates_by_id):
+        raise ValueError(
+            "Capacity geography coordinate manifest count does not match the artifact"
+        )
     village_counts = Counter(row.village.casefold() for row in snapshot.rows)
     result: list[CapacityGeography] = []
     for row in snapshot.rows:
         approved = approved_by_id.get(row.reference_id)
+        coordinate = coordinates_by_id[row.reference_id]
+        coordinate_identity = (
+            coordinate["county"].strip(),
+            coordinate["township"].strip(),
+            coordinate["village"].strip(),
+        )
+        reference_identity = (row.county, row.township, row.village)
+        if coordinate_identity != reference_identity:
+            raise ValueError(
+                "Capacity geography coordinate identity does not match the "
+                f"approved customers-served reference: {row.reference_id} "
+                f"({coordinate_identity} != {reference_identity})"
+            )
         region = _capacity_region(
             reference_id=row.reference_id,
             county=row.county,
             township=row.township,
             approved_by_id=approved_by_id,
         )
-        if approved is not None:
-            latitude, longitude = approved.latitude, approved.longitude
-        else:
-            latitude, longitude = _synthetic_reference_coordinates(
-                row.reference_id,
-                region,
-            )
+        latitude = float(coordinate["latitude"])
+        longitude = float(coordinate["longitude"])
         municipality = (
             f"{row.village}-{row.township}"
             if village_counts[row.village.casefold()] > 1
@@ -411,6 +495,9 @@ def load_capacity_geographies(
                 latitude=latitude,
                 longitude=longitude,
                 customers_served=row.customers_served,
+                coordinate_source=coordinate["coordinate_source"].strip(),
+                coordinate_source_reference=coordinate["source_reference"].strip(),
+                coordinate_precision=coordinate["precision"].strip(),
             )
         )
     return result
@@ -1229,6 +1316,7 @@ def generate_scenario(
     customer_out_target: int | None = None,
     reference_root: Path = DEFAULT_REFERENCE_ROOT,
     geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
+    capacity_geography_path: Path = DEFAULT_CAPACITY_GEOGRAPHY_PATH,
     population_constrained: bool = True,
 ) -> GeneratedScenario:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
@@ -1365,6 +1453,7 @@ def generate_scenario(
             load_capacity_geographies(
                 reference_root=reference_root,
                 geography_path=geography_path,
+                coordinate_path=capacity_geography_path,
             ),
             coverage_target=geography_coverage_target,
         )
@@ -1810,6 +1899,9 @@ def validate_geographic_reference_coverage(
     unknown_reference_ids: set[str] = set()
     municipality_mismatches: set[tuple[str, str]] = set()
     region_mismatches: set[tuple[str, str, str]] = set()
+    coordinate_mismatches: list[
+        tuple[str, str, float, float, float, float]
+    ] = []
     for incident in incident_rows:
         municipality = str(incident["municipality"])
         reference_id = str(incident.get("geography_reference_id") or "").strip()
@@ -1826,6 +1918,22 @@ def validate_geographic_reference_coverage(
             if location.region != incident_region:
                 region_mismatches.add(
                     (municipality, incident_region, location.region)
+                )
+            incident_latitude = float(incident["latitude"])
+            incident_longitude = float(incident["longitude"])
+            if (
+                abs(incident_latitude - location.latitude) > 0.000001
+                or abs(incident_longitude - location.longitude) > 0.000001
+            ):
+                coordinate_mismatches.append(
+                    (
+                        str(incident.get("incident_id", "unknown")),
+                        reference_id,
+                        incident_latitude,
+                        incident_longitude,
+                        location.latitude,
+                        location.longitude,
+                    )
                 )
             continue
         location = registry.resolve(municipality)
@@ -1864,6 +1972,23 @@ def validate_geographic_reference_coverage(
         raise ValueError(
             "Generated incident regions do not match approved geography mappings: "
             + details
+        )
+    if coordinate_mismatches:
+        details = ", ".join(
+            f"{incident_id}/{reference_id} "
+            f"({latitude}, {longitude} != {expected_latitude}, {expected_longitude})"
+            for (
+                incident_id,
+                reference_id,
+                latitude,
+                longitude,
+                expected_latitude,
+                expected_longitude,
+            ) in coordinate_mismatches[:10]
+        )
+        raise ValueError(
+            "Generated incident coordinates do not match the governed geography "
+            "reference: " + details
         )
 
 

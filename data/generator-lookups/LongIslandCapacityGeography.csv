@@ -1,0 +1,348 @@
+reference_id,county,township,village,latitude,longitude,coordinate_source,source_reference,precision
+pseg-li-68d68742c07b623100b5,Nassau,Hempstead,Atlantic Beach,40.586057,-73.725097,US Census Bureau 2025 Gazetteer,GEOID:3602968,internal_point
+pseg-li-f593f9379d7bcdfaa240,Nassau,Hempstead,Baldwin,40.650127,-73.607709,US Census Bureau 2025 Gazetteer,GEOID:3604143,internal_point
+pseg-li-3ef38654d66e0b92eeab,Nassau,Hempstead,Baldwin Harbor,40.6395471,-73.6084621,USGS GNIS Domestic Names 2026-08-28,feature:942898,named_feature_point
+pseg-li-41aa6d3bf8de966503b9,Nassau,Hempstead,Barnum Island,40.604916,-73.643134,US Census Bureau 2025 Gazetteer,GEOID:3604550,internal_point
+pseg-li-21127162f54d1d78e128,Nassau,Hempstead,Bay Park,40.631817,-73.668521,US Census Bureau 2025 Gazetteer,GEOID:3604891,internal_point
+pseg-li-16c48a60e553708cbd2a,Nassau,Hempstead,Bellerose,40.724275,-73.716674,US Census Bureau 2025 Gazetteer,GEOID:3605639,internal_point
+pseg-li-1c72467f46dcbb5386bc,Nassau,Hempstead,Bellerose Terrace,40.722147,-73.725159,US Census Bureau 2025 Gazetteer,GEOID:3605661,internal_point
+pseg-li-f2995d95b7f12602a672,Nassau,Hempstead,Bellmore,40.660239,-73.526597,US Census Bureau 2025 Gazetteer,GEOID:3605738,internal_point
+pseg-li-9685d35012cdfd22b187,Nassau,Hempstead,Cedarhurst,40.625202,-73.727831,US Census Bureau 2025 Gazetteer,GEOID:3613233,internal_point
+pseg-li-28710a4b27c340b779a7,Nassau,Hempstead,East Atlantic Beach,40.585582,-73.712204,US Census Bureau 2025 Gazetteer,GEOID:3621578,internal_point
+pseg-li-2c8b65236189e9f36e98,Nassau,Hempstead,East Garden City,40.7308333,-73.5980556,USGS GNIS Domestic Names 2026-08-28,feature:1852898,named_feature_point
+pseg-li-501220e4e8242f37d957,Nassau,Hempstead,East Meadow,40.720115,-73.558861,US Census Bureau 2025 Gazetteer,GEOID:3622502,internal_point
+pseg-li-e056d8f14ae3412db65e,Nassau,Hempstead,East Rockaway,40.643804,-73.66713,US Census Bureau 2025 Gazetteer,GEOID:3622876,internal_point
+pseg-li-270a54b2de13074c795a,Nassau,Hempstead,Elmont,40.699176,-73.706166,US Census Bureau 2025 Gazetteer,GEOID:3624273,internal_point
+pseg-li-237fada70f56e8de6610,Nassau,Hempstead,Floral Park,40.721952,-73.702824,US Census Bureau 2025 Gazetteer,GEOID:3626264,internal_point
+pseg-li-cde0c1107b3a33b72a60,Nassau,Hempstead,Franklin Square,40.700193,-73.677478,US Census Bureau 2025 Gazetteer,GEOID:3627309,internal_point
+pseg-li-d64d9e710bdcfd1b3ea5,Nassau,Hempstead,Freeport,40.650851,-73.584575,US Census Bureau 2025 Gazetteer,GEOID:3627485,internal_point
+pseg-li-41d1c8dcfcc706587b9f,Nassau,Hempstead,Garden City,40.725756,-73.645398,US Census Bureau 2025 Gazetteer,GEOID:3628178,internal_point
+pseg-li-5cbe4141a31554109814,Nassau,Hempstead,Garden City South,40.712153,-73.660475,US Census Bureau 2025 Gazetteer,GEOID:3628200,internal_point
+pseg-li-e9b516f97970e1816e6e,Nassau,Hempstead,Harbor Isle,40.602508,-73.66472,US Census Bureau 2025 Gazetteer,GEOID:3632105,internal_point
+pseg-li-bab1039ca6af519b87a8,Nassau,Hempstead,Hempstead,40.704374,-73.619445,US Census Bureau 2025 Gazetteer,GEOID:3633139,internal_point
+pseg-li-78b452f119b7098c48bb,Nassau,Hempstead,Hewlett,40.641996,-73.694393,US Census Bureau 2025 Gazetteer,GEOID:3634286,internal_point
+pseg-li-c51dec351272db2f3050,Nassau,Hempstead,Hewlett Bay Park,40.63512,-73.695824,US Census Bureau 2025 Gazetteer,GEOID:3634297,internal_point
+pseg-li-c85fba4420c1ddf9095b,Nassau,Hempstead,Hewlett Harbor,40.633619,-73.685898,US Census Bureau 2025 Gazetteer,GEOID:3634308,internal_point
+pseg-li-249a15df15f595be40c5,Nassau,Hempstead,Hewlett Neck,40.624763,-73.697082,US Census Bureau 2025 Gazetteer,GEOID:3634319,internal_point
+pseg-li-75e6e1f5af3820d64e30,Nassau,Hempstead,Inwood,40.621346,-73.75699,US Census Bureau 2025 Gazetteer,GEOID:3637583,internal_point
+pseg-li-82abb3dda27d38bda15e,Nassau,Hempstead,Island Park,40.605221,-73.6553,US Census Bureau 2025 Gazetteer,GEOID:3637847,internal_point
+pseg-li-0c89cc6563a0fe6b4102,Nassau,Hempstead,Jones Beach,40.5945469,-73.5029044,USGS GNIS Domestic Names 2026-08-28,feature:954152,named_feature_point
+pseg-li-1efc60cf445c9649e522,Nassau,Hempstead,Lakeview,40.677732,-73.649718,US Census Bureau 2025 Gazetteer,GEOID:3641003,internal_point
+pseg-li-26d762af5243b6b6a351,Nassau,Hempstead,Lawrence,40.602924,-73.714434,US Census Bureau 2025 Gazetteer,GEOID:3641553,internal_point
+pseg-li-4e4588479ae9ec47bceb,Nassau,Hempstead,Levittown,40.72399,-73.512709,US Census Bureau 2025 Gazetteer,GEOID:3642081,internal_point
+pseg-li-c6fac26608eb7ce52044,Nassau,Hempstead,Lido Beach,40.589098,-73.604318,US Census Bureau 2025 Gazetteer,GEOID:3642279,internal_point
+pseg-li-0ba5bf903345a07689f6,Nassau,Hempstead,Long Beach,40.585835,-73.665403,US Census Bureau 2025 Gazetteer,GEOID:3643335,internal_point
+pseg-li-81165d687b11fa821a1b,Nassau,Hempstead,Lynbrook,40.657883,-73.674199,US Census Bureau 2025 Gazetteer,GEOID:3643874,internal_point
+pseg-li-eeffcf024725af23ac87,Nassau,Hempstead,Malverne,40.674541,-73.672101,US Census Bureau 2025 Gazetteer,GEOID:3644787,internal_point
+pseg-li-5064a41571715e56a1a5,Nassau,Hempstead,Malverne Park Oaks,40.681655,-73.664414,US Census Bureau 2025 Gazetteer,GEOID:3644792,internal_point
+pseg-li-69a660510b476a166aa2,Nassau,Hempstead,Merrick,40.653175,-73.552013,US Census Bureau 2025 Gazetteer,GEOID:3646668,internal_point
+pseg-li-820e3be83c7ddc3943c7,Nassau,Hempstead,New Hyde Park,40.732273,-73.685864,US Census Bureau 2025 Gazetteer,GEOID:3650397,internal_point
+pseg-li-12be1a3a9378a6f2a1e5,Nassau,Hempstead,North Bellmore,40.690346,-73.539016,US Census Bureau 2025 Gazetteer,GEOID:3651517,internal_point
+pseg-li-2f63604d27473082da73,Nassau,Hempstead,North Lynbrook,40.668563,-73.673588,US Census Bureau 2025 Gazetteer,GEOID:3653231,internal_point
+pseg-li-d5f67fd3ca76e1ab8189,Nassau,Hempstead,North Merrick,40.688369,-73.560577,US Census Bureau 2025 Gazetteer,GEOID:3653264,internal_point
+pseg-li-05fed113116e65d63cfa,Nassau,Hempstead,North Valley Stream,40.684262,-73.708077,US Census Bureau 2025 Gazetteer,GEOID:3653748,internal_point
+pseg-li-bbc5637f8cb17b3ef147,Nassau,Hempstead,North Wantagh,40.693878,-73.51636,US Census Bureau 2025 Gazetteer,GEOID:3653792,internal_point
+pseg-li-35606198be61e0f1dc3a,Nassau,Hempstead,Oceanside,40.63302,-73.637701,US Census Bureau 2025 Gazetteer,GEOID:3654441,internal_point
+pseg-li-1a4f0dffe2ead8125ae6,Nassau,Hempstead,Point Lookout,40.590634,-73.57941,US Census Bureau 2025 Gazetteer,GEOID:3658849,internal_point
+pseg-li-5ca05abcd6011d163637,Nassau,Hempstead,Rockville Centre,40.664024,-73.638048,US Census Bureau 2025 Gazetteer,GEOID:3663264,internal_point
+pseg-li-12b46a4d978580219aa4,Nassau,Hempstead,Roosevelt,40.679422,-73.583372,US Census Bureau 2025 Gazetteer,GEOID:3663506,internal_point
+pseg-li-fa30d9233f491e7dc819,Nassau,Hempstead,Salisbury,40.745822,-73.56033,US Census Bureau 2025 Gazetteer,GEOID:3664842,internal_point
+pseg-li-d4ce4d1d754a12cd9062,Nassau,Hempstead,Seaford,40.66624,-73.49264,US Census Bureau 2025 Gazetteer,GEOID:3666058,internal_point
+pseg-li-93c662890987ff6fcea6,Nassau,Hempstead,Silver Point County Park,40.5880556,-73.7475,USGS GNIS,feature:2075812,named_feature_point
+pseg-li-1a4cc0c203ab8bc8e2c7,Nassau,Hempstead,South Floral Park,40.713507,-73.700442,US Census Bureau 2025 Gazetteer,GEOID:3669023,internal_point
+pseg-li-8657df6e598e23fe59e4,Nassau,Hempstead,South Hempstead,40.68134,-73.623334,US Census Bureau 2025 Gazetteer,GEOID:3669188,internal_point
+pseg-li-35ab1667430a56886d3f,Nassau,Hempstead,South Valley Stream,40.655792,-73.718538,US Census Bureau 2025 Gazetteer,GEOID:3669892,internal_point
+pseg-li-39b7c9c561134b76515e,Nassau,Hempstead,Stewart Manor,40.720118,-73.685412,US Census Bureau 2025 Gazetteer,GEOID:3671267,internal_point
+pseg-li-db5697b09353968a2ec5,Nassau,Hempstead,Uniondale,40.717593,-73.594656,US Census Bureau 2025 Gazetteer,GEOID:3676089,internal_point
+pseg-li-7fb66dacff4da56afd0e,Nassau,Hempstead,Valley Stream,40.664747,-73.704902,US Census Bureau 2025 Gazetteer,GEOID:3676705,internal_point
+pseg-li-ab8ee7ed3c6dde650d90,Nassau,Hempstead,Wantagh,40.667859,-73.510464,US Census Bureau 2025 Gazetteer,GEOID:3678146,internal_point
+pseg-li-4f106d9f24bdefb9b159,Nassau,Hempstead,West Hempstead,40.695816,-73.650454,US Census Bureau 2025 Gazetteer,GEOID:3680225,internal_point
+pseg-li-d1acfd8590dfb1e1208b,Nassau,Hempstead,Woodmere,40.637358,-73.721186,US Census Bureau 2025 Gazetteer,GEOID:3682942,internal_point
+pseg-li-e5e79954d155eb9bf453,Nassau,Hempstead,Woodsburgh,40.621197,-73.706215,US Census Bureau 2025 Gazetteer,GEOID:3682986,internal_point
+pseg-li-ce599c45ba22cf4bf45e,Nassau,North Hempstead,Albertson,40.771589,-73.648155,US Census Bureau 2025 Gazetteer,GEOID:3601011,internal_point
+pseg-li-e877168eccab156fff9b,Nassau,North Hempstead,Baxter Estates,40.833771,-73.694759,US Census Bureau 2025 Gazetteer,GEOID:3604803,internal_point
+pseg-li-914be3232b04b3efc59e,Nassau,North Hempstead,Carle Place,40.749895,-73.612367,US Census Bureau 2025 Gazetteer,GEOID:3612419,internal_point
+pseg-li-f022c181bf3b54bad204,Nassau,North Hempstead,East Hills,40.795841,-73.629176,US Census Bureau 2025 Gazetteer,GEOID:3622260,internal_point
+pseg-li-e04532aecae6331c922a,Nassau,North Hempstead,East Williston,40.76085,-73.633607,US Census Bureau 2025 Gazetteer,GEOID:3623217,internal_point
+pseg-li-7cbfe370dbf95dcbd275,Nassau,North Hempstead,Floral Park,40.721952,-73.702824,US Census Bureau 2025 Gazetteer,GEOID:3626264,internal_point
+pseg-li-07f4f4aa6e78594308fb,Nassau,North Hempstead,Flower Hill,40.807495,-73.675568,US Census Bureau 2025 Gazetteer,GEOID:3626352,internal_point
+pseg-li-bde5b4296fc050932100,Nassau,North Hempstead,Garden City Park,40.74293,-73.663307,US Census Bureau 2025 Gazetteer,GEOID:3628189,internal_point
+pseg-li-2645db455bd37b9c8a0f,Nassau,North Hempstead,Great Neck,40.802368,-73.733099,US Census Bureau 2025 Gazetteer,GEOID:3630169,internal_point
+pseg-li-6097a487969b2d987a52,Nassau,North Hempstead,Great Neck Estates,40.786476,-73.740167,US Census Bureau 2025 Gazetteer,GEOID:3630191,internal_point
+pseg-li-ab5b486d9290533740c0,Nassau,North Hempstead,Great Neck Gardens,40.796953,-73.722465,US Census Bureau 2025 Gazetteer,GEOID:3630202,internal_point
+pseg-li-93c1903bb29da3474f74,Nassau,North Hempstead,Great Neck Plaza,40.786913,-73.726155,US Census Bureau 2025 Gazetteer,GEOID:3630213,internal_point
+pseg-li-c99c6aef0c74b5eb3fdd,Nassau,North Hempstead,Greenvale,40.811957,-73.626327,US Census Bureau 2025 Gazetteer,GEOID:3630598,internal_point
+pseg-li-7c75cdc23c7e0a8698d2,Nassau,North Hempstead,Harbor Hills,40.788588,-73.749019,US Census Bureau 2025 Gazetteer,GEOID:3632094,internal_point
+pseg-li-77b284dc727ec67448ac,Nassau,North Hempstead,Herricks,40.756682,-73.663492,US Census Bureau 2025 Gazetteer,GEOID:3634198,internal_point
+pseg-li-1dedd30fed7559d69ad1,Nassau,North Hempstead,Kensington,40.793077,-73.722242,US Census Bureau 2025 Gazetteer,GEOID:3639309,internal_point
+pseg-li-9bc75d1523c3e8f6492a,Nassau,North Hempstead,Kings Point,40.817892,-73.73932,US Census Bureau 2025 Gazetteer,GEOID:3639694,internal_point
+pseg-li-5a973b383f1f5aba33dc,Nassau,North Hempstead,Lake Success,40.763883,-73.711112,US Census Bureau 2025 Gazetteer,GEOID:3640937,internal_point
+pseg-li-b82fe5a3906ecfb035dc,Nassau,North Hempstead,Manhasset,40.784977,-73.694879,US Census Bureau 2025 Gazetteer,GEOID:3644897,internal_point
+pseg-li-9bf352fcd788dd5413ba,Nassau,North Hempstead,Manhasset Hills,40.759137,-73.68087,US Census Bureau 2025 Gazetteer,GEOID:3644908,internal_point
+pseg-li-1d1d01e8b2b810bbee51,Nassau,North Hempstead,Manorhaven,40.83885,-73.710825,US Census Bureau 2025 Gazetteer,GEOID:3645106,internal_point
+pseg-li-61f469b45dc05f15db4e,Nassau,North Hempstead,Mineola,40.747026,-73.639363,US Census Bureau 2025 Gazetteer,GEOID:3647636,internal_point
+pseg-li-c736b7aa4fa3d2a4c5a9,Nassau,North Hempstead,Munsey Park,40.798993,-73.67985,US Census Bureau 2025 Gazetteer,GEOID:3649231,internal_point
+pseg-li-5e8033e66ffe5b0e840b,Nassau,North Hempstead,New Cassel,40.760202,-73.564934,US Census Bureau 2025 Gazetteer,GEOID:3650067,internal_point
+pseg-li-a4dbe8a669a0c976724c,Nassau,North Hempstead,New Hyde Park,40.732273,-73.685864,US Census Bureau 2025 Gazetteer,GEOID:3650397,internal_point
+pseg-li-27d42c3b306072941be0,Nassau,North Hempstead,North Hills,40.77645,-73.677847,US Census Bureau 2025 Gazetteer,GEOID:3653022,internal_point
+pseg-li-826f7cd555101a706d2e,Nassau,North Hempstead,North New Hyde Park,40.745753,-73.687775,US Census Bureau 2025 Gazetteer,GEOID:3653275,internal_point
+pseg-li-ad0d7f66a5c0838befe0,Nassau,North Hempstead,Old Westbury,40.786543,-73.597508,US Census Bureau 2025 Gazetteer,GEOID:3654705,internal_point
+pseg-li-fdda490df121f8d746b3,Nassau,North Hempstead,Plandome,40.806579,-73.70163,US Census Bureau 2025 Gazetteer,GEOID:3658475,internal_point
+pseg-li-32f36868e9174b37e866,Nassau,North Hempstead,Plandome Heights,40.802072,-73.704901,US Census Bureau 2025 Gazetteer,GEOID:3658486,internal_point
+pseg-li-2cb492daebd7d23933a8,Nassau,North Hempstead,Plandome Manor,40.812909,-73.698699,US Census Bureau 2025 Gazetteer,GEOID:3658497,internal_point
+pseg-li-599ef3dd4bc3533dd120,Nassau,North Hempstead,Port Washington,40.827452,-73.680008,US Census Bureau 2025 Gazetteer,GEOID:3659520,internal_point
+pseg-li-ed547694daf04f1db1f1,Nassau,North Hempstead,Port Washington North,40.843047,-73.700058,US Census Bureau 2025 Gazetteer,GEOID:3659531,internal_point
+pseg-li-de8c7c2ef534eecf172c,Nassau,North Hempstead,Roslyn,40.799816,-73.650424,US Census Bureau 2025 Gazetteer,GEOID:3663770,internal_point
+pseg-li-6bb6835cc010ba82838f,Nassau,North Hempstead,Roslyn Estates,40.793672,-73.661217,US Census Bureau 2025 Gazetteer,GEOID:3663792,internal_point
+pseg-li-abe2d59119e196c67a38,Nassau,North Hempstead,Roslyn Harbor,40.811234,-73.640582,US Census Bureau 2025 Gazetteer,GEOID:3663803,internal_point
+pseg-li-351b0ada4ac5db9b011e,Nassau,North Hempstead,Roslyn Heights,40.778746,-73.639593,US Census Bureau 2025 Gazetteer,GEOID:3663814,internal_point
+pseg-li-3b6092ab4d3829fb3b29,Nassau,North Hempstead,Russell Gardens,40.780892,-73.725451,US Census Bureau 2025 Gazetteer,GEOID:3664232,internal_point
+pseg-li-198129f02ba79d476966,Nassau,North Hempstead,Saddle Rock,40.79438,-73.749278,US Census Bureau 2025 Gazetteer,GEOID:3664430,internal_point
+pseg-li-13b3aeec923214c6e2e7,Nassau,North Hempstead,Saddle Rock Estates,40.793949,-73.741499,US Census Bureau 2025 Gazetteer,GEOID:3664441,internal_point
+pseg-li-61f502ec13814e833777,Nassau,North Hempstead,Sands Point,40.85343,-73.703586,US Census Bureau 2025 Gazetteer,GEOID:3665035,internal_point
+pseg-li-e63caefd83a2098cb08d,Nassau,North Hempstead,Searingtown,40.77047,-73.660335,US Census Bureau 2025 Gazetteer,GEOID:3666102,internal_point
+pseg-li-a3e96973b5cf87ca03a1,Nassau,North Hempstead,Thomaston,40.78752,-73.715158,US Census Bureau 2025 Gazetteer,GEOID:3673605,internal_point
+pseg-li-186d7d6cbdc4bebad364,Nassau,North Hempstead,University Gardens,40.775089,-73.727922,US Census Bureau 2025 Gazetteer,GEOID:3676287,internal_point
+pseg-li-1660a4382682f7cd0c8b,Nassau,North Hempstead,Westbury,40.75988,-73.589185,US Census Bureau 2025 Gazetteer,GEOID:3679444,internal_point
+pseg-li-366a0884f6cfb055cb2f,Nassau,North Hempstead,Williston Park,40.758756,-73.646588,US Census Bureau 2025 Gazetteer,GEOID:3682117,internal_point
+pseg-li-c84d905ddcccf50d8593,Nassau,Oyster Bay,Bayville,40.907257,-73.561166,US Census Bureau 2025 Gazetteer,GEOID:3605034,internal_point
+pseg-li-61ace93cea4536693eb9,Nassau,Oyster Bay,Bethpage,40.749517,-73.485536,US Census Bureau 2025 Gazetteer,GEOID:3606387,internal_point
+pseg-li-07c13022f55079ef9962,Nassau,Oyster Bay,Brookville,40.807912,-73.570122,US Census Bureau 2025 Gazetteer,GEOID:3610132,internal_point
+pseg-li-ab24befa48fa09154e61,Nassau,Oyster Bay,Centre Island,40.898546,-73.521919,US Census Bureau 2025 Gazetteer,GEOID:3613618,internal_point
+pseg-li-7c75d7e1df8f3d5b5d45,Nassau,Oyster Bay,Centre Island Town Park,40.9128761,-73.5326234,USGS GNIS,feature:946330,named_feature_point
+pseg-li-03ecbca5b24ad487105e,Nassau,Oyster Bay,Cold Spring Harbor,40.864322,-73.456406,US Census Bureau 2025 Gazetteer,GEOID:3616958,internal_point
+pseg-li-1c2e77bc45a2770176e6,Nassau,Oyster Bay,Cove Neck,40.885781,-73.497304,US Census Bureau 2025 Gazetteer,GEOID:3618597,internal_point
+pseg-li-c2a4e2062f4ad8726a01,Nassau,Oyster Bay,East Hills,40.795841,-73.629176,US Census Bureau 2025 Gazetteer,GEOID:3622260,internal_point
+pseg-li-cc102eaa9783f3331d5b,Nassau,Oyster Bay,East Massapequa,40.676236,-73.437058,US Census Bureau 2025 Gazetteer,GEOID:3622480,internal_point
+pseg-li-742ad7db1e69562504b9,Nassau,Oyster Bay,East Norwich,40.849523,-73.528852,US Census Bureau 2025 Gazetteer,GEOID:3622623,internal_point
+pseg-li-86cdb162ece4ddd172bc,Nassau,Oyster Bay,Farmingdale,40.732808,-73.446759,US Census Bureau 2025 Gazetteer,GEOID:3625384,internal_point
+pseg-li-373649e762c2aaf79e0a,Nassau,Oyster Bay,Glen Cove,40.884756,-73.644781,US Census Bureau 2025 Gazetteer,GEOID:3629113,internal_point
+pseg-li-cd81159110df9fc4aafb,Nassau,Oyster Bay,Glen Head,40.844918,-73.618018,US Census Bureau 2025 Gazetteer,GEOID:3629245,internal_point
+pseg-li-38d40e5df5c8b4530544,Nassau,Oyster Bay,Glenwood Landing,40.829451,-73.637736,US Census Bureau 2025 Gazetteer,GEOID:3629421,internal_point
+pseg-li-e8e5b5784ff34246af51,Nassau,Oyster Bay,Greenvale,40.811957,-73.626327,US Census Bureau 2025 Gazetteer,GEOID:3630598,internal_point
+pseg-li-32180e1a9c9aeac831db,Nassau,Oyster Bay,Hicksville,40.764136,-73.524806,US Census Bureau 2025 Gazetteer,GEOID:3634374,internal_point
+pseg-li-eb78158f2d342c8fe21b,Nassau,Oyster Bay,Jericho,40.787447,-73.541615,US Census Bureau 2025 Gazetteer,GEOID:3638539,internal_point
+pseg-li-b08ae512183ac3479e75,Nassau,Oyster Bay,Lattingtown,40.89464,-73.595343,US Census Bureau 2025 Gazetteer,GEOID:3641432,internal_point
+pseg-li-fe2e21fb2ff7bf913c8e,Nassau,Oyster Bay,Laurel Hollow,40.8567,-73.477542,US Census Bureau 2025 Gazetteer,GEOID:3641487,internal_point
+pseg-li-75ef5d13fab24e706a22,Nassau,Oyster Bay,Locust Valley,40.878083,-73.589333,US Census Bureau 2025 Gazetteer,GEOID:3643192,internal_point
+pseg-li-5e435ebc6b9118ea9c50,Nassau,Oyster Bay,Massapequa,40.668302,-73.471515,US Census Bureau 2025 Gazetteer,GEOID:3645986,internal_point
+pseg-li-55d60316dabf0f7966d1,Nassau,Oyster Bay,Massapequa Park,40.680909,-73.449689,US Census Bureau 2025 Gazetteer,GEOID:3645997,internal_point
+pseg-li-b4475df799b765bf25d3,Nassau,Oyster Bay,Matinecock,40.859352,-73.580472,US Census Bureau 2025 Gazetteer,GEOID:3646107,internal_point
+pseg-li-39b6ec9d15495be5b322,Nassau,Oyster Bay,Mill Neck,40.882132,-73.558968,US Census Bureau 2025 Gazetteer,GEOID:3647405,internal_point
+pseg-li-7d639a825c34c33c5b50,Nassau,Oyster Bay,Muttontown,40.825394,-73.536338,US Census Bureau 2025 Gazetteer,GEOID:3649330,internal_point
+pseg-li-4b72d61b862db256f280,Nassau,Oyster Bay,North Massapequa,40.703007,-73.469122,US Census Bureau 2025 Gazetteer,GEOID:3653253,internal_point
+pseg-li-1109cc965373c90b9e54,Nassau,Oyster Bay,Old Bethpage,40.750823,-73.458396,US Census Bureau 2025 Gazetteer,GEOID:3654551,internal_point
+pseg-li-55e86906ddc979ab9b1a,Nassau,Oyster Bay,Old Brookville,40.83647,-73.605108,US Census Bureau 2025 Gazetteer,GEOID:3654562,internal_point
+pseg-li-9fbc585f144f57c4510c,Nassau,Oyster Bay,Old Westbury,40.786543,-73.597508,US Census Bureau 2025 Gazetteer,GEOID:3654705,internal_point
+pseg-li-2832204a21e89dba5f98,Nassau,Oyster Bay,Oyster Bay Cove,40.860496,-73.505379,US Census Bureau 2025 Gazetteer,GEOID:3656011,internal_point
+pseg-li-efed831c7f169e79c780,Nassau,Oyster Bay,Oyster Bay Hamlet,40.868057,-73.531053,US Census Bureau 2025 Gazetteer,GEOID:3655992,internal_point
+pseg-li-551b7b5307353664c8a3,Nassau,Oyster Bay,Plainedge,40.724009,-73.476993,US Census Bureau 2025 Gazetteer,GEOID:3658409,internal_point
+pseg-li-ed2c22ffe0e6b31fb03c,Nassau,Oyster Bay,Plainview,40.781771,-73.473118,US Census Bureau 2025 Gazetteer,GEOID:3658442,internal_point
+pseg-li-0915ceba23409303b4f5,Nassau,Oyster Bay,Roslyn Harbor,40.811234,-73.640582,US Census Bureau 2025 Gazetteer,GEOID:3663803,internal_point
+pseg-li-d337d68811c7c214375a,Nassau,Oyster Bay,Sea Cliff,40.846158,-73.65043,US Census Bureau 2025 Gazetteer,GEOID:3666047,internal_point
+pseg-li-a9c032aa915dc2ecaf64,Nassau,Oyster Bay,South Farmingdale,40.716886,-73.448606,US Census Bureau 2025 Gazetteer,GEOID:3669001,internal_point
+pseg-li-87a95e52ce548ae6516d,Nassau,Oyster Bay,Syosset,40.815682,-73.502025,US Census Bureau 2025 Gazetteer,GEOID:3672554,internal_point
+pseg-li-4c1f9958936ea6737c87,Nassau,Oyster Bay,Tobay,40.6059352,-73.4451247,USGS GNIS,feature:967584,named_feature_point
+pseg-li-addc8c835bd0a7b1e982,Nassau,Oyster Bay,Upper Brookville,40.847499,-73.562901,US Census Bureau 2025 Gazetteer,GEOID:3676331,internal_point
+pseg-li-0205144088130de635b3,Nassau,Oyster Bay,Woodbury,40.8256545,-73.4676225,USGS GNIS Domestic Names 2026-08-28,feature:971608,named_feature_point
+pseg-li-31d3df560aa45c14a0a3,Queens,Rockaway Peninsula,Arverne,40.591216,-73.7959669,USGS GNIS Domestic Names 2026-08-28,feature:942602,named_feature_point
+pseg-li-5c4318612c37e3cc5ce3,Queens,Rockaway Peninsula,Belle Harbor,40.5759385,-73.8481906,USGS GNIS Domestic Names 2026-08-28,feature:943603,named_feature_point
+pseg-li-c91eed01f362fa24d8e3,Queens,Rockaway Peninsula,Breezy Point,40.5564945,-73.9262483,USGS GNIS Domestic Names 2026-08-28,feature:944686,named_feature_point
+pseg-li-c1a98a8326d828eaa6f5,Queens,Rockaway Peninsula,Edgemere,40.5962159,-73.7676329,USGS GNIS Domestic Names 2026-08-28,feature:949371,named_feature_point
+pseg-li-2be55479fb0baeb7f566,Queens,Rockaway Peninsula,Far Rockaway,40.6053824,-73.7551325,USGS GNIS Domestic Names 2026-08-28,feature:949907,named_feature_point
+pseg-li-2deecd722be7b5834bc3,Queens,Rockaway Peninsula,Neponsit,40.571772,-73.8615243,USGS GNIS Domestic Names 2026-08-28,feature:958369,named_feature_point
+pseg-li-b2a3bb344932268c63d4,Queens,Rockaway Peninsula,Rockaway Beach,40.5714942,-73.851524,USGS GNIS Domestic Names 2026-08-28,feature:962741,named_feature_point
+pseg-li-7fe28c07c87c12d24ae3,Queens,Rockaway Peninsula,Rockaway Park,40.5801051,-73.8362459,USGS GNIS Domestic Names 2026-08-28,feature:962743,named_feature_point
+pseg-li-14776f831adef73e5d5d,Queens,Rockaway Peninsula,Roxbury,40.5664943,-73.8906918,USGS GNIS Domestic Names 2026-08-28,feature:963057,named_feature_point
+pseg-li-00a4e06805e141089e47,Suffolk,Babylon,Amityville,40.669844,-73.415787,US Census Bureau 2025 Gazetteer,GEOID:3602044,internal_point
+pseg-li-ef5225dd8758afff11da,Suffolk,Babylon,Babylon,40.693679,-73.326,US Census Bureau 2025 Gazetteer,GEOID:3603408,internal_point
+pseg-li-f29202ad9006ff7ac0f4,Suffolk,Babylon,Captree,40.646074,-73.257051,US Census Bureau 2025 Gazetteer,GEOID:3612402,internal_point
+pseg-li-869ae581e1682fd36ddf,Suffolk,Babylon,Copiague,40.670358,-73.392761,US Census Bureau 2025 Gazetteer,GEOID:3618146,internal_point
+pseg-li-1f11d63d6e234e549e48,Suffolk,Babylon,Deer Park,40.761441,-73.321736,US Census Bureau 2025 Gazetteer,GEOID:3619972,internal_point
+pseg-li-b908666d02f4dc0f0c8a,Suffolk,Babylon,East Farmingdale,40.736657,-73.411368,US Census Bureau 2025 Gazetteer,GEOID:3621985,internal_point
+pseg-li-882b46d6040abf3b39fd,Suffolk,Babylon,Gilgo Beach,40.6184346,-73.3976229,USGS GNIS Domestic Names 2026-08-28,feature:951106,named_feature_point
+pseg-li-c969288e609749672ae9,Suffolk,Babylon,Lindenhurst,40.685751,-73.371594,US Census Bureau 2025 Gazetteer,GEOID:3642554,internal_point
+pseg-li-84e94dab14803ddec3c0,Suffolk,Babylon,North Amityville,40.700525,-73.411884,US Census Bureau 2025 Gazetteer,GEOID:3651396,internal_point
+pseg-li-61be38f5ddc5f94279ef,Suffolk,Babylon,North Babylon,40.731454,-73.32493,US Census Bureau 2025 Gazetteer,GEOID:3651440,internal_point
+pseg-li-1948c34eee9a479b7243,Suffolk,Babylon,North Lindenhurst,40.707221,-73.385968,US Census Bureau 2025 Gazetteer,GEOID:3653198,internal_point
+pseg-li-a82def9793fded452d17,Suffolk,Babylon,Oak Beach,40.638582,-73.276481,US Census Bureau 2025 Gazetteer,GEOID:3654111,internal_point
+pseg-li-b7548114d4674c826678,Suffolk,Babylon,Robert Moses Pk,40.6264151,-73.244326,OpenStreetMap Nominatim,relation:6442393,representative_point
+pseg-li-f6c562ba168688c3fb9e,Suffolk,Babylon,West Babylon,40.712417,-73.359727,US Census Bureau 2025 Gazetteer,GEOID:3679246,internal_point
+pseg-li-ac9b5e588cf8eca479c5,Suffolk,Babylon,Wheatley Heights,40.762408,-73.370558,US Census Bureau 2025 Gazetteer,GEOID:3681419,internal_point
+pseg-li-8be3a7bf961837e6d6fd,Suffolk,Babylon,Wyandanch,40.749143,-73.363525,US Census Bureau 2025 Gazetteer,GEOID:3683294,internal_point
+pseg-li-7b04ec39440c58d9f766,Suffolk,Brookhaven,Barrett Beach,40.6723214,-73.0409435,OpenStreetMap Nominatim,node:357546866,named_feature_point
+pseg-li-5262e0875c8587e8011c,Suffolk,Brookhaven,Belle Terre,40.960698,-73.067274,US Census Bureau 2025 Gazetteer,GEOID:3605672,internal_point
+pseg-li-de41b237e6f2fca52b32,Suffolk,Brookhaven,Bellport,40.75095,-72.941325,US Census Bureau 2025 Gazetteer,GEOID:3605771,internal_point
+pseg-li-c97c0358f4a5e91e5133,Suffolk,Brookhaven,Blue Point,40.751642,-73.035015,US Census Bureau 2025 Gazetteer,GEOID:3607069,internal_point
+pseg-li-c18068a7aa6d2f9f96e2,Suffolk,Brookhaven,Blue Point Beach,40.7464872,-73.0251091,USGS GNIS Domestic Names 2026-08-28,feature:944324,named_feature_point
+pseg-li-aead2244bbe55d8e14e3,Suffolk,Brookhaven,Brookhaven,40.776671,-72.907833,US Census Bureau 2025 Gazetteer,GEOID:3609000,internal_point
+pseg-li-6d25b5933fd5aa1796f5,Suffolk,Brookhaven,Calverton,40.91994,-72.77337,US Census Bureau 2025 Gazetteer,GEOID:3611781,internal_point
+pseg-li-62322c897d86c56c8005,Suffolk,Brookhaven,Center Moriches,40.799313,-72.796524,US Census Bureau 2025 Gazetteer,GEOID:3613420,internal_point
+pseg-li-3664473e4f31d18d6c32,Suffolk,Brookhaven,Centereach,40.868067,-73.082104,US Census Bureau 2025 Gazetteer,GEOID:3613376,internal_point
+pseg-li-dbc8af0a614550922aaa,Suffolk,Brookhaven,Cherry Grove,40.6589884,-73.0890008,USGS GNIS Domestic Names 2026-08-28,feature:946512,named_feature_point
+pseg-li-47ea78c3be45f15ee91b,Suffolk,Brookhaven,Coram,40.881236,-73.005882,US Census Bureau 2025 Gazetteer,GEOID:3618157,internal_point
+pseg-li-7dad019fda028322b0fe,Suffolk,Brookhaven,Davis Park,40.683988,-73.004831,USGS GNIS Domestic Names 2026-08-28,feature:948069,named_feature_point
+pseg-li-d1eb6c83ce2160ec837c,Suffolk,Brookhaven,East Moriches,40.808772,-72.756601,US Census Bureau 2025 Gazetteer,GEOID:3622546,internal_point
+pseg-li-4bf05490e2acc26efd0b,Suffolk,Brookhaven,East Patchogue,40.770031,-72.981772,US Census Bureau 2025 Gazetteer,GEOID:3622733,internal_point
+pseg-li-0e353cd6d84fafb4d78f,Suffolk,Brookhaven,East Shoreham,40.950232,-72.875352,US Census Bureau 2025 Gazetteer,GEOID:3622980,internal_point
+pseg-li-3d0679ffae01aa2f3a51,Suffolk,Brookhaven,Eastport,40.83508,-72.735052,US Census Bureau 2025 Gazetteer,GEOID:3622810,internal_point
+pseg-li-267d838e1ca69842852d,Suffolk,Brookhaven,Farmingville,40.838978,-73.040463,US Census Bureau 2025 Gazetteer,GEOID:3625417,internal_point
+pseg-li-7d525cd25650527bf68a,Suffolk,Brookhaven,Fire Island,40.637097,-73.203314,US Census Bureau 2025 Gazetteer,GEOID:3625839,internal_point
+pseg-li-6f3ac05c1910b3346c35,Suffolk,Brookhaven,Fire Island National Seashore,40.7084252,-72.9513976,OpenStreetMap Nominatim,relation:11132469,representative_point
+pseg-li-27649c16c3926c11b535,Suffolk,Brookhaven,Gordon Heights,40.863647,-72.962088,US Census Bureau 2025 Gazetteer,GEOID:3629509,internal_point
+pseg-li-6d0dea83a70ce3317cd0,Suffolk,Brookhaven,Holbrook,40.794373,-73.070022,US Census Bureau 2025 Gazetteer,GEOID:3635056,internal_point
+pseg-li-2bafb8d22ba30a8fc68c,Suffolk,Brookhaven,Holtsville,40.812373,-73.044653,US Census Bureau 2025 Gazetteer,GEOID:3635254,internal_point
+pseg-li-51c1b4aa90bb16dc3c43,Suffolk,Brookhaven,Lake Grove,40.857817,-73.116844,US Census Bureau 2025 Gazetteer,GEOID:3640530,internal_point
+pseg-li-eef5186e51df5135469c,Suffolk,Brookhaven,Lake Ronkonkoma,40.830318,-73.113298,US Census Bureau 2025 Gazetteer,GEOID:3640838,internal_point
+pseg-li-24ce30b7a7f43dcecc7f,Suffolk,Brookhaven,Manorville,40.862328,-72.787521,US Census Bureau 2025 Gazetteer,GEOID:3645139,internal_point
+pseg-li-e86c069e0a47e4eb7f51,Suffolk,Brookhaven,Mastic,40.809653,-72.847986,US Census Bureau 2025 Gazetteer,GEOID:3646074,internal_point
+pseg-li-d43b67643929ab2dfa09,Suffolk,Brookhaven,Mastic Beach,40.765722,-72.836722,US Census Bureau 2025 Gazetteer,GEOID:3646085,internal_point
+pseg-li-3d8047f886c85e697957,Suffolk,Brookhaven,Medford,40.821979,-72.985918,US Census Bureau 2025 Gazetteer,GEOID:3646404,internal_point
+pseg-li-90e2ab841790177d7143,Suffolk,Brookhaven,Middle Island,40.892509,-72.951175,US Census Bureau 2025 Gazetteer,GEOID:3646976,internal_point
+pseg-li-3163027ccb81d6f18b06,Suffolk,Brookhaven,Miller Place,40.943115,-72.993342,US Census Bureau 2025 Gazetteer,GEOID:3647306,internal_point
+pseg-li-9ed6d8b8a6bd07d9e76a,Suffolk,Brookhaven,Moriches,40.805414,-72.826992,US Census Bureau 2025 Gazetteer,GEOID:3648450,internal_point
+pseg-li-81c1c73ddaaf85288e33,Suffolk,Brookhaven,Mount Sinai,40.94178,-73.020242,US Census Bureau 2025 Gazetteer,GEOID:3649066,internal_point
+pseg-li-71b89fd2fab6f48c1517,Suffolk,Brookhaven,North Bellport,40.786816,-72.94568,US Census Bureau 2025 Gazetteer,GEOID:3651528,internal_point
+pseg-li-f913bcbec000b3ffae70,Suffolk,Brookhaven,North Patchogue,40.784034,-73.023889,US Census Bureau 2025 Gazetteer,GEOID:3653319,internal_point
+pseg-li-b73a8312bb54bec08608,Suffolk,Brookhaven,Oakleyville,40.654186,-73.116602,NPS community-order interpolation,Oakleyville between Point o'Woods and Sailors Haven,locality_estimate
+pseg-li-d39ac5e7e188f7d25e2e,Suffolk,Brookhaven,Ocean Bay Park,40.6487108,-73.1401139,USGS GNIS Domestic Names 2026-08-28,feature:959210,named_feature_point
+pseg-li-1a129bf8a3732a1703a1,Suffolk,Brookhaven,Ocean Ridge,40.6868048,-72.9991019,OpenStreetMap Nominatim,way:93628010,representative_point
+pseg-li-2098f5e44816994efaee,Suffolk,Brookhaven,Old Field,40.966673,-73.131044,US Census Bureau 2025 Gazetteer,GEOID:3654617,internal_point
+pseg-li-7df6c7d16cc457d6fec3,Suffolk,Brookhaven,Patchogue,40.76371,-73.019773,US Census Bureau 2025 Gazetteer,GEOID:3656660,internal_point
+pseg-li-af39ed1225dcd7e4e051,Suffolk,Brookhaven,Point O'Woods,40.6514885,-73.1287245,USGS GNIS Domestic Names 2026-08-28,feature:970489,named_feature_point
+pseg-li-3bd2e482ffb390c0b045,Suffolk,Brookhaven,Poquott,40.953044,-73.090877,US Census Bureau 2025 Gazetteer,GEOID:3659157,internal_point
+pseg-li-2b047b26421be7f73a09,Suffolk,Brookhaven,Port Jefferson,40.942177,-73.052799,US Census Bureau 2025 Gazetteer,GEOID:3659355,internal_point
+pseg-li-a63cb13486ee05648cff,Suffolk,Brookhaven,Port Jefferson Station,40.925939,-73.065186,US Census Bureau 2025 Gazetteer,GEOID:3659377,internal_point
+pseg-li-67b8ae8b1bea6479ce6f,Suffolk,Brookhaven,Ridge,40.903814,-72.88588,US Census Bureau 2025 Gazetteer,GEOID:3661665,internal_point
+pseg-li-c0fe02bd2d703461570f,Suffolk,Brookhaven,Rocky Point,40.939825,-72.936301,US Census Bureau 2025 Gazetteer,GEOID:3663319,internal_point
+pseg-li-a5c0a1788db39c90b9dd,Suffolk,Brookhaven,Sailors Haven,40.656884,-73.104475,National Park Service,Sailors Haven Visitor Center,named_feature_point
+pseg-li-b4b4d096f32581f531fe,Suffolk,Brookhaven,Seaview,40.6470441,-73.149003,USGS GNIS Domestic Names 2026-08-28,feature:964754,named_feature_point
+pseg-li-71af61d9523be5477bf2,Suffolk,Brookhaven,Selden,40.871444,-73.046615,US Census Bureau 2025 Gazetteer,GEOID:3666212,internal_point
+pseg-li-8d8185ddf857df30b5a0,Suffolk,Brookhaven,Setauket-East Setauket,40.9306822,-73.1018326,USGS GNIS,feature:2390276,historical_census_internal_point
+pseg-li-013f91763bde24feceb6,Suffolk,Brookhaven,Shirley,40.793602,-72.875911,US Census Bureau 2025 Gazetteer,GEOID:3667070,internal_point
+pseg-li-a9db4be92ea6ee8661cc,Suffolk,Brookhaven,Shoreham,40.957097,-72.907054,US Census Bureau 2025 Gazetteer,GEOID:3667191,internal_point
+pseg-li-8fbd758fa7d1c1d30bb6,Suffolk,Brookhaven,Smith Point,40.7373211,-72.8742707,USGS GNIS Domestic Names 2026-08-28,feature:965501,named_feature_point
+pseg-li-fd474c83dfc776ed5244,Suffolk,Brookhaven,Sound Beach,40.96286,-72.970764,US Census Bureau 2025 Gazetteer,GEOID:3668374,internal_point
+pseg-li-cd224b86103dfd0430b5,Suffolk,Brookhaven,Stony Brook,40.907804,-73.127479,US Census Bureau 2025 Gazetteer,GEOID:3671608,internal_point
+pseg-li-7a48ff2b3c724b92e6d0,Suffolk,Brookhaven,Terryville,40.909259,-73.048662,US Census Bureau 2025 Gazetteer,GEOID:3673352,internal_point
+pseg-li-73df2843e8d597860aa3,Suffolk,Brookhaven,Upton,40.869543,-72.8867697,USGS GNIS Domestic Names 2026-08-28,feature:973183,named_feature_point
+pseg-li-159279674d1087d5a189,Suffolk,Brookhaven,Watch Hill,40.6898212,-72.9892749,OpenStreetMap Nominatim,node:158872591,named_feature_point
+pseg-li-d6d8b9d48089aa5b5738,Suffolk,Brookhaven,Water Island,40.6756548,-73.0292764,USGS GNIS Domestic Names 2026-08-28,feature:968892,named_feature_point
+pseg-li-363c43f233984390377f,Suffolk,Brookhaven,Westhampton Beach,40.806972,-72.645072,US Census Bureau 2025 Gazetteer,GEOID:3680181,internal_point
+pseg-li-7cca1561fc2897d0a9e4,Suffolk,Brookhaven,Yaphank,40.83101,-72.93165,US Census Bureau 2025 Gazetteer,GEOID:3683426,internal_point
+pseg-li-cfcecab4b9e75eb7b200,Suffolk,East Hampton,Amagansett,40.983382,-72.130131,US Census Bureau 2025 Gazetteer,GEOID:3601594,internal_point
+pseg-li-c1ef2152d176ff078dee,Suffolk,East Hampton,East Hampton,40.951543,-72.196094,US Census Bureau 2025 Gazetteer,GEOID:3622183,internal_point
+pseg-li-598be41a785c8b25b37c,Suffolk,East Hampton,East Hampton Village,40.951543,-72.196094,US Census Bureau 2025 Gazetteer,GEOID:3622183,internal_point
+pseg-li-ac887ff38dbe03e10e6e,Suffolk,East Hampton,Montauk,41.047538,-71.946369,US Census Bureau 2025 Gazetteer,GEOID:3648054,internal_point
+pseg-li-229cbeeab06ef1ebf283,Suffolk,East Hampton,Napeague,40.99847,-72.06422,US Census Bureau 2025 Gazetteer,GEOID:3649424,internal_point
+pseg-li-de177863bda0ef6fdfb8,Suffolk,East Hampton,North West Harbor,41.013774,-72.220394,US Census Bureau 2025 Gazetteer,GEOID:3653852,internal_point
+pseg-li-09542e4ffed3cd394858,Suffolk,East Hampton,Sag Harbor,40.994274,-72.288503,US Census Bureau 2025 Gazetteer,GEOID:3664485,internal_point
+pseg-li-0c41699e01f3a38a924c,Suffolk,East Hampton,Springs,41.03112,-72.159656,US Census Bureau 2025 Gazetteer,GEOID:3670387,internal_point
+pseg-li-d6ec6df2b6bf56106f4a,Suffolk,East Hampton,Wainscott,40.954784,-72.255312,US Census Bureau 2025 Gazetteer,GEOID:3677805,internal_point
+pseg-li-6a980a716ca721d91847,Suffolk,Huntington,Asharoken,40.93927,-73.38506,US Census Bureau 2025 Gazetteer,GEOID:3602737,internal_point
+pseg-li-51ad52bf353ffe9d4711,Suffolk,Huntington,Centerport,40.902425,-73.371427,US Census Bureau 2025 Gazetteer,GEOID:3613442,internal_point
+pseg-li-78126a5b7f349de36d85,Suffolk,Huntington,Cold Spring Harbor,40.864322,-73.456406,US Census Bureau 2025 Gazetteer,GEOID:3616958,internal_point
+pseg-li-289e368faf8b9b59e020,Suffolk,Huntington,Commack,40.843449,-73.283336,US Census Bureau 2025 Gazetteer,GEOID:3617530,internal_point
+pseg-li-05f297d13adb82397631,Suffolk,Huntington,Dix Hills,40.803322,-73.337459,US Census Bureau 2025 Gazetteer,GEOID:3620687,internal_point
+pseg-li-11e86878d235004c8b35,Suffolk,Huntington,East Northport,40.879131,-73.323244,US Census Bureau 2025 Gazetteer,GEOID:3622612,internal_point
+pseg-li-31b8d859415175603dc9,Suffolk,Huntington,Eatons Neck,40.930969,-73.401771,US Census Bureau 2025 Gazetteer,GEOID:3623316,internal_point
+pseg-li-a5b6247d62ad4a213f2c,Suffolk,Huntington,Elwood,40.846198,-73.338874,US Census Bureau 2025 Gazetteer,GEOID:3624405,internal_point
+pseg-li-1b0997a70373ee3f67b0,Suffolk,Huntington,Fort Salonga,40.911413,-73.295587,US Census Bureau 2025 Gazetteer,GEOID:3626946,internal_point
+pseg-li-d704897218f1b0b32ce2,Suffolk,Huntington,Greenlawn,40.863515,-73.365754,US Census Bureau 2025 Gazetteer,GEOID:3630543,internal_point
+pseg-li-b5a5161f81b65ffe4770,Suffolk,Huntington,Halesite,40.886284,-73.412514,US Census Bureau 2025 Gazetteer,GEOID:3631445,internal_point
+pseg-li-39518595a166d3abc6d7,Suffolk,Huntington,Huntington,40.875389,-73.405761,US Census Bureau 2025 Gazetteer,GEOID:3636233,internal_point
+pseg-li-a5c926fe550eb09df1be,Suffolk,Huntington,Huntington Bay,40.903556,-73.412127,US Census Bureau 2025 Gazetteer,GEOID:3637022,internal_point
+pseg-li-a55cb05e1edeaaf66a34,Suffolk,Huntington,Huntington Station,40.844488,-73.404812,US Census Bureau 2025 Gazetteer,GEOID:3637044,internal_point
+pseg-li-35572fcbe80d38306197,Suffolk,Huntington,Lloyd Harbor,40.921496,-73.443386,US Census Bureau 2025 Gazetteer,GEOID:3643005,internal_point
+pseg-li-5b9a7b6b1be35e55c535,Suffolk,Huntington,Melville,40.782357,-73.408824,US Census Bureau 2025 Gazetteer,GEOID:3646514,internal_point
+pseg-li-9766c827d8ab03f312f8,Suffolk,Huntington,Northport,40.904045,-73.344968,US Census Bureau 2025 Gazetteer,GEOID:3653396,internal_point
+pseg-li-45c43153defa15d0f0fd,Suffolk,Huntington,South Huntington,40.822505,-73.392162,US Census Bureau 2025 Gazetteer,GEOID:3669254,internal_point
+pseg-li-4887db53e5fe38f26779,Suffolk,Huntington,West Hills,40.819938,-73.433923,US Census Bureau 2025 Gazetteer,GEOID:3680258,internal_point
+pseg-li-760ca33b97af829c329d,Suffolk,Islip,Atlantique,40.6417665,-73.1706705,USGS GNIS Domestic Names 2026-08-28,feature:942675,named_feature_point
+pseg-li-12bd9fd78f12cf8b7432,Suffolk,Islip,Bay Shore,40.729377,-73.250141,US Census Bureau 2025 Gazetteer,GEOID:3604935,internal_point
+pseg-li-124fe278f19d12880d46,Suffolk,Islip,Bayport,40.745984,-73.056388,US Census Bureau 2025 Gazetteer,GEOID:3604913,internal_point
+pseg-li-8c206a5f1530ad024e4c,Suffolk,Islip,Baywood,40.753354,-73.289926,US Census Bureau 2025 Gazetteer,GEOID:3605039,internal_point
+pseg-li-66276694215a3ebdcfcf,Suffolk,Islip,Bohemia,40.777011,-73.13509,US Census Bureau 2025 Gazetteer,GEOID:3607157,internal_point
+pseg-li-19dde346bc11e762bd90,Suffolk,Islip,Brentwood,40.783918,-73.252235,US Census Bureau 2025 Gazetteer,GEOID:3608026,internal_point
+pseg-li-d787feb94514be39d555,Suffolk,Islip,Brightwaters,40.716435,-73.261514,US Census Bureau 2025 Gazetteer,GEOID:3608323,internal_point
+pseg-li-1c0a01d60ff7f797104b,Suffolk,Islip,Captree,40.646074,-73.257051,US Census Bureau 2025 Gazetteer,GEOID:3612402,internal_point
+pseg-li-30ee11f85e608c30190d,Suffolk,Islip,Central Islip,40.783589,-73.194475,US Census Bureau 2025 Gazetteer,GEOID:3613552,internal_point
+pseg-li-ba36181b615ed2ea6d7a,Suffolk,Islip,Corneille Estates,40.6451,-73.1608,NPS community-order interpolation,Corneille Estates between Ocean Beach and Robbins Rest,locality_estimate
+pseg-li-b641fbf80d469f039c60,Suffolk,Islip,Dunewood,40.6419256,-73.1801898,OpenStreetMap Nominatim,node:6737861694,named_feature_point
+pseg-li-57cedc4b7cad9b4d6ebc,Suffolk,Islip,East Islip,40.726249,-73.187346,US Census Bureau 2025 Gazetteer,GEOID:3622315,internal_point
+pseg-li-d955a365d223dddc9032,Suffolk,Islip,Fairhaven,40.6392666,-73.1842821,USGS GNIS,feature:949800 (Fair Harbor),approved_alias_point
+pseg-li-12d05b777e54d35a98d5,Suffolk,Islip,Great River,40.713454,-73.176039,US Census Bureau 2025 Gazetteer,GEOID:3630235,internal_point
+pseg-li-a4a60d74a61a3f2c528b,Suffolk,Islip,Hauppauge,40.822351,-73.210701,US Census Bureau 2025 Gazetteer,GEOID:3632732,internal_point
+pseg-li-4d636294b0937184e09a,Suffolk,Islip,Holbrook,40.794373,-73.070022,US Census Bureau 2025 Gazetteer,GEOID:3635056,internal_point
+pseg-li-1719f9b1c2d79889d87f,Suffolk,Islip,Holtsville,40.812373,-73.044653,US Census Bureau 2025 Gazetteer,GEOID:3635254,internal_point
+pseg-li-3bd291f802f06509f0cc,Suffolk,Islip,Islandia,40.806862,-73.171084,US Census Bureau 2025 Gazetteer,GEOID:3637840,internal_point
+pseg-li-caf65cb5120e4bab6cad,Suffolk,Islip,Islip,40.730319,-73.216113,US Census Bureau 2025 Gazetteer,GEOID:3637869,internal_point
+pseg-li-e5efc0cc1a34d135e6aa,Suffolk,Islip,Islip Terrace,40.750269,-73.186889,US Census Bureau 2025 Gazetteer,GEOID:3638022,internal_point
+pseg-li-290e6002e239c75de229,Suffolk,Islip,Kismet,40.6342667,-73.2034495,USGS GNIS Domestic Names 2026-08-28,feature:954725,named_feature_point
+pseg-li-b290d93402d2ab8b31d5,Suffolk,Islip,Lonelyville,40.6409331,-73.1748374,USGS GNIS Domestic Names 2026-08-28,feature:955824,named_feature_point
+pseg-li-fca400dc60961bf49a68,Suffolk,Islip,North Bay Shore,40.760191,-73.261674,US Census Bureau 2025 Gazetteer,GEOID:3651495,internal_point
+pseg-li-a99fe6f5d007fb0063da,Suffolk,Islip,North Great River,40.756157,-73.163061,US Census Bureau 2025 Gazetteer,GEOID:3652078,internal_point
+pseg-li-721e144f153687dcef84,Suffolk,Islip,Oakdale,40.737782,-73.134698,US Census Bureau 2025 Gazetteer,GEOID:3654144,internal_point
+pseg-li-86e346fd028da7bcaf56,Suffolk,Islip,Ocean Beach,40.646286,-73.156523,US Census Bureau 2025 Gazetteer,GEOID:3654430,internal_point
+pseg-li-c3bf6f7700764ffa12fd,Suffolk,Islip,Robbins Rest,40.6434331,-73.1645592,USGS GNIS Domestic Names 2026-08-28,feature:962645,named_feature_point
+pseg-li-f8c94b0108a60380ccb6,Suffolk,Islip,Ronkonkoma,40.803529,-73.124548,US Census Bureau 2025 Gazetteer,GEOID:3663473,internal_point
+pseg-li-042a146e6c16f9c980ba,Suffolk,Islip,Saltaire,40.638072,-73.194717,US Census Bureau 2025 Gazetteer,GEOID:3664881,internal_point
+pseg-li-e26f0a02feb163a9b9ce,Suffolk,Islip,Sayville,40.747588,-73.085232,US Census Bureau 2025 Gazetteer,GEOID:3665409,internal_point
+pseg-li-c2ba9b15fdf77583a525,Suffolk,Islip,Seaview,40.6470441,-73.149003,USGS GNIS Domestic Names 2026-08-28,feature:964754,named_feature_point
+pseg-li-a5d915ab81693947467a,Suffolk,Islip,Us Coast Guard Sta,40.6253044,-73.2580351,OpenStreetMap Nominatim,relation:6442392,representative_point
+pseg-li-e437218ac70f646ac1fd,Suffolk,Islip,West Bay Shore,40.70167,-73.260107,US Census Bureau 2025 Gazetteer,GEOID:3679301,internal_point
+pseg-li-a07a05afa9df57154fe3,Suffolk,Islip,West Islip,40.702861,-73.295526,US Census Bureau 2025 Gazetteer,GEOID:3680302,internal_point
+pseg-li-69e02f56a2ff88d9020c,Suffolk,Islip,West Sayville,40.729739,-73.1052,US Census Bureau 2025 Gazetteer,GEOID:3680885,internal_point
+pseg-li-b1b7b846f471e0cfd702,Suffolk,Riverhead,Aquebogue,40.944013,-72.615397,US Census Bureau 2025 Gazetteer,GEOID:3602374,internal_point
+pseg-li-acb53babc73b9ac2e141,Suffolk,Riverhead,Baiting Hollow,40.962793,-72.744252,US Census Bureau 2025 Gazetteer,GEOID:3604055,internal_point
+pseg-li-12217e6aef649637ea6e,Suffolk,Riverhead,Calverton,40.91994,-72.77337,US Census Bureau 2025 Gazetteer,GEOID:3611781,internal_point
+pseg-li-c4ddaf62e10f4ed8161a,Suffolk,Riverhead,Jamesport,40.960967,-72.583173,US Census Bureau 2025 Gazetteer,GEOID:3638253,internal_point
+pseg-li-109d62ab0964a298aff1,Suffolk,Riverhead,Northville,40.975572,-72.630246,US Census Bureau 2025 Gazetteer,GEOID:3653775,internal_point
+pseg-li-808d36974b333bb1ab63,Suffolk,Riverhead,Riverhead,40.951315,-72.676056,US Census Bureau 2025 Gazetteer,GEOID:3661973,internal_point
+pseg-li-bd2ed9577e34f7c1caf0,Suffolk,Riverhead,Wading River,40.95358,-72.814925,US Census Bureau 2025 Gazetteer,GEOID:3677772,internal_point
+pseg-li-adf2f410822e6365c44e,Suffolk,Shelter Island,Dering Harbor,41.092177,-72.341328,US Census Bureau 2025 Gazetteer,GEOID:3620379,internal_point
+pseg-li-e836a31e87f8dce29e04,Suffolk,Shelter Island,Shelter Island,41.05532,-72.297129,US Census Bureau 2025 Gazetteer,GEOID:3666828,internal_point
+pseg-li-89cf025b59a28d343b0e,Suffolk,Shelter Island,Shelter Island Heights,41.055473,-72.360384,US Census Bureau 2025 Gazetteer,GEOID:3666850,internal_point
+pseg-li-28ac694c954da7bffa41,Suffolk,Smithtown,Commack,40.843449,-73.283336,US Census Bureau 2025 Gazetteer,GEOID:3617530,internal_point
+pseg-li-032163f827acbbaa4333,Suffolk,Smithtown,Fort Salonga,40.911413,-73.295587,US Census Bureau 2025 Gazetteer,GEOID:3626946,internal_point
+pseg-li-eb1056de80e81478e9cb,Suffolk,Smithtown,Hauppauge,40.822351,-73.210701,US Census Bureau 2025 Gazetteer,GEOID:3632732,internal_point
+pseg-li-d0b9c7885ecd3c0576d7,Suffolk,Smithtown,Head Of The Harbor,40.897658,-73.161536,US Census Bureau 2025 Gazetteer,GEOID:3632963,internal_point
+pseg-li-c6a3417d72e7c5e7186d,Suffolk,Smithtown,Kings Park,40.886964,-73.245571,US Census Bureau 2025 Gazetteer,GEOID:3639672,internal_point
+pseg-li-5319801db196fabf05f5,Suffolk,Smithtown,Lake Ronkonkoma,40.830318,-73.113298,US Census Bureau 2025 Gazetteer,GEOID:3640838,internal_point
+pseg-li-55f85ce00c192cd1e859,Suffolk,Smithtown,Nesconset,40.846855,-73.152008,US Census Bureau 2025 Gazetteer,GEOID:3649825,internal_point
+pseg-li-a6cd8714204e499ca61b,Suffolk,Smithtown,Nissequogue,40.902716,-73.186246,US Census Bureau 2025 Gazetteer,GEOID:3651286,internal_point
+pseg-li-982b285545d79c875ef7,Suffolk,Smithtown,Saint James,40.8789871,-73.1567778,USGS GNIS Domestic Names 2026-08-28,feature:963553,named_feature_point
+pseg-li-9d0f8b2559233b2c53f3,Suffolk,Smithtown,Smithtown,40.857482,-73.21667,US Census Bureau 2025 Gazetteer,GEOID:3667851,internal_point
+pseg-li-fd814096a338c5a3eb96,Suffolk,Smithtown,Village Of The Branch,40.853368,-73.18223,US Census Bureau 2025 Gazetteer,GEOID:3677519,internal_point
+pseg-li-11d5c0f1e79c6389f943,Suffolk,Southampton,Bridgehampton,40.941131,-72.305709,US Census Bureau 2025 Gazetteer,GEOID:3608136,internal_point
+pseg-li-faa546dfc07e155d6801,Suffolk,Southampton,East Quogue,40.845851,-72.575354,US Census Bureau 2025 Gazetteer,GEOID:3622832,internal_point
+pseg-li-da01d318a33d932ae36a,Suffolk,Southampton,Eastport,40.83508,-72.735052,US Census Bureau 2025 Gazetteer,GEOID:3622810,internal_point
+pseg-li-09faeb38d540b2f6761d,Suffolk,Southampton,Flanders,40.888755,-72.604235,US Census Bureau 2025 Gazetteer,GEOID:3626121,internal_point
+pseg-li-58e1bab665d954f3f841,Suffolk,Southampton,Hampton Bays,40.864652,-72.518104,US Census Bureau 2025 Gazetteer,GEOID:3631896,internal_point
+pseg-li-532088e9809050c7072f,Suffolk,Southampton,North Haven,41.023263,-72.313997,US Census Bureau 2025 Gazetteer,GEOID:3652188,internal_point
+pseg-li-87fc0963cdc1106cfb2b,Suffolk,Southampton,North Sea,40.931543,-72.40604,US Census Bureau 2025 Gazetteer,GEOID:3653561,internal_point
+pseg-li-f8adceb833c23ed20fe9,Suffolk,Southampton,Noyack,40.978706,-72.346015,US Census Bureau 2025 Gazetteer,GEOID:3654056,internal_point
+pseg-li-104d7dd63ea5c05e5d44,Suffolk,Southampton,Quiogue,40.819696,-72.62815,US Census Bureau 2025 Gazetteer,GEOID:3660408,internal_point
+pseg-li-1c260b710393130d762e,Suffolk,Southampton,Quogue,40.821406,-72.598903,US Census Bureau 2025 Gazetteer,GEOID:3660422,internal_point
+pseg-li-4b694315770fe173c467,Suffolk,Southampton,Remsenburg-Speonk,40.816233,-72.705765,US Census Bureau 2025 Gazetteer,GEOID:3661142,internal_point
+pseg-li-f879207a80d062e641f4,Suffolk,Southampton,Riverside,40.905087,-72.671719,US Census Bureau 2025 Gazetteer,GEOID:3662066,internal_point
+pseg-li-d0a3b3d56553337cf5c9,Suffolk,Southampton,Sag Harbor,40.994274,-72.288503,US Census Bureau 2025 Gazetteer,GEOID:3664485,internal_point
+pseg-li-cce2e82db750ed2666ae,Suffolk,Southampton,Sagaponack,40.930895,-72.268719,US Census Bureau 2025 Gazetteer,GEOID:3664452,internal_point
+pseg-li-5c94fa8004a04d886893,Suffolk,Southampton,Shinnecock Hills,40.888612,-72.452751,US Census Bureau 2025 Gazetteer,GEOID:3667048,internal_point
+pseg-li-d73ab1f01151b249a8e9,Suffolk,Southampton,Shinnecock Indian Res,40.8737616,-72.4309699,USGS GNIS,feature:979494 (Shinnecock Reservation),approved_alias_point
+pseg-li-0afc5ef16e5a6ba1e9d1,Suffolk,Southampton,Southampton,40.876617,-72.403089,US Census Bureau 2025 Gazetteer,GEOID:3668462,internal_point
+pseg-li-9da3adf61aa2a90e6706,Suffolk,Southampton,Southampton Village,40.876617,-72.403089,US Census Bureau 2025 Gazetteer,GEOID:3668462,internal_point
+pseg-li-0e9affa66b38953a140f,Suffolk,Southampton,Water Mill,40.922393,-72.350704,US Census Bureau 2025 Gazetteer,GEOID:3678575,internal_point
+pseg-li-2d2608b1e5761f4f5597,Suffolk,Southampton,Westhampton,40.846782,-72.659916,US Census Bureau 2025 Gazetteer,GEOID:3680170,internal_point
+pseg-li-4aaa333214d2bfa1d7c5,Suffolk,Southampton,Westhampton Beach,40.806972,-72.645072,US Census Bureau 2025 Gazetteer,GEOID:3680181,internal_point
+pseg-li-5a1321a654310023d872,Suffolk,Southampton,Westhampton Dunes,40.77877,-72.706733,US Census Bureau 2025 Gazetteer,GEOID:3680186 (West Hampton Dunes),approved_alias_point
+pseg-li-e6eff67e970f61c43aea,Suffolk,Southold,Cutchogue,41.021223,-72.486958,US Census Bureau 2025 Gazetteer,GEOID:3619466,internal_point
+pseg-li-5c4730eedb81e66f11c4,Suffolk,Southold,East Marion,41.135271,-72.33516,US Census Bureau 2025 Gazetteer,GEOID:3622447,internal_point
+pseg-li-3305b8c7d54e81ce2aae,Suffolk,Southold,Greenport,41.102428,-72.366763,US Census Bureau 2025 Gazetteer,GEOID:3630576,internal_point
+pseg-li-e354348df14b8063c42e,Suffolk,Southold,Greenport West,41.090168,-72.384584,US Census Bureau 2025 Gazetteer,GEOID:3630581,internal_point
+pseg-li-62052f7cedf0b6a1e72b,Suffolk,Southold,Laurel,40.972918,-72.554532,US Census Bureau 2025 Gazetteer,GEOID:3641465,internal_point
+pseg-li-f3d2ccf9f1486af6ed24,Suffolk,Southold,Mattituck,41.007298,-72.543521,US Census Bureau 2025 Gazetteer,GEOID:3646140,internal_point
+pseg-li-f577b7f7bc8fde6a21e5,Suffolk,Southold,New Suffolk,40.996754,-72.477472,US Census Bureau 2025 Gazetteer,GEOID:3650727,internal_point
+pseg-li-d1444b717dab34de8e7c,Suffolk,Southold,Orient,41.148888,-72.249384,US Census Bureau 2025 Gazetteer,GEOID:3655321,internal_point
+pseg-li-c3ff9421973853bd7d7b,Suffolk,Southold,Peconic,41.039067,-72.464419,US Census Bureau 2025 Gazetteer,GEOID:3656968,internal_point
+pseg-li-8542dbd54f326f7bd8a0,Suffolk,Southold,Southold,41.065368,-72.429783,US Census Bureau 2025 Gazetteer,GEOID:3669452,internal_point

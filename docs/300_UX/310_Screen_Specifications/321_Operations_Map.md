@@ -6,7 +6,7 @@ A single read-only geographic view of the active synthetic scenario. The default
 
 ## Behavior
 
-- Incident pins use the scenario latitude/longitude. Crew pins use the village center resolved by the backend's shared geography registry from `current_location`, including approved aliases. Crew home region remains the operating-region filter; it is not used to infer physical location.
+- Incident pins use the scenario latitude/longitude generated from the complete stable-ID municipality-coordinate reference. Crew pins use the village center resolved by the backend's shared geography registry from `current_location`, including approved aliases. Crew home region remains the operating-region filter; it is not used to infer physical location.
 - Round red `!` markers identify incidents; square blue `C` markers identify crews. Navy clusters count records, not customers, distinct locations, or incidents alone. Clicking clusters expands them; coincident points spread apart for selection.
 - Search covers IDs, names, named locations, incident severity/hazard, crew capability, and status over the complete active inventory. Layer toggles and the operating-region filter affect the map and list together. The paginated record list contains 20 records per page and never caps the plotted inventory.
 - Counts describe filtered records with valid map locations, plus filtered unmapped records and the full scenario population. They are independent of the current map viewport. The `Unmapped only` checkbox filters the record list only, allowing missing positions to be inspected without hiding mapped context.
@@ -21,7 +21,7 @@ Uses [Leaflet 1.9.4](https://leafletjs.com/reference.html), [Leaflet.markerclust
 
 ## Data limitations and deferred work
 
-The `base` scenario has fictional named crew locations outside the Long Island registry and therefore shows unmapped crews. `long-island-copilot-demo` resolves all 32 crew locations. `august-storm-preview-v3` resolves 445 of 500 crews; 55 staging-location records remain unmapped. Incident coordinates remain synthetic and are not claims of actual equipment or customer positions.
+The `base` scenario has fictional named crew locations outside the Long Island registry and therefore shows unmapped crews. `long-island-copilot-demo` resolves all 32 crew locations. `august-storm-preview-v3` resolves 445 of 500 crews; 55 staging-location records remain unmapped. Newly generated population-constrained incident coordinates are representative municipality points with recorded provenance and precision; they remain synthetic planning locations and are not claims of actual equipment or customer positions. Previously generated scenario fixtures retain their stored coordinates until explicitly regenerated and republished.
 
 Explicit operations-center/staging-area coordinates, live GPS, road routing, electrical topology, outage-area polygons, weather overlays, and map-based dispatch actions are outside this scope.
 

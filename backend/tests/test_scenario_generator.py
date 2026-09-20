@@ -17,6 +17,7 @@ from app.optimization.policy import POC019_OPERATIONAL_RECOMMENDATION_POLICY
 from app.scenario_generator import (
     COPILOT_DEMO_CREW_COUNT,
     COPILOT_DEMO_INCIDENT_COUNT,
+    DEFAULT_CAPACITY_GEOGRAPHY_PATH,
     FACILITY_CATALOG,
     LSE_CUSTOMER_BOUNDARIES,
     LSE_FACILITY_SUFFIX,
@@ -192,6 +193,78 @@ def test_population_reference_has_complete_stable_split_geography_identity() -> 
         "Commack-Huntington",
         "Commack-Smithtown",
     }
+    east_farmingdale = next(
+        row for row in geographies if row.village == "East Farmingdale"
+    )
+    assert (east_farmingdale.latitude, east_farmingdale.longitude) == (
+        40.736657,
+        -73.411368,
+    )
+    assert east_farmingdale.coordinate_source == "US Census Bureau 2025 Gazetteer"
+    assert east_farmingdale.coordinate_precision == "internal_point"
+
+
+def test_population_reference_rejects_incomplete_coordinate_coverage(
+    tmp_path: Path,
+) -> None:
+    with DEFAULT_CAPACITY_GEOGRAPHY_PATH.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+        headers = list(rows[0])
+    coordinate_path = tmp_path / "capacity-geography.csv"
+    with coordinate_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=headers, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(
+            row for row in rows if row["village"] != "East Farmingdale"
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="coordinate coverage must exactly match.*missing pseg-li-b908666d02f4dc0f0c8a",
+    ):
+        load_capacity_geographies(coordinate_path=coordinate_path)
+
+
+def test_population_generation_uses_governed_geography_coordinates() -> None:
+    scenario = generate_scenario(
+        scenario_id="governed-geography-coordinates",
+        start_date=date(2026, 9, 18),
+        incident_count=120,
+        crew_count=120,
+        geography_coverage_target=100,
+        seed=20260918,
+    )
+    coordinates = {
+        row.reference_id: (row.latitude, row.longitude)
+        for row in load_capacity_geographies()
+    }
+
+    assert all(
+        (float(incident["latitude"]), float(incident["longitude"]))
+        == coordinates[incident["geography_reference_id"]]
+        for incident in scenario.incidents
+    )
+
+
+def test_geographic_validation_rejects_stale_incident_coordinates() -> None:
+    scenario = generate_scenario(
+        scenario_id="stale-geography-coordinates",
+        start_date=date(2026, 9, 18),
+        incident_count=20,
+        crew_count=20,
+        assignment_rate=0.05,
+        dual_tree_incidents=0,
+        seed=43,
+    )
+    scenario.incidents[0]["longitude"] = float(
+        scenario.incidents[0]["longitude"]
+    ) + 0.1
+
+    with pytest.raises(
+        ValueError,
+        match="incident coordinates do not match the governed geography reference",
+    ):
+        validate_geographic_reference_coverage(scenario.incidents)
 
 
 def test_population_target_is_exact_and_fails_when_reference_capacity_is_insufficient() -> None:
