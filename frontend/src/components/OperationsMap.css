@@ -17,13 +17,23 @@
 .operations-map-layout > div { min-width: 0; }
 .operations-map-surface { position: relative; isolation: isolate; }
 .operations-map-canvas { width: 100%; height: clamp(440px, 66vh, 760px); background: #e1e9ed; border: 1px solid #cbd7df; border-radius: 6px; }
-.operations-map .operations-marker { display: grid; place-items: center; color: white; border: 2px solid white; box-shadow: 0 1px 5px #17202a66; font-size: 15px; font-weight: 800; }
-.operations-marker-incident { background: #bd3c2f; border-radius: 50%; }
-.operations-marker-crew { background: #176a96; border-radius: 5px; }
+.operations-map .operations-marker { display: grid; place-items: center; color: white; font-size: 15px; font-weight: 800; }
+.operations-map .operations-marker > span { display: grid; place-items: center; color: white; border: 2px solid white; box-shadow: 0 1px 5px #17202a66; }
+.operations-marker-incident > span { border-radius: 50%; }
+.operations-marker-crew > span { border-radius: 5px; }
 .operations-cluster { display: grid; place-items: center; background: #173f59; color: white; border: 3px solid #cbdfe9; border-radius: 50%; font-weight: 800; font-size: 13px; }
 .operations-map-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 13px 0; font-size: 12px; }
 .operations-map-legend span { display: flex; align-items: center; gap: 6px; }
 .operations-map-legend b { display: inline-grid; place-items: center; color: white; width: 22px; height: 22px; }
+.operations-map-encoding-key { flex-wrap: wrap; }
+.operations-swatch { display: inline-block; width: 12px; height: 12px; border: 1px solid #526578; border-radius: 50%; }
+.operations-swatch-critical { background: #9d1c1c; }
+.operations-swatch-high { background: #bd3c2f; }
+.operations-swatch-medium { background: #c47b16; }
+.operations-swatch-low { background: #3d7f4f; }
+.operations-swatch-critical-facility { background: #7b2cbf; }
+.operations-swatch-ranked { background: #176a96; }
+.operations-swatch-unknown, .operations-swatch-withheld { background: #6b7c8f; }
 .operations-legend-incident { background: #bd3c2f; border-radius: 50%; }
 .operations-legend-crew { background: #176a96; border-radius: 4px; }
 .operations-legend-cluster { background: #173f59; border-radius: 50%; }

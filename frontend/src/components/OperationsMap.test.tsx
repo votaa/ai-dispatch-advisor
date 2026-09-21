@@ -176,6 +176,36 @@ describe("Operations Map", () => {
     expect(screen.getByRole("option", { name: "Riverhead, Municipality, 1 match" })).toBeTruthy();
     expect(screen.queryByRole("group", { name: "Location" })).toBeNull();
   });
+
+  it("cascades complete-inventory incident facet counts and preserves withheld unknowns", () => {
+    const incidents = [
+      { ...incident, incident_id: "INC-CRITICAL", severity: "critical", hazard: "wire", critical_facility: true, critical_facility_level: 1 as const, ranking_status: "ranked" as const, customers_out: 1_500, assigned_crews: [] },
+      { ...incident, incident_id: "INC-WITHHELD", severity: "high", hazard: "tree", critical_facility: true, critical_facility_level: null, ranking_status: "withheld" as const, customers_out: 50, assigned_crews: [{ crew_id: "C1", crew_name: "Line crew 1", assignment_id: "a-1", assigned_at: "2026-09-21T00:00:00Z" }] },
+      { ...incident, incident_id: "INC-MEDIUM", severity: "medium", hazard: "wire", critical_facility: false, critical_facility_level: null, customers_out: 250, assigned_crews: [] }
+    ];
+    render(<OperationsMap incidents={incidents} crews={[]} onNavigate={vi.fn()} />);
+
+    expect(screen.getByRole("option", { name: "Critical (1)" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "Unknown (2)" })).toBeTruthy();
+    expect(screen.getByRole("option", { name: "Withheld (1)" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Map severity"), { target: { value: "critical" } });
+    expect(screen.getByRole("status").textContent).toContain("1 incidents match facets");
+    expect(screen.getByRole("button", { name: /! · INC-CRITICAL/ })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /! · INC-WITHHELD/ })).toBeNull();
+  });
+
+  it("synchronizes the selected marker encoding with the legend", () => {
+    render(<OperationsMap incidents={[{ ...incident, customers_out: 2_000 }]} crews={[]} onNavigate={vi.fn()} />);
+    const encoding = screen.getByLabelText("Map marker encoding");
+    expect(screen.getByLabelText("Severity colors")).toBeTruthy();
+    expect(screen.getByLabelText("Critical severity")).toBeTruthy();
+    fireEvent.change(encoding, { target: { value: "customers" } });
+    expect(screen.getByText("Encoding: Customer impact size")).toBeTruthy();
+    fireEvent.change(encoding, { target: { value: "ranking" } });
+    expect(screen.getByLabelText("Ranking status colors")).toBeTruthy();
+    expect(screen.getByLabelText("Withheld")).toBeTruthy();
+  });
+
   it("reports basemap failure and offers retry while keeping records available", () => {
     const tileLayer = vi.spyOn(L, "tileLayer");
     const redraw = vi.spyOn(L.TileLayer.prototype, "redraw");

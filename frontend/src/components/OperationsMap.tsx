@@ -14,6 +14,19 @@ import "./OperationsMap.css";
 // Initial framing only: panning remains unrestricted, including surrounding NYC.
 const LONG_ISLAND_BOUNDS: L.LatLngBoundsExpression = [[40.48, -74.12], [41.19, -71.80]];
 const PAGE_SIZE = 20;
+type IncidentFacetKey = "severity" | "hazard" | "criticalFacilityLevel" | "rankingStatus" | "customerImpact" | "assignmentState" | "incidentAge";
+type MapEncoding = NonNullable<MapWorkspaceState["encoding"]>;
+
+const CUSTOMER_IMPACT_RANGES = [
+  { value: "0-99", label: "0–99 customers", matches: (incident: Incident) => incident.customers_out < 100 },
+  { value: "100-999", label: "100–999 customers", matches: (incident: Incident) => incident.customers_out >= 100 && incident.customers_out < 1_000 },
+  { value: "1000+", label: "1,000+ customers", matches: (incident: Incident) => incident.customers_out >= 1_000 }
+];
+const INCIDENT_AGE_RANGES = [
+  { value: "0-59", label: "Under 1 hour", matches: (incident: Incident) => incident.age_minutes < 60 },
+  { value: "60-239", label: "1–3 hours", matches: (incident: Incident) => incident.age_minutes >= 60 && incident.age_minutes < 240 },
+  { value: "240+", label: "4+ hours", matches: (incident: Incident) => incident.age_minutes >= 240 }
+];
 export type MapRecord = {
   key: string;
   kind: "incident" | "crew";
@@ -33,6 +46,36 @@ export type MapNavigationTarget = {
   entityId: string;
   requestId: number;
 };
+
+export function incidentFacetValue(incident: Incident, facet: IncidentFacetKey): string {
+  if (facet === "severity") return incident.severity.toLowerCase();
+  if (facet === "hazard") return incident.hazard || "unknown";
+  if (facet === "criticalFacilityLevel") return incident.critical_facility_level ? `level-${incident.critical_facility_level}` : "unknown";
+  if (facet === "rankingStatus") return incident.ranking_status === "withheld" ? "withheld" : "ranked";
+  if (facet === "customerImpact") return CUSTOMER_IMPACT_RANGES.find((range) => range.matches(incident))?.value ?? "unknown";
+  if (facet === "assignmentState") return incident.assigned_crews.length ? "assigned" : "unassigned";
+  return INCIDENT_AGE_RANGES.find((range) => range.matches(incident))?.value ?? "unknown";
+}
+
+export function encodingLabel(encoding: MapEncoding): string {
+  return ({ severity: "Severity color", customers: "Customer impact size", age: "Incident age size", criticalFacility: "Critical-facility color", ranking: "Ranking status color" })[encoding];
+}
+
+function formatFacetValue(value: string): string {
+  if (value === "unknown") return "Unknown";
+  if (value === "ranked") return "Ranked";
+  if (value === "withheld") return "Withheld";
+  if (value.startsWith("level-")) return `Level ${value.slice(6)}`;
+  return value.replace(/\b\w/g, (character) => character.toUpperCase()).replace(/-/g, " ");
+}
+
+function facetOptions(incidents: Incident[], facet: IncidentFacetKey, selected: string): Array<{ value: string; label: string; count: number }> {
+  const values = Array.from(new Set(incidents.map((incident) => incidentFacetValue(incident, facet))));
+  const ordered = facet === "severity" ? ["critical", "high", "medium", "low"] : values.sort((left, right) => left.localeCompare(right));
+  if (selected !== "all" && !ordered.includes(selected)) ordered.push(selected);
+  const rangeLabels = new Map([...CUSTOMER_IMPACT_RANGES, ...INCIDENT_AGE_RANGES].map((range) => [range.value, range.label]));
+  return ordered.map((value) => ({ value, label: rangeLabels.get(value) ?? formatFacetValue(value), count: incidents.filter((incident) => incidentFacetValue(incident, facet) === value).length }));
+}
 
 const mapAutocompleteFields: AutocompleteField<MapRecord>[] = [
   { group: "Incident ID", values: (record) => record.incident?.incident_id ?? "" },
@@ -71,20 +114,29 @@ export function mapRecords(incidents: Incident[], crews: Crew[]): MapRecord[] {
   ];
 }
 
-function markerIcon(kind: MapRecord["kind"]) {
+function markerIcon(record: MapRecord, encoding: MapEncoding) {
+  const incident = record.incident;
+  const style = encoding === "customers" ? { size: incident ? Math.min(42, 24 + Math.log10(Math.max(1, incident.customers_out)) * 5) : 28 }
+    : encoding === "age" ? { size: incident ? Math.min(42, 26 + Math.log10(Math.max(1, incident.age_minutes)) * 4) : 28 } : { size: 28 };
+  const color = record.kind === "crew" ? "#176a96" : encoding === "criticalFacility"
+    ? (incident?.critical_facility ? "#7b2cbf" : "#6b7c8f")
+    : encoding === "ranking" ? (incident?.ranking_status === "withheld" ? "#6b7c8f" : "#176a96")
+    : encoding === "severity" ? ({ critical: "#9d1c1c", high: "#bd3c2f", medium: "#c47b16", low: "#3d7f4f" }[incident?.severity.toLowerCase() ?? ""] ?? "#6b7c8f")
+    : "#bd3c2f";
   return L.divIcon({
-    className: `operations-marker operations-marker-${kind}`,
-    html: kind === "incident" ? "!" : "C", iconSize: [28, 28], iconAnchor: [14, 14]
+    className: `operations-marker operations-marker-${record.kind}`,
+    html: `<span style="background:${color};width:${style.size}px;height:${style.size}px">${record.kind === "incident" ? "!" : "C"}</span>`, iconSize: [style.size, style.size], iconAnchor: [style.size / 2, style.size / 2]
   });
 }
 
-function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport, onViewportChange }: {
+function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport, onViewportChange, encoding }: {
   records: MapRecord[];
   selected: string | null;
   onSelect: (key: string) => void;
   homeRequest: number;
   restoredViewport?: MapViewportState | null;
   onViewportChange?: (viewport: MapViewportState) => void;
+  encoding: MapEncoding;
 }) {
   const element = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -139,7 +191,7 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
       const tooltip = document.createElement("span");
       tooltip.textContent = label;
       const marker = L.marker(record.coordinates, {
-        icon: markerIcon(record.kind), title: label, alt: label, keyboard: true
+        icon: markerIcon(record, encoding), title: label, alt: label, keyboard: true
       }).bindTooltip(tooltip).on("click", () => onSelect(record.key));
       marker.on("keydown", (event: L.LeafletKeyboardEvent) => {
         if (event.originalEvent.key === "Enter" || event.originalEvent.key === " ") {
@@ -152,7 +204,7 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
       return [marker];
     });
     group.addLayers(layers);
-  }, [records, onSelect]);
+  }, [encoding, onSelect, records]);
 
   useEffect(() => {
     if (!selected) return;
@@ -204,6 +256,14 @@ export default function OperationsMap({
   const [query, setQuery] = useState(restoredState?.query ?? "");
   const [region, setRegion] = useState(restoredState?.region ?? "all");
   const [unmappedOnly, setUnmappedOnly] = useState(restoredState?.unmappedOnly ?? false);
+  const [severity, setSeverity] = useState(restoredState?.severity ?? "all");
+  const [hazard, setHazard] = useState(restoredState?.hazard ?? "all");
+  const [criticalFacilityLevel, setCriticalFacilityLevel] = useState(restoredState?.criticalFacilityLevel ?? "all");
+  const [rankingStatus, setRankingStatus] = useState(restoredState?.rankingStatus ?? "all");
+  const [customerImpact, setCustomerImpact] = useState(restoredState?.customerImpact ?? "all");
+  const [assignmentState, setAssignmentState] = useState(restoredState?.assignmentState ?? "all");
+  const [incidentAge, setIncidentAge] = useState(restoredState?.incidentAge ?? "all");
+  const [encoding, setEncoding] = useState<MapEncoding>(restoredState?.encoding ?? "severity");
   const [selected, setSelected] = useState<string | null>(restoredState?.selected ?? null);
   const [page, setPage] = useState(restoredState?.page ?? 0);
   const [viewport, setViewport] = useState<MapViewportState | null>(restoredState?.viewport ?? null);
@@ -223,12 +283,30 @@ export default function OperationsMap({
     () => buildAutocompleteSuggestions(suggestionRecords, mapAutocompleteFields, query),
     [query, suggestionRecords]
   );
+  const incidentFacetSelections: Record<IncidentFacetKey, string> = { severity, hazard, criticalFacilityLevel, rankingStatus, customerImpact, assignmentState, incidentAge };
+  const matchesIncidentFacets = useCallback((incident: Incident, excluded?: IncidentFacetKey) =>
+    (excluded === "severity" || severity === "all" || incidentFacetValue(incident, "severity") === severity) &&
+    (excluded === "hazard" || hazard === "all" || incidentFacetValue(incident, "hazard") === hazard) &&
+    (excluded === "criticalFacilityLevel" || criticalFacilityLevel === "all" || incidentFacetValue(incident, "criticalFacilityLevel") === criticalFacilityLevel) &&
+    (excluded === "rankingStatus" || rankingStatus === "all" || incidentFacetValue(incident, "rankingStatus") === rankingStatus) &&
+    (excluded === "customerImpact" || customerImpact === "all" || incidentFacetValue(incident, "customerImpact") === customerImpact) &&
+    (excluded === "assignmentState" || assignmentState === "all" || incidentFacetValue(incident, "assignmentState") === assignmentState) &&
+    (excluded === "incidentAge" || incidentAge === "all" || incidentFacetValue(incident, "incidentAge") === incidentAge),
+  [assignmentState, criticalFacilityLevel, customerImpact, hazard, incidentAge, rankingStatus, severity]);
   const filtered = useMemo(() => {
     const search = query.toLowerCase().trim();
     return all.filter((r) => (r.kind === "incident" ? showIncidents : showCrews) &&
       (region === "all" || r.region === region) &&
+      (r.kind !== "incident" || (r.incident && matchesIncidentFacets(r.incident))) &&
       `${r.title} ${r.id} ${r.location} ${r.detail} ${r.status}`.toLowerCase().includes(search));
-  }, [all, query, region, showIncidents, showCrews]);
+  }, [all, matchesIncidentFacets, query, region, showIncidents, showCrews]);
+  const filteredIncidentInventory = useMemo(() => all.filter((record) => record.kind === "incident" &&
+    (region === "all" || record.region === region) &&
+    `${record.title} ${record.id} ${record.location} ${record.detail} ${record.status}`.toLowerCase().includes(query.toLowerCase().trim())
+  ).map((record) => record.incident!).filter(Boolean), [all, query, region]);
+  const facetOptionsByKey = useMemo(() => Object.fromEntries((Object.keys(incidentFacetSelections) as IncidentFacetKey[]).map((facet) => [facet,
+    facetOptions(filteredIncidentInventory.filter((incident) => matchesIncidentFacets(incident, facet)), facet, incidentFacetSelections[facet])
+  ])), [filteredIncidentInventory, incidentFacetSelections, matchesIncidentFacets]);
   const unmappedCount = filtered.filter((r) => !r.coordinates).length;
   const mappedIncidents = filtered.filter((r) => r.kind === "incident" && r.coordinates).length;
   const mappedCrews = filtered.filter((r) => r.kind === "crew" && r.coordinates).length;
@@ -262,11 +340,19 @@ export default function OperationsMap({
       query,
       region,
       unmappedOnly,
+      severity,
+      hazard,
+      criticalFacilityLevel,
+      rankingStatus,
+      customerImpact,
+      assignmentState,
+      incidentAge,
+      encoding,
       selected: selection?.key ?? null,
       page: currentPage,
       viewport
     });
-  }, [currentPage, onStateChange, query, region, selection?.key, showCrews, showIncidents, unmappedOnly, viewport]);
+  }, [assignmentState, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, unmappedOnly, viewport]);
 
   useEffect(() => {
     if (!navigationTarget) return;
@@ -280,10 +366,17 @@ export default function OperationsMap({
     }
 
     const targetLayerVisible = targetRecord.kind === "incident" ? showIncidents : showCrews;
-    if (query || region !== "all" || unmappedOnly || !targetLayerVisible) {
+    if (query || region !== "all" || unmappedOnly || severity !== "all" || hazard !== "all" || criticalFacilityLevel !== "all" || rankingStatus !== "all" || customerImpact !== "all" || assignmentState !== "all" || incidentAge !== "all" || !targetLayerVisible) {
       setQuery("");
       setRegion("all");
       setUnmappedOnly(false);
+      setSeverity("all");
+      setHazard("all");
+      setCriticalFacilityLevel("all");
+      setRankingStatus("all");
+      setCustomerImpact("all");
+      setAssignmentState("all");
+      setIncidentAge("all");
       if (targetRecord.kind === "incident") setShowIncidents(true);
       if (targetRecord.kind === "crew") setShowCrews(true);
       return;
@@ -296,7 +389,11 @@ export default function OperationsMap({
       ? `Showing ${targetRecord.kind} ${targetRecord.id} on the map.`
       : `${targetRecord.kind === "incident" ? "Incident" : "Crew"} ${targetRecord.id} is selected, but no map location is available.`);
     onNavigationHandled?.(navigationTarget.requestId);
-  }, [all, filtered, navigationTarget, onNavigationHandled, query, region, showCrews, showIncidents, unmappedOnly]);
+  }, [all, assignmentState, criticalFacilityLevel, customerImpact, filtered, hazard, incidentAge, navigationTarget, onNavigationHandled, query, rankingStatus, region, severity, showCrews, showIncidents, unmappedOnly]);
+
+  const facetControl = (label: string, facet: IncidentFacetKey, value: string, setValue: (value: string) => void) => (
+    <label>{label}<select aria-label={`Map ${label.toLowerCase()}`} value={value} onChange={(event) => setValue(event.target.value)}><option value="all">All {label.toLowerCase()}</option>{(facetOptionsByKey[facet] ?? []).map((option) => <option key={option.value} disabled={option.count === 0 && value !== option.value} value={option.value}>{option.label} ({option.count})</option>)}</select></label>
+  );
 
   return <section className="operations-map panel" aria-label="Operations Map workspace">
     <div className="operations-map-intro">
@@ -317,8 +414,16 @@ export default function OperationsMap({
       <label>Operating region<select value={region} onChange={(e) => setRegion(e.target.value)}><option value="all">All regions</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></label>
       <label className="operations-map-toggle"><input type="checkbox" checked={showIncidents} onChange={(e) => setShowIncidents(e.target.checked)} />Incidents</label>
       <label className="operations-map-toggle"><input type="checkbox" checked={showCrews} onChange={(e) => setShowCrews(e.target.checked)} />Crews</label>
+      {facetControl("Severity", "severity", severity, setSeverity)}
+      {facetControl("Hazard", "hazard", hazard, setHazard)}
+      {facetControl("Critical-facility level", "criticalFacilityLevel", criticalFacilityLevel, setCriticalFacilityLevel)}
+      {facetControl("Ranking status", "rankingStatus", rankingStatus, setRankingStatus)}
+      {facetControl("Customer impact", "customerImpact", customerImpact, setCustomerImpact)}
+      {facetControl("Assignment state", "assignmentState", assignmentState, setAssignmentState)}
+      {facetControl("Incident age", "incidentAge", incidentAge, setIncidentAge)}
+      <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
     </div>
-    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records</p>
+    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {filtered.filter((record) => record.kind === "incident").length.toLocaleString()} incidents match facets</p>
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">
       <div>
@@ -329,8 +434,28 @@ export default function OperationsMap({
           homeRequest={homeRequest}
           restoredViewport={restoredState?.viewport}
           onViewportChange={setViewport}
+          encoding={encoding}
         />
-        <div className="operations-map-legend"><span><b className="operations-legend-incident">!</b> Incident</span><span><b className="operations-legend-crew">C</b> Crew</span><span><b className="operations-legend-cluster">#</b> Grouped records — click to expand</span></div>
+        <div className="operations-map-legend" aria-label="Map legend">
+          <span><b className="operations-legend-incident">!</b> Incident</span>
+          <span><b className="operations-legend-crew">C</b> Crew</span>
+          <span><b className="operations-legend-cluster">#</b> Grouped records — click to expand</span>
+          <span>Encoding: {encodingLabel(encoding)}</span>
+          {encoding === "severity" && <span className="operations-map-encoding-key" aria-label="Severity colors">
+            <i className="operations-swatch operations-swatch-critical" aria-label="Critical severity" />Critical
+            <i className="operations-swatch operations-swatch-high" aria-label="High severity" />High
+            <i className="operations-swatch operations-swatch-medium" aria-label="Medium severity" />Medium
+            <i className="operations-swatch operations-swatch-low" aria-label="Low severity" />Low
+          </span>}
+          {encoding === "criticalFacility" && <span className="operations-map-encoding-key" aria-label="Critical-facility colors">
+            <i className="operations-swatch operations-swatch-critical-facility" aria-label="Critical facility" />Critical facility
+            <i className="operations-swatch operations-swatch-unknown" aria-label="No or unknown critical facility" />No/unknown
+          </span>}
+          {encoding === "ranking" && <span className="operations-map-encoding-key" aria-label="Ranking status colors">
+            <i className="operations-swatch operations-swatch-ranked" aria-label="Ranked" />Ranked
+            <i className="operations-swatch operations-swatch-withheld" aria-label="Withheld" />Withheld
+          </span>}
+        </div>
         <p className="operations-map-note">Crew pins are approximate village centers, not live GPS. Incident pins use synthetic scenario coordinates. Multiple records can share a location.</p>
       </div>
       <aside className="operations-map-sidebar" aria-label="Map records and selection">

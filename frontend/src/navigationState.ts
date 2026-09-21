@@ -45,6 +45,14 @@ export type MapWorkspaceState = {
   query: string;
   region: string;
   unmappedOnly: boolean;
+  severity?: string;
+  hazard?: string;
+  criticalFacilityLevel?: string;
+  rankingStatus?: string;
+  customerImpact?: string;
+  assignmentState?: string;
+  incidentAge?: string;
+  encoding?: "severity" | "customers" | "age" | "criticalFacility" | "ranking";
   selected: string | null;
   page: number;
   viewport: MapViewportState | null;
