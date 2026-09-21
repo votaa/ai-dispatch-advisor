@@ -53,6 +53,12 @@ export type MapWorkspaceState = {
   assignmentState?: string;
   incidentAge?: string;
   encoding?: "severity" | "customers" | "age" | "criticalFacility" | "ranking";
+  crewStatus?: string;
+  crewCapability?: string;
+  crewReadiness?: string;
+  crewShift?: string;
+  crewAssignment?: string;
+  crewPreset?: string;
   selected: string | null;
   page: number;
   viewport: MapViewportState | null;

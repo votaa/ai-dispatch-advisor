@@ -189,7 +189,7 @@ describe("Operations Map", () => {
     expect(screen.getByRole("option", { name: "Unknown (2)" })).toBeTruthy();
     expect(screen.getByRole("option", { name: "Withheld (1)" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Map severity"), { target: { value: "critical" } });
-    expect(screen.getByRole("status").textContent).toContain("1 incidents match facets");
+    expect(screen.getByRole("status").textContent).toContain("1 incidents · 0 crews match facets");
     expect(screen.getByRole("button", { name: /! · INC-CRITICAL/ })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /! · INC-WITHHELD/ })).toBeNull();
   });
@@ -204,6 +204,25 @@ describe("Operations Map", () => {
     fireEvent.change(encoding, { target: { value: "ranking" } });
     expect(screen.getByLabelText("Ranking status colors")).toBeTruthy();
     expect(screen.getByLabelText("Withheld")).toBeTruthy();
+  });
+
+  it("filters crews by readiness, shift, assignment, and the available-line preset", () => {
+    const crews = [
+      crew,
+      { ...crew, crew_id: "C2", crew_name: "Tree crew 2", status: "assigned", capability: "tree", shift_remaining_hours: 2, storm_ready: false, assigned_incidents: [{ assignment_id: "a-2", incident_id: "INC-1", assigned_at: "2026-09-21T00:00:00Z", municipality: "Hicksville", severity: "critical" }] },
+      { ...crew, crew_id: "C3", crew_name: "Line crew 3", shift_remaining_hours: 8 }
+    ];
+    render(<OperationsMap incidents={[]} crews={crews} onNavigate={vi.fn()} />);
+
+    expect(screen.getByRole("option", { name: "Storm-ready (2)" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Map crew readiness"), { target: { value: "ready" } });
+    fireEvent.change(screen.getByLabelText("Map crew assignment"), { target: { value: "unassigned" } });
+    expect(screen.getByRole("button", { name: /C · Line crew 1/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /C · Line crew 3/ })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /C · Tree crew 2/ })).toBeNull();
+    fireEvent.change(screen.getByLabelText("Map crew preset"), { target: { value: "available-line" } });
+    expect(screen.getByRole("button", { name: /C · Line crew 1/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /C · Line crew 3/ })).toBeTruthy();
   });
 
   it("reports basemap failure and offers retry while keeping records available", () => {

@@ -15,6 +15,7 @@ import "./OperationsMap.css";
 const LONG_ISLAND_BOUNDS: L.LatLngBoundsExpression = [[40.48, -74.12], [41.19, -71.80]];
 const PAGE_SIZE = 20;
 type IncidentFacetKey = "severity" | "hazard" | "criticalFacilityLevel" | "rankingStatus" | "customerImpact" | "assignmentState" | "incidentAge";
+type CrewFacetKey = "status" | "capability" | "readiness" | "shift" | "assignment";
 type MapEncoding = NonNullable<MapWorkspaceState["encoding"]>;
 
 const CUSTOMER_IMPACT_RANGES = [
@@ -26,6 +27,11 @@ const INCIDENT_AGE_RANGES = [
   { value: "0-59", label: "Under 1 hour", matches: (incident: Incident) => incident.age_minutes < 60 },
   { value: "60-239", label: "1–3 hours", matches: (incident: Incident) => incident.age_minutes >= 60 && incident.age_minutes < 240 },
   { value: "240+", label: "4+ hours", matches: (incident: Incident) => incident.age_minutes >= 240 }
+];
+const CREW_SHIFT_RANGES = [
+  { value: "0-3", label: "0–3 hours", matches: (crew: Crew) => crew.shift_remaining_hours < 4 },
+  { value: "4-7", label: "4–7 hours", matches: (crew: Crew) => crew.shift_remaining_hours >= 4 && crew.shift_remaining_hours < 8 },
+  { value: "8+", label: "8+ hours", matches: (crew: Crew) => crew.shift_remaining_hours >= 8 }
 ];
 export type MapRecord = {
   key: string;
@@ -57,6 +63,14 @@ export function incidentFacetValue(incident: Incident, facet: IncidentFacetKey):
   return INCIDENT_AGE_RANGES.find((range) => range.matches(incident))?.value ?? "unknown";
 }
 
+function crewFacetValue(crew: Crew, facet: CrewFacetKey): string {
+  if (facet === "status") return crew.status || "unknown";
+  if (facet === "capability") return crew.capability || "unknown";
+  if (facet === "readiness") return crew.storm_ready ? "ready" : "not-ready";
+  if (facet === "assignment") return crew.assigned_incidents.length ? "assigned" : "unassigned";
+  return CREW_SHIFT_RANGES.find((range) => range.matches(crew))?.value ?? "unknown";
+}
+
 export function encodingLabel(encoding: MapEncoding): string {
   return ({ severity: "Severity color", customers: "Customer impact size", age: "Incident age size", criticalFacility: "Critical-facility color", ranking: "Ranking status color" })[encoding];
 }
@@ -75,6 +89,15 @@ function facetOptions(incidents: Incident[], facet: IncidentFacetKey, selected: 
   if (selected !== "all" && !ordered.includes(selected)) ordered.push(selected);
   const rangeLabels = new Map([...CUSTOMER_IMPACT_RANGES, ...INCIDENT_AGE_RANGES].map((range) => [range.value, range.label]));
   return ordered.map((value) => ({ value, label: rangeLabels.get(value) ?? formatFacetValue(value), count: incidents.filter((incident) => incidentFacetValue(incident, facet) === value).length }));
+}
+
+function crewFacetOptions(crews: Crew[], facet: CrewFacetKey, selected: string): Array<{ value: string; label: string; count: number }> {
+  const values = Array.from(new Set(crews.map((crew) => crewFacetValue(crew, facet))));
+  const ordered = facet === "readiness" ? ["ready", "not-ready"] : values.sort((left, right) => left.localeCompare(right));
+  if (selected !== "all" && !ordered.includes(selected)) ordered.push(selected);
+  const rangeLabels = new Map(CREW_SHIFT_RANGES.map((range) => [range.value, range.label]));
+  const labels: Record<string, string> = { ready: "Storm-ready", "not-ready": "Not storm-ready", assigned: "Assigned", unassigned: "Unassigned" };
+  return ordered.map((value) => ({ value, label: rangeLabels.get(value) ?? labels[value] ?? formatFacetValue(value), count: crews.filter((crew) => crewFacetValue(crew, facet) === value).length }));
 }
 
 const mapAutocompleteFields: AutocompleteField<MapRecord>[] = [
@@ -264,6 +287,12 @@ export default function OperationsMap({
   const [assignmentState, setAssignmentState] = useState(restoredState?.assignmentState ?? "all");
   const [incidentAge, setIncidentAge] = useState(restoredState?.incidentAge ?? "all");
   const [encoding, setEncoding] = useState<MapEncoding>(restoredState?.encoding ?? "severity");
+  const [crewStatus, setCrewStatus] = useState(restoredState?.crewStatus ?? "all");
+  const [crewCapability, setCrewCapability] = useState(restoredState?.crewCapability ?? "all");
+  const [crewReadiness, setCrewReadiness] = useState(restoredState?.crewReadiness ?? "all");
+  const [crewShift, setCrewShift] = useState(restoredState?.crewShift ?? "all");
+  const [crewAssignment, setCrewAssignment] = useState(restoredState?.crewAssignment ?? "all");
+  const [crewPreset, setCrewPreset] = useState(restoredState?.crewPreset ?? "all");
   const [selected, setSelected] = useState<string | null>(restoredState?.selected ?? null);
   const [page, setPage] = useState(restoredState?.page ?? 0);
   const [viewport, setViewport] = useState<MapViewportState | null>(restoredState?.viewport ?? null);
@@ -275,15 +304,8 @@ export default function OperationsMap({
     () => Array.from(new Set(all.map((record) => record.region).filter((region): region is string => Boolean(region)))).sort(),
     [all]
   );
-  const suggestionRecords = useMemo(() => all.filter((record) =>
-    (record.kind === "incident" ? showIncidents : showCrews) &&
-    (region === "all" || record.region === region)
-  ), [all, region, showIncidents, showCrews]);
-  const autocompleteSuggestions = useMemo(
-    () => buildAutocompleteSuggestions(suggestionRecords, mapAutocompleteFields, query),
-    [query, suggestionRecords]
-  );
   const incidentFacetSelections: Record<IncidentFacetKey, string> = { severity, hazard, criticalFacilityLevel, rankingStatus, customerImpact, assignmentState, incidentAge };
+  const crewFacetSelections: Record<CrewFacetKey, string> = { status: crewStatus, capability: crewCapability, readiness: crewReadiness, shift: crewShift, assignment: crewAssignment };
   const matchesIncidentFacets = useCallback((incident: Incident, excluded?: IncidentFacetKey) =>
     (excluded === "severity" || severity === "all" || incidentFacetValue(incident, "severity") === severity) &&
     (excluded === "hazard" || hazard === "all" || incidentFacetValue(incident, "hazard") === hazard) &&
@@ -293,13 +315,30 @@ export default function OperationsMap({
     (excluded === "assignmentState" || assignmentState === "all" || incidentFacetValue(incident, "assignmentState") === assignmentState) &&
     (excluded === "incidentAge" || incidentAge === "all" || incidentFacetValue(incident, "incidentAge") === incidentAge),
   [assignmentState, criticalFacilityLevel, customerImpact, hazard, incidentAge, rankingStatus, severity]);
+  const matchesCrewFacets = useCallback((crew: Crew, excluded?: CrewFacetKey) =>
+    (excluded === "status" || crewStatus === "all" || crewFacetValue(crew, "status") === crewStatus) &&
+    (excluded === "capability" || crewCapability === "all" || crewFacetValue(crew, "capability") === crewCapability) &&
+    (excluded === "readiness" || crewReadiness === "all" || crewFacetValue(crew, "readiness") === crewReadiness) &&
+    (excluded === "shift" || crewShift === "all" || crewFacetValue(crew, "shift") === crewShift) &&
+    (excluded === "assignment" || crewAssignment === "all" || crewFacetValue(crew, "assignment") === crewAssignment) &&
+    (crewPreset === "all" || (crewPreset === "available-line" && crew.status === "available" && crew.capability.toLowerCase() === "line")),
+  [crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus]);
+  const suggestionRecords = useMemo(() => all.filter((record) =>
+    (record.kind === "incident" ? showIncidents : showCrews) &&
+    (region === "all" || record.region === region) &&
+    (record.kind === "incident" ? Boolean(record.incident && matchesIncidentFacets(record.incident)) : Boolean(record.crew && matchesCrewFacets(record.crew)))
+  ), [all, matchesCrewFacets, matchesIncidentFacets, region, showCrews, showIncidents]);
+  const autocompleteSuggestions = useMemo(
+    () => buildAutocompleteSuggestions(suggestionRecords, mapAutocompleteFields, query),
+    [query, suggestionRecords]
+  );
   const filtered = useMemo(() => {
     const search = query.toLowerCase().trim();
     return all.filter((r) => (r.kind === "incident" ? showIncidents : showCrews) &&
       (region === "all" || r.region === region) &&
-      (r.kind !== "incident" || (r.incident && matchesIncidentFacets(r.incident))) &&
+      (r.kind === "incident" ? Boolean(r.incident && matchesIncidentFacets(r.incident)) : Boolean(r.crew && matchesCrewFacets(r.crew))) &&
       `${r.title} ${r.id} ${r.location} ${r.detail} ${r.status}`.toLowerCase().includes(search));
-  }, [all, matchesIncidentFacets, query, region, showIncidents, showCrews]);
+  }, [all, matchesCrewFacets, matchesIncidentFacets, query, region, showIncidents, showCrews]);
   const filteredIncidentInventory = useMemo(() => all.filter((record) => record.kind === "incident" &&
     (region === "all" || record.region === region) &&
     `${record.title} ${record.id} ${record.location} ${record.detail} ${record.status}`.toLowerCase().includes(query.toLowerCase().trim())
@@ -307,6 +346,13 @@ export default function OperationsMap({
   const facetOptionsByKey = useMemo(() => Object.fromEntries((Object.keys(incidentFacetSelections) as IncidentFacetKey[]).map((facet) => [facet,
     facetOptions(filteredIncidentInventory.filter((incident) => matchesIncidentFacets(incident, facet)), facet, incidentFacetSelections[facet])
   ])), [filteredIncidentInventory, incidentFacetSelections, matchesIncidentFacets]);
+  const filteredCrewInventory = useMemo(() => all.filter((record) => record.kind === "crew" &&
+    (region === "all" || record.region === region) &&
+    `${record.title} ${record.id} ${record.location} ${record.detail} ${record.status}`.toLowerCase().includes(query.toLowerCase().trim())
+  ).map((record) => record.crew!).filter(Boolean), [all, query, region]);
+  const crewFacetOptionsByKey = useMemo(() => Object.fromEntries((Object.keys(crewFacetSelections) as CrewFacetKey[]).map((facet) => [facet,
+    crewFacetOptions(filteredCrewInventory.filter((crew) => matchesCrewFacets(crew, facet)), facet, crewFacetSelections[facet])
+  ])), [crewFacetSelections, filteredCrewInventory, matchesCrewFacets]);
   const unmappedCount = filtered.filter((r) => !r.coordinates).length;
   const mappedIncidents = filtered.filter((r) => r.kind === "incident" && r.coordinates).length;
   const mappedCrews = filtered.filter((r) => r.kind === "crew" && r.coordinates).length;
@@ -331,7 +377,7 @@ export default function OperationsMap({
     setPage(0);
     setSelected((current) => current && filtered.some((record) => record.key === current) ? current : null);
     setNavigationNotice("");
-  }, [filtered, query, region, showIncidents, showCrews, unmappedOnly]);
+  }, [crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, filtered, query, region, showIncidents, showCrews, unmappedOnly]);
 
   useEffect(() => {
     onStateChange?.({
@@ -348,11 +394,17 @@ export default function OperationsMap({
       assignmentState,
       incidentAge,
       encoding,
+      crewStatus,
+      crewCapability,
+      crewReadiness,
+      crewShift,
+      crewAssignment,
+      crewPreset,
       selected: selection?.key ?? null,
       page: currentPage,
       viewport
     });
-  }, [assignmentState, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, unmappedOnly, viewport]);
+  }, [assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, unmappedOnly, viewport]);
 
   useEffect(() => {
     if (!navigationTarget) return;
@@ -366,7 +418,7 @@ export default function OperationsMap({
     }
 
     const targetLayerVisible = targetRecord.kind === "incident" ? showIncidents : showCrews;
-    if (query || region !== "all" || unmappedOnly || severity !== "all" || hazard !== "all" || criticalFacilityLevel !== "all" || rankingStatus !== "all" || customerImpact !== "all" || assignmentState !== "all" || incidentAge !== "all" || !targetLayerVisible) {
+    if (query || region !== "all" || unmappedOnly || severity !== "all" || hazard !== "all" || criticalFacilityLevel !== "all" || rankingStatus !== "all" || customerImpact !== "all" || assignmentState !== "all" || incidentAge !== "all" || crewStatus !== "all" || crewCapability !== "all" || crewReadiness !== "all" || crewShift !== "all" || crewAssignment !== "all" || crewPreset !== "all" || !targetLayerVisible) {
       setQuery("");
       setRegion("all");
       setUnmappedOnly(false);
@@ -377,6 +429,12 @@ export default function OperationsMap({
       setCustomerImpact("all");
       setAssignmentState("all");
       setIncidentAge("all");
+      setCrewStatus("all");
+      setCrewCapability("all");
+      setCrewReadiness("all");
+      setCrewShift("all");
+      setCrewAssignment("all");
+      setCrewPreset("all");
       if (targetRecord.kind === "incident") setShowIncidents(true);
       if (targetRecord.kind === "crew") setShowCrews(true);
       return;
@@ -389,10 +447,13 @@ export default function OperationsMap({
       ? `Showing ${targetRecord.kind} ${targetRecord.id} on the map.`
       : `${targetRecord.kind === "incident" ? "Incident" : "Crew"} ${targetRecord.id} is selected, but no map location is available.`);
     onNavigationHandled?.(navigationTarget.requestId);
-  }, [all, assignmentState, criticalFacilityLevel, customerImpact, filtered, hazard, incidentAge, navigationTarget, onNavigationHandled, query, rankingStatus, region, severity, showCrews, showIncidents, unmappedOnly]);
+  }, [all, assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, customerImpact, filtered, hazard, incidentAge, navigationTarget, onNavigationHandled, query, rankingStatus, region, severity, showCrews, showIncidents, unmappedOnly]);
 
   const facetControl = (label: string, facet: IncidentFacetKey, value: string, setValue: (value: string) => void) => (
     <label>{label}<select aria-label={`Map ${label.toLowerCase()}`} value={value} onChange={(event) => setValue(event.target.value)}><option value="all">All {label.toLowerCase()}</option>{(facetOptionsByKey[facet] ?? []).map((option) => <option key={option.value} disabled={option.count === 0 && value !== option.value} value={option.value}>{option.label} ({option.count})</option>)}</select></label>
+  );
+  const crewFacetControl = (label: string, facet: CrewFacetKey, value: string, setValue: (value: string) => void) => (
+    <label>{label}<select aria-label={`Map ${label.toLowerCase()}`} value={value} onChange={(event) => setValue(event.target.value)}><option value="all">All {label.toLowerCase()}</option>{(crewFacetOptionsByKey[facet] ?? []).map((option) => <option key={option.value} disabled={option.count === 0 && value !== option.value} value={option.value}>{option.label} ({option.count})</option>)}</select></label>
   );
 
   return <section className="operations-map panel" aria-label="Operations Map workspace">
@@ -421,9 +482,15 @@ export default function OperationsMap({
       {facetControl("Customer impact", "customerImpact", customerImpact, setCustomerImpact)}
       {facetControl("Assignment state", "assignmentState", assignmentState, setAssignmentState)}
       {facetControl("Incident age", "incidentAge", incidentAge, setIncidentAge)}
+      {crewFacetControl("Crew status", "status", crewStatus, setCrewStatus)}
+      {crewFacetControl("Crew capability", "capability", crewCapability, setCrewCapability)}
+      {crewFacetControl("Crew readiness", "readiness", crewReadiness, setCrewReadiness)}
+      {crewFacetControl("Crew shift remaining", "shift", crewShift, setCrewShift)}
+      {crewFacetControl("Crew assignment", "assignment", crewAssignment, setCrewAssignment)}
+      <label>Crew preset<select aria-label="Map crew preset" value={crewPreset} onChange={(event) => setCrewPreset(event.target.value)}><option value="all">All crews</option><option value="available-line">Available line crews</option></select></label>
       <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
     </div>
-    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {filtered.filter((record) => record.kind === "incident").length.toLocaleString()} incidents match facets</p>
+    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {filtered.filter((record) => record.kind === "incident").length.toLocaleString()} incidents · {filtered.filter((record) => record.kind === "crew").length.toLocaleString()} crews match facets</p>
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">
       <div>
