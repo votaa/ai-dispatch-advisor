@@ -1,6 +1,6 @@
 # POC-051 — Unassign and Reassign Crews from Incidents
 
-Status: Planning only; no implementation is included in this document.
+Status: Implemented in the working tree and committed; durable assignment-mutation history presentation is deferred to POC-052.
 
 ## Purpose
 
@@ -195,6 +195,12 @@ Validation must fail closed when:
 
 The implementation must preserve the original recommendation and any prior decision event. Unassigning an assignment is not equivalent to deleting or rewriting the recommendation history.
 
+### Audit-history boundary and follow-up
+
+POC-051 persists assignment mutations with the action, affected assignment and incident/crew IDs, reason category, optional note, actor, and timestamp. The current implementation returns those fields from the mutation response, but it does not yet expose a durable assignment-mutation history endpoint or an in-product Audit / Assignment History panel. The existing `/api/audit/events` route and recommendation history UI remain scoped to recommendation decisions.
+
+This audit-history presentation is tracked as POC-052. Until that follow-up is implemented, operators can see the resulting assignment state and a transient success message in the Incident or Crew views, but cannot review the selected category or note after the mutation flow closes.
+
 ## Refresh and count behavior
 
 After a successful mutation, refresh the authoritative data used by all affected views in one coordinated update:
@@ -265,4 +271,3 @@ Required test scenarios include:
 ## Scope boundaries
 
 POC-051 does not include live OMS writeback, role-based authorization, production dispatch integration, route optimization, automatic recommendation acceptance, or changes to scenario fixture CSVs. Those boundaries should remain explicit in the implementation and demo messaging.
-
