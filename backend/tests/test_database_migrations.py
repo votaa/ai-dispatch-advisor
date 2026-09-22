@@ -20,11 +20,13 @@ def test_fresh_database_applies_all_migrations(tmp_path: Path) -> None:
         assignment_columns = _columns(connection, "demo_assignments")
         indexes = _indexes(connection)
 
-    assert version == 3
+    assert version == 5
     assert [(row["version"], row["name"]) for row in history] == [
         (1, "create_decision_store"),
         (2, "add_scenario_scope"),
         (3, "add_decision_indexes"),
+        (4, "create_assignment_mutations"),
+        (5, "add_assignment_reason_categories"),
     ]
     assert "scenario_id" in audit_columns
     assert "scenario_id" in assignment_columns
@@ -58,8 +60,8 @@ def test_migrations_are_idempotent_and_preserve_rows(tmp_path: Path) -> None:
         )
         connection.commit()
 
-        assert run_migrations(connection) == 3
-        assert len(applied_migrations(connection)) == 3
+        assert run_migrations(connection) == 5
+        assert len(applied_migrations(connection)) == 5
         row = connection.execute(
             "SELECT scenario_id, recommendation_id FROM recommendation_audit_events"
         ).fetchone()
@@ -100,7 +102,7 @@ def test_current_unversioned_schema_is_baselined_without_data_loss(tmp_path: Pat
             ("existing-event",),
         ).fetchone()
 
-    assert [entry["version"] for entry in history] == [1, 2, 3]
+    assert [entry["version"] for entry in history] == [1, 2, 3, 4, 5]
     assert row == ("crew-shortage", "No qualified crew")
 
 
@@ -132,7 +134,7 @@ def test_incomplete_existing_schema_is_rejected(tmp_path: Path) -> None:
 def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
     migration_copy = tmp_path / "migrations"
     shutil.copytree(MIGRATIONS_DIR, migration_copy)
-    (migration_copy / "004_invalid_change.sql").write_text(
+    (migration_copy / "006_invalid_change.sql").write_text(
         """
         CREATE TABLE should_be_rolled_back (id TEXT PRIMARY KEY);
         INSERT INTO table_that_does_not_exist (id) VALUES ('fail');
@@ -141,7 +143,7 @@ def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
     )
 
     with sqlite3.connect(tmp_path / "rollback.db") as connection:
-        with pytest.raises(MigrationError, match="004_invalid_change"):
+        with pytest.raises(MigrationError, match="006_invalid_change"):
             run_migrations(connection, migration_copy)
 
         assert "should_be_rolled_back" not in {
@@ -150,7 +152,7 @@ def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3]
+        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5]
 
 
 def _columns(connection: sqlite3.Connection, table: str) -> set[str]:

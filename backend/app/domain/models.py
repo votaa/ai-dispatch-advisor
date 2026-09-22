@@ -158,6 +158,29 @@ class Assignment(DomainModel):
     notes: str
 
 
+class AssignmentMutation(DomainModel):
+    mutation_id: str
+    scenario_id: str
+    assignment_id: str
+    incident_id: str
+    crew_id: str
+    action: Literal["unassigned", "reassigned"]
+    reason: str
+    reason_category: Literal[
+        "field_condition_changed",
+        "crew_unavailable",
+        "assignment_entered_in_error",
+        "incident_priority_changed",
+        "supervisor_direction",
+        "other",
+    ]
+    note: Optional[str] = None
+    actor: str
+    created_at: str
+    new_assignment_id: Optional[str] = None
+    new_crew_id: Optional[str] = None
+
+
 class AuditEvent(DomainModel):
     """Target generic audit contract; recommendation decisions are its first persisted subtype."""
 

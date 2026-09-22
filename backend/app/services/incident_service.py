@@ -90,7 +90,13 @@ class IncidentService:
             incident = Incident.model_validate(
                 {
                     **row,
-                    "status": "assigned" if assigned_crews else row.get("status"),
+                    "status": (
+                        "assigned"
+                        if assigned_crews
+                        else "unassigned"
+                        if row.get("status") == "assigned"
+                        else row.get("status")
+                    ),
                     "assigned_crews": assigned_crews,
                     "current_decision": latest_decisions.get(incident_id),
                 }

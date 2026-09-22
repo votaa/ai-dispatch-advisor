@@ -2038,6 +2038,80 @@ tbody tr:focus-visible {
   margin-top: 4px;
 }
 
+.assignment-action-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.assignment-action-row .secondary-action {
+  min-height: 32px;
+  padding: 5px 8px;
+}
+
+.assignment-action-overlay {
+  align-items: center;
+  background: rgb(17 34 48 / 42%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 600;
+}
+
+.assignment-action-dialog {
+  background: #ffffff;
+  border: 1px solid #b8c7d6;
+  border-radius: 10px;
+  box-shadow: 0 18px 45px rgb(17 34 48 / 24%);
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  padding: 20px;
+  width: 100%;
+}
+
+.assignment-action-dialog h2,
+.assignment-action-dialog p {
+  margin: 0;
+}
+
+.assignment-action-dialog label {
+  color: #526170;
+  display: grid;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 6px;
+}
+
+.assignment-action-dialog select,
+.assignment-action-dialog textarea {
+  border: 1px solid #b8c7d6;
+  border-radius: 6px;
+  color: #183247;
+  font: inherit;
+  padding: 8px;
+  width: 100%;
+}
+
+.assignment-action-dialog textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.assignment-action-error {
+  color: #a52c2c;
+  font-weight: 700;
+}
+
+.assignment-action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .detail-link-list button,
 .detail-link,
 .detail-close {

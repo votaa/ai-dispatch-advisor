@@ -51,7 +51,8 @@ import type {
   Recommendation,
   RecommendationAction,
   RecommendationActionType,
-  ScenarioDescriptor
+  ScenarioDescriptor,
+  AssignmentReasonCategory
 } from "./types";
 
 const OperationsMap = lazy(() => import("./components/OperationsMap"));
@@ -70,6 +71,24 @@ type ScenarioFeedback = {
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
+type ActionLoading = RecommendationActionType | "unassigned" | "reassigned";
+type AssignmentReference = { assignment_id: string; incident_id: string; crew_id: string };
+type AssignmentActionDraft = {
+  action: "unassigned" | "reassigned";
+  assignment: AssignmentReference;
+  selectedCrewId: string;
+  reasonCategory: AssignmentReasonCategory | "";
+  note: string;
+  error: string;
+};
+const assignmentReasonOptions: Array<{ value: AssignmentReasonCategory; label: string }> = [
+  { value: "field_condition_changed", label: "Field condition changed" },
+  { value: "crew_unavailable", label: "Crew unavailable" },
+  { value: "assignment_entered_in_error", label: "Assignment entered in error" },
+  { value: "incident_priority_changed", label: "Incident priority changed" },
+  { value: "supervisor_direction", label: "Supervisor direction" },
+  { value: "other", label: "Other" }
+];
 type ExpandableWorkspaceKey = "dashboard" | "dispatch" | "incidents" | "crews" | "storm";
 type NavigationFocusOrigin = { id: string; occurrence: number };
 type ReturnNavigationContext = {
@@ -191,9 +210,10 @@ function App() {
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState<RecommendationActionType | null>(null);
+  const [actionLoading, setActionLoading] = useState<ActionLoading | null>(null);
   const [actionMessage, setActionMessage] = useState("");
   const [actionFailed, setActionFailed] = useState(false);
+  const [assignmentActionDraft, setAssignmentActionDraft] = useState<AssignmentActionDraft | null>(null);
   const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
   const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
   const [scenarioLoading, setScenarioLoading] = useState(false);
@@ -575,6 +595,64 @@ function App() {
     }
   }
 
+  function startUnassignAssignment(assignment: AssignmentReference) {
+    setAssignmentActionDraft({ action: "unassigned", assignment, selectedCrewId: "", reasonCategory: "", note: "", error: "" });
+  }
+
+  function startReassignAssignment(assignment: AssignmentReference) {
+    const eligibleCrews = crews.filter((item) => item.status === "available" && item.assigned_incidents.length === 0);
+    if (!eligibleCrews.length) {
+      setActionFailed(true);
+      setActionMessage("No available replacement crews are currently eligible.");
+      return;
+    }
+    setAssignmentActionDraft({ action: "reassigned", assignment, selectedCrewId: eligibleCrews[0].crew_id, reasonCategory: "", note: "", error: "" });
+  }
+
+  async function submitAssignmentAction() {
+    if (!assignmentActionDraft) return;
+    const reasonCategory = assignmentActionDraft.reasonCategory;
+    const note = assignmentActionDraft.note.trim();
+    if (!reasonCategory) {
+      setAssignmentActionDraft((draft) => draft ? { ...draft, error: "Select a reason category." } : draft);
+      return;
+    }
+    if (reasonCategory === "other" && !note) {
+      setAssignmentActionDraft((draft) => draft ? { ...draft, error: "A note is required when reason category is Other." } : draft);
+      return;
+    }
+    if (assignmentActionDraft.action === "reassigned" && !assignmentActionDraft.selectedCrewId) {
+      setAssignmentActionDraft((draft) => draft ? { ...draft, error: "Select an available replacement crew." } : draft);
+      return;
+    }
+    const draft = assignmentActionDraft;
+    const previousCrew = crews.find((item) => item.crew_id === draft.assignment.crew_id);
+    const replacementCrew = crews.find((item) => item.crew_id === draft.selectedCrewId);
+    setActionLoading(draft.action);
+    setActionMessage("");
+    setActionFailed(false);
+    try {
+      if (draft.action === "unassigned") {
+        await api.unassignAssignment(draft.assignment.assignment_id, reasonCategory, note || undefined);
+      } else {
+        await api.reassignAssignment(draft.assignment.assignment_id, draft.selectedCrewId, reasonCategory, note || undefined);
+      }
+      await refreshOperationalState();
+      setScenarioFeedback({
+        kind: "success",
+        message: draft.action === "unassigned"
+          ? `${previousCrew?.crew_name ?? draft.assignment.crew_id} unassigned from ${draft.assignment.incident_id}.`
+          : `${draft.assignment.incident_id} reassigned to ${replacementCrew?.crew_name ?? draft.selectedCrewId}.`
+      });
+      setAssignmentActionDraft(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Assignment action failed";
+      setAssignmentActionDraft((current) => current ? { ...current, error: message } : current);
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
   return (
     <div className="app-shell" style={{ "--sidebar-width": `${sidebarWidth}px` } as CSSProperties}>
       <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -911,6 +989,8 @@ function App() {
                 onCloseDetails={() => setSelectedCrewId(undefined)}
                 onSelectCrew={setSelectedCrewId}
                 onNavigate={navigateOperationally}
+                onUnassign={startUnassignAssignment}
+                onReassign={startReassignAssignment}
                 selectedCrew={selectedCrew}
                 selectedCrewId={selectedCrewId}
                 restoredState={restoringNavigation?.sourceView === "crews" ? restoringNavigation.crewState : undefined}
@@ -1139,9 +1219,66 @@ function App() {
               incident={incidentDetail}
               navigationContext={navigationContext}
               onNavigate={navigateOperationally}
+              onUnassign={startUnassignAssignment}
+              onReassign={startReassignAssignment}
             />
           ) : null}
         </SideSheet>
+        {assignmentActionDraft ? (
+          <div className="assignment-action-overlay" role="presentation">
+            <section aria-labelledby="assignment-action-title" aria-modal="true" className="assignment-action-dialog" role="dialog">
+              <h2 id="assignment-action-title">
+                {assignmentActionDraft.action === "unassigned" ? "Unassign crew" : "Reassign crew"}
+              </h2>
+              <p>
+                {assignmentActionDraft.action === "unassigned"
+                  ? `Remove ${assignmentActionDraft.assignment.crew_id} from ${assignmentActionDraft.assignment.incident_id}?`
+                  : `Choose a replacement crew for ${assignmentActionDraft.assignment.incident_id}.`}
+              </p>
+              {assignmentActionDraft.action === "reassigned" ? (
+                <label>
+                  Replacement crew
+                  <select
+                    aria-label="Replacement crew"
+                    onChange={(event) => setAssignmentActionDraft((draft) => draft ? { ...draft, selectedCrewId: event.target.value, error: "" } : draft)}
+                    value={assignmentActionDraft.selectedCrewId}
+                  >
+                    {crews.filter((crew) => crew.status === "available" && crew.assigned_incidents.length === 0).map((crew) => (
+                      <option key={crew.crew_id} value={crew.crew_id}>{crew.crew_id} · {crew.crew_name}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
+              <label>
+                Reason category
+                <select
+                  aria-label="Assignment reason category"
+                  onChange={(event) => setAssignmentActionDraft((draft) => draft ? { ...draft, reasonCategory: event.target.value as AssignmentReasonCategory, error: "" } : draft)}
+                  value={assignmentActionDraft.reasonCategory}
+                >
+                  <option disabled value="">Select a reason</option>
+                  {assignmentReasonOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                </select>
+              </label>
+              <label>
+                Additional note{assignmentActionDraft.reasonCategory === "other" ? " (required)" : " (optional)"}
+                <textarea
+                  aria-label="Assignment additional note"
+                  onChange={(event) => setAssignmentActionDraft((draft) => draft ? { ...draft, note: event.target.value, error: "" } : draft)}
+                  placeholder="Add operational context if needed."
+                  value={assignmentActionDraft.note}
+                />
+              </label>
+              {assignmentActionDraft.error ? <p className="assignment-action-error" role="alert">{assignmentActionDraft.error}</p> : null}
+              <div className="assignment-action-buttons">
+                <button className="secondary-action" onClick={() => setAssignmentActionDraft(null)} type="button">Cancel</button>
+                <button className="primary-action" disabled={actionLoading !== null} onClick={submitAssignmentAction} type="button">
+                  {actionLoading ? "Saving…" : assignmentActionDraft.action === "unassigned" ? "Confirm unassign" : "Confirm reassignment"}
+                </button>
+              </div>
+            </section>
+          </div>
+        ) : null}
       </main>
     </div>
   );
@@ -1332,11 +1469,15 @@ function RecommendationComparison({
 function IncidentDetail({
   incident,
   navigationContext,
-  onNavigate
+  onNavigate,
+  onUnassign,
+  onReassign
 }: {
   incident: Incident;
   navigationContext: NavigationResolverContext;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+  onUnassign: (assignment: AssignmentReference) => void;
+  onReassign: (assignment: AssignmentReference) => void;
 }) {
   const detailNavigationContext: NavigationResolverContext = {
     ...navigationContext,
@@ -1402,15 +1543,30 @@ function IncidentDetail({
         {incident.assigned_crews.length ? (
           <div className="detail-link-list">
             {incident.assigned_crews.map((crew) => (
-              <EntityNavigationActions
-                accessibleLabel={`${crew.crew_name} destinations`}
-                context={detailNavigationContext}
-                destinationKinds={["full_detail"]}
-                key={crew.assignment_id}
-                labelOverrides={{ full_detail: `${crew.crew_name} (${crew.crew_id})` }}
-                onNavigate={onNavigate}
-                reference={{ kind: "crew", id: crew.crew_id }}
-              />
+              <div className="assignment-action-row" key={crew.assignment_id}>
+                <EntityNavigationActions
+                  accessibleLabel={`${crew.crew_name} destinations`}
+                  context={detailNavigationContext}
+                  destinationKinds={["full_detail"]}
+                  labelOverrides={{ full_detail: `${crew.crew_name} (${crew.crew_id})` }}
+                  onNavigate={onNavigate}
+                  reference={{ kind: "crew", id: crew.crew_id }}
+                />
+                <button
+                  className="secondary-action"
+                  onClick={() => onUnassign({ assignment_id: crew.assignment_id, incident_id: incident.incident_id, crew_id: crew.crew_id })}
+                  type="button"
+                >
+                  Unassign
+                </button>
+                <button
+                  className="secondary-action"
+                  onClick={() => onReassign({ assignment_id: crew.assignment_id, incident_id: incident.incident_id, crew_id: crew.crew_id })}
+                  type="button"
+                >
+                  Reassign
+                </button>
+              </div>
             ))}
           </div>
         ) : <p>No crews assigned.</p>}
@@ -1433,12 +1589,16 @@ function CrewDetail({
   crew,
   navigationContext,
   onClose,
-  onNavigate
+  onNavigate,
+  onUnassign,
+  onReassign
 }: {
   crew: Crew;
   navigationContext: NavigationResolverContext;
   onClose: () => void;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+  onUnassign: (assignment: AssignmentReference) => void;
+  onReassign: (assignment: AssignmentReference) => void;
 }) {
   const detailNavigationContext: NavigationResolverContext = {
     ...navigationContext,
@@ -1469,15 +1629,30 @@ function CrewDetail({
         {crew.assigned_incidents.length ? (
           <div className="detail-link-list">
             {crew.assigned_incidents.map((assignment) => (
-              <EntityNavigationActions
-                accessibleLabel={`${assignment.incident_id} destinations`}
-                context={detailNavigationContext}
-                destinationKinds={["full_detail"]}
-                key={assignment.assignment_id}
-                labelOverrides={{ full_detail: `${assignment.incident_id}${assignment.municipality ? ` · ${assignment.municipality}` : ""}` }}
-                onNavigate={onNavigate}
-                reference={{ kind: "incident", id: assignment.incident_id }}
-              />
+              <div className="assignment-action-row" key={assignment.assignment_id}>
+                <EntityNavigationActions
+                  accessibleLabel={`${assignment.incident_id} destinations`}
+                  context={detailNavigationContext}
+                  destinationKinds={["full_detail"]}
+                  labelOverrides={{ full_detail: `${assignment.incident_id}${assignment.municipality ? ` · ${assignment.municipality}` : ""}` }}
+                  onNavigate={onNavigate}
+                  reference={{ kind: "incident", id: assignment.incident_id }}
+                />
+                <button
+                  className="secondary-action"
+                  onClick={() => onUnassign({ assignment_id: assignment.assignment_id, incident_id: assignment.incident_id, crew_id: crew.crew_id })}
+                  type="button"
+                >
+                  Unassign
+                </button>
+                <button
+                  className="secondary-action"
+                  onClick={() => onReassign({ assignment_id: assignment.assignment_id, incident_id: assignment.incident_id, crew_id: crew.crew_id })}
+                  type="button"
+                >
+                  Reassign
+                </button>
+              </div>
             ))}
           </div>
         ) : <p>No active incident assignments.</p>}
@@ -1498,6 +1673,8 @@ function CrewBoard({
   navigationFilterRequest,
   onCloseDetails,
   onNavigate,
+  onUnassign,
+  onReassign,
   onSelectCrew,
   selectedCrew,
   selectedCrewId,
@@ -1510,6 +1687,8 @@ function CrewBoard({
   navigationFilterRequest?: { requestId: number; filter: CrewNavigationFilter } | null;
   onCloseDetails: () => void;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;
+  onUnassign: (assignment: AssignmentReference) => void;
+  onReassign: (assignment: AssignmentReference) => void;
   onSelectCrew: (crewId: string) => void;
   selectedCrew?: Crew;
   selectedCrewId?: string;
@@ -1786,6 +1965,8 @@ function CrewBoard({
           navigationContext={navigationContext}
           onClose={onCloseDetails}
           onNavigate={onNavigate}
+          onUnassign={onUnassign}
+          onReassign={onReassign}
         />
       ) : null}
     </div>
@@ -2238,7 +2419,7 @@ function RecommendationPanel({
   selectedIncident
 }: {
   actionFailed: boolean;
-  actionLoading: RecommendationActionType | null;
+  actionLoading: ActionLoading | null;
   actionMessage: string;
   navigationContext: NavigationResolverContext;
   onNavigate: (command: OperationalNavigationCommand, trigger?: HTMLElement) => void;

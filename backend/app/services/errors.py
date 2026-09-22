@@ -14,6 +14,23 @@ class DecisionReasonRequiredError(ValueError):
         super().__init__(f"{action.title()} reason is required")
 
 
+class AssignmentReasonRequiredError(ValueError):
+    def __init__(self) -> None:
+        super().__init__("Unassign reason is required")
+
+
+class AssignmentConflictError(ValueError):
+    def __init__(self, assignment_id: str, message: str) -> None:
+        self.assignment_id = assignment_id
+        super().__init__(message)
+
+
+class AssignmentCrewSelectionError(ValueError):
+    def __init__(self, crew_id: str, message: str) -> None:
+        self.crew_id = crew_id
+        super().__init__(message)
+
+
 class DecisionConflictError(ValueError):
     def __init__(self, incident_id: str, recommendation_incident_id: str) -> None:
         self.incident_id = incident_id

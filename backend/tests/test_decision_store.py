@@ -95,7 +95,7 @@ def test_init_store_migrates_existing_rows_to_base_scenario() -> None:
     assert "scenario_id" in assignment_columns
     assert audit_scenario == "base"
     assert assignment_scenario == "base"
-    assert migration_versions == [1, 2, 3]
+    assert migration_versions == [1, 2, 3, 4, 5]
     assert "idx_recommendation_audit_events_scenario_incident" in indexes
     assert "idx_demo_assignments_scenario_active" in indexes
     assert decision_store.recent_decisions("storm") == []

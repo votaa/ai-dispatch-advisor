@@ -12,6 +12,8 @@ const apiMocks = vi.hoisted(() => ({
   optimize: vi.fn(),
   auditEvents: vi.fn(),
   recordRecommendationAction: vi.fn(),
+  unassignAssignment: vi.fn(),
+  reassignAssignment: vi.fn(),
   chat: vi.fn()
 }));
 
@@ -149,6 +151,34 @@ describe("application states and scenario switching", () => {
     apiMocks.assignments.mockResolvedValue([]);
     apiMocks.optimize.mockResolvedValue(recommendation);
     apiMocks.auditEvents.mockResolvedValue([recordedDecision]);
+    apiMocks.unassignAssignment.mockResolvedValue({
+      mutation_id: "mutation-1",
+      scenario_id: "base",
+      assignment_id: "a-1",
+      incident_id: "INC-1001",
+      crew_id: "CR-01",
+      action: "unassigned",
+      reason: "Field condition changed",
+      reason_category: "field_condition_changed",
+      note: null,
+      actor: "demo-dispatcher",
+      created_at: "2026-08-10T00:00:00Z"
+    });
+    apiMocks.reassignAssignment.mockResolvedValue({
+      mutation_id: "mutation-2",
+      scenario_id: "base",
+      assignment_id: "a-1",
+      incident_id: "INC-1001",
+      crew_id: "CR-01",
+      action: "reassigned",
+      reason: "Crew unavailable",
+      reason_category: "crew_unavailable",
+      note: null,
+      actor: "demo-dispatcher",
+      created_at: "2026-08-10T00:00:00Z",
+      new_assignment_id: "a-2",
+      new_crew_id: "CR-02"
+    });
   });
 
   afterEach(() => {
@@ -871,6 +901,59 @@ describe("application states and scenario switching", () => {
     const crewDetails = await screen.findByLabelText("Crew details CR-01");
     fireEvent.click(within(crewDetails).getByRole("button", { name: "INC-1001 · Millbrook" }));
     expect(await screen.findByLabelText("Incident details INC-1001")).toBeTruthy();
+  });
+
+  it("offers an unassign action with confirmation and reason capture", async () => {
+    const assignedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "assigned",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: [{ assignment_id: "a-1", incident_id: "INC-1001", assigned_at: "2026-08-10T00:00:00Z", municipality: "Millbrook", severity: "critical" }]
+    };
+    apiMocks.crews.mockResolvedValue([assignedCrew]);
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, status: "assigned", assigned_crews: [{ crew_id: "CR-01", crew_name: "North Line Alpha", assignment_id: "a-1", assigned_at: "2026-08-10T00:00:00Z" }] }]);
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "INC-1001" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Unassign" }));
+    fireEvent.change(screen.getByLabelText("Assignment reason category"), { target: { value: "field_condition_changed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm unassign" }));
+
+    await waitFor(() => expect(apiMocks.unassignAssignment).toHaveBeenCalledWith("a-1", "field_condition_changed", undefined));
+    expect(await screen.findByText("North Line Alpha unassigned from INC-1001.")).toBeTruthy();
+  });
+
+  it("offers reassignment to an available crew and refreshes state", async () => {
+    const assignedCrew = {
+      crew_id: "CR-01",
+      crew_name: "North Line Alpha",
+      home_region: "North",
+      status: "assigned",
+      capability: "line",
+      current_location: "Millbrook",
+      shift_remaining_hours: 8,
+      storm_ready: true,
+      travel_minutes_to_selected_incident: 10,
+      assigned_incidents: [{ assignment_id: "a-1", incident_id: "INC-1001", assigned_at: "2026-08-10T00:00:00Z", municipality: "Millbrook", severity: "critical" }]
+    };
+    const availableCrew = { ...assignedCrew, crew_id: "CR-02", crew_name: "South Line Bravo", status: "available", assigned_incidents: [] };
+    apiMocks.crews.mockResolvedValue([assignedCrew, availableCrew]);
+    apiMocks.incidents.mockResolvedValue([{ ...baseIncident, status: "assigned", assigned_crews: [{ crew_id: "CR-01", crew_name: "North Line Alpha", assignment_id: "a-1", assigned_at: "2026-08-10T00:00:00Z" }] }]);
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "INC-1001" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Reassign" }));
+    fireEvent.change(screen.getByLabelText("Assignment reason category"), { target: { value: "crew_unavailable" } });
+    fireEvent.click(screen.getByRole("button", { name: "Confirm reassignment" }));
+
+    await waitFor(() => expect(apiMocks.reassignAssignment).toHaveBeenCalledWith("a-1", "CR-02", "crew_unavailable", undefined));
+    expect(await screen.findByText("INC-1001 reassigned to South Line Bravo.")).toBeTruthy();
   });
 
   it("opens incident details in place from Dashboard and Dispatch rows", async () => {

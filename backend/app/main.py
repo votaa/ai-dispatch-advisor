@@ -12,6 +12,8 @@ from .api_models import (
     DashboardResponse,
     HealthResponse,
     OptimizeRequest,
+    AssignmentActionRequest,
+    AssignmentActionResponse,
     RecommendationActionRequest,
     ScenarioActivationRequest,
 )
@@ -95,6 +97,22 @@ def crews() -> list[Crew]:
 @app.get("/api/assignments")
 def assignments() -> list[Assignment]:
     return services.assignments.list_active()
+
+
+@app.post("/api/assignment-actions", response_model=AssignmentActionResponse)
+def assignment_action(request: AssignmentActionRequest) -> AssignmentActionResponse:
+    if request.action == "reassigned":
+        return services.assignments.reassign(
+            assignment_id=request.assignment_id,
+            selected_crew_id=request.selected_crew_id,
+            reason_category=request.reason_category,
+            note=request.note,
+        )
+    return services.assignments.unassign(
+        assignment_id=request.assignment_id,
+        reason_category=request.reason_category,
+        note=request.note,
+    )
 
 
 @app.get("/api/weather")

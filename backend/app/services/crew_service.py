@@ -57,7 +57,13 @@ class CrewService:
                 Crew.model_validate(
                     {
                         **row,
-                        "status": "assigned" if assigned_incidents else row.get("status"),
+                        "status": (
+                            "assigned"
+                            if assigned_incidents
+                            else "available"
+                            if row.get("status") == "assigned"
+                            else row.get("status")
+                        ),
                         "assigned_incidents": assigned_incidents,
                         "map_location": map_location,
                     }

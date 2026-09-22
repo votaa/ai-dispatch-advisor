@@ -1,5 +1,7 @@
 import type {
   Assignment,
+  AssignmentMutation,
+  AssignmentReasonCategory,
   Crew,
   CopilotResponse,
   DashboardSummary,
@@ -63,6 +65,21 @@ export const api = {
   incidents: () => getJson<Incident[]>("/api/incidents"),
   crews: () => getJson<Crew[]>("/api/crews"),
   assignments: () => getJson<Assignment[]>("/api/assignments"),
+  unassignAssignment: (assignmentId: string, reasonCategory: AssignmentReasonCategory, note?: string) =>
+    postJson<AssignmentMutation>("/api/assignment-actions", {
+      assignment_id: assignmentId,
+      action: "unassigned",
+      reason_category: reasonCategory,
+      note
+    }),
+  reassignAssignment: (assignmentId: string, selectedCrewId: string, reasonCategory: AssignmentReasonCategory, note?: string) =>
+    postJson<AssignmentMutation>("/api/assignment-actions", {
+      assignment_id: assignmentId,
+      action: "reassigned",
+      selected_crew_id: selectedCrewId,
+      reason_category: reasonCategory,
+      note
+    }),
   optimize: (incidentId?: string) => postJson<Recommendation>("/api/optimize", { incident_id: incidentId }),
   auditEvents: () => getJson<RecommendationAction[]>("/api/audit/events"),
   recordRecommendationAction: (

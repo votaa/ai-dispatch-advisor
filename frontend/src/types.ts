@@ -69,6 +69,30 @@ export type Assignment = {
   notes: string;
 };
 
+export type AssignmentReasonCategory =
+  | "field_condition_changed"
+  | "crew_unavailable"
+  | "assignment_entered_in_error"
+  | "incident_priority_changed"
+  | "supervisor_direction"
+  | "other";
+
+export type AssignmentMutation = {
+  mutation_id: string;
+  scenario_id: string;
+  assignment_id: string;
+  incident_id: string;
+  crew_id: string;
+  action: "unassigned" | "reassigned";
+  reason: string;
+  reason_category: AssignmentReasonCategory;
+  note?: string | null;
+  actor: string;
+  created_at: string;
+  new_assignment_id?: string | null;
+  new_crew_id?: string | null;
+};
+
 export type DashboardSummary = {
   active_incidents: number;
   customers_out: number;

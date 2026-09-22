@@ -65,6 +65,10 @@ def build_services(
         active_scenario_id=data_loader.get_active_scenario,
         baseline_assignments=data_loader.assignments,
         accepted_assignments=decision_store.accepted_assignments,
+        unassigned_assignment_ids=decision_store.unassigned_assignment_ids,
+        record_unassignment=decision_store.record_unassignment,
+        crew_rows=data_loader.crews,
+        record_reassignment=decision_store.record_reassignment,
     )
     incidents = IncidentService(
         active_scenario_id=data_loader.get_active_scenario,

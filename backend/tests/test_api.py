@@ -40,7 +40,7 @@ def test_application_startup_applies_database_migrations() -> None:
         assert startup_client.get("/health").status_code == 200
 
     with decision_store._connect() as connection:
-        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3]
+        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5]
 
 
 def test_openapi_exposes_explicit_core_response_contracts() -> None:
@@ -359,6 +359,110 @@ def test_accepting_recommendation_updates_assignment_state() -> None:
     assigned_crew = next(crew for crew in crews if crew["crew_id"] == crew_id)
     assert assigned_crew["status"] == "assigned"
     assert assigned_crew["assigned_incidents"][0]["incident_id"] == "INC-1001"
+
+
+def test_unassigning_active_assignment_updates_incident_and_crew_state() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    client.post(
+        "/api/recommendation-actions",
+        json={"incident_id": "INC-1001", "action": "accepted", "recommendation": recommendation},
+    )
+    assignment = next(item for item in client.get("/api/assignments").json() if item["incident_id"] == "INC-1001")
+
+    response = client.post(
+        "/api/assignment-actions",
+        json={
+            "assignment_id": assignment["assignment_id"],
+            "action": "unassigned",
+            "reason_category": "field_condition_changed",
+        },
+    )
+
+    assert response.status_code == 200
+    mutation = response.json()
+    assert mutation["action"] == "unassigned"
+    assert mutation["assignment_id"] == assignment["assignment_id"]
+    assert not any(item["assignment_id"] == assignment["assignment_id"] for item in client.get("/api/assignments").json())
+
+    incident = client.get("/api/incidents/INC-1001").json()
+    assert incident["status"] == "unassigned"
+    assert incident["assigned_crews"] == []
+
+    crew = next(item for item in client.get("/api/crews").json() if item["crew_id"] == assignment["crew_id"])
+    assert crew["status"] == "available"
+    assert crew["assigned_incidents"] == []
+
+
+def test_unassign_requires_reason_and_rejects_stale_assignment() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    client.post(
+        "/api/recommendation-actions",
+        json={"incident_id": "INC-1001", "action": "accepted", "recommendation": recommendation},
+    )
+    assignment = next(item for item in client.get("/api/assignments").json())
+
+    missing_reason = client.post(
+        "/api/assignment-actions",
+        json={"assignment_id": assignment["assignment_id"], "action": "unassigned", "reason_category": "other", "note": " "},
+    )
+    assert missing_reason.status_code == 400
+    assert missing_reason.json()["error"]["code"] == "assignment_reason_required"
+
+    first = client.post(
+        "/api/assignment-actions",
+        json={"assignment_id": assignment["assignment_id"], "action": "unassigned", "reason_category": "assignment_entered_in_error"},
+    )
+    assert first.status_code == 200
+    stale = client.post(
+        "/api/assignment-actions",
+        json={"assignment_id": assignment["assignment_id"], "action": "unassigned", "reason_category": "assignment_entered_in_error"},
+    )
+    assert stale.status_code == 409
+    assert stale.json()["error"]["code"] == "assignment_conflict"
+
+
+def test_reassign_retires_old_assignment_and_activates_available_crew() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    client.post(
+        "/api/recommendation-actions",
+        json={"incident_id": "INC-1001", "action": "accepted", "recommendation": recommendation},
+    )
+    current = next(item for item in client.get("/api/assignments").json() if item["incident_id"] == "INC-1001")
+    replacement = next(
+        item for item in client.get("/api/crews").json()
+        if item["crew_id"] != current["crew_id"] and item["status"] == "available"
+    )
+
+    response = client.post(
+        "/api/assignment-actions",
+        json={
+            "assignment_id": current["assignment_id"],
+            "action": "reassigned",
+            "selected_crew_id": replacement["crew_id"],
+            "reason_category": "crew_unavailable",
+        },
+    )
+
+    assert response.status_code == 200
+    mutation = response.json()
+    assert mutation["action"] == "reassigned"
+    assert mutation["new_crew_id"] == replacement["crew_id"]
+    active = client.get("/api/assignments").json()
+    assert not any(item["assignment_id"] == current["assignment_id"] for item in active)
+    assert any(item["assignment_id"] == mutation["new_assignment_id"] and item["crew_id"] == replacement["crew_id"] for item in active)
+
+    incident = client.get("/api/incidents/INC-1001").json()
+    assert incident["status"] == "assigned"
+    assert [item["crew_id"] for item in incident["assigned_crews"]] == [replacement["crew_id"]]
+    old_crew = next(item for item in client.get("/api/crews").json() if item["crew_id"] == current["crew_id"])
+    assert old_crew["status"] == "available"
+    assert old_crew["assigned_incidents"] == []
+    new_crew = next(item for item in client.get("/api/crews").json() if item["crew_id"] == replacement["crew_id"])
+    assert new_crew["status"] == "assigned"
+    assert new_crew["assigned_incidents"][0]["incident_id"] == "INC-1001"
 
 
 def test_modified_alternative_creates_assignment_and_preserves_recommendation_evidence() -> None:

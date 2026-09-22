@@ -6,6 +6,7 @@ from typing import Literal, Optional
 from pydantic import Field, field_validator
 
 from .domain.models import (
+    AssignmentMutation,
     DomainModel,
     Incident,
     Recommendation,
@@ -35,6 +36,26 @@ class RecommendationActionRequest(DomainModel):
     selected_crew_id: Optional[str] = None
     reason: Optional[str] = None
     note: Optional[str] = None
+
+
+class AssignmentActionRequest(DomainModel):
+    assignment_id: str
+    action: Literal["unassigned", "reassigned"]
+    selected_crew_id: Optional[str] = None
+    reason_category: Literal[
+        "field_condition_changed",
+        "crew_unavailable",
+        "assignment_entered_in_error",
+        "incident_priority_changed",
+        "supervisor_direction",
+        "other",
+    ]
+    note: Optional[str] = None
+
+
+
+class AssignmentActionResponse(AssignmentMutation):
+    pass
 
 
 class ScenarioActivationRequest(DomainModel):

@@ -13,6 +13,9 @@ from starlette.exceptions import HTTPException
 
 from .scenario_service import ScenarioServiceError
 from .services.errors import (
+    AssignmentConflictError,
+    AssignmentCrewSelectionError,
+    AssignmentReasonRequiredError,
     DecisionConflictError,
     DecisionCrewSelectionError,
     DecisionReasonRequiredError,
@@ -161,6 +164,49 @@ async def _decision_reason_required_handler(
     )
 
 
+async def _assignment_reason_required_handler(
+    request: Request,
+    exc: AssignmentReasonRequiredError,
+) -> JSONResponse:
+    return _error_response(
+        request,
+        status_code=400,
+        code="assignment_reason_required",
+        message=str(exc),
+        details=[{"location": "body.reason", "message": "A reason is required when removing an assignment.", "type": "value_error.missing_reason"}],
+    )
+
+
+async def _assignment_conflict_handler(
+    request: Request,
+    exc: AssignmentConflictError,
+) -> JSONResponse:
+    return _error_response(
+        request,
+        status_code=409,
+        code="assignment_conflict",
+        message=str(exc),
+        details=[{"location": "body.assignment_id", "message": str(exc), "type": "value_error.assignment_conflict"}],
+        entity="Assignment",
+        entity_id=exc.assignment_id,
+    )
+
+
+async def _assignment_crew_selection_handler(
+    request: Request,
+    exc: AssignmentCrewSelectionError,
+) -> JSONResponse:
+    return _error_response(
+        request,
+        status_code=409,
+        code="assignment_crew_selection_invalid",
+        message=str(exc),
+        details=[{"location": "body.selected_crew_id", "message": str(exc), "type": "value_error.assignment_crew_selection"}],
+        entity="Crew",
+        entity_id=exc.crew_id,
+    )
+
+
 async def _decision_conflict_handler(request: Request, exc: DecisionConflictError) -> JSONResponse:
     return _error_response(
         request,
@@ -305,6 +351,9 @@ def install_error_contract(app: FastAPI) -> None:
         return response
 
     app.add_exception_handler(EntityNotFoundError, _entity_not_found_handler)
+    app.add_exception_handler(AssignmentReasonRequiredError, _assignment_reason_required_handler)
+    app.add_exception_handler(AssignmentConflictError, _assignment_conflict_handler)
+    app.add_exception_handler(AssignmentCrewSelectionError, _assignment_crew_selection_handler)
     app.add_exception_handler(DecisionReasonRequiredError, _decision_reason_required_handler)
     app.add_exception_handler(DecisionConflictError, _decision_conflict_handler)
     app.add_exception_handler(DecisionCrewSelectionError, _decision_crew_selection_handler)
