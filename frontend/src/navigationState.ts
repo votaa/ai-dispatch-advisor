@@ -59,6 +59,7 @@ export type MapWorkspaceState = {
   crewShift?: string;
   crewAssignment?: string;
   crewPreset?: string;
+  showRelationships?: boolean;
   selected: string | null;
   page: number;
   viewport: MapViewportState | null;

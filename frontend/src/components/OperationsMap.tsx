@@ -137,7 +137,7 @@ export function mapRecords(incidents: Incident[], crews: Crew[]): MapRecord[] {
   ];
 }
 
-function markerIcon(record: MapRecord, encoding: MapEncoding) {
+function markerIcon(record: MapRecord, encoding: MapEncoding, relationship: "selected" | "related" | null) {
   const incident = record.incident;
   const style = encoding === "customers" ? { size: incident ? Math.min(42, 24 + Math.log10(Math.max(1, incident.customers_out)) * 5) : 28 }
     : encoding === "age" ? { size: incident ? Math.min(42, 26 + Math.log10(Math.max(1, incident.age_minutes)) * 4) : 28 } : { size: 28 };
@@ -147,14 +147,16 @@ function markerIcon(record: MapRecord, encoding: MapEncoding) {
     : encoding === "severity" ? ({ critical: "#9d1c1c", high: "#bd3c2f", medium: "#c47b16", low: "#3d7f4f" }[incident?.severity.toLowerCase() ?? ""] ?? "#6b7c8f")
     : "#bd3c2f";
   return L.divIcon({
-    className: `operations-marker operations-marker-${record.kind}`,
+    className: `operations-marker operations-marker-${record.kind}${relationship ? ` operations-marker-${relationship}` : ""}`,
     html: `<span style="background:${color};width:${style.size}px;height:${style.size}px">${record.kind === "incident" ? "!" : "C"}</span>`, iconSize: [style.size, style.size], iconAnchor: [style.size / 2, style.size / 2]
   });
 }
 
-function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport, onViewportChange, encoding }: {
+function MapCanvas({ records, selected, relatedKeys, connectors, onSelect, homeRequest, restoredViewport, onViewportChange, encoding }: {
   records: MapRecord[];
   selected: string | null;
+  relatedKeys: Set<string>;
+  connectors: Array<[[number, number], [number, number]]>;
   onSelect: (key: string) => void;
   homeRequest: number;
   restoredViewport?: MapViewportState | null;
@@ -165,7 +167,10 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
   const map = useRef<L.Map | null>(null);
   const clusters = useRef<L.MarkerClusterGroup | null>(null);
   const markers = useRef(new Map<string, L.Marker>());
+  const styledKeys = useRef(new Set<string>());
+  const highlightedMarkers = useRef(new Set<L.Marker>());
   const tiles = useRef<L.TileLayer | null>(null);
+  const relationshipLines = useRef<L.LayerGroup | null>(null);
   const skipInitialSelectionReveal = useRef(Boolean(restoredViewport && selected));
   const homeRequestMounted = useRef(false);
   const [tileError, setTileError] = useState(false);
@@ -178,12 +183,14 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(instance);
+    relationshipLines.current = L.layerGroup().addTo(instance);
     tileLayer.on("tileerror", () => setTileError(true));
     const group = L.markerClusterGroup({
       maxClusterRadius: 42, showCoverageOnHover: false, animate: false,
       spiderfyOnMaxZoom: true,
       iconCreateFunction: (cluster) => L.divIcon({
-        html: `<span aria-label="${cluster.getChildCount()} grouped records">${cluster.getChildCount()}</span>`, className: "operations-cluster",
+        html: `<span aria-label="${cluster.getChildCount()} grouped records">${cluster.getChildCount()}</span>`,
+        className: `operations-cluster${cluster.getAllChildMarkers().some((marker) => highlightedMarkers.current.has(marker)) ? " operations-cluster-related" : ""}`,
         iconSize: [38, 38]
       })
     }).addTo(instance);
@@ -200,7 +207,7 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
     observer.observe(element.current);
     return () => {
       observer.disconnect(); instance.off("moveend", reportViewport); instance.remove();
-      map.current = null; clusters.current = null; tiles.current = null; markers.current.clear();
+      map.current = null; clusters.current = null; tiles.current = null; relationshipLines.current = null; markers.current.clear(); styledKeys.current.clear(); highlightedMarkers.current.clear();
     };
   }, []);
 
@@ -214,7 +221,7 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
       const tooltip = document.createElement("span");
       tooltip.textContent = label;
       const marker = L.marker(record.coordinates, {
-        icon: markerIcon(record, encoding), title: label, alt: label, keyboard: true
+        icon: markerIcon(record, encoding, null), title: label, alt: label, keyboard: true
       }).bindTooltip(tooltip).on("click", () => onSelect(record.key));
       marker.on("keydown", (event: L.LeafletKeyboardEvent) => {
         if (event.originalEvent.key === "Enter" || event.originalEvent.key === " ") {
@@ -230,14 +237,43 @@ function MapCanvas({ records, selected, onSelect, homeRequest, restoredViewport,
   }, [encoding, onSelect, records]);
 
   useEffect(() => {
+    const next = new Set(relatedKeys);
+    if (selected) next.add(selected);
+    const byKey = new Map(records.map((record) => [record.key, record]));
+    new Set([...styledKeys.current, ...next]).forEach((key) => {
+      const record = byKey.get(key);
+      if (record) markers.current.get(key)?.setIcon(markerIcon(record, encoding,
+        key === selected ? "selected" : relatedKeys.has(key) ? "related" : null));
+    });
+    styledKeys.current = next;
+    highlightedMarkers.current = new Set([...next].map((key) => markers.current.get(key)).filter((marker): marker is L.Marker => Boolean(marker)));
+    clusters.current?.refreshClusters();
+  }, [encoding, records, relatedKeys, selected]);
+
+  useEffect(() => {
+    const group = relationshipLines.current;
+    if (!group) return;
+    group.clearLayers();
+    connectors.forEach(([from, to]) => {
+      L.polyline([from, to], { color: "#51418b", weight: 3, opacity: 0.85, dashArray: "6 6", interactive: false }).addTo(group);
+    });
+  }, [connectors]);
+
+  useEffect(() => {
     if (!selected) return;
     if (skipInitialSelectionReveal.current) {
       skipInitialSelectionReveal.current = false;
       return;
     }
+    if (connectors.length > 0) {
+      map.current?.fitBounds(L.latLngBounds(connectors.flatMap(([from, to]) => [from, to])), {
+        padding: [36, 36], maxZoom: 12, animate: false
+      });
+      return;
+    }
     const marker = markers.current.get(selected);
     if (marker) clusters.current?.zoomToShowLayer(marker, () => marker.openTooltip());
-  }, [selected, records]);
+  }, [connectors, selected, records]);
 
   useEffect(() => {
     if (!homeRequestMounted.current) {
@@ -293,6 +329,7 @@ export default function OperationsMap({
   const [crewShift, setCrewShift] = useState(restoredState?.crewShift ?? "all");
   const [crewAssignment, setCrewAssignment] = useState(restoredState?.crewAssignment ?? "all");
   const [crewPreset, setCrewPreset] = useState(restoredState?.crewPreset ?? "all");
+  const [showRelationships, setShowRelationships] = useState(restoredState?.showRelationships ?? false);
   const [selected, setSelected] = useState<string | null>(restoredState?.selected ?? null);
   const [page, setPage] = useState(restoredState?.page ?? 0);
   const [viewport, setViewport] = useState<MapViewportState | null>(restoredState?.viewport ?? null);
@@ -360,6 +397,24 @@ export default function OperationsMap({
   const pageCount = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const selection = filtered.find((r) => r.key === selected);
+  const related = useMemo(() => {
+    if (!selection) return [];
+    const references = selection.incident
+      ? selection.incident.assigned_crews.map((assignment) => ({ key: `crew:${assignment.crew_id}`, name: assignment.crew_name }))
+      : selection.crew?.assigned_incidents.map((assignment) => ({ key: `incident:${assignment.incident_id}`, name: assignment.incident_id })) ?? [];
+    const byKey = new Map(all.map((record) => [record.key, record]));
+    const visibleKeys = new Set(filtered.map((record) => record.key));
+    return Array.from(new Map(references.map((reference) => [reference.key, reference])).values()).map((reference) => ({
+      ...reference, record: byKey.get(reference.key), visible: visibleKeys.has(reference.key)
+    }));
+  }, [all, filtered, selection]);
+  const relatedKeys = useMemo(() => new Set(related.filter((item) => item.visible).map((item) => item.key)), [related]);
+  const connectors = useMemo((): Array<[[number, number], [number, number]]> => {
+    if (!showRelationships || !selection?.coordinates) return [];
+    return related.flatMap(({ record, visible }) => visible && record?.coordinates &&
+      (record.coordinates[0] !== selection.coordinates![0] || record.coordinates[1] !== selection.coordinates![1])
+      ? [[selection.coordinates!, record.coordinates]] : []);
+  }, [related, selection, showRelationships]);
   const mapNavigationContext: NavigationResolverContext = {
     ...(navigationContext ?? { incidents, crews }),
     currentView: "map",
@@ -400,11 +455,12 @@ export default function OperationsMap({
       crewShift,
       crewAssignment,
       crewPreset,
+      showRelationships,
       selected: selection?.key ?? null,
       page: currentPage,
       viewport
     });
-  }, [assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, unmappedOnly, viewport]);
+  }, [assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, showRelationships, unmappedOnly, viewport]);
 
   useEffect(() => {
     if (!navigationTarget) return;
@@ -491,12 +547,15 @@ export default function OperationsMap({
       <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
     </div>
     <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {filtered.filter((record) => record.kind === "incident").length.toLocaleString()} incidents · {filtered.filter((record) => record.kind === "crew").length.toLocaleString()} crews match facets</p>
+    {selection && <label className="operations-map-relationship-toggle"><input type="checkbox" checked={showRelationships} onChange={(event) => setShowRelationships(event.target.checked)} /> Show assignment relationship connectors <span>(straight lines, not routes)</span></label>}
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">
       <div>
         <MapCanvas
           records={filtered}
           selected={selection?.key ?? null}
+          relatedKeys={relatedKeys}
+          connectors={connectors}
           onSelect={select}
           homeRequest={homeRequest}
           restoredViewport={restoredState?.viewport}
@@ -507,6 +566,8 @@ export default function OperationsMap({
           <span><b className="operations-legend-incident">!</b> Incident</span>
           <span><b className="operations-legend-crew">C</b> Crew</span>
           <span><b className="operations-legend-cluster">#</b> Grouped records — click to expand</span>
+          {selection && <span><b className="operations-legend-related">◎</b> Selected or assigned record</span>}
+          {connectors.length > 0 && <span><b className="operations-legend-relationship">┄</b> Assignment relationship, not a route</span>}
           <span>Encoding: {encodingLabel(encoding)}</span>
           {encoding === "severity" && <span className="operations-map-encoding-key" aria-label="Severity colors">
             <i className="operations-swatch operations-swatch-critical" aria-label="Critical severity" />Critical
@@ -530,14 +591,26 @@ export default function OperationsMap({
           <div className="operations-map-detail-heading"><h3>{selection.title}</h3><button aria-label="Clear map selection" type="button" onClick={() => setSelected(null)}>×</button></div>
           <p>{selection.kind === "incident" ? "Incident" : "Crew"} · {selection.status.replace(/_/g, " ")}</p>
           <dl><dt>Location</dt><dd>{selection.location}</dd><dt>Region</dt><dd>{selection.region}</dd>
-            {selection.incident && <><dt>Customers out</dt><dd>{selection.incident.customers_out.toLocaleString()}</dd><dt>Severity / hazard</dt><dd>{selection.detail}</dd><dt>Assigned crews</dt><dd>{selection.incident.assigned_crews.length ? <div className="map-related-actions">{selection.incident.assigned_crews.map((crew) => <EntityNavigationActions accessibleLabel={`${crew.crew_name} destinations`} context={mapNavigationContext} destinationKinds={["full_detail"]} key={crew.assignment_id} labelOverrides={{ full_detail: crew.crew_name }} onNavigate={onNavigate} reference={{ kind: "crew", id: crew.crew_id }} />)}</div> : "None"}</dd></>}
-            {selection.crew && <><dt>Capability</dt><dd>{selection.crew.capability}</dd><dt>Assigned incidents</dt><dd>{selection.crew.assigned_incidents.length ? <div className="map-related-actions">{selection.crew.assigned_incidents.map((assignment) => <EntityNavigationActions accessibleLabel={`${assignment.incident_id} destinations`} context={mapNavigationContext} destinationKinds={["full_detail"]} key={assignment.assignment_id} labelOverrides={{ full_detail: assignment.incident_id }} onNavigate={onNavigate} reference={{ kind: "incident", id: assignment.incident_id }} />)}</div> : "None"}</dd></>}
+            {selection.incident && <><dt>Customers out</dt><dd>{selection.incident.customers_out.toLocaleString()}</dd><dt>Severity / hazard</dt><dd>{selection.detail}</dd><dt>Assigned crews</dt><dd>{related.length}</dd></>}
+            {selection.crew && <><dt>Capability</dt><dd>{selection.crew.capability}</dd><dt>Assigned incidents</dt><dd>{related.length}</dd></>}
           </dl>
           <p>{!selection.coordinates ? "Location unavailable — this record is not plotted." : selection.kind === "crew" ? `Approximate center: ${selection.crew?.map_location?.village}` : "Synthetic incident location"}</p>
+          <section className="operations-map-relationships" aria-label="Assignment relationships">
+            <h3>Assignment relationships ({related.length})</h3>
+            {related.length === 0 ? <p>No current assignments for this record.</p> : <ul>{related.map((item) => <li key={item.key}>
+              <strong>{item.name}</strong>
+              <span>{!item.record ? "Record unavailable in this scenario" : !item.visible ? "Hidden by current map filters" : !item.record.coordinates ? "Visible in list · location unavailable" : "Visible on map"}</span>
+              {item.visible && <button type="button" onClick={() => { setPage(Math.floor(filtered.findIndex((record) => record.key === item.key) / PAGE_SIZE)); select(item.key); }}>Select {item.name} on map</button>}
+              {item.record && <EntityNavigationActions accessibleLabel={`${item.name} destinations`} context={mapNavigationContext} destinationKinds={["full_detail"]} labelOverrides={{ full_detail: `Open ${item.name} details` }} onNavigate={onNavigate} reference={{ kind: item.record.kind, id: item.record.id }} />}
+            </li>)}</ul>}
+            {related.some((item) => item.visible && item.record?.coordinates && selection.coordinates &&
+              item.record.coordinates[0] === selection.coordinates[0] && item.record.coordinates[1] === selection.coordinates[1]) &&
+              <p>Some assigned records share a map point; no line appears between overlapping locations.</p>}
+          </section>
           <ContextualNavigationPanel context={mapNavigationContext} onNavigate={onNavigate} reference={{ kind: selection.kind, id: selection.id }} />
         </div> : <div className="operations-map-help"><h3>Explore the scenario</h3><p>Select a marker or record for details. Open its incident or crew screen to continue the existing workflow.</p></div>}
         <div className="operations-map-list-heading"><h3>Records ({listed.length.toLocaleString()})</h3><label><input type="checkbox" checked={unmappedOnly} onChange={(e) => setUnmappedOnly(e.target.checked)} /> Unmapped only</label></div>
-        <ul className="operations-map-records" aria-label="Map record list">{listed.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE).map((r) => <li key={r.key}><button type="button" aria-pressed={selection?.key === r.key} onClick={() => select(r.key)}><strong>{r.kind === "incident" ? "!" : "C"} · {r.title}</strong><span>{r.location} · {r.status.replace(/_/g, " ")}{!r.coordinates ? " · Unmapped" : ""}</span></button></li>)}</ul>
+        <ul className="operations-map-records" aria-label="Map record list">{listed.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE).map((r) => <li key={r.key}><button type="button" aria-pressed={selection?.key === r.key} data-related={relatedKeys.has(r.key)} onClick={() => select(r.key)}><strong>{r.kind === "incident" ? "!" : "C"} · {r.title}</strong><span>{r.location} · {r.status.replace(/_/g, " ")}{!r.coordinates ? " · Unmapped" : ""}{relatedKeys.has(r.key) ? " · Assigned relationship" : ""}</span></button></li>)}</ul>
         {listed.length === 0 && <p>No records match these filters.</p>}
         <div className="operations-map-pagination"><button type="button" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>Previous</button><span>{currentPage + 1} / {pageCount}</span><button type="button" disabled={currentPage + 1 >= pageCount} onClick={() => setPage(currentPage + 1)}>Next</button></div>
       </aside>

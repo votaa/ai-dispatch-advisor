@@ -16,6 +16,9 @@ const crew: Crew = {
   travel_minutes_to_selected_incident: 10, assigned_incidents: [],
   map_location: { latitude: 40.77, longitude: -73.52, village: "Hicksville", reference_id: "village-1", precision: "village_center" }
 };
+const assignment = { assignment_id: "a-1", incident_id: "INC-1", assigned_at: "2026-09-21T00:00:00Z", municipality: "Hicksville", severity: "critical" };
+const assignedCrew = { ...crew, status: "assigned", assigned_incidents: [assignment], map_location: { ...crew.map_location!, latitude: 40.8 } };
+const assignedIncident = { ...incident, assigned_crews: [{ crew_id: "C1", crew_name: "Line crew 1", assignment_id: "a-1", assigned_at: "2026-09-21T00:00:00Z" }] };
 
 beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(1024);
@@ -240,6 +243,61 @@ describe("Operations Map", () => {
     render(<OperationsMap incidents={[]} crews={[crew]} onNavigate={vi.fn()} />);
     fireEvent.keyDown(screen.getByRole("button", {name: "Crew Line crew 1 · Hicksville"}), {key: "Enter"});
     expect(screen.getByRole("button", {name: "Open crew details"})).toBeTruthy();
+  });
+
+  it("shows assigned records, selects them across list pages, and draws opt-in assignment connectors", () => {
+    const line = vi.spyOn(L, "polyline");
+    const fitBounds = vi.spyOn(L.Map.prototype, "fitBounds");
+    const incidents = [assignedIncident, ...Array.from({ length: 24 }, (_, index) => ({ ...incident, incident_id: `OTHER-${index}` }))];
+    render(<OperationsMap incidents={incidents} crews={[assignedCrew]} onNavigate={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /! · INC-1/ }));
+    expect(screen.getByRole("region", { name: "Assignment relationships" }).textContent).toContain("Visible on map");
+    expect(line).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("checkbox", { name: /Show assignment relationship connectors/ }));
+    expect(line).toHaveBeenCalledTimes(1);
+    expect(line).toHaveBeenCalledWith([[40.77, -73.52], [40.8, -73.52]], expect.objectContaining({ dashArray: "6 6", interactive: false }));
+    const relationshipBounds = fitBounds.mock.lastCall?.[0] as L.LatLngBounds;
+    expect(relationshipBounds.contains([40.77, -73.52])).toBe(true);
+    expect(relationshipBounds.contains([40.8, -73.52])).toBe(true);
+    expect(fitBounds.mock.lastCall?.[1]).toEqual(expect.objectContaining({ maxZoom: 12, animate: false }));
+    fireEvent.click(screen.getByRole("button", { name: "Select Line crew 1 on map" }));
+    expect(screen.getByText("2 / 2")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /C · Line crew 1/ }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Clear map selection" }));
+    expect(screen.queryByRole("checkbox", { name: /Show assignment relationship connectors/ })).toBeNull();
+    expect(screen.queryByRole("region", { name: "Assignment relationships" })).toBeNull();
+  });
+
+  it("discloses filtered and unmapped assigned records without drawing misleading lines", () => {
+    const line = vi.spyOn(L, "polyline");
+    render(<OperationsMap incidents={[assignedIncident]} crews={[{ ...assignedCrew, map_location: null }]} onNavigate={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /! · INC-1/ }));
+    expect(screen.getByRole("region", { name: "Assignment relationships" }).textContent).toContain("Visible in list · location unavailable");
+    fireEvent.click(screen.getByRole("checkbox", { name: /Show assignment relationship connectors/ }));
+    expect(line).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText("Map crew status"), { target: { value: "available" } });
+    expect(screen.getByRole("region", { name: "Assignment relationships" }).textContent).toContain("Hidden by current map filters");
+    expect(screen.queryByRole("button", { name: "Select Line crew 1 on map" })).toBeNull();
+  });
+
+  it("keeps overlapping assigned points in the relationship panel without a connector", () => {
+    const line = vi.spyOn(L, "polyline");
+    render(<OperationsMap incidents={[assignedIncident]} crews={[{ ...assignedCrew, map_location: crew.map_location }]} onNavigate={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /! · INC-1/ }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /Show assignment relationship connectors/ }));
+    expect(screen.getByText(/Some assigned records share a map point/)).toBeTruthy();
+    expect(line).not.toHaveBeenCalled();
+  });
+
+  it("uses a selected crew's assignments and reports missing scenario records", () => {
+    const withMissing = { ...assignedCrew, assigned_incidents: [assignment, { ...assignment, assignment_id: "a-2", incident_id: "INC-MISSING" }] };
+    render(<OperationsMap incidents={[assignedIncident]} crews={[withMissing]} onNavigate={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
+    const relationships = screen.getByRole("region", { name: "Assignment relationships" });
+    expect(relationships.textContent).toContain("Assignment relationships (2)");
+    expect(relationships.textContent).toContain("Record unavailable in this scenario");
+    expect(screen.getByRole("button", { name: "Select INC-1 on map" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Select INC-MISSING on map" })).toBeNull();
   });
 
 });

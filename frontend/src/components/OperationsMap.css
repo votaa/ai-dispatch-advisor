@@ -21,7 +21,10 @@
 .operations-map .operations-marker > span { display: grid; place-items: center; color: white; border: 2px solid white; box-shadow: 0 1px 5px #17202a66; }
 .operations-marker-incident > span { border-radius: 50%; }
 .operations-marker-crew > span { border-radius: 5px; }
+.operations-map .operations-marker-selected > span { outline: 4px solid #222; outline-offset: 2px; }
+.operations-map .operations-marker-related > span { outline: 4px dashed #51418b; outline-offset: 2px; }
 .operations-cluster { display: grid; place-items: center; background: #173f59; color: white; border: 3px solid #cbdfe9; border-radius: 50%; font-weight: 800; font-size: 13px; }
+.operations-cluster-related { border: 4px dashed #51418b; background: #f1edfa; color: #2e2463; }
 .operations-map-legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 13px 0; font-size: 12px; }
 .operations-map-legend span { display: flex; align-items: center; gap: 6px; }
 .operations-map-legend b { display: inline-grid; place-items: center; color: white; width: 22px; height: 22px; }
@@ -37,6 +40,10 @@
 .operations-legend-incident { background: #bd3c2f; border-radius: 50%; }
 .operations-legend-crew { background: #176a96; border-radius: 4px; }
 .operations-legend-cluster { background: #173f59; border-radius: 50%; }
+.operations-legend-related { border: 2px dashed #51418b; border-radius: 50%; color: #51418b !important; }
+.operations-legend-relationship { color: #51418b !important; font-size: 22px; }
+.operations-map-relationship-toggle { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; font-size: 13px; font-weight: 600; }
+.operations-map-relationship-toggle span { color: #526578; font-weight: 400; }
 .operations-map .operations-map-note { font-size: 12px; color: #526578; line-height: 1.6; }
 .operations-map-warning { position: absolute; top: 10px; left: 55px; right: 10px; z-index: 1000; background: #fff4d9; border: 1px solid #a97a15; border-radius: 5px; padding: 10px; font-size: 13px; }
 .operations-map-warning button { margin: 6px 0 0 6px; }
@@ -48,12 +55,18 @@
 .operations-map-detail dl { display: grid; grid-template-columns: 100px minmax(0, 1fr); font-size: 12px; gap: 8px; }
 .operations-map-detail dt { color: #526578; }
 .operations-map-detail dd { margin: 0; }
-.map-related-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+.operations-map-relationships { margin: 12px 0; border-top: 1px solid #c8d7e2; padding-top: 12px; }
+.operations-map-relationships ul { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 10px; }
+.operations-map-relationships li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+.operations-map-relationships li strong { flex-basis: 100%; }
+.operations-map-relationships li span { color: #526578; flex-basis: 100%; }
+.operations-map-relationships button { font-size: 12px; padding: 5px 7px; }
 .operations-map-list-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 16px 0 10px; }
 .operations-map-list-heading label { font-size: 12px; }
 .operations-map-records { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }
 .operations-map-records button { display: block; width: 100%; text-align: left; padding: 10px; border: 0; border-bottom: 1px solid #e1e7ed; border-radius: 0; overflow-wrap: anywhere; }
 .operations-map-records button:hover, .operations-map-records button[aria-pressed=true] { background: #e6f1f8; }
+.operations-map-records button[data-related=true] { box-shadow: inset 4px 0 #51418b; background: #f1edfa; }
 .operations-map-records strong { display: block; font-size: 12px; }
 .operations-map-records span { display: block; font-size: 11px; color: #526578; margin-top: 4px; }
 .operations-map-pagination { display: flex; justify-content: space-between; align-items: center; font-size: 12px; gap: 8px; padding-top: 10px; }
