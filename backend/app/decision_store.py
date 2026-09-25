@@ -191,6 +191,24 @@ def unassigned_assignment_ids(scenario_id: str) -> set[str]:
     return {str(row["assignment_id"]) for row in rows}
 
 
+def recent_assignment_mutations(scenario_id: str, limit: int = 25, offset: int = 0) -> list[dict[str, Any]]:
+    init_store()
+    with _lock, _connect() as connection:
+        rows = connection.execute(
+            """
+            SELECT mutation_id, scenario_id, assignment_id, incident_id, crew_id,
+                   action, reason, reason_category, note, actor, created_at,
+                   new_assignment_id, new_crew_id, resulting_incident_status
+            FROM assignment_mutations
+            WHERE scenario_id = ?
+            ORDER BY created_at DESC, mutation_id DESC
+            LIMIT ? OFFSET ?
+            """,
+            (scenario_id, limit, offset),
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
 def record_unassignment(
     *,
     scenario_id: str,
@@ -199,6 +217,7 @@ def record_unassignment(
     crew_id: str,
     reason_category: str,
     note: str | None,
+    resulting_incident_status: str,
     actor: str = "demo-dispatcher",
 ) -> dict[str, Any]:
     init_store()
@@ -209,9 +228,10 @@ def record_unassignment(
             """
             INSERT INTO assignment_mutations (
               mutation_id, scenario_id, assignment_id, incident_id, crew_id,
-              action, reason, actor, created_at, reason_category, note
+              action, reason, actor, created_at, reason_category, note,
+              resulting_incident_status
             )
-            VALUES (?, ?, ?, ?, ?, 'unassigned', ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 'unassigned', ?, ?, ?, ?, ?, ?)
             """,
             (
                 mutation_id,
@@ -224,6 +244,7 @@ def record_unassignment(
                 created_at,
                 reason_category,
                 note,
+                resulting_incident_status,
             ),
         )
     return {
@@ -238,6 +259,7 @@ def record_unassignment(
         "note": note,
         "actor": actor,
         "created_at": created_at,
+        "resulting_incident_status": resulting_incident_status,
     }
 
 
@@ -250,6 +272,7 @@ def record_reassignment(
     selected_crew_id: str,
     reason_category: str,
     note: str | None,
+    resulting_incident_status: str,
     actor: str = "demo-dispatcher",
 ) -> dict[str, Any]:
     init_store()
@@ -261,9 +284,10 @@ def record_reassignment(
             """
             INSERT INTO assignment_mutations (
               mutation_id, scenario_id, assignment_id, incident_id, crew_id,
-              action, reason, actor, created_at, reason_category, note
+              action, reason, actor, created_at, reason_category, note,
+              new_assignment_id, new_crew_id, resulting_incident_status
             )
-            VALUES (?, ?, ?, ?, ?, 'reassigned', ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 'reassigned', ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 mutation_id,
@@ -276,6 +300,9 @@ def record_reassignment(
                 created_at,
                 reason_category,
                 note,
+                new_assignment_id,
+                selected_crew_id,
+                resulting_incident_status,
             ),
         )
         connection.execute(
@@ -310,6 +337,7 @@ def record_reassignment(
         "created_at": created_at,
         "new_assignment_id": new_assignment_id,
         "new_crew_id": selected_crew_id,
+        "resulting_incident_status": resulting_incident_status,
     }
 
 

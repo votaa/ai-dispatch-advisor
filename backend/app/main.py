@@ -17,7 +17,7 @@ from .api_models import (
     RecommendationActionRequest,
     ScenarioActivationRequest,
 )
-from .domain.models import Assignment, Crew, Incident, Recommendation, RecommendationDecision
+from .domain.models import Assignment, AssignmentMutation, Crew, Incident, Recommendation, RecommendationDecision
 from .error_contracts import ERROR_RESPONSES, install_error_contract
 from .scenario_service import ScenarioDescriptor
 from .services import (
@@ -113,6 +113,11 @@ def assignment_action(request: AssignmentActionRequest) -> AssignmentActionRespo
         reason_category=request.reason_category,
         note=request.note,
     )
+
+
+@app.get("/api/assignment-actions/history", response_model=list[AssignmentMutation])
+def assignment_action_history(limit: int = 25, offset: int = 0) -> list[AssignmentMutation]:
+    return services.assignments.recent_mutations(limit, offset)
 
 
 @app.get("/api/weather")

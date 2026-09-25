@@ -18,20 +18,24 @@ def test_fresh_database_applies_all_migrations(tmp_path: Path) -> None:
         history = applied_migrations(connection)
         audit_columns = _columns(connection, "recommendation_audit_events")
         assignment_columns = _columns(connection, "demo_assignments")
+        mutation_columns = _columns(connection, "assignment_mutations")
         indexes = _indexes(connection)
 
-    assert version == 5
+    assert version == 6
     assert [(row["version"], row["name"]) for row in history] == [
         (1, "create_decision_store"),
         (2, "add_scenario_scope"),
         (3, "add_decision_indexes"),
         (4, "create_assignment_mutations"),
         (5, "add_assignment_reason_categories"),
+        (6, "assignment_mutation_history"),
     ]
     assert "scenario_id" in audit_columns
     assert "scenario_id" in assignment_columns
+    assert {"new_assignment_id", "new_crew_id", "resulting_incident_status"} <= mutation_columns
     assert "idx_recommendation_audit_events_scenario_incident" in indexes
     assert "idx_demo_assignments_scenario_active" in indexes
+    assert "idx_assignment_mutations_scenario_created" in indexes
 
 
 def test_migrations_are_idempotent_and_preserve_rows(tmp_path: Path) -> None:
@@ -60,8 +64,8 @@ def test_migrations_are_idempotent_and_preserve_rows(tmp_path: Path) -> None:
         )
         connection.commit()
 
-        assert run_migrations(connection) == 5
-        assert len(applied_migrations(connection)) == 5
+        assert run_migrations(connection) == 6
+        assert len(applied_migrations(connection)) == 6
         row = connection.execute(
             "SELECT scenario_id, recommendation_id FROM recommendation_audit_events"
         ).fetchone()
@@ -102,7 +106,7 @@ def test_current_unversioned_schema_is_baselined_without_data_loss(tmp_path: Pat
             ("existing-event",),
         ).fetchone()
 
-    assert [entry["version"] for entry in history] == [1, 2, 3, 4, 5]
+    assert [entry["version"] for entry in history] == [1, 2, 3, 4, 5, 6]
     assert row == ("crew-shortage", "No qualified crew")
 
 
@@ -134,7 +138,7 @@ def test_incomplete_existing_schema_is_rejected(tmp_path: Path) -> None:
 def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
     migration_copy = tmp_path / "migrations"
     shutil.copytree(MIGRATIONS_DIR, migration_copy)
-    (migration_copy / "006_invalid_change.sql").write_text(
+    (migration_copy / "007_invalid_change.sql").write_text(
         """
         CREATE TABLE should_be_rolled_back (id TEXT PRIMARY KEY);
         INSERT INTO table_that_does_not_exist (id) VALUES ('fail');
@@ -143,7 +147,7 @@ def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
     )
 
     with sqlite3.connect(tmp_path / "rollback.db") as connection:
-        with pytest.raises(MigrationError, match="006_invalid_change"):
+        with pytest.raises(MigrationError, match="007_invalid_change"):
             run_migrations(connection, migration_copy)
 
         assert "should_be_rolled_back" not in {
@@ -152,7 +156,49 @@ def test_failed_migration_rolls_back_schema_and_history(tmp_path: Path) -> None:
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5]
+        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5, 6]
+
+
+def test_history_migration_recovers_replacement_without_inventing_outcome(tmp_path: Path) -> None:
+    old_migrations = tmp_path / "old-migrations"
+    old_migrations.mkdir()
+    for source in sorted(MIGRATIONS_DIR.glob("0*.sql"))[:5]:
+        shutil.copy(source, old_migrations / source.name)
+
+    with sqlite3.connect(tmp_path / "upgrade.db") as connection:
+        assert run_migrations(connection, old_migrations) == 5
+        connection.execute(
+            """
+            INSERT INTO assignment_mutations (
+              mutation_id, scenario_id, assignment_id, incident_id, crew_id,
+              action, reason, actor, created_at, reason_category, note
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("MUT-OLD", "base", "ASG-OLD", "INC-1", "CR-OLD", "reassigned",
+             "Crew unavailable", "tester", "2026-09-01T12:00:00+00:00",
+             "crew_unavailable", None),
+        )
+        connection.execute(
+            """
+            INSERT INTO demo_assignments (
+              assignment_id, scenario_id, incident_id, crew_id, status,
+              assigned_at, notes, decision_event_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("ASG-NEW", "base", "INC-1", "CR-NEW", "active",
+             "2026-09-01T12:00:00+00:00", "Reassigned", "MUT-OLD"),
+        )
+        connection.commit()
+
+        assert run_migrations(connection) == 6
+        row = connection.execute(
+            """
+            SELECT new_assignment_id, new_crew_id, resulting_incident_status
+            FROM assignment_mutations WHERE mutation_id = 'MUT-OLD'
+            """
+        ).fetchone()
+
+    assert row == ("ASG-NEW", "CR-NEW", None)
 
 
 def _columns(connection: sqlite3.Connection, table: str) -> set[str]:

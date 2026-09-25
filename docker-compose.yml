@@ -20,6 +20,7 @@ services:
       AIDA_COPILOT_MAX_CONTEXT_RECORDS: ${AIDA_COPILOT_MAX_CONTEXT_RECORDS:-30}
     volumes:
       - ./data/scenarios:/app/data/scenarios:ro
+      - ./database:/app/database
 
   frontend:
     image: node:20-slim

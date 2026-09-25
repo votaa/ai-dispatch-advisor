@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from ..domain.models import Assignment
+from ..domain.models import Assignment, AssignmentMutation
 from .errors import AssignmentConflictError, AssignmentCrewSelectionError, AssignmentReasonRequiredError
 
 
@@ -28,6 +28,7 @@ class AssignmentService:
         record_unassignment: Callable[..., dict[str, Any]] = lambda **_kwargs: {},
         crew_rows: Callable[[], list[dict[str, Any]]] = lambda: [],
         record_reassignment: Callable[..., dict[str, Any]] = lambda **_kwargs: {},
+        recent_mutations: Callable[[str, int, int], list[dict[str, Any]]] = lambda _scenario_id, _limit, _offset: [],
     ) -> None:
         self._active_scenario_id = active_scenario_id
         self._baseline_assignments = baseline_assignments
@@ -36,6 +37,15 @@ class AssignmentService:
         self._record_unassignment = record_unassignment
         self._crew_rows = crew_rows
         self._record_reassignment = record_reassignment
+        self._recent_mutations = recent_mutations
+
+    def recent_mutations(self, limit: int = 25, offset: int = 0) -> list[AssignmentMutation]:
+        bounded_limit = max(1, min(limit, 100))
+        bounded_offset = max(0, offset)
+        return [
+            AssignmentMutation.model_validate(row)
+            for row in self._recent_mutations(self._active_scenario_id(), bounded_limit, bounded_offset)
+        ]
 
     def list_active(self) -> list[Assignment]:
         scenario_id = self._active_scenario_id()
@@ -68,8 +78,9 @@ class AssignmentService:
     ) -> dict[str, Any]:
         normalized_note = self._validate_reason(reason_category, note)
 
+        active_assignments = self.list_active()
         assignment = next(
-            (item for item in self.list_active() if item.assignment_id == assignment_id),
+            (item for item in active_assignments if item.assignment_id == assignment_id),
             None,
         )
         if assignment is None:
@@ -82,6 +93,12 @@ class AssignmentService:
             crew_id=assignment.crew_id,
             reason_category=reason_category,
             note=normalized_note,
+            resulting_incident_status=(
+                "assigned" if any(
+                    item.incident_id == assignment.incident_id and item.assignment_id != assignment_id
+                    for item in active_assignments
+                ) else "unassigned"
+            ),
             actor=actor,
         )
 
@@ -124,6 +141,7 @@ class AssignmentService:
             selected_crew_id=selected_crew_id,
             reason_category=reason_category,
             note=normalized_note,
+            resulting_incident_status="assigned",
             actor=actor,
         )
 

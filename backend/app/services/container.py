@@ -69,6 +69,7 @@ def build_services(
         record_unassignment=decision_store.record_unassignment,
         crew_rows=data_loader.crews,
         record_reassignment=decision_store.record_reassignment,
+        recent_mutations=decision_store.recent_assignment_mutations,
     )
     incidents = IncidentService(
         active_scenario_id=data_loader.get_active_scenario,

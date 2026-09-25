@@ -179,6 +179,7 @@ class AssignmentMutation(DomainModel):
     created_at: str
     new_assignment_id: Optional[str] = None
     new_crew_id: Optional[str] = None
+    resulting_incident_status: Optional[Literal["assigned", "unassigned"]] = None
 
 
 class AuditEvent(DomainModel):

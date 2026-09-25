@@ -40,7 +40,7 @@ def test_application_startup_applies_database_migrations() -> None:
         assert startup_client.get("/health").status_code == 200
 
     with decision_store._connect() as connection:
-        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5]
+        assert [row["version"] for row in applied_migrations(connection)] == [1, 2, 3, 4, 5, 6]
 
 
 def test_openapi_exposes_explicit_core_response_contracts() -> None:
@@ -383,6 +383,10 @@ def test_unassigning_active_assignment_updates_incident_and_crew_state() -> None
     mutation = response.json()
     assert mutation["action"] == "unassigned"
     assert mutation["assignment_id"] == assignment["assignment_id"]
+    assert mutation["resulting_incident_status"] == "unassigned"
+    history = client.get("/api/assignment-actions/history")
+    assert history.status_code == 200
+    assert history.json() == [mutation]
     assert not any(item["assignment_id"] == assignment["assignment_id"] for item in client.get("/api/assignments").json())
 
     incident = client.get("/api/incidents/INC-1001").json()
@@ -450,6 +454,8 @@ def test_reassign_retires_old_assignment_and_activates_available_crew() -> None:
     mutation = response.json()
     assert mutation["action"] == "reassigned"
     assert mutation["new_crew_id"] == replacement["crew_id"]
+    assert mutation["resulting_incident_status"] == "assigned"
+    assert client.get("/api/assignment-actions/history").json() == [mutation]
     active = client.get("/api/assignments").json()
     assert not any(item["assignment_id"] == current["assignment_id"] for item in active)
     assert any(item["assignment_id"] == mutation["new_assignment_id"] and item["crew_id"] == replacement["crew_id"] for item in active)
@@ -463,6 +469,76 @@ def test_reassign_retires_old_assignment_and_activates_available_crew() -> None:
     new_crew = next(item for item in client.get("/api/crews").json() if item["crew_id"] == replacement["crew_id"])
     assert new_crew["status"] == "assigned"
     assert new_crew["assigned_incidents"][0]["incident_id"] == "INC-1001"
+
+
+def test_assignment_history_is_scenario_scoped_and_survives_new_database_connection() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    client.post(
+        "/api/recommendation-actions",
+        json={"incident_id": "INC-1001", "action": "accepted", "recommendation": recommendation},
+    )
+    assignment = next(item for item in client.get("/api/assignments").json() if item["incident_id"] == "INC-1001")
+    mutation = client.post(
+        "/api/assignment-actions",
+        json={"assignment_id": assignment["assignment_id"], "action": "unassigned",
+              "reason_category": "other", "note": "Field report verified"},
+    ).json()
+
+    # Each read opens a fresh SQLite connection; repeat after a new app lifespan.
+    with TestClient(app) as restarted_client:
+        assert restarted_client.get("/api/assignment-actions/history").json() == [mutation]
+        assert restarted_client.get("/api/audit/events").json()[0]["action"] == "accepted"
+        switched = restarted_client.put(
+            "/api/scenarios/active", json={"scenario_id": "long-island-copilot-demo"}
+        )
+        assert switched.status_code == 200
+        assert restarted_client.get("/api/assignment-actions/history").json() == []
+        assert restarted_client.put(
+            "/api/scenarios/active", json={"scenario_id": "base"}
+        ).status_code == 200
+        assert restarted_client.get("/api/assignment-actions/history").json() == [mutation]
+
+    assert mutation["note"] == "Field report verified"
+    assert mutation["actor"] == "demo-dispatcher"
+    assert mutation["scenario_id"] == "base"
+    assert mutation["created_at"]
+
+
+def test_unassign_history_snapshots_assigned_when_another_crew_remains() -> None:
+    clear_decisions()
+    recommendation = client.post("/api/optimize", json={"incident_id": "INC-1001"}).json()
+    client.post(
+        "/api/recommendation-actions",
+        json={"incident_id": "INC-1001", "action": "accepted", "recommendation": recommendation},
+    )
+    original = next(item for item in client.get("/api/assignments").json() if item["incident_id"] == "INC-1001")
+    other_crew = next(
+        crew for crew in client.get("/api/crews").json()
+        if crew["status"] == "available" and crew["crew_id"] != original["crew_id"]
+    )
+    with decision_store._connect() as connection:
+        connection.execute(
+            """
+            INSERT INTO demo_assignments (
+              assignment_id, scenario_id, incident_id, crew_id, status,
+              assigned_at, notes, decision_event_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            ("ASG-SECOND", "base", "INC-1001", other_crew["crew_id"], "active",
+             "2026-09-25T12:00:00+00:00", "Second crew", "test-second"),
+        )
+
+    mutation = client.post(
+        "/api/assignment-actions",
+        json={"assignment_id": original["assignment_id"], "action": "unassigned",
+              "reason_category": "field_condition_changed"},
+    ).json()
+
+    assert mutation["resulting_incident_status"] == "assigned"
+    assert client.get("/api/incidents/INC-1001").json()["status"] == "assigned"
+    assert client.get("/api/assignment-actions/history?limit=0").json() == [mutation]
+    assert client.get("/api/assignment-actions/history?offset=1").json() == []
 
 
 def test_modified_alternative_creates_assignment_and_preserves_recommendation_evidence() -> None:
