@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import L from "leaflet";
 import "leaflet.markercluster";
 import "leaflet/dist/leaflet.css";
@@ -17,6 +18,7 @@ const PAGE_SIZE = 20;
 type IncidentFacetKey = "severity" | "hazard" | "criticalFacilityLevel" | "rankingStatus" | "customerImpact" | "assignmentState" | "incidentAge";
 type CrewFacetKey = "status" | "capability" | "readiness" | "shift" | "assignment";
 type MapEncoding = NonNullable<MapWorkspaceState["encoding"]>;
+type MapFilterTab = NonNullable<MapWorkspaceState["filterPanelTab"]>;
 
 const CUSTOMER_IMPACT_RANGES = [
   { value: "0-99", label: "0–99 customers", matches: (incident: Incident) => incident.customers_out < 100 },
@@ -335,6 +337,11 @@ export default function OperationsMap({
   const [viewport, setViewport] = useState<MapViewportState | null>(restoredState?.viewport ?? null);
   const [homeRequest, setHomeRequest] = useState(0);
   const [navigationNotice, setNavigationNotice] = useState("");
+  const [filterPanelOpen, setFilterPanelOpen] = useState(restoredState?.filterPanelOpen ?? false);
+  const [filterPanelTab, setFilterPanelTab] = useState<MapFilterTab>(restoredState?.filterPanelTab ?? "incidents");
+  const filterTriggerRef = useRef<HTMLButtonElement>(null);
+  const filterPanelRef = useRef<HTMLElement>(null);
+  const focusOpenedTab = useRef(false);
   const skipInitialFilterReset = useRef(Boolean(restoredState));
   const all = useMemo(() => mapRecords(incidents, crews), [incidents, crews]);
   const regions = useMemo(
@@ -448,6 +455,47 @@ export default function OperationsMap({
     setNavigationNotice("");
     setSelected(key);
   }, []);
+  const activeFilterCount = [
+    query.trim() !== "", region !== "all", !showIncidents, !showCrews, unmappedOnly,
+    severity !== "all", hazard !== "all", criticalFacilityLevel !== "all", rankingStatus !== "all",
+    customerImpact !== "all", assignmentState !== "all", incidentAge !== "all",
+    crewStatus !== "all", crewCapability !== "all", crewReadiness !== "all", crewShift !== "all",
+    crewAssignment !== "all", crewPreset !== "all"
+  ].filter(Boolean).length;
+  const openFilterPanel = (tab: MapFilterTab) => {
+    focusOpenedTab.current = true;
+    setFilterPanelTab(tab);
+    setFilterPanelOpen(true);
+  };
+  const closeFilterPanel = () => {
+    setFilterPanelOpen(false);
+    filterTriggerRef.current?.focus();
+  };
+  const clearMapFilters = () => {
+    setQuery("");
+    setRegion("all");
+    setShowIncidents(true);
+    setShowCrews(true);
+    setUnmappedOnly(false);
+    setSeverity("all");
+    setHazard("all");
+    setCriticalFacilityLevel("all");
+    setRankingStatus("all");
+    setCustomerImpact("all");
+    setAssignmentState("all");
+    setIncidentAge("all");
+    setCrewStatus("all");
+    setCrewCapability("all");
+    setCrewReadiness("all");
+    setCrewShift("all");
+    setCrewAssignment("all");
+    setCrewPreset("all");
+  };
+  useEffect(() => {
+    if (!filterPanelOpen || !focusOpenedTab.current) return;
+    filterPanelRef.current?.querySelector<HTMLButtonElement>(`[data-map-filter-tab="${filterPanelTab}"]`)?.focus();
+    focusOpenedTab.current = false;
+  }, [filterPanelOpen, filterPanelTab]);
   useEffect(() => {
     if (skipInitialFilterReset.current) {
       skipInitialFilterReset.current = false;
@@ -460,6 +508,8 @@ export default function OperationsMap({
 
   useEffect(() => {
     onStateChange?.({
+      filterPanelOpen,
+      filterPanelTab,
       showIncidents,
       showCrews,
       query,
@@ -484,7 +534,7 @@ export default function OperationsMap({
       page: currentPage,
       viewport
     });
-  }, [assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, currentPage, customerImpact, encoding, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, showRelationships, unmappedOnly, viewport]);
+  }, [assignmentState, crewAssignment, crewCapability, crewPreset, crewReadiness, crewShift, crewStatus, criticalFacilityLevel, currentPage, customerImpact, encoding, filterPanelOpen, filterPanelTab, hazard, incidentAge, onStateChange, query, rankingStatus, region, selection?.key, severity, showCrews, showIncidents, showRelationships, unmappedOnly, viewport]);
 
   useEffect(() => {
     if (!navigationTarget) return;
@@ -535,58 +585,84 @@ export default function OperationsMap({
   const crewFacetControl = (label: string, facet: CrewFacetKey, value: string, setValue: (value: string) => void) => (
     <label>{label}<select aria-label={`Map ${label.toLowerCase()}`} value={value} onChange={(event) => setValue(event.target.value)}><option value="all">All {label.toLowerCase()}</option>{(crewFacetOptionsByKey[facet] ?? []).map((option) => <option key={option.value} disabled={option.count === 0 && value !== option.value} value={option.value}>{option.label} ({option.count})</option>)}</select></label>
   );
+  const filterTabs: MapFilterTab[] = ["incidents", "crews", "results"];
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, tab: MapFilterTab) => {
+    const current = filterTabs.indexOf(tab);
+    const next = event.key === "ArrowRight" ? (current + 1) % filterTabs.length
+      : event.key === "ArrowLeft" ? (current - 1 + filterTabs.length) % filterTabs.length
+      : event.key === "Home" ? 0 : event.key === "End" ? filterTabs.length - 1 : -1;
+    if (next < 0) return;
+    event.preventDefault();
+    const nextTab = filterTabs[next];
+    setFilterPanelTab(nextTab);
+    filterPanelRef.current?.querySelector<HTMLButtonElement>(`[data-map-filter-tab="${nextTab}"]`)?.focus();
+  };
 
   return <section className="operations-map panel" aria-label="Operations Map workspace">
     <div className="operations-map-intro">
       <div><h2>Long Island operations</h2><p>Active scenario incidents and crew locations</p></div>
       <button type="button" onClick={() => { setSelected(null); setNavigationNotice(""); setHomeRequest((n) => n + 1); }}>Reset to Long Island</button>
     </div>
-    <div className="operations-map-controls" role="group" aria-label="Map filters">
-      <div className="operations-map-search">
-        <AutocompleteSearch
-          accessibleLabel="Search records"
-          label="Search records"
-          onChange={setQuery}
-          placeholder="Incident, crew, village…"
-          suggestions={autocompleteSuggestions}
-          value={query}
-        />
+    <div className="operations-map-filter-anchor">
+      <div className="operations-map-controls" role="group" aria-label="Map filters">
+        <div className="operations-map-search">
+          <AutocompleteSearch
+            accessibleLabel="Search records"
+            label="Search records"
+            onChange={setQuery}
+            placeholder="Incident, crew, village…"
+            suggestions={autocompleteSuggestions}
+            value={query}
+          />
+        </div>
+        <label>Operating region<select value={region} onChange={(e) => setRegion(e.target.value)}><option value="all">All regions</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></label>
+        <label className="operations-map-toggle"><input type="checkbox" checked={showIncidents} onChange={(e) => setShowIncidents(e.target.checked)} />Incidents</label>
+        <label className="operations-map-toggle"><input type="checkbox" checked={showCrews} onChange={(e) => setShowCrews(e.target.checked)} />Crews</label>
+        <button ref={filterTriggerRef} type="button" className="operations-map-filter-trigger" aria-expanded={filterPanelOpen} aria-controls="operations-map-filter-panel" onClick={() => filterPanelOpen ? closeFilterPanel() : openFilterPanel(filterPanelTab)}>Filters &amp; results · {activeFilterCount} active</button>
       </div>
-      <label>Operating region<select value={region} onChange={(e) => setRegion(e.target.value)}><option value="all">All regions</option>{regions.map((r) => <option key={r}>{r}</option>)}</select></label>
-      <label className="operations-map-toggle"><input type="checkbox" checked={showIncidents} onChange={(e) => setShowIncidents(e.target.checked)} />Incidents</label>
-      <label className="operations-map-toggle"><input type="checkbox" checked={showCrews} onChange={(e) => setShowCrews(e.target.checked)} />Crews</label>
-      {facetControl("Severity", "severity", severity, setSeverity)}
-      {facetControl("Hazard", "hazard", hazard, setHazard)}
-      {facetControl("Critical-facility level", "criticalFacilityLevel", criticalFacilityLevel, setCriticalFacilityLevel)}
-      {facetControl("Ranking status", "rankingStatus", rankingStatus, setRankingStatus)}
-      {facetControl("Customer impact", "customerImpact", customerImpact, setCustomerImpact)}
-      {facetControl("Assignment state", "assignmentState", assignmentState, setAssignmentState)}
-      {facetControl("Incident age", "incidentAge", incidentAge, setIncidentAge)}
-      {crewFacetControl("Crew status", "status", crewStatus, setCrewStatus)}
-      {crewFacetControl("Crew capability", "capability", crewCapability, setCrewCapability)}
-      {crewFacetControl("Crew readiness", "readiness", crewReadiness, setCrewReadiness)}
-      {crewFacetControl("Crew shift remaining", "shift", crewShift, setCrewShift)}
-      {crewFacetControl("Crew assignment", "assignment", crewAssignment, setCrewAssignment)}
-      <label>Crew preset<select aria-label="Map crew preset" value={crewPreset} onChange={(event) => setCrewPreset(event.target.value)}><option value="all">All crews</option><option value="available-line">Available line crews</option></select></label>
-      <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
+      <div className="operations-map-summary"><span role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location</span><button type="button" onClick={() => openFilterPanel("results")}>Open results</button></div>
+      <section ref={filterPanelRef} id="operations-map-filter-panel" className="operations-map-filter-panel" aria-label="Map filters and results" hidden={!filterPanelOpen} onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); closeFilterPanel(); } }}>
+        <div className="operations-map-filter-heading"><h3>Map filters &amp; results</h3><button type="button" onClick={closeFilterPanel}>Close</button></div>
+        <div className="operations-map-filter-tabs" role="tablist" aria-label="Map filter categories">
+          {filterTabs.map((tab) => <button key={tab} type="button" role="tab" id={`operations-map-tab-${tab}`} data-map-filter-tab={tab} aria-controls={`operations-map-panel-${tab}`} aria-selected={filterPanelTab === tab} tabIndex={filterPanelTab === tab ? 0 : -1} onClick={() => setFilterPanelTab(tab)} onKeyDown={(event) => handleTabKeyDown(event, tab)}>{tab === "incidents" ? "Incidents" : tab === "crews" ? "Crews" : "Results"}</button>)}
+        </div>
+        <div role="tabpanel" id="operations-map-panel-incidents" aria-labelledby="operations-map-tab-incidents" hidden={filterPanelTab !== "incidents"} className="operations-map-filter-body"><div className="operations-map-filter-fields">
+          {facetControl("Severity", "severity", severity, setSeverity)}
+          {facetControl("Hazard", "hazard", hazard, setHazard)}
+          {facetControl("Critical-facility level", "criticalFacilityLevel", criticalFacilityLevel, setCriticalFacilityLevel)}
+          {facetControl("Ranking status", "rankingStatus", rankingStatus, setRankingStatus)}
+          {facetControl("Customer impact", "customerImpact", customerImpact, setCustomerImpact)}
+          {facetControl("Assignment state", "assignmentState", assignmentState, setAssignmentState)}
+          {facetControl("Incident age", "incidentAge", incidentAge, setIncidentAge)}
+          <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
+        </div></div>
+        <div role="tabpanel" id="operations-map-panel-crews" aria-labelledby="operations-map-tab-crews" hidden={filterPanelTab !== "crews"} className="operations-map-filter-body"><div className="operations-map-filter-fields">
+          {crewFacetControl("Crew status", "status", crewStatus, setCrewStatus)}
+          {crewFacetControl("Crew capability", "capability", crewCapability, setCrewCapability)}
+          {crewFacetControl("Crew readiness", "readiness", crewReadiness, setCrewReadiness)}
+          {crewFacetControl("Crew shift remaining", "shift", crewShift, setCrewShift)}
+          {crewFacetControl("Crew assignment", "assignment", crewAssignment, setCrewAssignment)}
+          <label>Crew preset<select aria-label="Map crew preset" value={crewPreset} onChange={(event) => setCrewPreset(event.target.value)}><option value="all">All crews</option><option value="available-line">Available line crews</option></select></label>
+        </div></div>
+        <section role="tabpanel" id="operations-map-panel-results" aria-labelledby="operations-map-tab-results" hidden={filterPanelTab !== "results"} className="operations-map-drillup operations-map-filter-body">
+          <p>Open complete inventories. Counts use the active map search and facets across the scenario, including records outside the viewport and current list page. “Unmapped only” changes the list below, not these counts.</p>
+          <div className="operations-map-drillup-actions">
+            {summaryAction("incident", "all", "Matching incidents")}
+            {summaryAction("crew", "all", "Matching crews")}
+            {summaryAction("incident", "mapped", "Mapped incidents")}
+            {summaryAction("crew", "mapped", "Mapped crews")}
+            {summaryAction("incident", "unmapped", "Unmapped incidents")}
+            {summaryAction("crew", "unmapped", "Unmapped crews")}
+          </div>
+          <div className="operations-map-drillup-actions" aria-label="Broader scenario inventories">
+            {summaryAction("incident", "scenario", "All scenario incidents")}
+            {summaryAction("crew", "scenario", "All scenario crews")}
+          </div>
+          <p>Scenario totals exclude map filters. Destination inventories keep their own operational ordering.</p>
+        </section>
+        <div className="operations-map-filter-footer"><span>Selections update the map immediately</span><button type="button" disabled={activeFilterCount === 0} onClick={clearMapFilters}>Clear map filters</button></div>
+      </section>
     </div>
-    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {summaryRecords("incident").length.toLocaleString()} incidents · {summaryRecords("crew").length.toLocaleString()} crews match facets</p>
-    <section className="operations-map-drillup" aria-label="Open complete map populations">
-      <p>Open complete inventories. Counts use the active map search and facets across the scenario, including records outside the viewport and current list page. “Unmapped only” changes the list below, not these counts.</p>
-      <div className="operations-map-drillup-actions">
-        {summaryAction("incident", "all", "Matching incidents")}
-        {summaryAction("crew", "all", "Matching crews")}
-        {summaryAction("incident", "mapped", "Mapped incidents")}
-        {summaryAction("crew", "mapped", "Mapped crews")}
-        {summaryAction("incident", "unmapped", "Unmapped incidents")}
-        {summaryAction("crew", "unmapped", "Unmapped crews")}
-      </div>
-      <div className="operations-map-drillup-actions" aria-label="Broader scenario inventories">
-        {summaryAction("incident", "scenario", "All scenario incidents")}
-        {summaryAction("crew", "scenario", "All scenario crews")}
-      </div>
-      <p>Scenario totals exclude map filters. Destination inventories keep their own operational ordering.</p>
-    </section>
     {selection && <label className="operations-map-relationship-toggle"><input type="checkbox" checked={showRelationships} onChange={(event) => setShowRelationships(event.target.checked)} /> Show assignment relationship connectors <span>(straight lines, not routes)</span></label>}
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">

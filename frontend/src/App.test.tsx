@@ -1905,8 +1905,10 @@ describe("application states and scenario switching", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Operations Map" }));
+    fireEvent.click(await screen.findByRole("button", { name: /^Filters & results/ }));
     const severity = await screen.findByRole("combobox", { name: "Map severity" });
     fireEvent.change(severity, { target: { value: "low" } });
+    fireEvent.click(screen.getByRole("tab", { name: "Results" }));
     const summary = screen.getByRole("button", { name: "Matching incidents (1)" });
     fireEvent.click(summary);
 
@@ -1915,8 +1917,10 @@ describe("application states and scenario switching", () => {
     expect(screen.queryByRole("button", { name: "INC-1001" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Return to Operations Map" }));
-    expect((await screen.findByRole("combobox", { name: "Map severity" }) as HTMLSelectElement).value).toBe("low");
+    expect((await screen.findByRole("tab", { name: "Results" })).getAttribute("aria-selected")).toBe("true");
     await waitFor(() => expect(document.activeElement?.getAttribute("data-navigation-origin")).toBe("map-summary-incident-all"));
+    fireEvent.click(screen.getByRole("tab", { name: "Incidents" }));
+    expect((screen.getByRole("combobox", { name: "Map severity" }) as HTMLSelectElement).value).toBe("low");
   });
 
   it("uses contextual destinations for exact related-record filters", async () => {

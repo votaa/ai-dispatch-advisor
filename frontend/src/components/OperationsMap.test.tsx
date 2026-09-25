@@ -27,6 +27,12 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
+function openFilterTab(tab: "Incidents" | "Crews" | "Results") {
+  const trigger = screen.getByRole("button", { name: /^Filters & results/ });
+  if (trigger.getAttribute("aria-expanded") === "false") fireEvent.click(trigger);
+  fireEvent.click(screen.getByRole("tab", { name: tab }));
+}
+
 describe("Operations Map", () => {
   it("uses supplied crew centers and excludes missing or invalid coordinates without losing records", () => {
     const records = mapRecords([
@@ -67,6 +73,34 @@ describe("Operations Map", () => {
     expect(screen.getByRole("button", { name: "Open crew details" })).toBeTruthy();
   });
 
+  it("opens accessible tabs, preserves selections on close, and clears filters without resetting the map extent", () => {
+    const fitBounds = vi.spyOn(L.Map.prototype, "fitBounds");
+    render(<OperationsMap incidents={[incident]} crews={[crew]} onNavigate={vi.fn()} />);
+    expect(screen.queryByRole("combobox", { name: "Map severity" })).toBeNull();
+
+    const trigger = screen.getByRole("button", { name: "Filters & results · 0 active" });
+    fireEvent.click(trigger);
+    const incidentTab = screen.getByRole("tab", { name: "Incidents" });
+    expect(document.activeElement).toBe(incidentTab);
+    fireEvent.change(screen.getByRole("combobox", { name: "Map severity" }), { target: { value: "critical" } });
+    fireEvent.keyDown(incidentTab, { key: "ArrowRight" });
+    expect(screen.getByRole("tab", { name: "Crews" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.change(screen.getByRole("combobox", { name: "Map crew preset" }), { target: { value: "available-line" } });
+    expect(screen.getByRole("button", { name: "Filters & results · 2 active" })).toBeTruthy();
+
+    fireEvent.keyDown(screen.getByRole("tab", { name: "Crews" }), { key: "Escape" });
+    expect(document.activeElement).toBe(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("combobox", { name: "Map crew preset" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Open results" }));
+    expect(screen.getByRole("tab", { name: "Results" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Clear map filters" }));
+    expect(screen.getByRole("button", { name: "Filters & results · 0 active" })).toBeTruthy();
+    expect(fitBounds).toHaveBeenCalledTimes(1);
+    openFilterTab("Incidents");
+    expect((screen.getByRole("combobox", { name: "Map severity" }) as HTMLSelectElement).value).toBe("all");
+  });
+
   it("opens complete filtered and scenario populations without using the list page or map viewport", () => {
     const onNavigate = vi.fn();
     const many = Array.from({ length: 25 }, (_, index) => ({
@@ -75,7 +109,9 @@ describe("Operations Map", () => {
     }));
     render(<OperationsMap incidents={many} crews={[{ ...crew, map_location: null }]} onNavigate={onNavigate} />);
 
+    openFilterTab("Incidents");
     fireEvent.change(screen.getByRole("combobox", { name: "Map severity" }), { target: { value: "low" } });
+    openFilterTab("Results");
     fireEvent.click(screen.getByRole("button", { name: "Matching incidents (1)" }));
     expect(onNavigate).toHaveBeenLastCalledWith({
       type: "filter_incidents",
@@ -217,17 +253,19 @@ describe("Operations Map", () => {
     ];
     render(<OperationsMap incidents={incidents} crews={[]} onNavigate={vi.fn()} />);
 
+    openFilterTab("Incidents");
     expect(screen.getByRole("option", { name: "Critical (1)" })).toBeTruthy();
     expect(screen.getByRole("option", { name: "Unknown (2)" })).toBeTruthy();
     expect(screen.getByRole("option", { name: "Withheld (1)" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Map severity"), { target: { value: "critical" } });
-    expect(screen.getByRole("status").textContent).toContain("1 incidents · 0 crews match facets");
+    expect(screen.getByRole("status").textContent).toContain("1 incidents mapped · 0 crews mapped");
     expect(screen.getByRole("button", { name: /! · INC-CRITICAL/ })).toBeTruthy();
     expect(screen.queryByRole("button", { name: /! · INC-WITHHELD/ })).toBeNull();
   });
 
   it("synchronizes the selected marker encoding with the legend", () => {
     render(<OperationsMap incidents={[{ ...incident, customers_out: 2_000 }]} crews={[]} onNavigate={vi.fn()} />);
+    openFilterTab("Incidents");
     const encoding = screen.getByLabelText("Map marker encoding");
     expect(screen.getByLabelText("Severity colors")).toBeTruthy();
     expect(screen.getByLabelText("Critical severity")).toBeTruthy();
@@ -246,6 +284,7 @@ describe("Operations Map", () => {
     ];
     render(<OperationsMap incidents={[]} crews={crews} onNavigate={vi.fn()} />);
 
+    openFilterTab("Crews");
     expect(screen.getByRole("option", { name: "Storm-ready (2)" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Map crew readiness"), { target: { value: "ready" } });
     fireEvent.change(screen.getByLabelText("Map crew assignment"), { target: { value: "unassigned" } });
@@ -304,6 +343,7 @@ describe("Operations Map", () => {
     expect(screen.getByRole("region", { name: "Assignment relationships" }).textContent).toContain("Visible in list · location unavailable");
     fireEvent.click(screen.getByRole("checkbox", { name: /Show assignment relationship connectors/ }));
     expect(line).not.toHaveBeenCalled();
+    openFilterTab("Crews");
     fireEvent.change(screen.getByLabelText("Map crew status"), { target: { value: "available" } });
     expect(screen.getByRole("region", { name: "Assignment relationships" }).textContent).toContain("Hidden by current map filters");
     expect(screen.queryByRole("button", { name: "Select Line crew 1 on map" })).toBeNull();

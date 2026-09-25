@@ -40,6 +40,8 @@ export type MapViewportState = {
 };
 
 export type MapWorkspaceState = {
+  filterPanelOpen?: boolean;
+  filterPanelTab?: "incidents" | "crews" | "results";
   showIncidents: boolean;
   showCrews: boolean;
   query: string;
