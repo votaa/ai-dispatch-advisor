@@ -67,6 +67,35 @@ describe("Operations Map", () => {
     expect(screen.getByRole("button", { name: "Open crew details" })).toBeTruthy();
   });
 
+  it("opens complete filtered and scenario populations without using the list page or map viewport", () => {
+    const onNavigate = vi.fn();
+    const many = Array.from({ length: 25 }, (_, index) => ({
+      ...incident, incident_id: `INC-${index}`, severity: index < 24 ? "critical" : "low",
+      latitude: index === 24 ? NaN : incident.latitude
+    }));
+    render(<OperationsMap incidents={many} crews={[{ ...crew, map_location: null }]} onNavigate={onNavigate} />);
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Map severity" }), { target: { value: "low" } });
+    fireEvent.click(screen.getByRole("button", { name: "Matching incidents (1)" }));
+    expect(onNavigate).toHaveBeenLastCalledWith({
+      type: "filter_incidents",
+      filter: { kind: "incident_ids", ids: ["INC-24"], label: "Matching incidents", source: "map_summary", criteria: "severity: low" }
+    }, expect.any(HTMLElement));
+
+    fireEvent.click(screen.getByRole("button", { name: "Unmapped incidents (1)" }));
+    expect(onNavigate.mock.lastCall?.[0].filter.ids).toEqual(["INC-24"]);
+    fireEvent.click(screen.getByRole("checkbox", { name: "Unmapped only" }));
+    fireEvent.click(screen.getByRole("button", { name: "All scenario incidents (25)" }));
+    expect(onNavigate.mock.lastCall?.[0].filter.ids).toHaveLength(25);
+    expect(onNavigate.mock.lastCall?.[0].filter.criteria).toContain("map filters excluded");
+
+    fireEvent.click(screen.getByRole("button", { name: "Unmapped crews (1)" }));
+    expect(onNavigate.mock.lastCall?.[0]).toEqual({
+      type: "filter_crews",
+      filter: { kind: "crew_ids", ids: ["C1"], label: "Unmapped crews", source: "map_summary", criteria: "no applicable search or facet filters · location: unmapped" }
+    });
+  });
+
   it("consumes a mapped cross-view target, selects it, and reveals its clustered marker", async () => {
     const onNavigationHandled = vi.fn();
     const zoomToShowLayer = vi.spyOn(L.MarkerClusterGroup.prototype, "zoomToShowLayer");

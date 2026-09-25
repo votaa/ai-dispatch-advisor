@@ -393,6 +393,30 @@ export default function OperationsMap({
   const unmappedCount = filtered.filter((r) => !r.coordinates).length;
   const mappedIncidents = filtered.filter((r) => r.kind === "incident" && r.coordinates).length;
   const mappedCrews = filtered.filter((r) => r.kind === "crew" && r.coordinates).length;
+  // Summary populations come from the complete filtered inventory, before list paging,
+  // the list-only unmapped switch, clustering, or viewport rendering.
+  const summaryCriteria = (kind: MapRecord["kind"]) => [
+    region !== "all" && `region: ${region}`,
+    query.trim() && `map search: ${query.trim()}`,
+    ...(kind === "incident" ? Object.entries(incidentFacetSelections) : Object.entries(crewFacetSelections))
+      .filter(([, value]) => value !== "all").map(([key, value]) => `${key}: ${value}`),
+    kind === "crew" && crewPreset !== "all" && `crew preset: ${crewPreset}`
+  ].filter(Boolean).join(" · ") || "no applicable search or facet filters";
+  const summaryRecords = (kind: MapRecord["kind"], location: "all" | "mapped" | "unmapped" = "all") =>
+    filtered.filter((record) => record.kind === kind && (location === "all" || Boolean(record.coordinates) === (location === "mapped")));
+  const summaryAction = (kind: MapRecord["kind"], location: "all" | "mapped" | "unmapped" | "scenario", label: string) => {
+    const records = location === "scenario" ? all.filter((record) => record.kind === kind) : summaryRecords(kind, location);
+    const criteria = location === "scenario" ? "entire active scenario; map filters excluded" : `${summaryCriteria(kind)}${location === "all" ? "" : ` · location: ${location}`}`;
+    return <button
+      type="button"
+      data-navigation-origin={`map-summary-${kind}-${location}`}
+      disabled={!records.length}
+      title={`Open the complete ${kind} inventory matching ${criteria}. Map list paging and viewport do not limit this population.`}
+      onClick={(event) => onNavigate(kind === "incident"
+        ? { type: "filter_incidents", filter: { kind: "incident_ids", ids: records.map((record) => record.id), label, source: "map_summary", criteria } }
+        : { type: "filter_crews", filter: { kind: "crew_ids", ids: records.map((record) => record.id), label, source: "map_summary", criteria } }, event.currentTarget)}
+    >{label} ({records.length.toLocaleString()})</button>;
+  };
   const listed = unmappedOnly ? filtered.filter((r) => !r.coordinates) : filtered;
   const pageCount = Math.max(1, Math.ceil(listed.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
@@ -546,7 +570,23 @@ export default function OperationsMap({
       <label>Crew preset<select aria-label="Map crew preset" value={crewPreset} onChange={(event) => setCrewPreset(event.target.value)}><option value="all">All crews</option><option value="available-line">Available line crews</option></select></label>
       <label>Marker encoding<select aria-label="Map marker encoding" value={encoding} onChange={(event) => setEncoding(event.target.value as MapEncoding)}><option value="severity">Severity color</option><option value="customers">Customer impact size</option><option value="age">Incident age size</option><option value="criticalFacility">Critical-facility color</option><option value="ranking">Ranking status color</option></select></label>
     </div>
-    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {filtered.filter((record) => record.kind === "incident").length.toLocaleString()} incidents · {filtered.filter((record) => record.kind === "crew").length.toLocaleString()} crews match facets</p>
+    <p className="operations-map-summary" role="status">{mappedIncidents.toLocaleString()} incidents mapped · {mappedCrews.toLocaleString()} crews mapped · {unmappedCount.toLocaleString()} without a map location · {all.length.toLocaleString()} total scenario records · {summaryRecords("incident").length.toLocaleString()} incidents · {summaryRecords("crew").length.toLocaleString()} crews match facets</p>
+    <section className="operations-map-drillup" aria-label="Open complete map populations">
+      <p>Open complete inventories. Counts use the active map search and facets across the scenario, including records outside the viewport and current list page. “Unmapped only” changes the list below, not these counts.</p>
+      <div className="operations-map-drillup-actions">
+        {summaryAction("incident", "all", "Matching incidents")}
+        {summaryAction("crew", "all", "Matching crews")}
+        {summaryAction("incident", "mapped", "Mapped incidents")}
+        {summaryAction("crew", "mapped", "Mapped crews")}
+        {summaryAction("incident", "unmapped", "Unmapped incidents")}
+        {summaryAction("crew", "unmapped", "Unmapped crews")}
+      </div>
+      <div className="operations-map-drillup-actions" aria-label="Broader scenario inventories">
+        {summaryAction("incident", "scenario", "All scenario incidents")}
+        {summaryAction("crew", "scenario", "All scenario crews")}
+      </div>
+      <p>Scenario totals exclude map filters. Destination inventories keep their own operational ordering.</p>
+    </section>
     {selection && <label className="operations-map-relationship-toggle"><input type="checkbox" checked={showRelationships} onChange={(event) => setShowRelationships(event.target.checked)} /> Show assignment relationship connectors <span>(straight lines, not routes)</span></label>}
     {navigationNotice ? <p className="operations-map-navigation-notice" role="status">{navigationNotice}</p> : null}
     <div className="operations-map-layout">

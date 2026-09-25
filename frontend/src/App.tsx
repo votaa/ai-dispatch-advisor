@@ -1954,8 +1954,8 @@ function CrewBoard({
       </div>
       {relatedFilter ? (
         <div className="navigation-filter-banner" role="status">
-          <span>Related records · {relatedFilter.label}</span>
-          <button onClick={() => setRelatedFilter(null)} type="button">Clear related filter</button>
+          <span>{relatedFilter.source === "map_summary" ? `Map summary · ${relatedFilter.label} · ${filteredCrews.length} ${filteredCrews.length === 1 ? "crew" : "crews"} evaluated · ${relatedFilter.criteria}` : `Related records · ${relatedFilter.label}`}</span>
+          <button onClick={() => setRelatedFilter(null)} type="button">Clear {relatedFilter.source === "map_summary" ? "map summary" : "related"} filter</button>
         </div>
       ) : null}
       {visibleCrews.length === 0 ? <EmptyState message="No crews match the current filters." /> : (
@@ -2309,8 +2309,8 @@ function IncidentTable({
       </div>
       {relatedFilter ? (
         <div className="navigation-filter-banner" role="status">
-          <span>Related records · {relatedFilter.label}</span>
-          <button onClick={() => setRelatedFilter(null)} type="button">Clear related filter</button>
+          <span>{relatedFilter.kind === "incident_ids" && relatedFilter.source === "map_summary" ? `Map summary · ${relatedFilter.label} · ${filteredIncidents.length} ${filteredIncidents.length === 1 ? "incident" : "incidents"} evaluated · ${relatedFilter.criteria}` : `Related records · ${relatedFilter.label}`}</span>
+          <button onClick={() => setRelatedFilter(null)} type="button">Clear {relatedFilter.kind === "incident_ids" && relatedFilter.source === "map_summary" ? "map summary" : "related"} filter</button>
         </div>
       ) : null}
       {visibleIncidents.length === 0 ? (

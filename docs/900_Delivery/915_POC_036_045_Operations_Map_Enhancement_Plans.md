@@ -134,6 +134,8 @@ Let users understand selected assignment relationships in place and move from ma
    - Make eligible incident, crew, unmapped, and future area totals actionable.
    - Carry a documented filter descriptor into the destination view and display the destination's evaluated population.
 
+POC-044 implementation contract: current map summary actions open the complete Incidents or Crew Board inventory. Matching and mapped/unmapped actions use the current layer visibility, region, search, applicable entity facets, and crew preset; the location actions additionally require a valid or absent map coordinate. The map's `Unmapped only` switch affects list rows only. Scenario-total actions deliberately exclude map filters. Each navigation command carries the matching authoritative record IDs plus a readable criteria descriptor; destination views reset their local filters, evaluate those IDs against the current scenario, display the resulting count and criteria, and retain their normal ordering. The map viewport, rendered clusters, and list page never limit these populations. POC-039 area summaries can use the same contract once governed area membership exists. Dashboard and Storm Mode do not currently support every map facet, so current POC-044 summaries open their complete incident or crew inventories instead of silently dropping filters there.
+
 ### Acceptance themes
 
 - Connectors never claim road routing, travel time, live movement, or electrical connectivity.

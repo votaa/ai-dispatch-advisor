@@ -1896,6 +1896,29 @@ describe("application states and scenario switching", () => {
     expect(screen.getByText("Location unavailable — this record is not plotted.")).toBeTruthy();
   });
 
+  it("opens a map summary in the full incident inventory and returns to the map filters", async () => {
+    vi.stubGlobal("ResizeObserver", class { observe() {} disconnect() {} });
+    apiMocks.incidents.mockResolvedValue([
+      { ...baseIncident, region: "North", latitude: 40.77, longitude: -73.52 },
+      { ...baseIncident, incident_id: "INC-1002", severity: "low", region: "North", latitude: 40.78, longitude: -73.53 }
+    ]);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Operations Map" }));
+    const severity = await screen.findByRole("combobox", { name: "Map severity" });
+    fireEvent.change(severity, { target: { value: "low" } });
+    const summary = screen.getByRole("button", { name: "Matching incidents (1)" });
+    fireEvent.click(summary);
+
+    expect(await screen.findByText(/Map summary · Matching incidents · 1 incident evaluated · severity: low/)).toBeTruthy();
+    expect(screen.getByText(/of 1 matching incidents \(2 total\)/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "INC-1001" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Return to Operations Map" }));
+    expect((await screen.findByRole("combobox", { name: "Map severity" }) as HTMLSelectElement).value).toBe("low");
+    await waitFor(() => expect(document.activeElement?.getAttribute("data-navigation-origin")).toBe("map-summary-incident-all"));
+  });
+
   it("uses contextual destinations for exact related-record filters", async () => {
     const assignedCrew = {
       crew_id: "CR-01",

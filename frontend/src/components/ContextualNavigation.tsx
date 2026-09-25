@@ -19,7 +19,7 @@ export type OperationalNavigationCommand =
   | { type: "filter_crews"; filter: CrewNavigationFilter };
 
 export type IncidentNavigationFilter =
-  | { kind: "incident_ids"; ids: string[]; label: string }
+  | { kind: "incident_ids"; ids: string[]; label: string; source?: "map_summary"; criteria?: string }
   | { kind: "municipality"; value: string; label: string }
   | { kind: "feeder"; value: string; label: string }
   | { kind: "critical_facility"; value: string; label: string };
@@ -28,6 +28,8 @@ export type CrewNavigationFilter = {
   kind: "crew_ids";
   ids: string[];
   label: string;
+  source?: "map_summary";
+  criteria?: string;
 };
 
 export type NavigationDestination = {
