@@ -65,6 +65,8 @@ export const api = {
   incidents: () => getJson<Incident[]>("/api/incidents"),
   crews: () => getJson<Crew[]>("/api/crews"),
   assignments: () => getJson<Assignment[]>("/api/assignments"),
+  assignmentHistory: (limit = 25, offset = 0) =>
+    getJson<AssignmentMutation[]>(`/api/assignment-actions/history?limit=${limit}&offset=${offset}`),
   unassignAssignment: (assignmentId: string, reasonCategory: AssignmentReasonCategory, note?: string) =>
     postJson<AssignmentMutation>("/api/assignment-actions", {
       assignment_id: assignmentId,

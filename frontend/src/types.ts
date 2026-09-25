@@ -91,6 +91,7 @@ export type AssignmentMutation = {
   created_at: string;
   new_assignment_id?: string | null;
   new_crew_id?: string | null;
+  resulting_incident_status?: "assigned" | "unassigned" | null;
 };
 
 export type DashboardSummary = {

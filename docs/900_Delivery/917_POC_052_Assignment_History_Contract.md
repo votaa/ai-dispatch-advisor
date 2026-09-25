@@ -1,6 +1,6 @@
 # POC-052 — Assignment Mutation History Contract
 
-Status: Slice 1 implemented. The in-product history panel remains future work.
+Status: Implemented and locally validated on 2026-09-25.
 
 ## Historical record
 
@@ -18,6 +18,8 @@ The default SQLite file is `database/aida_decisions.db`. Local backend runs use 
 
 **Existing-container handoff:** A backend container created before this mount keeps its database inside the container. Before recreating it with the new Compose configuration, stop writes, take a consistent SQLite backup of `/app/database/aida_decisions.db` from that container, preserve any existing host `database/aida_decisions.db`, and place the container backup at the host path. Then recreate the backend so migration 006 runs against the retained records. On 2026-09-25, the running container had 1 recommendation decision, 2 demo assignments, and 5 assignment mutations; the host database had no decision or assignment rows and no mutation table. Recreating the container against the host file without this handoff would hide the five existing mutations.
 
-## Remaining slice
+## In-product history
 
-Add a discoverable Audit / Assignment History panel that shows these records and distinguishes them from recommendation decisions. Display the historical incident outcome separately from current incident status, and make `null` legacy fields explicitly unavailable.
+The primary navigation opens a scenario-scoped Audit / Assignment History panel. It shows action, incident, prior and new crew IDs, assignment IDs, reason category, note, actor, UTC timestamp, scenario, and incident status immediately after the action. It keeps recommendation decisions in their existing Recent Actions display. Legacy `null` values are labeled unavailable. The panel loads 25 rows at a time, offers pagination, refresh, empty and error states, and refetches after scenario switching or when reopened after an assignment action.
+
+The 2026-09-25 handoff stopped the backend, preserved separate copies of the prior host and container databases, copied the consistent container database into the host mount, and recreated the backend. SQLite integrity passed, migration 006 applied, and the retained database contained 1 recommendation decision, 2 demo assignments, and 5 assignment mutations. The endpoint returned the active base-scenario mutation. Direct browser checks showed 1 base-scenario and 4 critical-facility mutations, restored Base Operations, confirmed history after a page reload, checked the intermediate and narrow layouts without page overflow, and found no new console errors. The 90-test frontend suite and production build passed. Recommendation Recent Actions remained separate from the new panel.

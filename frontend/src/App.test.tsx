@@ -9,6 +9,7 @@ const apiMocks = vi.hoisted(() => ({
   incidents: vi.fn(),
   crews: vi.fn(),
   assignments: vi.fn(),
+  assignmentHistory: vi.fn(),
   optimize: vi.fn(),
   auditEvents: vi.fn(),
   recordRecommendationAction: vi.fn(),
@@ -149,6 +150,7 @@ describe("application states and scenario switching", () => {
     apiMocks.incidents.mockResolvedValue([baseIncident]);
     apiMocks.crews.mockResolvedValue([]);
     apiMocks.assignments.mockResolvedValue([]);
+    apiMocks.assignmentHistory.mockResolvedValue([]);
     apiMocks.optimize.mockResolvedValue(recommendation);
     apiMocks.auditEvents.mockResolvedValue([recordedDecision]);
     apiMocks.unassignAssignment.mockResolvedValue({
@@ -208,6 +210,41 @@ describe("application states and scenario switching", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Scenario" }));
     expect(screen.getByText("Loading scenario metadata...")).toBeTruthy();
+  });
+
+  it("keeps assignment history separate and refetches it when the scenario changes", async () => {
+    const mutation = {
+      mutation_id: "MUT-1",
+      scenario_id: "base",
+      assignment_id: "ASG-1",
+      incident_id: "INC-1001",
+      crew_id: "CR-01",
+      action: "reassigned",
+      reason: "Crew unavailable: Field report verified",
+      reason_category: "crew_unavailable",
+      note: "Field report verified",
+      actor: "demo-dispatcher",
+      created_at: "2026-09-25T12:00:00Z",
+      new_assignment_id: "ASG-2",
+      new_crew_id: "CR-02",
+      resulting_incident_status: "assigned"
+    };
+    apiMocks.assignmentHistory.mockResolvedValueOnce([mutation]).mockResolvedValueOnce([]);
+    apiMocks.activateScenario.mockResolvedValue({ ...stormScenario, is_active: true });
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Assignment History" }));
+    const history = await screen.findByRole("region", { name: "Audit / Assignment History" });
+    expect(await within(history).findByRole("article", { name: "Reassigned INC-1001" })).toBeTruthy();
+    expect(within(history).getByText("CR-02")).toBeTruthy();
+    expect(within(history).getByText("Field report verified")).toBeTruthy();
+    expect(within(history).getByText("assigned")).toBeTruthy();
+    expect(within(history).queryByText("Recent Actions")).toBeNull();
+
+    fireEvent.change(screen.getByLabelText("Active synthetic scenario"), { target: { value: "storm" } });
+    fireEvent.click(screen.getByRole("button", { name: "Switch scenario" }));
+    expect(await screen.findByText("No assignment changes recorded for this scenario.")).toBeTruthy();
+    expect(apiMocks.assignmentHistory).toHaveBeenCalledTimes(2);
   });
 
   it("keeps data-quality incidents visible while withholding automatic selection", async () => {
@@ -1618,7 +1655,7 @@ describe("application states and scenario switching", () => {
   });
 
   it("requires confirmation when the active scenario has recorded decisions", async () => {
-    const confirm = vi.spyOn(window, "confirm").mockReturnValueOnce(false).mockReturnValueOnce(true);
+    const nativeConfirm = vi.spyOn(window, "confirm");
     render(<App />);
 
     const selector = await screen.findByLabelText("Active synthetic scenario") as HTMLSelectElement;
@@ -1626,14 +1663,20 @@ describe("application states and scenario switching", () => {
 
     fireEvent.change(selector, { target: { value: "storm" } });
 
-    expect(confirm).toHaveBeenCalledWith(expect.stringContaining("decisions will remain saved"));
+    const dialog = screen.getByRole("dialog", { name: "Switch scenario?" });
+    expect(dialog.textContent).toContain("decisions will remain saved");
+    expect(screen.getByRole("heading", { name: "Switch scenario?" })).toBe(document.activeElement);
     expect(apiMocks.activateScenario).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByRole("dialog", { name: "Switch scenario?" })).toBeNull();
     await waitFor(() => expect(selector.value).toBe("base"));
 
     apiMocks.dashboard.mockResolvedValue(dashboard("storm"));
     apiMocks.auditEvents.mockResolvedValue([]);
     fireEvent.change(selector, { target: { value: "storm" } });
+    fireEvent.click(screen.getByRole("button", { name: "Switch scenario" }));
 
+    expect(nativeConfirm).not.toHaveBeenCalled();
     await waitFor(() => expect(apiMocks.activateScenario).toHaveBeenCalledWith("storm"));
     await waitFor(() => expect(selector.value).toBe("storm"));
     expect(await screen.findByText("Major Storm activated.")).toBeTruthy();

@@ -6,6 +6,7 @@ import {
   Check,
   ClipboardList,
   CloudLightning,
+  History,
   Map,
   Pause,
   Pencil,
@@ -18,6 +19,8 @@ import type { CSSProperties, ElementType, ReactNode } from "react";
 import { api } from "./api";
 import { CopilotMarkdown } from "./CopilotMarkdown";
 import { AutocompleteSearch, buildAutocompleteSuggestions } from "./components/AutocompleteSearch";
+import { AssignmentHistory } from "./components/AssignmentHistory";
+import { ActionDialog } from "./components/ActionDialog";
 import type { AutocompleteField } from "./components/AutocompleteSearch";
 import { ExpandableWorkspace } from "./components/ExpandableWorkspace";
 import {
@@ -57,7 +60,7 @@ import type {
 
 const OperationsMap = lazy(() => import("./components/OperationsMap"));
 
-type ViewKey = "map" | "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot";
+type ViewKey = "map" | "dashboard" | "dispatch" | "incidents" | "crews" | "storm" | "scenario" | "copilot" | "history";
 type ChatTurn = {
   question: string;
   answer: string;
@@ -139,6 +142,7 @@ const navItems: Array<{ key: ViewKey; label: string; icon: ElementType }> = [
   { key: "dispatch", label: "Dispatch", icon: RadioTower },
   { key: "incidents", label: "Incidents", icon: ClipboardList },
   { key: "crews", label: "Crew Board", icon: Users },
+  { key: "history", label: "Assignment History", icon: History },
   { key: "map", label: "Operations Map", icon: Map },
   { key: "storm", label: "Storm Mode", icon: CloudLightning },
   { key: "scenario", label: "Scenario", icon: Map },
@@ -217,6 +221,7 @@ function App() {
   const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
   const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
   const [scenarioLoading, setScenarioLoading] = useState(false);
+  const [pendingScenarioId, setPendingScenarioId] = useState<string | null>(null);
   const [scenarioFeedback, setScenarioFeedback] = useState<ScenarioFeedback | null>(null);
   const [error, setError] = useState<string>("");
   const [initialLoading, setInitialLoading] = useState(true);
@@ -395,17 +400,17 @@ function App() {
     }
   }
 
+  function requestScenarioActivation(scenarioId: string) {
+    if (scenarioLoading || scenarioId === activeScenario?.scenario_id) return;
+    if (recommendationActions.length > 0) {
+      setPendingScenarioId(scenarioId);
+      return;
+    }
+    void activateScenario(scenarioId);
+  }
+
   async function activateScenario(scenarioId: string) {
     if (scenarioLoading || scenarioId === activeScenario?.scenario_id) return;
-
-    if (recommendationActions.length > 0) {
-      const targetScenario = scenarios.find((scenario) => scenario.scenario_id === scenarioId);
-      const shouldSwitch = window.confirm(
-        `The active scenario has recorded dispatch decisions. Switch to ${targetScenario?.name ?? scenarioId}?\n\n` +
-          "Existing decisions will remain saved under the current scenario and will reappear when you switch back."
-      );
-      if (!shouldSwitch) return;
-    }
 
     setScenarioLoading(true);
     setScenarioFeedback(null);
@@ -689,7 +694,7 @@ function App() {
         className="main"
         id="main-content"
       >
-        <header className="topbar">
+        <header className={view === "history" ? "topbar history-topbar" : "topbar"}>
           <div>
             <p className="eyebrow">Developer Bootstrap MVP</p>
             <h1 id="page-heading" ref={pageHeadingRef} tabIndex={-1}>{navItems.find((item) => item.key === view)?.label}</h1>
@@ -704,7 +709,7 @@ function App() {
                 aria-label="Active synthetic scenario"
                 disabled={scenarioLoading || scenarios.length === 0}
                 id="active-scenario"
-                onChange={(event) => activateScenario(event.target.value)}
+                onChange={(event) => requestScenarioActivation(event.target.value)}
                 value={activeScenario?.scenario_id ?? ""}
               >
                 {!activeScenario ? <option value="">Loading scenarios...</option> : null}
@@ -1000,6 +1005,18 @@ function App() {
           </ExpandableWorkspace>
         ))}
 
+        {view === "history" && (initialLoading || scenarioLoading ? (
+          <ViewState title="Loading assignment history..." message="Retrieving the active scenario and its assignment actions." />
+        ) : activeScenario ? (
+          <AssignmentHistory
+            key={activeScenario.scenario_id}
+            scenarioId={activeScenario.scenario_id}
+            scenarioName={activeScenario.name}
+          />
+        ) : (
+          <ViewState title="Assignment history unavailable" message="Active scenario metadata could not be loaded." actionLabel="Retry connection" onAction={loadApplication} />
+        ))}
+
         {view === "storm" && (initialLoading ? (
           <ViewState title="Loading storm mode..." message="Retrieving high-priority and critical-facility events." />
         ) : operationalDataUnavailable || !dashboard ? (
@@ -1224,12 +1241,37 @@ function App() {
             />
           ) : null}
         </SideSheet>
+        {pendingScenarioId ? (
+          <ActionDialog
+            id="scenario-switch-title"
+            onCancel={() => setPendingScenarioId(null)}
+            title="Switch scenario?"
+          >
+            <p>The active scenario has recorded dispatch decisions. Switch to {scenarios.find((scenario) => scenario.scenario_id === pendingScenarioId)?.name ?? pendingScenarioId}?</p>
+            <p>Existing decisions will remain saved under the current scenario and will reappear when you switch back.</p>
+            <div className="assignment-action-buttons">
+              <button className="secondary-action" onClick={() => setPendingScenarioId(null)} type="button">Cancel</button>
+              <button
+                className="primary-action"
+                onClick={() => {
+                  const scenarioId = pendingScenarioId;
+                  setPendingScenarioId(null);
+                  void activateScenario(scenarioId);
+                }}
+                type="button"
+              >
+                Switch scenario
+              </button>
+            </div>
+          </ActionDialog>
+        ) : null}
         {assignmentActionDraft ? (
-          <div className="assignment-action-overlay" role="presentation">
-            <section aria-labelledby="assignment-action-title" aria-modal="true" className="assignment-action-dialog" role="dialog">
-              <h2 id="assignment-action-title">
-                {assignmentActionDraft.action === "unassigned" ? "Unassign crew" : "Reassign crew"}
-              </h2>
+          <ActionDialog
+            closeDisabled={actionLoading !== null}
+            id="assignment-action-title"
+            onCancel={() => setAssignmentActionDraft(null)}
+            title={assignmentActionDraft.action === "unassigned" ? "Unassign crew" : "Reassign crew"}
+          >
               <p>
                 {assignmentActionDraft.action === "unassigned"
                   ? `Remove ${assignmentActionDraft.assignment.crew_id} from ${assignmentActionDraft.assignment.incident_id}?`
@@ -1276,8 +1318,7 @@ function App() {
                   {actionLoading ? "Saving…" : assignmentActionDraft.action === "unassigned" ? "Confirm unassign" : "Confirm reassignment"}
                 </button>
               </div>
-            </section>
-          </div>
+          </ActionDialog>
         ) : null}
       </main>
     </div>
