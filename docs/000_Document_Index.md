@@ -166,6 +166,7 @@ Batch 4B establishes the delivery governance foundation.
 | `docs/900_Delivery/913_POC_025_Critical_Facility_Level_Copilot_Queries_Plan.md` | Drafted | Deferred deterministic Copilot queries for Level 1–3 breakdowns, highest-level incident counts, facility-record detail, and unknown warnings |
 | `docs/900_Delivery/914_POC_012_PSEG_LI_Static_Reference_Implementation_Plan.md` | Completed | SME-maintained PSEG Long Island hierarchy and customers-served snapshot, validation, ingestion, deterministic Copilot use, refresh governance, and Phase 5 closeout evidence |
 | `docs/900_Delivery/915_POC_036_045_Operations_Map_Enhancement_Plans.md` | Drafted | Review-ready grouping, effort, sequencing, boundaries, and approval gates for POC-036 through POC-045 map and cross-view navigation enhancements |
+| `docs/900_Delivery/919_POC_049_Incident_Time_and_ETR_Implementation_Plan.md` | Drafted | Incident creation and scenario-cutoff time contract, configurable ETR mix and optional timeline conversion, generator previews, application and Copilot phases, and acceptance gates |
 
 ## Planned Documentation Structure
 
