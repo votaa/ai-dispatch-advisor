@@ -38,6 +38,7 @@ class CrewMapLocation(DomainModel):
     village: str
     reference_id: str
     precision: Literal["village_center"] = "village_center"
+    resolution_basis: Literal["source_place", "operating_hq_proxy"] = "source_place"
 
 
 class Crew(DomainModel):

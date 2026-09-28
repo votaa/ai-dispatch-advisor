@@ -710,7 +710,9 @@ export default function OperationsMap({
             {selection.incident && <><dt>Customers out</dt><dd>{selection.incident.customers_out.toLocaleString()}</dd><dt>Severity / hazard</dt><dd>{selection.detail}</dd><dt>Assigned crews</dt><dd>{related.length}</dd></>}
             {selection.crew && <><dt>Capability</dt><dd>{selection.crew.capability}</dd><dt>Assigned incidents</dt><dd>{related.length}</dd></>}
           </dl>
-          <p>{!selection.coordinates ? "Location unavailable — this record is not plotted." : selection.kind === "crew" ? `Approximate center: ${selection.crew?.map_location?.village}` : "Synthetic incident location"}</p>
+          <p>{!selection.coordinates ? "Location unavailable — this record is not plotted." : selection.kind === "crew" && selection.crew?.map_location?.resolution_basis === "operating_hq_proxy"
+            ? `Operating HQ proxy: ${selection.crew.map_location.village} (approximate village center). Reported location: ${selection.crew.current_location}.`
+            : selection.kind === "crew" ? `Approximate center: ${selection.crew?.map_location?.village}` : "Synthetic incident location"}</p>
           <section className="operations-map-relationships" aria-label="Assignment relationships">
             <h3>Assignment relationships ({related.length})</h3>
             {related.length === 0 ? <p>No current assignments for this record.</p> : <ul>{related.map((item) => <li key={item.key}>

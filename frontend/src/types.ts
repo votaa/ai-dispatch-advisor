@@ -38,6 +38,7 @@ export type Crew = {
     village: string;
     reference_id: string;
     precision: "village_center";
+    resolution_basis?: "source_place" | "operating_hq_proxy";
   } | null;
   suitability_score?: number;
   capability_match?: boolean;

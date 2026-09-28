@@ -60,6 +60,19 @@ describe("Operations Map", () => {
     expect(screen.queryByRole("button", { name: /! · INC-1/ })).toBeNull();
   });
 
+  it("discloses an operating HQ proxy while retaining the reported staging location", () => {
+    const proxyCrew: Crew = {
+      ...crew,
+      current_location: "RDA4 MUA Staging",
+      map_location: { ...crew.map_location!, resolution_basis: "operating_hq_proxy" }
+    };
+    render(<OperationsMap incidents={[]} crews={[proxyCrew]} onNavigate={vi.fn()} />);
+    expect(screen.getByRole("status").textContent).toContain("1 crews mapped");
+    fireEvent.click(screen.getByRole("button", { name: /C · Line crew 1/ }));
+    expect(screen.getByText("Operating HQ proxy: Hicksville (approximate village center). Reported location: RDA4 MUA Staging.")).toBeTruthy();
+    expect(screen.getByText("RDA4 MUA Staging")).toBeTruthy();
+  });
+
   it("keeps unmapped records accessible and searches the complete inventory across pages", () => {
     const many = Array.from({length: 25}, (_, i) => ({...incident, incident_id: `INC-${i}`}));
     render(<OperationsMap incidents={many} crews={[{...crew, map_location: null}]} onNavigate={vi.fn()} />);
