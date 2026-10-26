@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 RecommendationAction = Literal["accepted", "modified", "deferred", "overridden"]
@@ -140,13 +141,40 @@ class Incident(DomainModel):
     age_minutes: int
     latitude: float
     longitude: float
-    etr: str
+    etr: Optional[str] = None
+    etr_status: Optional[Literal["estimated", "assessing_conditions"]] = None
+    created_at: Optional[str] = None
+    created_at_source: Optional[Literal["synthetic_generator", "source_record"]] = None
     assigned_crews: list[AssignedCrew] = Field(default_factory=list)
     current_decision: Optional[RecommendationDecision] = None
     critical_facility_level: Optional[Literal[1, 2, 3]] = None
     matched_critical_facility_ids: list[str] = Field(default_factory=list)
     ranking_status: Literal["ranked", "withheld"] = "ranked"
     ranking_warning: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_temporal_state(self) -> Incident:
+        if self.created_at is not None:
+            try:
+                created = datetime.fromisoformat(self.created_at)
+            except ValueError as exc:
+                raise ValueError("created_at must be an RFC 3339 datetime") from exc
+            if created.tzinfo is None or created.utcoffset() is None:
+                raise ValueError("created_at must include a timezone offset")
+            if self.created_at_source is None:
+                raise ValueError("created_at_source is required with created_at")
+        if self.etr_status == "assessing_conditions" and self.etr is not None:
+            raise ValueError("Assessing Conditions must have a NULL ETR")
+        if self.etr_status == "estimated":
+            if not self.etr:
+                raise ValueError("An estimated ETR must have a timestamp")
+            try:
+                estimated = datetime.fromisoformat(self.etr)
+            except ValueError as exc:
+                raise ValueError("An estimated ETR must be an RFC 3339 datetime") from exc
+            if estimated.tzinfo is None or estimated.utcoffset() is None:
+                raise ValueError("An estimated ETR must include a timezone offset")
+        return self
 
 
 class Assignment(DomainModel):
@@ -218,6 +246,55 @@ class ScenarioFreshness(DomainModel):
         return value
 
 
+class ScenarioETRDistributionEntry(DomainModel):
+    range: str
+    percent: float = Field(ge=0, le=100)
+
+    @field_validator("range")
+    @classmethod
+    def validate_range(cls, value: str) -> str:
+        if not re.fullmatch(r"null|[1-9]\d*(?:-[1-9]\d*)?h", value):
+            raise ValueError("ETR range must be null, fixed hours, or an hour band")
+        if "-" in value:
+            minimum, maximum = value[:-1].split("-")
+            if int(maximum) < int(minimum):
+                raise ValueError("ETR hour band must be ordered")
+        return value
+
+
+class ScenarioTemporal(DomainModel):
+    kind: Literal["single_snapshot", "timeline_snapshot"]
+    as_of_at: datetime
+    time_zone: Literal["America/New_York"] = "America/New_York"
+    etr_distribution: list[ScenarioETRDistributionEntry] = Field(min_length=1)
+    timeline_id: Optional[str] = None
+    snapshot_index: Optional[int] = Field(default=None, ge=1)
+    snapshot_count: Optional[int] = Field(default=None, ge=1)
+
+    @field_validator("as_of_at")
+    @classmethod
+    def require_aware_cutoff(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("must include a timezone offset")
+        return value
+
+    @model_validator(mode="after")
+    def validate_timeline_identity(self) -> ScenarioTemporal:
+        if abs(sum(entry.percent for entry in self.etr_distribution) - 100) > 0.000001:
+            raise ValueError("ETR distribution percentages must total 100")
+        labels = [entry.range for entry in self.etr_distribution]
+        if len(labels) != len(set(labels)):
+            raise ValueError("ETR distribution ranges must be unique")
+        fields = (self.timeline_id, self.snapshot_index, self.snapshot_count)
+        if self.kind == "single_snapshot" and any(value is not None for value in fields):
+            raise ValueError("single snapshots cannot declare timeline identity")
+        if self.kind == "timeline_snapshot" and any(value is None for value in fields):
+            raise ValueError("timeline snapshots require timeline identity and index/count")
+        if self.snapshot_index and self.snapshot_count and self.snapshot_index > self.snapshot_count:
+            raise ValueError("snapshot_index cannot exceed snapshot_count")
+        return self
+
+
 class ScenarioMetadata(DomainModel):
     schema_version: Literal["1.0"]
     scenario_id: str
@@ -226,3 +303,4 @@ class ScenarioMetadata(DomainModel):
     event_type: ScenarioEventType
     expected_conditions: list[str]
     freshness: Optional[ScenarioFreshness] = None
+    temporal: Optional[ScenarioTemporal] = None

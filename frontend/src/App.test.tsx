@@ -448,6 +448,20 @@ describe("application states and scenario switching", () => {
     ]);
   });
 
+  it("shows intentional NULL ETRs and keeps ETR sorting usable", async () => {
+    const assessing = { ...baseIncident, etr: null, etr_status: "assessing_conditions" };
+    const estimated = { ...baseIncident, incident_id: "INC-2002", etr: "2026-09-29T22:00:00-04:00", etr_status: "estimated" };
+    apiMocks.incidents.mockResolvedValue([assessing, estimated]);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("base"), active_incidents: 2, top_incidents: [assessing, estimated] });
+    render(<App />);
+
+    expect(await screen.findByText("Assessing Conditions")).toBeTruthy();
+    const compactSort = screen.getByLabelText("Priority dispatch queue compact sort") as HTMLSelectElement;
+    fireEvent.change(compactSort, { target: { value: "etr" } });
+    expect(compactSort.value).toBe("etr");
+    expect(screen.getByText("Assessing Conditions")).toBeTruthy();
+  });
+
   it("preserves backend priority order in the dashboard queue", async () => {
     const lowerPriorityIncident = {
       ...baseIncident,

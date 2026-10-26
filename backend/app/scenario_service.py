@@ -4,6 +4,7 @@ import csv
 import json
 import re
 from collections import Counter
+from datetime import datetime, timezone
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Any, Literal
@@ -14,6 +15,17 @@ from .domain.models import ScenarioEventType, ScenarioMetadata
 
 
 SUPPORTED_EVENT_TYPES = ScenarioEventType
+TEMPORAL_INCIDENT_FIELDS = ["created_at", "created_at_source", "etr_status"]
+
+
+def _aware_instant(value: str) -> datetime | None:
+    try:
+        result = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if result.tzinfo is None or result.utcoffset() is None:
+        return None
+    return result.astimezone(timezone.utc)
 
 
 class ScenarioFiles(BaseModel):
@@ -297,6 +309,11 @@ class ScenarioService:
                                 *expected_headers[3:],
                             ]
                         )
+                        if manifest.temporal is not None:
+                            allowed_headers = [
+                                [*headers, *TEMPORAL_INCIDENT_FIELDS]
+                                for headers in allowed_headers
+                            ]
                     if actual_headers not in allowed_headers:
                         issues.append(
                             {
@@ -332,6 +349,46 @@ class ScenarioService:
                     }
                 )
             rows_by_file[filename] = rows
+
+        if manifest.temporal is not None and "PendingIncidents.csv" in rows_by_file:
+            cutoff = manifest.temporal.as_of_at.astimezone(timezone.utc)
+            created_by_id: dict[str, datetime] = {}
+            for row_number, incident in enumerate(rows_by_file["PendingIncidents.csv"], start=2):
+                location = f"PendingIncidents.csv:{row_number}"
+                created = _aware_instant(incident["created_at"])
+                if created is None:
+                    issues.append({"location": f"{location}.created_at", "message": "Creation time must include a valid offset"})
+                    continue
+                if created > cutoff:
+                    issues.append({"location": f"{location}.created_at", "message": "Creation time cannot follow scenario as_of_at"})
+                if incident["created_at_source"] not in {"synthetic_generator", "source_record"}:
+                    issues.append({"location": f"{location}.created_at_source", "message": "Unknown creation-time source"})
+                created_by_id[incident["incident_id"].strip()] = created
+                try:
+                    age = int(incident["age_minutes"])
+                except ValueError:
+                    age = -1
+                expected_age = int((cutoff - created).total_seconds() // 60)
+                if age != expected_age:
+                    issues.append({"location": f"{location}.age_minutes", "message": "Age must equal snapshot cutoff minus creation time in whole minutes"})
+                status = incident["etr_status"]
+                etr = incident["etr"]
+                if status == "assessing_conditions":
+                    if etr:
+                        issues.append({"location": f"{location}.etr", "message": "Assessing Conditions requires an empty ETR"})
+                elif status == "estimated":
+                    estimated = _aware_instant(etr)
+                    if estimated is None or estimated <= created:
+                        issues.append({"location": f"{location}.etr", "message": "Estimated ETR must be an aware time after creation"})
+                else:
+                    issues.append({"location": f"{location}.etr_status", "message": "Unknown ETR status"})
+            for row_number, assignment in enumerate(rows_by_file.get("Assignments.csv", []), start=2):
+                created = created_by_id.get(assignment["incident_id"].strip())
+                if created is None:
+                    continue
+                assigned = _aware_instant(assignment["assigned_at"])
+                if assigned is None or not created <= assigned <= cutoff:
+                    issues.append({"location": f"Assignments.csv:{row_number}.assigned_at", "message": "Assignment time must be aware and between creation and scenario cutoff"})
 
         reference_files = {"Assignments.csv", "PendingIncidents.csv", "Crews.csv"}
         if reference_files.issubset(rows_by_file):

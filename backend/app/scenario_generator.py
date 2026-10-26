@@ -7,8 +7,9 @@ import random
 import re
 import tempfile
 from collections import Counter, defaultdict
-from dataclasses import dataclass
-from datetime import date, datetime, time, timedelta
+from dataclasses import dataclass, field
+from datetime import date, datetime, time, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
@@ -124,6 +125,13 @@ INCIDENT_HEADERS = [
     "longitude",
     "etr",
 ]
+TEMPORAL_INCIDENT_HEADERS = [
+    *INCIDENT_HEADERS,
+    "created_at",
+    "created_at_source",
+    "etr_status",
+]
+DEFAULT_ETR_MIX = "4-24h=100"
 CREW_HEADERS = [
     "crew_id",
     "crew_name",
@@ -262,6 +270,8 @@ class GeneratedScenario:
     critical_facilities: list[dict[str, Any]]
     topology: list[dict[str, Any]]
     crew_types: dict[str, str]
+    temporal: dict[str, Any] | None = None
+    etr_mix_counts: dict[str, int] = field(default_factory=dict)
 
     def summary(self) -> dict[str, Any]:
         geography_ids = {
@@ -269,7 +279,7 @@ class GeneratedScenario:
             for row in self.incidents
             if row.get("geography_reference_id")
         }
-        return {
+        result = {
             "scenario_id": self.scenario_id,
             "incidents": len(self.incidents),
             "crews": len(self.crews),
@@ -284,6 +294,142 @@ class GeneratedScenario:
             "customers_out": sum(int(row["customers_out"]) for row in self.incidents),
             "geography_coverage": len(geography_ids),
         }
+        if self.temporal is not None:
+            created = [datetime.fromisoformat(str(row["created_at"])) for row in self.incidents]
+            durations = [
+                (datetime.fromisoformat(str(row["etr"])) - datetime.fromisoformat(str(row["created_at"]))).total_seconds() / 3600
+                for row in self.incidents
+                if row["etr_status"] == "estimated"
+            ]
+            result["temporal"] = {
+                **self.temporal,
+                "first_created_at": min(created).isoformat(),
+                "last_created_at": max(created).isoformat(),
+                "etr_status_counts": dict(sorted(Counter(row["etr_status"] for row in self.incidents).items())),
+                "realized_etr_mix_counts": dict(sorted(self.etr_mix_counts.items())),
+                "estimated_duration_hours": {
+                    "minimum": round(min(durations), 2) if durations else None,
+                    "maximum": round(max(durations), 2) if durations else None,
+                },
+            }
+        return result
+
+
+@dataclass(frozen=True)
+class ETRMixEntry:
+    label: str
+    minimum_minutes: int | None
+    maximum_minutes: int | None
+    percent: Decimal
+
+
+def parse_etr_mix(value: str) -> tuple[ETRMixEntry, ...]:
+    """Parse fixed-hour, hour-band and null shares for temporal generation."""
+    entries: list[ETRMixEntry] = []
+    seen: set[str] = set()
+    for piece in value.split(","):
+        match = re.fullmatch(r"\s*(null|([1-9]\d*)(?:-([1-9]\d*))?h)\s*=\s*(\d+(?:\.\d+)?)\s*", piece, re.I)
+        if match is None:
+            raise ValueError(f"Invalid ETR mix entry: {piece!r}; expected 8h=25,4-8h=25,null=50")
+        label = match.group(1).lower()
+        if label in seen:
+            raise ValueError(f"Duplicate ETR mix entry: {label}")
+        seen.add(label)
+        try:
+            percent = Decimal(match.group(4))
+        except InvalidOperation as exc:
+            raise ValueError(f"Invalid ETR percentage in {piece!r}") from exc
+        if percent > 100:
+            raise ValueError("ETR mix percentages must be between 0 and 100")
+        minimum = maximum = None
+        if label != "null":
+            minimum = int(match.group(2)) * 60
+            maximum = int(match.group(3) or match.group(2)) * 60
+            if maximum < minimum:
+                raise ValueError(f"ETR range must be ordered: {label}")
+        entries.append(ETRMixEntry(label, minimum, maximum, percent))
+    if not entries or sum((entry.percent for entry in entries), Decimal(0)) != 100:
+        raise ValueError("ETR mix percentages must total 100")
+    return tuple(entries)
+
+
+def _mix_labels(entries: tuple[ETRMixEntry, ...], count: int, rng: random.Random) -> list[ETRMixEntry]:
+    exact = [entry.percent * count / 100 for entry in entries]
+    counts = [int(value) for value in exact]
+    remaining = count - sum(counts)
+    order = sorted(range(len(entries)), key=lambda index: (-(exact[index] - counts[index]), index))
+    for index in order[:remaining]:
+        counts[index] += 1
+    labels = [entry for entry, quantity in zip(entries, counts) for _ in range(quantity)]
+    rng.shuffle(labels)
+    return labels
+
+
+def _apply_single_snapshot_times(
+    scenario: GeneratedScenario,
+    *,
+    start_date: date,
+    end_date: date,
+    as_of_at: datetime,
+    etr_mix: str | None,
+    seed: int,
+) -> None:
+    if as_of_at.tzinfo is None or as_of_at.utcoffset() is None:
+        raise ValueError("as_of_at must include a timezone offset")
+    cutoff = as_of_at.astimezone(LOCAL_TIMEZONE)
+    if cutoff.date() < end_date:
+        raise ValueError("as_of_at must reach the requested end_date")
+    if end_date < start_date:
+        raise ValueError("end_date must be on or after start_date")
+    mix = parse_etr_mix(etr_mix or DEFAULT_ETR_MIX)
+    created_rng = random.Random(f"{seed}:poc049:created")
+    etr_rng = random.Random(f"{seed}:poc049:etr")
+    assignment_rng = random.Random(f"{seed}:poc049:assignment")
+    cutoff_utc = cutoff.astimezone(timezone.utc)
+    cutoff_minute = cutoff_utc.replace(second=0, microsecond=0)
+    allocations = _mix_labels(mix, len(scenario.incidents), etr_rng)
+    scenario.etr_mix_counts = dict(Counter(entry.label for entry in allocations))
+    by_id: dict[str, datetime] = {}
+    for incident, allocation in zip(scenario.incidents, allocations):
+        incident_date = datetime.strptime(str(incident["incident_id"]).split("-")[1], "%Y%m%d").date()
+        first_utc = datetime.combine(incident_date, time.min, LOCAL_TIMEZONE).astimezone(timezone.utc)
+        next_utc = datetime.combine(incident_date + timedelta(days=1), time.min, LOCAL_TIMEZONE).astimezone(timezone.utc)
+        last_exclusive = min(next_utc, cutoff_minute + timedelta(minutes=1))
+        available_minutes = int((last_exclusive - first_utc).total_seconds() // 60)
+        if available_minutes <= 0:
+            raise ValueError(f"No eligible creation time on {incident_date}")
+        created = (first_utc + timedelta(minutes=created_rng.randrange(available_minutes))).astimezone(LOCAL_TIMEZONE)
+        created_utc = created.astimezone(timezone.utc)
+        incident["created_at"] = created.isoformat()
+        incident["created_at_source"] = "synthetic_generator"
+        incident["age_minutes"] = int((cutoff_utc - created_utc).total_seconds() // 60)
+        if allocation.label == "null":
+            incident["etr"] = None
+            incident["etr_status"] = "assessing_conditions"
+        else:
+            assert allocation.minimum_minutes is not None and allocation.maximum_minutes is not None
+            duration = etr_rng.randint(allocation.minimum_minutes, allocation.maximum_minutes)
+            incident["etr"] = (created_utc + timedelta(minutes=duration)).astimezone(LOCAL_TIMEZONE).isoformat()
+            incident["etr_status"] = "estimated"
+        by_id[str(incident["incident_id"])] = created_utc
+    assignment_sequences: Counter[str] = Counter()
+    for assignment in scenario.assignments:
+        created_utc = by_id[str(assignment["incident_id"])]
+        span = int((cutoff_minute - created_utc).total_seconds() // 60)
+        assigned_utc = created_utc + timedelta(minutes=assignment_rng.randint(0, max(0, span)))
+        assigned_local = assigned_utc.astimezone(LOCAL_TIMEZONE)
+        assignment["assigned_at"] = assigned_local.isoformat()
+        date_text = assigned_local.strftime("%Y%m%d")
+        assignment_sequences[date_text] += 1
+        assignment["assignment_id"] = f"ASG-{date_text}-{assignment_sequences[date_text]:04d}"
+    scenario.temporal = {
+        "kind": "single_snapshot",
+        "as_of_at": cutoff.isoformat(),
+        "time_zone": "America/New_York",
+        "etr_distribution": [
+            {"range": entry.label, "percent": float(entry.percent)} for entry in mix
+        ],
+    }
 
 
 def _date_range(start_date: date, end_date: date) -> list[date]:
@@ -1318,6 +1464,8 @@ def generate_scenario(
     geography_path: Path = DEFAULT_GEOGRAPHY_PATH,
     capacity_geography_path: Path = DEFAULT_CAPACITY_GEOGRAPHY_PATH,
     population_constrained: bool = True,
+    as_of_at: datetime | None = None,
+    etr_mix: str | None = None,
 ) -> GeneratedScenario:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", scenario_id):
         raise ValueError("scenario_id must use lowercase letters, numbers, hyphens, or underscores")
@@ -1329,7 +1477,15 @@ def generate_scenario(
         raise ValueError("start_day_location_rate must be between 0 and 1")
     if critical_facilities_per_region is not None and critical_facilities_per_region <= 0:
         raise ValueError("critical_facilities_per_region must be positive")
+    if as_of_at is None and etr_mix is not None:
+        raise ValueError("etr_mix requires an explicit as_of_at")
     end_date = end_date or start_date
+    if as_of_at is not None:
+        if as_of_at.tzinfo is None or as_of_at.utcoffset() is None:
+            raise ValueError("as_of_at must include a timezone offset")
+        if as_of_at.astimezone(LOCAL_TIMEZONE).date() < end_date:
+            raise ValueError("as_of_at must reach the requested end_date")
+        parse_etr_mix(etr_mix or DEFAULT_ETR_MIX)
     rng = random.Random(seed)
     municipalities = load_municipalities(lookup_path)
     if allowed_municipalities is not None:
@@ -1484,6 +1640,15 @@ def generate_scenario(
         crew_types=crew_types,
     )
     validate_generated_scenario(result, assigned_incident_count, dual_tree_incidents)
+    if as_of_at is not None:
+        _apply_single_snapshot_times(
+            result,
+            start_date=start_date,
+            end_date=end_date,
+            as_of_at=as_of_at,
+            etr_mix=etr_mix,
+            seed=seed,
+        )
     return result
 
 
@@ -2056,8 +2221,11 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
         raise FileExistsError(f"Output scenario already exists: {target}")
     output_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix=f".{scenario.scenario_id}-", dir=output_root) as temporary:
-        temporary_path = Path(temporary)
-        _write_csv(temporary_path / "PendingIncidents.csv", INCIDENT_HEADERS, scenario.incidents)
+        temporary_root = Path(temporary)
+        temporary_path = temporary_root / scenario.scenario_id
+        temporary_path.mkdir()
+        incident_headers = TEMPORAL_INCIDENT_HEADERS if scenario.temporal else INCIDENT_HEADERS
+        _write_csv(temporary_path / "PendingIncidents.csv", incident_headers, scenario.incidents)
         _write_csv(temporary_path / "Crews.csv", CREW_HEADERS, scenario.crews)
         _write_csv(temporary_path / "Assignments.csv", ASSIGNMENT_HEADERS, scenario.assignments)
         _write_csv(temporary_path / "HistoricalRepairs.csv", HISTORICAL_REPAIR_HEADERS, scenario.historical_repairs)
@@ -2090,6 +2258,11 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
                 "topology": "Topology.csv",
             },
         }
+        if scenario.temporal is not None:
+            manifest["temporal"] = scenario.temporal
         (temporary_path / "scenario.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        from .scenario_service import ScenarioService
+
+        ScenarioService(temporary_root, scenario.scenario_id).active_scenario()
         temporary_path.rename(target)
     return target

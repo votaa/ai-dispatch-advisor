@@ -4,12 +4,13 @@ import csv
 import json
 import shutil
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pytest
 
-from app.domain.models import Incident
+from app.domain.models import Incident, ScenarioETRDistributionEntry
 from app.geography import GeographyRegistry
 from app.optimization.critical_facility import resolve_critical_facility_impact
 from app.optimization.deterministic_engine import DeterministicOptimizationEngine
@@ -27,6 +28,7 @@ from app.scenario_generator import (
     REGIONS,
     generate_copilot_demo_scenario,
     generate_scenario,
+    parse_etr_mix,
     load_capacity_geographies,
     load_municipalities,
     write_scenario,
@@ -35,7 +37,7 @@ from app.scenario_generator import (
     validate_lse_coverage,
     validate_population_capacity,
 )
-from app.scenario_service import ScenarioService
+from app.scenario_service import ScenarioService, ScenarioServiceError
 
 
 def test_default_generator_obeys_approved_dispatch_rules() -> None:
@@ -596,7 +598,10 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
     assert descriptor.freshness is not None
     assert descriptor.freshness.updated_at.utcoffset() is not None
     with (target / "PendingIncidents.csv").open(newline="", encoding="utf-8") as handle:
-        assert len(list(csv.DictReader(handle))) == 80
+        reader = csv.DictReader(handle)
+        assert "created_at" not in (reader.fieldnames or [])
+        assert len(list(reader)) == 80
+    assert "temporal" not in manifest
     with (target / "Weather.csv").open(newline="", encoding="utf-8") as handle:
         assert {row["region"] for row in csv.DictReader(handle)} == set(REGIONS)
     with (target / "CriticalFacilities.csv").open(newline="", encoding="utf-8") as handle:
@@ -605,6 +610,167 @@ def test_written_preview_is_a_valid_application_scenario(tmp_path: Path) -> None
         assert len(list(csv.DictReader(handle))) == 40
     with (target / "Topology.csv").open(newline="", encoding="utf-8") as handle:
         assert len(list(csv.DictReader(handle))) == len(scenario.topology)
+
+
+def test_temporal_single_snapshot_mix_and_chronology(tmp_path: Path) -> None:
+    settings = {
+        "scenario_id": "poc049-small-preview",
+        "start_date": date(2026, 9, 28),
+        "end_date": date(2026, 9, 29),
+        "as_of_at": datetime.fromisoformat("2026-09-29T18:00:00-04:00"),
+        "etr_mix": "8h=25,24h=25,48h=25,null=25",
+        "incident_count": 24,
+        "crew_count": 32,
+        "assignment_rate": 0.25,
+        "dual_tree_incidents": 1,
+        "critical_facilities_per_region": 2,
+        "geography_coverage_target": 16,
+    }
+    scenario = generate_scenario(**settings)
+    repeated = generate_scenario(**settings)
+    assert scenario.incidents == repeated.incidents
+    assert scenario.assignments == repeated.assignments
+    assert scenario.temporal is not None
+    assert scenario.summary()["temporal"]["realized_etr_mix_counts"] == {
+        "8h": 6, "24h": 6, "48h": 6, "null": 6
+    }
+    assert Counter(row["etr_status"] for row in scenario.incidents) == {
+        "estimated": 18,
+        "assessing_conditions": 6,
+    }
+    duration_counts: Counter[int | None] = Counter()
+    cutoff = settings["as_of_at"].astimezone(timezone.utc)
+    created_by_id = {}
+    for row in scenario.incidents:
+        created = datetime.fromisoformat(row["created_at"])
+        created_by_id[row["incident_id"]] = created
+        assert created.date() == datetime.strptime(row["incident_id"].split("-")[1], "%Y%m%d").date()
+        assert created.astimezone(timezone.utc) <= cutoff
+        assert row["age_minutes"] == int((cutoff - created.astimezone(timezone.utc)).total_seconds() // 60)
+        assert row["created_at_source"] == "synthetic_generator"
+        if row["etr_status"] == "assessing_conditions":
+            assert row["etr"] is None
+            duration_counts[None] += 1
+        else:
+            duration = int((datetime.fromisoformat(row["etr"]) - created).total_seconds() // 60)
+            duration_counts[duration] += 1
+    assert duration_counts == {480: 6, 1440: 6, 2880: 6, None: 6}
+    for assignment in scenario.assignments:
+        assigned = datetime.fromisoformat(assignment["assigned_at"])
+        assert created_by_id[assignment["incident_id"]] <= assigned <= settings["as_of_at"]
+        assert assignment["assignment_id"].split("-")[1] == assigned.strftime("%Y%m%d")
+
+    target = write_scenario(scenario, tmp_path)
+    descriptor = ScenarioService(tmp_path, scenario.scenario_id).active_scenario()
+    assert descriptor.temporal is not None
+    assert descriptor.temporal.kind == "single_snapshot"
+    assert descriptor.temporal.as_of_at == settings["as_of_at"]
+    with (target / "PendingIncidents.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    assert len(rows) == 24
+    assert all("created_at" in row and "etr_status" in row for row in rows)
+    assert sum(row["etr"] == "" for row in rows) == 6
+    assert all(Incident.model_validate({key: value or None for key, value in row.items()}) for row in rows)
+
+
+def test_temporal_mix_and_cutoff_reject_invalid_inputs() -> None:
+    for value in ("8h=50,null=40", "8h=101", "24-8h=100", "0h=100", "null=50,null=50"):
+        with pytest.raises(ValueError):
+            parse_etr_mix(value)
+    with pytest.raises(ValueError, match="hour band must be ordered"):
+        ScenarioETRDistributionEntry(range="24-8h", percent=100)
+    with pytest.raises(ValueError, match="etr_mix requires"):
+        generate_scenario(scenario_id="invalid-time", start_date=date(2026, 9, 28), etr_mix="null=100")
+    with pytest.raises(ValueError, match="end_date"):
+        generate_scenario(
+            scenario_id="invalid-time",
+            start_date=date(2026, 9, 28),
+            end_date=date(2026, 9, 29),
+            as_of_at=datetime.fromisoformat("2026-09-28T18:00:00-04:00"),
+        )
+
+
+def test_temporal_preflight_rejects_contradictory_null_status(tmp_path: Path) -> None:
+    scenario = generate_scenario(
+        scenario_id="invalid-temporal-row",
+        start_date=date(2026, 9, 28),
+        as_of_at=datetime.fromisoformat("2026-09-28T18:00:00-04:00"),
+        etr_mix="null=100",
+        incident_count=24,
+        crew_count=32,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+        critical_facilities_per_region=2,
+        geography_coverage_target=16,
+    )
+    target = write_scenario(scenario, tmp_path)
+    csv_path = target / "PendingIncidents.csv"
+    with csv_path.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+        headers = list(rows[0])
+    rows[0]["etr"] = "2026-09-29T12:00:00-04:00"
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(rows)
+    with pytest.raises(ScenarioServiceError) as failure:
+        ScenarioService(tmp_path, scenario.scenario_id).active_scenario()
+    assert any("Assessing Conditions requires" in issue["message"] for issue in failure.value.details)
+
+
+@pytest.mark.parametrize(
+    ("day", "cutoff"),
+    [
+        (date(2026, 3, 8), "2026-03-08T23:59:00-04:00"),
+        (date(2026, 11, 1), "2026-11-01T23:59:00-05:00"),
+    ],
+)
+def test_temporal_creation_uses_real_minutes_across_dst(day: date, cutoff: str) -> None:
+    scenario = generate_scenario(
+        scenario_id="dst-preview",
+        start_date=day,
+        as_of_at=datetime.fromisoformat(cutoff),
+        etr_mix="8h=100",
+        incident_count=24,
+        crew_count=32,
+        assignment_rate=0,
+        dual_tree_incidents=0,
+        critical_facilities_per_region=2,
+        geography_coverage_target=16,
+    )
+    eastern = ZoneInfo("America/New_York")
+    for row in scenario.incidents:
+        created = datetime.fromisoformat(row["created_at"])
+        etr = datetime.fromisoformat(row["etr"])
+        assert created.astimezone(timezone.utc).astimezone(eastern).isoformat() == created.isoformat()
+        assert (etr - created).total_seconds() == 8 * 3600
+
+
+def test_temporal_preflight_rejects_assignment_before_creation(tmp_path: Path) -> None:
+    scenario = generate_scenario(
+        scenario_id="invalid-assignment-time",
+        start_date=date(2026, 9, 28),
+        as_of_at=datetime.fromisoformat("2026-09-28T18:00:00-04:00"),
+        incident_count=24,
+        crew_count=32,
+        assignment_rate=0.25,
+        dual_tree_incidents=1,
+        critical_facilities_per_region=2,
+        geography_coverage_target=16,
+    )
+    target = write_scenario(scenario, tmp_path)
+    csv_path = target / "Assignments.csv"
+    with csv_path.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+        headers = list(rows[0])
+    rows[0]["assigned_at"] = "2026-09-27T18:00:00-04:00"
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(rows)
+    with pytest.raises(ScenarioServiceError) as failure:
+        ScenarioService(tmp_path, scenario.scenario_id).active_scenario()
+    assert any("Assignment time must be aware" in issue["message"] for issue in failure.value.details)
 
 
 def test_publication_rejects_incomplete_geographic_coverage(tmp_path: Path) -> None:

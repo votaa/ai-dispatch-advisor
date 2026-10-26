@@ -1707,12 +1707,17 @@ class CopilotService:
     def _selected_incident(self, incident: Incident | None) -> ChatResponse:
         if incident is None:
             return self._unavailable_incident()
+        etr_label = (
+            "Assessing Conditions"
+            if incident.etr_status == "assessing_conditions"
+            else incident.etr or "unavailable"
+        )
         return self._response(
             answer=(
                 f"{incident.incident_id} is in {incident.municipality} on feeder "
                 f"{incident.feeder}. It affects {incident.customers_out:,} customers, "
                 f"has status {incident.status}, hazard '{incident.hazard}', and ETR "
-                f"{incident.etr}."
+                f"{etr_label}."
             ),
             intent="selected_incident",
             evidence=[self._evidence("incident", incident.incident_id, incident.municipality)],

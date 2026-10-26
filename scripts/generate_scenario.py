@@ -6,7 +6,7 @@ import csv
 import io
 import json
 import sys
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 
@@ -18,9 +18,11 @@ from app.scenario_generator import (  # noqa: E402
     CRITICAL_FACILITY_HEADERS,
     CREW_HEADERS,
     DEFAULT_OUTPUT_ROOT,
+    DEFAULT_ETR_MIX,
     DEFAULT_START_DAY_LOCATION_RATE,
     HISTORICAL_REPAIR_HEADERS,
     INCIDENT_HEADERS,
+    TEMPORAL_INCIDENT_HEADERS,
     TOPOLOGY_HEADERS,
     WEATHER_HEADERS,
     COPILOT_DEMO_SCENARIO_ID,
@@ -51,6 +53,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--start-date", type=date.fromisoformat, default=date.today())
     parser.add_argument("--end-date", type=date.fromisoformat)
+    parser.add_argument(
+        "--as-of-at",
+        type=datetime.fromisoformat,
+        help="Aware RFC 3339 cutoff for a temporal single snapshot, such as 2026-09-29T18:00:00-04:00",
+    )
+    parser.add_argument(
+        "--etr-mix",
+        help=f"Initial ETR percentages, such as 8h=25,24h=25,48h=25,null=25 (default with --as-of-at: {DEFAULT_ETR_MIX})",
+    )
     parser.add_argument("--incidents", type=int, default=2000)
     parser.add_argument("--crews", type=int, default=500)
     parser.add_argument("--assignment-rate", type=float, default=0.05)
@@ -93,6 +104,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = build_parser().parse_args()
     if args.preset == "copilot-demo":
+        if args.as_of_at is not None or args.etr_mix is not None:
+            raise SystemExit("Temporal options are supported by the standard preset only")
         if args.scenario_id != COPILOT_DEMO_SCENARIO_ID:
             raise SystemExit(
                 "The copilot-demo preset requires --scenario-id "
@@ -117,13 +130,15 @@ def main() -> None:
             start_day_location_rate=args.start_day_location_rate,
             geography_coverage_target=args.geography_coverage_target,
             customer_out_target=args.customers_out_target,
+            as_of_at=args.as_of_at,
+            etr_mix=args.etr_mix,
         )
     print(f"Preset: {args.preset}")
     print(json.dumps(scenario.summary(), indent=2))
     print("\nCrews.csv preview")
     print(_csv_preview(CREW_HEADERS, scenario.crews, args.preview_rows))
     print("\nPendingIncidents.csv preview")
-    print(_csv_preview(INCIDENT_HEADERS, scenario.incidents, args.preview_rows))
+    print(_csv_preview(TEMPORAL_INCIDENT_HEADERS if scenario.temporal else INCIDENT_HEADERS, scenario.incidents, args.preview_rows))
     print("\nAssignments.csv preview")
     print(_csv_preview(ASSIGNMENT_HEADERS, scenario.assignments, args.preview_rows))
     print("\nWeather.csv preview")

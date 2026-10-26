@@ -12,7 +12,10 @@ export type Incident = {
   age_minutes: number;
   latitude: number;
   longitude: number;
-  etr: string;
+  etr: string | null;
+  etr_status?: "estimated" | "assessing_conditions" | null;
+  created_at?: string | null;
+  created_at_source?: "synthetic_generator" | "source_record" | null;
   assigned_crews: AssignedCrew[];
   current_decision: RecommendationAction | null;
   critical_facility_level?: 1 | 2 | 3 | null;
@@ -158,6 +161,15 @@ export type ScenarioDescriptor = {
   description: string;
   event_type: ScenarioEventType;
   freshness: ScenarioFreshness | null;
+  temporal?: {
+    kind: "single_snapshot" | "timeline_snapshot";
+    as_of_at: string;
+    time_zone: "America/New_York";
+    etr_distribution: { range: string; percent: number }[];
+    timeline_id?: string | null;
+    snapshot_index?: number | null;
+    snapshot_count?: number | null;
+  } | null;
   expected_conditions: string[];
   files: {
     incidents: string;

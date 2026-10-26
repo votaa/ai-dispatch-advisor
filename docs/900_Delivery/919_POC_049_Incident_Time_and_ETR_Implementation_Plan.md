@@ -1,6 +1,7 @@
 # POC-049 — Incident time and ETR implementation plan
 
-**Status:** Proposed, documentation only. No generator, application, or scenario data change is authorized by this plan.  
+**Status:** Phases 0–2 implemented as a single-snapshot candidate, pending owner review. Phases 3–6 remain planned.
+
 **Scope:** Standard single-snapshot generator, multi-snapshot timeline generator, scenario/API contracts, incident detail, and deterministic AI Copilot ETR questions.
 
 ## Outcome
@@ -113,6 +114,14 @@ Use an **absolute one-hour Due Soon window** for this POC. It has the same opera
 - Reuse the same temporal policy for any UI summary or follow-up question so the app cannot show a current count that Copilot blocks. Keep existing Copilot `data_snapshot_at` semantics for other intents; add typed ETR-specific fields rather than silently repurposing a weather snapshot timestamp.
 
 ## Phased implementation and review gates
+
+### Phases 0–2 candidate (2026-10-26)
+
+The initial implementation requires an explicit offset-bearing `--as-of-at` to opt into the new single-snapshot contract. Without it, the standard generator and existing timeline generator retain their legacy output until Phase 3 updates timeline semantics. In temporal mode, the default ETR mix is `4-24h=100`; `--etr-mix` can specify fixed hours, hour bands, and intentional NULL shares. The new CSV fields and manifest `temporal` object are optional for legacy folders, and generated temporal folders pass `ScenarioService` preflight before write completion. The application has minimal NULL-safe ETR rendering and sorting, labels incident age as scenario snapshot age, and gives an honest selected-incident Copilot ETR label; the fuller incident-time presentation and time-based Copilot answers remain Phases 4 and 5.
+
+An isolated 24-incident preview using September 28–29 dates, a September 29 6 PM Eastern cutoff, and `8h=25,24h=25,48h=25,null=25` produced six incidents in each bucket. Its 32 crews, seven assignments, creation times, assignment chronology, and scenario/API round trip validated. This preview is outside `data/scenarios/` and is not a published fixture. It is a contract and generator sample, not yet a complete five-category Copilot demo: at its simulated cutoff it has expired, future, and assessing incidents, but no Due Now or Due Soon incident. Phase 5 needs a targeted boundary fixture for those categories.
+
+A separate 2,000-incident, 500-crew preview with the same dates, cutoff, and mix also passed isolated folder preflight. It produced 500 incidents in each ETR category and 105 assignments. Both previews remain under `/private/tmp/poc049-phase02-current/` for local review.
 
 | Phase | Deliverable | Evidence needed before next phase |
 | --- | --- | --- |

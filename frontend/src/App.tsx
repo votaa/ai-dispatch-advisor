@@ -72,6 +72,10 @@ type ScenarioFeedback = {
   message: string;
 };
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
+function incidentEtrLabel(incident: Incident): string {
+  if (incident.etr_status === "assessing_conditions") return "Assessing Conditions";
+  return incident.etr || "ETR unavailable";
+}
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
 type ActionLoading = RecommendationActionType | "unassigned" | "reassigned";
@@ -1558,8 +1562,8 @@ function IncidentDetail({
         <div><dt>Critical facility</dt><dd>{incident.critical_facility ? "Yes" : "No"}</dd></div>
         {incident.critical_facility_level ? <div><dt>CF level</dt><dd>Level {incident.critical_facility_level}</dd></div> : null}
         {incident.ranking_status === "withheld" ? <div><dt>Ranking</dt><dd>Withheld — {incident.ranking_warning}</dd></div> : null}
-        <div><dt>Incident age</dt><dd>{incident.age_minutes} min</dd></div>
-        <div><dt>ETR</dt><dd>{incident.etr}</dd></div>
+        <div><dt>Scenario snapshot age</dt><dd>{incident.age_minutes} min</dd></div>
+        <div><dt>ETR</dt><dd>{incidentEtrLabel(incident)}</dd></div>
       </dl>
       {incident.matched_critical_facility_ids?.length ? (
         <div className="detail-section">
@@ -2148,7 +2152,7 @@ function IncidentTable({
             (left.assigned_crews[0]?.crew_name ?? "").localeCompare(right.assigned_crews[0]?.crew_name ?? "");
         }
         if (sort.key === "decision") comparison = (left.current_decision?.action ?? "").localeCompare(right.current_decision?.action ?? "");
-        if (sort.key === "etr") comparison = left.etr.localeCompare(right.etr, undefined, { numeric: true });
+        if (sort.key === "etr") comparison = (left.etr ?? "").localeCompare(right.etr ?? "", undefined, { numeric: true });
         return comparison * direction || left.incident_id.localeCompare(right.incident_id);
       }
       if (preserveOrder) return 0;
@@ -2426,7 +2430,7 @@ function IncidentTable({
                   <span>No decision</span>
                 )}
               </td>
-              <td><span className="compact-cell-label">ETR</span>{incident.etr}</td>
+              <td><span className="compact-cell-label">ETR</span>{incidentEtrLabel(incident)}</td>
             </tr>
           ))}
         </tbody>
