@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import importlib.util
+import csv
 import json
 from collections import Counter, defaultdict
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
 import pytest
 
+from app.domain.models import Incident
 from app.scenario_generator import (
     LSE_CUSTOMER_BOUNDARIES,
     LSE_FACILITY_SUFFIX,
@@ -20,6 +22,9 @@ from app.scenario_timeline_generator import (
     INCIDENT_PHASES,
     RECOVERY_PROFILES,
     generate_timeline,
+    parse_assessing_conversion,
+    parse_assessing_conversion_overrides,
+    validate_timeline,
     write_timeline,
 )
 
@@ -485,6 +490,13 @@ def test_noninteractive_cli_requires_scenario_id_and_custom_targets() -> None:
                 ["--scenario-id", "cli-test", "--recovery-profile", "custom", "--no-prompt"]
             )
         )
+    settings = module.resolve_arguments(parser.parse_args(["--scenario-id", "cli-test", "--no-prompt"]))
+    assert settings["etr_mix"] == "4-24h=100"
+    assert settings["assessing_conversion"] is None
+    scheduled = module.resolve_arguments(parser.parse_args([
+        "--scenario-id", "cli-test", "--start-date", "2026-09-28", "--no-prompt"
+    ]))
+    assert scheduled["end_date"] == date(2026, 9, 30)
 
 
 def test_interactive_prompt_retries_invalid_values(capsys) -> None:
@@ -504,3 +516,247 @@ def test_interactive_prompt_retries_invalid_values(capsys) -> None:
 
     assert value == 10
     assert "Invalid value" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("snapshots,hours,end_date", [
+    (1, 24, date(2026, 9, 28)),
+    (5, 12, date(2026, 9, 30)),
+    (10, 6, date(2026, 9, 30)),
+])
+def test_temporal_timeline_cutoffs_arrivals_and_null_continuity(
+    snapshots: int, hours: int, end_date: date
+) -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=end_date,
+        snapshots=snapshots,
+        hours_apart=hours,
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        etr_mix="8h=25,24h=25,null=50",
+    )
+    for index, snapshot in enumerate(timeline.snapshots):
+        metadata = snapshot.scenario.temporal
+        assert metadata["kind"] == "timeline_snapshot"
+        assert metadata["snapshot_index"] == index + 1
+        assert metadata["snapshot_count"] == snapshots
+        assert metadata["timeline_id"] == "timeline-test"
+        assert sum(snapshot.summary()["temporal"]["etr_categories"].values()) == len(snapshot.scenario.incidents)
+        cutoff = snapshot.timestamp.astimezone(timezone.utc)
+        for incident in snapshot.scenario.incidents:
+            created = datetime.fromisoformat(incident["created_at"]).astimezone(timezone.utc)
+            assert created <= cutoff
+            assert incident["age_minutes"] == int((cutoff - created).total_seconds() // 60)
+            if incident["etr_status"] == "assessing_conditions":
+                assert incident["etr"] is None
+                assert not incident.get("etr_updated_at")
+        if index:
+            previous = _rows_by_id(timeline.snapshots[index - 1].scenario.incidents, "incident_id")
+            current = _rows_by_id(snapshot.scenario.incidents, "incident_id")
+            assert not snapshot.converted_incident_ids
+            assert all(current[key]["created_at"] == previous[key]["created_at"] for key in previous.keys() & current.keys())
+            assert all(
+                datetime.fromisoformat(current[key]["created_at"]).astimezone(timezone.utc)
+                > timeline.snapshots[index - 1].timestamp.astimezone(timezone.utc)
+                for key in snapshot.new_incident_ids
+            )
+
+
+def test_assessing_conversion_repeats_with_overrides_and_provenance(tmp_path: Path) -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 9, 30),
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        recovery_profile="custom",
+        recovery_target=0,
+        arrival_profile="custom",
+        new_incident_share=0,
+        etr_mix="null=100",
+        assessing_conversion="10%@24h",
+        assessing_conversion_overrides="2=0%@12h,4=50%@24h",
+    )
+    assert [len(step.converted_incident_ids) for step in timeline.snapshots] == [0, 0, 8, 36, 3]
+    converted_seen: set[str] = set()
+    for step in timeline.snapshots:
+        converted_seen.update(step.converted_incident_ids)
+        for row in step.scenario.incidents:
+            if row["incident_id"] in converted_seen:
+                assert row["etr_status"] == "estimated"
+                assert row["etr_source"] == "timeline_assessment_conversion"
+                assert row["etr_updated_at"]
+            else:
+                assert row["etr_status"] == "assessing_conditions"
+                assert row["etr"] is None
+    assert len(converted_seen) == 47
+    paths = write_timeline(timeline, tmp_path)
+    assert len(paths) == 5
+    for path in paths:
+        assert ScenarioService(tmp_path, path.name).active_scenario().validation_status == "valid"
+    manifest = json.loads((paths[3] / "scenario.json").read_text(encoding="utf-8"))
+    assert manifest["temporal"]["assessing_conversion_overrides"]["4"] == {"percent": 50.0, "hours": 24}
+    with (paths[3] / "PendingIncidents.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    assert any(row["etr_source"] == "timeline_assessment_conversion" for row in rows)
+    assert all(Incident.model_validate({key: value or None for key, value in row.items()}) for row in rows)
+
+
+def test_new_arrivals_keep_initial_null_until_later_step() -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 9, 30),
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        etr_mix="null=100",
+        assessing_conversion="100%@24h",
+    )
+    second = timeline.snapshots[1]
+    by_id = _rows_by_id(second.scenario.incidents, "incident_id")
+    assert second.new_incident_ids
+    assert all(by_id[key]["etr_status"] == "assessing_conditions" for key in second.new_incident_ids)
+    assert not set(second.new_incident_ids) & set(second.converted_incident_ids)
+
+
+def test_conversion_carries_small_fractional_shares_between_steps() -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 9, 30),
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        recovery_profile="custom",
+        recovery_target=0,
+        arrival_profile="custom",
+        new_incident_share=0,
+        etr_mix="null=100",
+        assessing_conversion="1%@24h",
+    )
+    assert [len(step.converted_incident_ids) for step in timeline.snapshots] == [0, 0, 1, 1, 1]
+
+
+@pytest.mark.parametrize("hours_apart,horizon,expected_minutes", [
+    (12, 12, 0),
+    (12, 24, 720),
+    (24, 24, 0),
+    (24, 48, 1440),
+])
+def test_conversion_horizon_uses_configured_elapsed_interval(
+    hours_apart: int, horizon: int, expected_minutes: int
+) -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 10, 2),
+        snapshots=3,
+        hours_apart=hours_apart,
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        recovery_profile="custom",
+        recovery_target=0,
+        arrival_profile="custom",
+        new_incident_share=0,
+        etr_mix="null=100",
+        assessing_conversion=f"50%@{horizon}h",
+    )
+    converted = timeline.snapshots[1].converted_incident_ids
+    assert converted
+    second_rows = _rows_by_id(timeline.snapshots[1].scenario.incidents, "incident_id")
+    third = timeline.snapshots[2]
+    assert all(
+        int((datetime.fromisoformat(second_rows[key]["etr"]).astimezone(timezone.utc)
+             - third.timestamp.astimezone(timezone.utc)).total_seconds() // 60) == expected_minutes
+        for key in converted
+    )
+
+
+def test_timeline_preview_clock_state_and_short_horizon_warning() -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 9, 30),
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        recovery_profile="custom",
+        recovery_target=0,
+        arrival_profile="custom",
+        new_incident_share=0,
+        etr_mix="null=100",
+        assessing_conversion="50%@12h",
+    )
+    evaluated = timeline.snapshots[2].timestamp + timedelta(hours=1)
+    summary = timeline.summary(evaluation_at=evaluated)
+    assert [row["clock_state"] for row in summary["snapshots"]] == [
+        "stale", "stale", "latest_eligible", "future", "future"
+    ]
+    assert summary["conversion_horizon_warnings"][0] == {
+        "step": 2,
+        "horizon_hours": 12,
+        "next_interval_hours": 12,
+        "state_at_next_cutoff": "due_now",
+    }
+
+
+@pytest.mark.parametrize("start_date,expected_cutoffs", [
+    (date(2026, 3, 8), [
+        "2026-03-08T00:30:00-05:00",
+        "2026-03-08T03:30:00-04:00",
+        "2026-03-08T05:30:00-04:00",
+    ]),
+    (date(2026, 11, 1), [
+        "2026-11-01T00:30:00-04:00",
+        "2026-11-01T01:30:00-05:00",
+        "2026-11-01T03:30:00-05:00",
+    ]),
+])
+def test_temporal_timeline_uses_elapsed_hours_across_dst(
+    start_date: date, expected_cutoffs: list[str]
+) -> None:
+    timeline = _timeline(
+        start_date=start_date,
+        end_date=start_date,
+        start_time=time(0, 30),
+        snapshots=3,
+        hours_apart=2,
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        etr_mix="null=100",
+    )
+    assert [step.timestamp.isoformat() for step in timeline.snapshots] == expected_cutoffs
+    assert all(
+        (right.timestamp.astimezone(timezone.utc) - left.timestamp.astimezone(timezone.utc))
+        == timedelta(hours=2)
+        for left, right in zip(timeline.snapshots, timeline.snapshots[1:])
+    )
+
+
+def test_conversion_rule_and_step_validation() -> None:
+    assert parse_assessing_conversion("0%@12h").percent == 0
+    for value in ("101%@12h", "10%@0h", "10@24h"):
+        with pytest.raises(ValueError):
+            parse_assessing_conversion(value)
+    for value in ("1=10%@12h", "6=10%@12h", "2=10%@12h,2=20%@24h"):
+        with pytest.raises(ValueError):
+            parse_assessing_conversion_overrides(value, 5)
+    with pytest.raises(ValueError, match="one-snapshot"):
+        _timeline(snapshots=1, etr_mix="null=100", assessing_conversion="10%@12h")
+
+
+def test_zero_null_mix_never_converts_and_policy_mismatch_fails() -> None:
+    timeline = _timeline(
+        start_date=date(2026, 9, 28),
+        end_date=date(2026, 9, 30),
+        incident_count=80,
+        crew_count=80,
+        dual_tree_incidents=1,
+        etr_mix="8h=100",
+        assessing_conversion="10%@24h",
+    )
+    assert all(not step.converted_incident_ids for step in timeline.snapshots)
+    assert all(step.summary()["temporal"]["assessing_conditions"] == 0 for step in timeline.snapshots)
+    timeline.snapshots[1].scenario.temporal["assessing_conversion"]["hours"] = 12
+    with pytest.raises(ValueError, match="inconsistent temporal policy"):
+        validate_timeline(timeline)

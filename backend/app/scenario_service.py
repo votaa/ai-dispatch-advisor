@@ -16,6 +16,7 @@ from .domain.models import ScenarioEventType, ScenarioMetadata
 
 SUPPORTED_EVENT_TYPES = ScenarioEventType
 TEMPORAL_INCIDENT_FIELDS = ["created_at", "created_at_source", "etr_status"]
+TIMELINE_ETR_UPDATE_FIELDS = ["etr_updated_at", "etr_source"]
 
 
 def _aware_instant(value: str) -> datetime | None:
@@ -314,6 +315,11 @@ class ScenarioService:
                                 [*headers, *TEMPORAL_INCIDENT_FIELDS]
                                 for headers in allowed_headers
                             ]
+                            if manifest.temporal.kind == "timeline_snapshot":
+                                allowed_headers = [
+                                    [*headers, *TIMELINE_ETR_UPDATE_FIELDS]
+                                    for headers in allowed_headers
+                                ]
                     if actual_headers not in allowed_headers:
                         issues.append(
                             {
@@ -382,6 +388,20 @@ class ScenarioService:
                         issues.append({"location": f"{location}.etr", "message": "Estimated ETR must be an aware time after creation"})
                 else:
                     issues.append({"location": f"{location}.etr_status", "message": "Unknown ETR status"})
+                if manifest.temporal.kind == "timeline_snapshot":
+                    updated_text = incident["etr_updated_at"]
+                    source = incident["etr_source"]
+                    if bool(updated_text) != bool(source):
+                        issues.append({"location": f"{location}.etr_source", "message": "ETR update time and source must be supplied together"})
+                    if updated_text:
+                        updated = _aware_instant(updated_text)
+                        converted_etr = _aware_instant(etr)
+                        if (
+                            updated is None or not created <= updated <= cutoff
+                            or source != "timeline_assessment_conversion" or status != "estimated"
+                            or converted_etr is None or converted_etr <= updated
+                        ):
+                            issues.append({"location": f"{location}.etr_updated_at", "message": "Invalid timeline ETR conversion provenance"})
             for row_number, assignment in enumerate(rows_by_file.get("Assignments.csv", []), start=2):
                 created = created_by_id.get(assignment["incident_id"].strip())
                 if created is None:

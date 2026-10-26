@@ -16,6 +16,8 @@ export type Incident = {
   etr_status?: "estimated" | "assessing_conditions" | null;
   created_at?: string | null;
   created_at_source?: "synthetic_generator" | "source_record" | null;
+  etr_updated_at?: string | null;
+  etr_source?: "timeline_assessment_conversion" | null;
   assigned_crews: AssignedCrew[];
   current_decision: RecommendationAction | null;
   critical_facility_level?: 1 | 2 | 3 | null;
@@ -169,6 +171,8 @@ export type ScenarioDescriptor = {
     timeline_id?: string | null;
     snapshot_index?: number | null;
     snapshot_count?: number | null;
+    assessing_conversion?: { percent: number; hours: number } | null;
+    assessing_conversion_overrides?: Record<string, { percent: number; hours: number }>;
   } | null;
   expected_conditions: string[];
   files: {

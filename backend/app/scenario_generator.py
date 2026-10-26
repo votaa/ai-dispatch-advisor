@@ -131,6 +131,7 @@ TEMPORAL_INCIDENT_HEADERS = [
     "created_at_source",
     "etr_status",
 ]
+TIMELINE_INCIDENT_HEADERS = [*TEMPORAL_INCIDENT_HEADERS, "etr_updated_at", "etr_source"]
 DEFAULT_ETR_MIX = "4-24h=100"
 CREW_HEADERS = [
     "crew_id",
@@ -2224,7 +2225,10 @@ def write_scenario(scenario: GeneratedScenario, output_root: Path = DEFAULT_OUTP
         temporary_root = Path(temporary)
         temporary_path = temporary_root / scenario.scenario_id
         temporary_path.mkdir()
-        incident_headers = TEMPORAL_INCIDENT_HEADERS if scenario.temporal else INCIDENT_HEADERS
+        incident_headers = (
+            TIMELINE_INCIDENT_HEADERS if scenario.temporal and scenario.temporal["kind"] == "timeline_snapshot"
+            else TEMPORAL_INCIDENT_HEADERS if scenario.temporal else INCIDENT_HEADERS
+        )
         _write_csv(temporary_path / "PendingIncidents.csv", incident_headers, scenario.incidents)
         _write_csv(temporary_path / "Crews.csv", CREW_HEADERS, scenario.crews)
         _write_csv(temporary_path / "Assignments.csv", ASSIGNMENT_HEADERS, scenario.assignments)

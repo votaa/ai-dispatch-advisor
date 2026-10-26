@@ -1,6 +1,6 @@
 # POC-049 — Incident time and ETR implementation plan
 
-**Status:** Phases 0–2 implemented as a single-snapshot candidate, pending owner review. Phases 3–6 remain planned.
+**Status:** Phases 0–3 implemented as generator candidates, pending owner review. Phases 4–6 remain planned.
 
 **Scope:** Standard single-snapshot generator, multi-snapshot timeline generator, scenario/API contracts, incident detail, and deterministic AI Copilot ETR questions.
 
@@ -122,6 +122,14 @@ The initial implementation requires an explicit offset-bearing `--as-of-at` to o
 An isolated 24-incident preview using September 28–29 dates, a September 29 6 PM Eastern cutoff, and `8h=25,24h=25,48h=25,null=25` produced six incidents in each bucket. Its 32 crews, seven assignments, creation times, assignment chronology, and scenario/API round trip validated. This preview is outside `data/scenarios/` and is not a published fixture. It is a contract and generator sample, not yet a complete five-category Copilot demo: at its simulated cutoff it has expired, future, and assessing incidents, but no Due Now or Due Soon incident. Phase 5 needs a targeted boundary fixture for those categories.
 
 A separate 2,000-incident, 500-crew preview with the same dates, cutoff, and mix also passed isolated folder preflight. It produced 500 incidents in each ETR category and 105 assignments. Both previews remain under `/private/tmp/poc049-phase02-current/` for local review.
+
+### Phase 3 candidate (2026-10-26)
+
+The timeline CLI now uses the temporal contract by default with `4-24h=100` unless `--etr-mix` supplies another distribution. The Python `generate_timeline` entrypoint retains its legacy default when called without temporal arguments so existing callers and scenarios remain compatible. `--start-date` and `--end-date` bound incident arrivals across the sequence; when the end date is omitted, the CLI defaults it to the configured final snapshot's local date. Each snapshot advances by configured elapsed hours, including across daylight-saving transitions. The first snapshot contains only incidents created by its cutoff. Later arrivals receive a seeded creation minute and the initial ETR mix for their own cohort. Continuing incidents retain `created_at`, and their age is recalculated at each cutoff.
+
+Optional `--assessing-conversion '10%@24h'` applies to continuing active Assessing Conditions incidents after clearances and before arrivals at each step. `--assessing-conversion-overrides '2=10%@12h,4=20%@24h'` replaces the baseline at named destination steps. Conversion is off by default; its seeded selection carries fractional rounding forward, and each selected incident records `etr_updated_at` and `etr_source: timeline_assessment_conversion`. Assignment alone leaves an intentional NULL ETR unchanged. Snapshot manifests retain timeline identity and the configured policy. The CLI dry run reports per-step arrivals, clearances, eligible and converted counts, ETR categories with examples, eligible/future/stale clock state, and a warning when a conversion horizon reaches or precedes the next cutoff.
+
+Isolated 1-, 5-, and 10-snapshot previews with varied intervals passed application preflight under `/private/tmp/poc049-phase3-preview/`. The 5-step sample with 80 initial incidents, 12-hour intervals, a 25%/25%/50% 8-hour/24-hour/NULL mix, and conversion overrides had 80, 75, 54, 31, and 20 active incidents. A separate 2,000-incident, 500-crew five-step preview also passed preflight. Its active Assessing Conditions counts were 500, 428, 296, 145, and 84, while valid future and due-soon ETRs together were 1,500, 1,017, 441, 287, and 143 as incidents aged and cleared. These are generator previews, not published fixtures. Phase 4 must still present the selected cutoff and temporal state in the application; Phase 5 must provide the deterministic current-time Copilot answers.
 
 | Phase | Deliverable | Evidence needed before next phase |
 | --- | --- | --- |

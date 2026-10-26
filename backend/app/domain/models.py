@@ -145,6 +145,8 @@ class Incident(DomainModel):
     etr_status: Optional[Literal["estimated", "assessing_conditions"]] = None
     created_at: Optional[str] = None
     created_at_source: Optional[Literal["synthetic_generator", "source_record"]] = None
+    etr_updated_at: Optional[str] = None
+    etr_source: Optional[Literal["timeline_assessment_conversion"]] = None
     assigned_crews: list[AssignedCrew] = Field(default_factory=list)
     current_decision: Optional[RecommendationDecision] = None
     critical_facility_level: Optional[Literal[1, 2, 3]] = None
@@ -174,6 +176,19 @@ class Incident(DomainModel):
                 raise ValueError("An estimated ETR must be an RFC 3339 datetime") from exc
             if estimated.tzinfo is None or estimated.utcoffset() is None:
                 raise ValueError("An estimated ETR must include a timezone offset")
+        if (self.etr_updated_at is None) != (self.etr_source is None):
+            raise ValueError("ETR update time and source must be supplied together")
+        if self.etr_updated_at is not None:
+            if self.etr_status != "estimated":
+                raise ValueError("An ETR update requires an estimated ETR")
+            try:
+                updated = datetime.fromisoformat(self.etr_updated_at)
+            except ValueError as exc:
+                raise ValueError("etr_updated_at must be an RFC 3339 datetime") from exc
+            if updated.tzinfo is None or updated.utcoffset() is None:
+                raise ValueError("etr_updated_at must include a timezone offset")
+            if datetime.fromisoformat(self.etr) <= updated:
+                raise ValueError("A converted ETR must follow its update time")
         return self
 
 
@@ -262,6 +277,11 @@ class ScenarioETRDistributionEntry(DomainModel):
         return value
 
 
+class ScenarioAssessingConversionRule(DomainModel):
+    percent: float = Field(ge=0, le=100)
+    hours: int = Field(gt=0)
+
+
 class ScenarioTemporal(DomainModel):
     kind: Literal["single_snapshot", "timeline_snapshot"]
     as_of_at: datetime
@@ -270,6 +290,8 @@ class ScenarioTemporal(DomainModel):
     timeline_id: Optional[str] = None
     snapshot_index: Optional[int] = Field(default=None, ge=1)
     snapshot_count: Optional[int] = Field(default=None, ge=1)
+    assessing_conversion: Optional[ScenarioAssessingConversionRule] = None
+    assessing_conversion_overrides: dict[int, ScenarioAssessingConversionRule] = Field(default_factory=dict)
 
     @field_validator("as_of_at")
     @classmethod
@@ -290,8 +312,20 @@ class ScenarioTemporal(DomainModel):
             raise ValueError("single snapshots cannot declare timeline identity")
         if self.kind == "timeline_snapshot" and any(value is None for value in fields):
             raise ValueError("timeline snapshots require timeline identity and index/count")
+        if self.kind == "timeline_snapshot" and not self.timeline_id:
+            raise ValueError("timeline_id must not be blank")
         if self.snapshot_index and self.snapshot_count and self.snapshot_index > self.snapshot_count:
             raise ValueError("snapshot_index cannot exceed snapshot_count")
+        if self.kind == "single_snapshot" and (self.assessing_conversion or self.assessing_conversion_overrides):
+            raise ValueError("single snapshots cannot declare assessing conversion")
+        if self.assessing_conversion_overrides and self.assessing_conversion is None:
+            raise ValueError("conversion overrides require a baseline rule")
+        if self.snapshot_count == 1 and self.assessing_conversion is not None:
+            raise ValueError("a one-snapshot timeline cannot declare assessing conversion")
+        if self.snapshot_count is not None and any(
+            step < 2 or step > self.snapshot_count for step in self.assessing_conversion_overrides
+        ):
+            raise ValueError("conversion override step is outside the timeline")
         return self
 
 

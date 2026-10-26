@@ -6,7 +6,7 @@ import csv
 import io
 import json
 import sys
-from datetime import date, time
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -17,10 +17,19 @@ sys.path.insert(0, str(REPO_ROOT / "backend"))
 from app.scenario_generator import (  # noqa: E402
     ASSIGNMENT_HEADERS,
     CREW_HEADERS,
+    DEFAULT_ETR_MIX,
     DEFAULT_OUTPUT_ROOT,
     INCIDENT_HEADERS,
+    LOCAL_TIMEZONE,
+    TIMELINE_INCIDENT_HEADERS,
+    parse_etr_mix,
 )
-from app.scenario_timeline_generator import generate_timeline, write_timeline  # noqa: E402
+from app.scenario_timeline_generator import (  # noqa: E402
+    generate_timeline,
+    parse_assessing_conversion,
+    parse_assessing_conversion_overrides,
+    write_timeline,
+)
 
 
 def _time(value: str) -> time:
@@ -58,6 +67,16 @@ def _snapshot_count(value: str) -> int:
     if not 1 <= number <= 10:
         raise argparse.ArgumentTypeError("snapshots must be between 1 and 10")
     return number
+
+
+def _etr_mix(value: str) -> str:
+    parse_etr_mix(value)
+    return value
+
+
+def _conversion(value: str) -> str:
+    parse_assessing_conversion(value)
+    return value
 
 
 def _decay(value: str) -> float:
@@ -139,6 +158,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scenario-id", help="Lowercase base name for zero-padded sibling folders")
     parser.add_argument("--start-date", type=date.fromisoformat)
     parser.add_argument("--end-date", type=date.fromisoformat)
+    parser.add_argument(
+        "--etr-mix",
+        help=f"Initial ETR percentages (default: {DEFAULT_ETR_MIX})",
+    )
+    parser.add_argument("--assessing-conversion", help="Repeat conversion rule, such as 10%%@24h")
+    parser.add_argument(
+        "--assessing-conversion-overrides",
+        help="Destination-step overrides, such as 2=10%%@12h,4=20%%@24h",
+    )
     parser.add_argument("--start-time", type=_time)
     parser.add_argument("--snapshots", type=_snapshot_count)
     parser.add_argument("--hours-apart", type=_positive_int)
@@ -200,16 +228,35 @@ def resolve_arguments(
         return _prompt(label, default, converter, input_fn=input_fn)
 
     scenario_id = resolved("scenario_id", "Scenario ID")
-    start_date = resolved("start_date", "Initial incident start date", date.fromisoformat)
-    if args.end_date is not None:
-        end_date = args.end_date
-    elif args.no_prompt:
-        end_date = start_date
-    else:
-        end_date = _prompt("Initial incident end date", start_date, date.fromisoformat, input_fn=input_fn)
+    start_date = resolved("start_date", "Overall incident arrival start date", date.fromisoformat)
     start_time = resolved("start_time", "Snapshot 1 local time", _time)
     snapshots = resolved("snapshots", "Number of snapshots", _snapshot_count)
     hours_apart = resolved("hours_apart", "Hours between snapshots", _positive_int)
+    first_cutoff = datetime.combine(start_date, start_time, LOCAL_TIMEZONE)
+    default_end_date = (
+        first_cutoff.astimezone(timezone.utc) + timedelta(hours=(snapshots - 1) * hours_apart)
+    ).astimezone(LOCAL_TIMEZONE).date()
+    if args.end_date is not None:
+        end_date = args.end_date
+    elif args.no_prompt:
+        end_date = default_end_date
+    else:
+        end_date = _prompt("Overall incident arrival end date", default_end_date, date.fromisoformat, input_fn=input_fn)
+    etr_mix = args.etr_mix if args.etr_mix is not None else (
+        DEFAULT_ETR_MIX if args.no_prompt else _prompt("Initial ETR mix", DEFAULT_ETR_MIX, _etr_mix, input_fn=input_fn)
+    )
+    conversion = args.assessing_conversion
+    overrides = args.assessing_conversion_overrides
+    if conversion is None and not args.no_prompt and _prompt_yes_no(
+        "Convert continuing Assessing Conditions incidents at each advance", False, input_fn=input_fn
+    ):
+        conversion = _prompt("Baseline conversion rule", "10%@24h", _conversion, input_fn=input_fn)
+    if conversion and overrides is None and not args.no_prompt and _prompt_yes_no(
+        "Set step-specific conversion overrides", False, input_fn=input_fn
+    ):
+        overrides = _prompt("Conversion overrides", "2=10%@12h", str, input_fn=input_fn)
+    if overrides:
+        parse_assessing_conversion_overrides(overrides, snapshots)
     incidents = resolved("incidents", "Initial incidents", _positive_int)
     crews = resolved("crews", "Crews", _positive_int)
     assignment_rate = resolved("assignment_rate", "Initial assignment percentage", _share)
@@ -251,6 +298,9 @@ def resolve_arguments(
         "scenario_id": scenario_id,
         "start_date": start_date,
         "end_date": end_date,
+        "etr_mix": etr_mix,
+        "assessing_conversion": conversion,
+        "assessing_conversion_overrides": overrides,
         "start_time": start_time,
         "snapshots": snapshots,
         "hours_apart": hours_apart,
@@ -276,7 +326,10 @@ def resolve_arguments(
 def _print_preview(label: str, snapshot: Any, limit: int) -> None:
     print(f"\n{label}: {snapshot.scenario.scenario_id} at {snapshot.timestamp.isoformat()}")
     print("PendingIncidents.csv")
-    print(_csv_preview(INCIDENT_HEADERS, snapshot.scenario.incidents, limit))
+    headers = (
+        TIMELINE_INCIDENT_HEADERS if snapshot.scenario.temporal else INCIDENT_HEADERS
+    )
+    print(_csv_preview(headers, snapshot.scenario.incidents, limit))
     print("\nCrews.csv")
     print(_csv_preview(CREW_HEADERS, snapshot.scenario.crews, limit))
     print("\nAssignments.csv")
@@ -292,7 +345,7 @@ def main() -> None:
         preview_rows = settings.pop("preview_rows")
         should_write = settings.pop("write")
         timeline = generate_timeline(**settings)
-        print(json.dumps(timeline.summary(), indent=2))
+        print(json.dumps(timeline.summary(evaluation_at=datetime.now(timezone.utc)), indent=2))
         _print_preview("First snapshot preview", timeline.snapshots[0], preview_rows)
         if len(timeline.snapshots) > 1:
             _print_preview("Final snapshot preview", timeline.snapshots[-1], preview_rows)
