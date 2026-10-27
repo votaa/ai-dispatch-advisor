@@ -1,6 +1,6 @@
 # POC-049 Phase 6 — release review
 
-**Status:** Owner approved the six-folder publication on 2026-10-26. The folders were published locally under new IDs, preflight passed, and local Docker browser smoke passed. They are not yet committed or deployed remotely. Owner commit and personal acceptance remain pending; POC-049 remains open.
+**Status:** Closed. Owner approved publication, reviewed the result, and committed the six historical folders and Phase 6 review as `838d93b` on 2026-10-26. Preflight and local Docker browser smoke passed. Remote deployment was not part of this release review.
 
 ## Recommendation and boundary
 
@@ -42,6 +42,6 @@ The local Compose stack was left running after the agent smoke test. Open `http:
 2. Select the single snapshot. Confirm **Scenario data as of: 09/29/2026 18:00 EDT** is distinct from **Scenario Last Updated**. Open one intentional NULL incident and confirm **Assessing Conditions**, creation time, source, and frozen age. In Copilot, choose **Scenario preview at selected cutoff** and ask “How many incidents have expired or coming due soon ETRs?” Expect **6 / 0 / 0 / 12 / 6**, total 24.
 3. Select timeline step 1, then steps 2–5. Check the incident inventory and cutoff advance, a continuing incident retains its creation time, and a converted incident shows timeline assessment provenance. In Copilot preview, step 1 should return **0 / 0 / 3 / 37 / 40**, step 3 **24 / 3 / 0 / 6 / 21**, and step 4 **16 / 0 / 1 / 5 / 9**.
 4. At a real clock later than Sep 30, select step 1 and ask the same question with **Current time**. It must block the older snapshot and offer step 5. Select step 5; its current-time answer will use the real request time and should disclose the old data cutoff. Do not expect near-due ETRs from historical dates.
-5. Switch to `base`: its missing authoritative cutoff must block current-time ETR counts. Return to a POC-049 snapshot and confirm scenario selection and incident details remain consistent. Record owner acceptance before marking the POC closed.
+5. Switch to `base`: its missing authoritative cutoff must block current-time ETR counts. Return to a POC-049 snapshot and confirm scenario selection and incident details remain consistent. Owner review and commit are recorded above; these steps remain available for repeat smoke testing.
 
-The staged candidate remains a temporary comparison copy. The published files under `data/scenarios/` are the reviewable source to commit.
+The staged candidate remains a temporary comparison copy. The committed files under `data/scenarios/` are the source for repeat testing.
