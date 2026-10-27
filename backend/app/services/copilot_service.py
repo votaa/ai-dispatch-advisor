@@ -5,7 +5,7 @@ from collections import Counter
 from collections.abc import Callable, Iterable
 from datetime import datetime, timezone
 
-from ..api_models import ChatResponse, CopilotEvidence, CopilotRequestTime
+from ..api_models import ChatResponse, CopilotEvidence, CopilotRequestTime, ETRAnalysis
 from ..copilot_config import CopilotConfig
 from ..copilot_provider import (
     CopilotGenerationRequest,
@@ -19,8 +19,10 @@ from .context_service import OperationalContextService
 from .copilot_context_service import CopilotContextBuilder
 from .copilot_reference_service import CopilotReferenceService
 from .crew_service import CrewService
+from .etr_query_service import ETRMode, analyze_etrs, etr_answer, is_etr_count_question
 from .incident_service import IncidentService
 from .recommendation_service import RecommendationService
+from .scenario_management_service import ScenarioManagementService
 
 
 SAFETY_NOTE = "This copilot response is advisory and does not execute dispatch actions."
@@ -94,6 +96,7 @@ class CopilotService:
         config: CopilotConfig,
         context_builder: CopilotContextBuilder,
         reference_queries: CopilotReferenceService,
+        scenarios: ScenarioManagementService,
         provider: CopilotProvider | None = None,
         clock: Callable[[], datetime] | None = None,
     ) -> None:
@@ -107,12 +110,13 @@ class CopilotService:
         self._config = config
         self._context_builder = context_builder
         self._reference_queries = reference_queries
+        self._scenarios = scenarios
         self._provider = provider
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
-    def respond(self, message: str, incident_id: str | None = None, crew_id: str | None = None) -> ChatResponse:
+    def respond(self, message: str, incident_id: str | None = None, crew_id: str | None = None, etr_mode: ETRMode = "current") -> ChatResponse:
         request_time = CopilotRequestTime(received_at=self._server_time())
-        response = self._respond(message, incident_id, crew_id, request_time)
+        response = self._respond(message, incident_id, crew_id, request_time, etr_mode)
         return response.model_copy(update={"request_time": request_time})
 
     def _respond(
@@ -121,8 +125,33 @@ class CopilotService:
         incident_id: str | None,
         crew_id: str | None,
         request_time: CopilotRequestTime,
+        etr_mode: ETRMode,
     ) -> ChatResponse:
         normalized = _normalized_text(message)
+        if is_etr_count_question(message):
+            selected_scenario = self._scenarios.active()
+            analysis = analyze_etrs(
+                self._incidents.list_visible(),
+                selected_scenario,
+                self._scenarios.list(),
+                request_time.received_at,
+                etr_mode,
+            )
+            return self._response(
+                answer=etr_answer(analysis),
+                intent="etr_time_counts",
+                evidence=[
+                    self._evidence("incident", item.incident_id, f"{item.category.replace('_', ' ').title()} ETR example")
+                    for item in analysis.examples
+                ],
+                warning=("ETR assessment blocked for the selected scenario and requested clock." if analysis.status == "blocked" else None),
+                response_scope=(
+                    "Complete active incident inventory in the selected synthetic scenario"
+                    if analysis.status == "answered"
+                    else "No incident counts evaluated because the selected scenario is not eligible for this clock"
+                ),
+                etr_analysis=analysis,
+            )
         incidents = self._incidents.list_ranked()
         selected = self._resolve_incident(message, incident_id, incidents)
         selected_crew = self._resolve_crew(message, self._crews.list(), crew_id)
@@ -265,6 +294,7 @@ class CopilotService:
         response_scope: str | None = None,
         source: str = "synthetic-demo-data",
         data_snapshot_at: str | None = None,
+        etr_analysis: ETRAnalysis | None = None,
     ) -> ChatResponse:
         weather_timestamps = [
             str(row.get("updated_at"))
@@ -290,13 +320,14 @@ class CopilotService:
             data_snapshot_at=(
                 data_snapshot_at
                 if data_snapshot_at is not None
-                else (max(weather_timestamps) if weather_timestamps else None)
+                else (max(weather_timestamps) if weather_timestamps and etr_analysis is None else None)
             ),
             evidence=unique_evidence,
             warning=warning,
             response_scope=response_scope or "Local scenario records for the stated query scope",
             provider=provider,
             model=model,
+            etr_analysis=etr_analysis,
         )
 
     def _grounded_or_fallback(

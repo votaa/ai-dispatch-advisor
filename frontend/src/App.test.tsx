@@ -1463,7 +1463,7 @@ describe("application states and scenario switching", () => {
     ).toBeTruthy();
     expect(screen.getByRole("table")).toBeTruthy();
     expect(screen.getByText("Local scenario query")).toBeTruthy();
-    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined, "current");
   });
 
   it("renders mixed-source PSEG reference calculations and evidence", async () => {
@@ -1532,7 +1532,33 @@ describe("application states and scenario switching", () => {
     ).toBeTruthy();
     expect(screen.getByText("Evidence (2)")).toBeTruthy();
     expect(screen.getByText("Local scenario query")).toBeTruthy();
-    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined, "current");
+  });
+
+  it("sends an explicitly selected scenario-preview clock for ETR questions", async () => {
+    const question = "How many incidents have expired or coming due soon ETRs?";
+    apiMocks.chat.mockResolvedValue({
+      answer: "### ETR scenario preview\n\nNo current-time count was requested.",
+      intent: "etr_time_counts",
+      execution_mode: "local_query",
+      scenario_id: "base",
+      generated_at: "2026-09-29T20:00:00Z",
+      data_snapshot_at: null,
+      provider: null,
+      model: null,
+      warning: null,
+      evidence: []
+    });
+    render(<App />);
+    await screen.findByLabelText("Active synthetic scenario");
+    fireEvent.click(screen.getByRole("button", { name: "AI Copilot" }));
+    fireEvent.change(screen.getByLabelText("ETR question clock"), {
+      target: { value: "scenario_preview" }
+    });
+    fireEvent.change(screen.getByLabelText("Copilot question"), { target: { value: question } });
+    fireEvent.click(screen.getByRole("button", { name: "Ask Copilot" }));
+    expect(await screen.findByRole("heading", { name: "ETR scenario preview" })).toBeTruthy();
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined, "scenario_preview");
   });
 
   it("renders POC-025 tables with explicit population and subset headings", async () => {
@@ -1610,7 +1636,7 @@ describe("application states and scenario switching", () => {
       expect(tableRegion.classList.contains("copilot-table-scroll")).toBe(true);
       expect(tableRegion.parentElement?.classList.contains("copilot-markdown")).toBe(true);
     }
-    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined);
+    expect(apiMocks.chat).toHaveBeenCalledWith(question, "INC-1001", undefined, "current");
   });
 
   it("renders safe, semantic Markdown in Copilot responses", async () => {

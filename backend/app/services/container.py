@@ -137,6 +137,7 @@ def build_services(
         config=copilot_config,
         context_builder=copilot_context,
         reference_queries=reference_queries,
+        scenarios=scenarios,
         provider=copilot_provider,
         clock=copilot_clock,
     )

@@ -2421,6 +2421,27 @@ textarea {
   width: 100%;
 }
 
+.copilot-etr-mode {
+  align-items: flex-start;
+  color: #38536a;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.copilot-etr-mode select {
+  background: #fff;
+  border: 1px solid #b8c7d6;
+  border-radius: 7px;
+  color: #17202a;
+  max-width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+}
+
 .copilot-actions {
   align-items: center;
   display: flex;

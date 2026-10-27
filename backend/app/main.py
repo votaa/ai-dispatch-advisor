@@ -159,4 +159,4 @@ def audit_events(limit: int = 25) -> list[RecommendationDecision]:
 
 @app.post("/api/chat")
 def chat(request: ChatRequest) -> ChatResponse:
-    return services.copilot.respond(request.message, request.incident_id, request.crew_id)
+    return services.copilot.respond(request.message, request.incident_id, request.crew_id, request.etr_mode)

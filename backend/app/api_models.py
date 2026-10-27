@@ -27,6 +27,7 @@ class ChatRequest(DomainModel):
     message: str = Field(min_length=1)
     incident_id: Optional[str] = None
     crew_id: Optional[str] = None
+    etr_mode: Literal["current", "scenario_preview"] = "current"
 
 
 class RecommendationActionRequest(DomainModel):
@@ -103,6 +104,39 @@ class CopilotRequestTime(DomainModel):
         return value
 
 
+class ETRCategoryCounts(DomainModel):
+    expired: int
+    due_now: int
+    due_soon: int
+    valid_future: int
+    unavailable: int
+
+
+class ETRExample(DomainModel):
+    incident_id: str
+    category: Literal["expired", "due_now", "due_soon", "valid_future", "unavailable"]
+    etr: Optional[str] = None
+    unavailable_reason: Optional[Literal["assessing_conditions", "missing_or_invalid"]] = None
+
+
+class ETRAnalysis(DomainModel):
+    mode: Literal["current", "scenario_preview"]
+    status: Literal["answered", "blocked"]
+    temporal_status: Literal["eligible", "future", "stale", "legacy", "unavailable"]
+    evaluation_at: datetime
+    scenario_as_of_at: Optional[datetime] = None
+    due_now_grace_minutes: int = 10
+    due_soon_window_minutes: int = 60
+    evaluated_incident_count: Optional[int] = None
+    counts: Optional[ETRCategoryCounts] = None
+    unavailable_assessing_conditions: Optional[int] = None
+    unavailable_missing_or_invalid: Optional[int] = None
+    past_due_total: Optional[int] = None
+    past_due_within_due_now: Optional[int] = None
+    examples: list[ETRExample] = Field(default_factory=list)
+    suggested_scenario_id: Optional[str] = None
+
+
 class ChatResponse(DomainModel):
     answer: str
     intent: str
@@ -118,3 +152,4 @@ class ChatResponse(DomainModel):
     warning: Optional[str] = None
     response_scope: Optional[str] = None
     evidence: list[CopilotEvidence] = Field(default_factory=list)
+    etr_analysis: Optional[ETRAnalysis] = None

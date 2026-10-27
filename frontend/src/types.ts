@@ -146,6 +146,23 @@ export type CopilotResponse = {
   warning: string | null;
   response_scope?: string | null;
   evidence: CopilotEvidence[];
+  etr_analysis?: {
+    mode: "current" | "scenario_preview";
+    status: "answered" | "blocked";
+    temporal_status: "eligible" | "future" | "stale" | "legacy" | "unavailable";
+    evaluation_at: string;
+    scenario_as_of_at: string | null;
+    due_now_grace_minutes: number;
+    due_soon_window_minutes: number;
+    evaluated_incident_count: number | null;
+    counts: { expired: number; due_now: number; due_soon: number; valid_future: number; unavailable: number } | null;
+    unavailable_assessing_conditions: number | null;
+    unavailable_missing_or_invalid: number | null;
+    past_due_total: number | null;
+    past_due_within_due_now: number | null;
+    examples: Array<{ incident_id: string; category: string; etr: string | null; unavailable_reason: string | null }>;
+    suggested_scenario_id: string | null;
+  } | null;
 };
 
 export type ScenarioEventType = "blue_sky" | "storm" | "crew_shortage" | "critical_facility";

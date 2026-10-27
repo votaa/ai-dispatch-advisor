@@ -97,10 +97,11 @@ export const api = {
       selected_crew_id: selectedCrewId,
       reason: note
     }),
-  chat: (message: string, incidentId?: string, crewId?: string) =>
+  chat: (message: string, incidentId?: string, crewId?: string, etrMode: "current" | "scenario_preview" = "current") =>
     postJson<CopilotResponse>("/api/chat", {
       message,
       incident_id: incidentId,
-      crew_id: crewId
+      crew_id: crewId,
+      etr_mode: etrMode
     })
 };

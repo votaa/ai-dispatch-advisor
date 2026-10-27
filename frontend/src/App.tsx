@@ -160,6 +160,7 @@ const SIDEBAR_STORAGE_KEY = "aida.ui.sidebar-width.v1";
 const DASHBOARD_DISPLAY_PERCENTAGES = [25, 50, 75, 100] as const;
 const COPILOT_PROMPTS = [
   "What should I focus on first?",
+  "How many incidents have expired or coming due soon ETRs?",
   "How many customers are out across all active incidents?",
   "How many customers are served in Nassau County?",
   "What percentage of customers in Melville are affected?",
@@ -219,6 +220,7 @@ function App() {
   const [returnNavigation, setReturnNavigation] = useState<ReturnNavigationContext | null>(null);
   const [restoringNavigation, setRestoringNavigation] = useState<ReturnNavigationContext | null>(null);
   const [chatMessage, setChatMessage] = useState("What should I focus on first?");
+  const [etrMode, setEtrMode] = useState<"current" | "scenario_preview">("current");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<ActionLoading | null>(null);
@@ -409,7 +411,7 @@ function App() {
     if (!question) return;
     setChatLoading(true);
     try {
-      const response = await api.chat(question, selectedIncidentId, selectedCrewContext?.crew_id);
+      const response = await api.chat(question, selectedIncidentId, selectedCrewContext?.crew_id, etrMode);
       const { answer, ...metadata } = response;
       setChatTurns((turns) => [{ question, answer, metadata }, ...turns]);
     } catch (err) {
@@ -1161,6 +1163,13 @@ function App() {
             </div>
             <label className="sr-only" htmlFor="copilot-question">Copilot question</label>
             <textarea id="copilot-question" value={chatMessage} onChange={(event) => setChatMessage(event.target.value)} />
+            <label className="copilot-etr-mode" htmlFor="copilot-etr-mode">
+              ETR question clock
+              <select id="copilot-etr-mode" value={etrMode} onChange={(event) => setEtrMode(event.target.value as "current" | "scenario_preview")}>
+                <option value="current">Current time</option>
+                <option value="scenario_preview">Scenario preview at selected cutoff</option>
+              </select>
+            </label>
             <div className="copilot-actions">
               <button
                 className="secondary-action"
