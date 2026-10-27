@@ -248,6 +248,7 @@ Pending incidents progress through `unassigned → assigned → en_route → ons
 This feature is generator-only. Raw CSVs preserve the detailed operational incident phase, but the current API can display an incident with an active assignment simply as `assigned`. Decisions recorded while one snapshot is selected remain scoped to that snapshot's scenario ID and do not flow into the next folder. Timeline folders are synthetic preview data; production scenarios must be delivered through a controlled deployment process or managed source rather than copied ad hoc from preview output.
 
 The approved design and lifecycle contract are recorded in `docs/900_Delivery/AI_Dispatch_Advisor_Timeline_Generator_Plan.md`.
+For a repeatable 2,000-incident storm with POC-049 creation times, NULL ETRs, and stepwise ETR conversion, use the [POC-049 large storm scenario runbook](docs/900_Delivery/921_POC_049_Large_Storm_Scenario_Runbook.md).
 
 ## Initial API Surface
 

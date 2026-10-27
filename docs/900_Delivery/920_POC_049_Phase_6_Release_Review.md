@@ -8,6 +8,8 @@ The owner approved publishing the **small historical review set** as six new, ve
 
 These cutoffs are September 28–30, 2026. At the current October 26 clock, all timed ETRs in this set have passed. The set is useful for **Scenario preview at selected cutoff**, historical progression, and deterministic automated tests. It cannot demonstrate a live current-time Due Soon state today. A fresh generated scenario near the actual test time is required for that specific live-clock demonstration. This is a release limitation, not a reason to relabel a historical snapshot as current.
 
+The [large storm scenario runbook](921_POC_049_Large_Storm_Scenario_Runbook.md) provides a fresh-dated 2,000-incident recipe and a separate preview/release gate.
+
 ## Published historical set
 
 The six folders are in `data/scenarios/`. They were copied from the validated Phase 2 single and Phase 3 small timeline previews via an isolated versioned candidate at `/private/tmp/poc049-phase6-release-v1/`. Only `scenario.json` identity, display name, description, and timeline ID changed; the seven CSV files in each folder are byte-identical to their source previews. `ScenarioService` preflight passed before and after publication. The default `base` selection was preserved.

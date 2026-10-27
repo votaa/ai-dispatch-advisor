@@ -4,6 +4,8 @@
 
 **Scope:** Standard single-snapshot generator, multi-snapshot timeline generator, scenario/API contracts, incident detail, and deterministic AI Copilot ETR questions.
 
+For a repeatable 2,000-incident, 500-crew timeline using this contract, see the [large storm scenario runbook](921_POC_049_Large_Storm_Scenario_Runbook.md).
+
 ## Outcome
 
 Give each newly generated incident a credible, immutable creation datetime within the requested date window. Let the operator choose the percentage of new incidents assigned to each initial ETR duration or duration range, including an intentional NULL ETR shown as **“Assessing Conditions.”** Make incident time, ETR state, and the scenario's simulated cutoff visible in the application. Answer questions such as “How many incidents have expired or coming due soon ETRs?” against the backend's current time, with five exhaustive categories: **Expired, Due Now, Due Soon, Valid Future, Unavailable**.
