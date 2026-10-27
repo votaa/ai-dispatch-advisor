@@ -44,6 +44,13 @@ import { ShowOnMapButton } from "./components/ShowOnMapButton";
 import type { MapEntityKind } from "./components/ShowOnMapButton";
 import type { MapNavigationTarget } from "./components/OperationsMap";
 import { useFittedPageSize } from "./hooks/useFittedPageSize";
+import {
+  formatEasternDateTime,
+  incidentCreationSource,
+  incidentEtrLabel,
+  scenarioTemporalState
+} from "./scenarioTime";
+import type { ScenarioTemporalState } from "./scenarioTime";
 import type { CrewWorkspaceState, IncidentWorkspaceState, MapWorkspaceState } from "./navigationState";
 import type {
   Assignment,
@@ -72,10 +79,6 @@ type ScenarioFeedback = {
   message: string;
 };
 type IncidentSortKey = "id" | "region" | "customers" | "severity" | "criticalFacility" | "hazard" | "assigned" | "decision" | "etr";
-function incidentEtrLabel(incident: Incident): string {
-  if (incident.etr_status === "assessing_conditions") return "Assessing Conditions";
-  return incident.etr || "ETR unavailable";
-}
 type SortDirection = "asc" | "desc";
 type CrewSortKey = "name" | "status" | "capability" | "shift" | "assigned" | "travel";
 type ActionLoading = RecommendationActionType | "unassigned" | "reassigned";
@@ -224,6 +227,7 @@ function App() {
   const [assignmentActionDraft, setAssignmentActionDraft] = useState<AssignmentActionDraft | null>(null);
   const [scenarios, setScenarios] = useState<ScenarioDescriptor[]>([]);
   const [activeScenario, setActiveScenario] = useState<ScenarioDescriptor | null>(null);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [scenarioLoading, setScenarioLoading] = useState(false);
   const [pendingScenarioId, setPendingScenarioId] = useState<string | null>(null);
   const [scenarioFeedback, setScenarioFeedback] = useState<ScenarioFeedback | null>(null);
@@ -244,6 +248,18 @@ function App() {
   useEffect(() => {
     loadApplication();
   }, []);
+
+  useEffect(() => {
+    setCurrentTime(Date.now());
+    if (!activeScenario?.temporal) return;
+    const intervalId = window.setInterval(() => setCurrentTime(Date.now()), 60_000);
+    return () => window.clearInterval(intervalId);
+  }, [activeScenario?.scenario_id]);
+
+  const temporalState = useMemo(
+    () => scenarioTemporalState(activeScenario, scenarios, currentTime),
+    [activeScenario, scenarios, currentTime]
+  );
 
   useEffect(() => {
     pageHeadingRef.current?.focus();
@@ -725,6 +741,7 @@ function App() {
               </select>
             </div>
             <div className="scenario-meta">
+              <ScenarioTemporalLabel scenario={activeScenario} state={temporalState} />
               <ScenarioFreshnessLabel scenario={activeScenario} />
               {scenarioFeedback?.kind === "success" ? (
                 <span aria-live="polite" className="scenario-feedback success" role="status">
@@ -734,6 +751,14 @@ function App() {
             </div>
           </div>
         </header>
+
+        {!initialLoading && activeScenario && !scenarioLoading ? (
+          <ScenarioTemporalNotice
+            onSelectScenario={requestScenarioActivation}
+            scenario={activeScenario}
+            state={temporalState}
+          />
+        ) : null}
 
         {returnNavigation && returnNavigation.scenarioId === activeScenario?.scenario_id ? (
           <nav aria-label="Return navigation" className="return-navigation">
@@ -1079,7 +1104,9 @@ function App() {
                   </div>
                   <p>{activeScenario.description}</p>
                   <div className="scenario-freshness-detail">
+                    <ScenarioTemporalLabel scenario={activeScenario} state={temporalState} />
                     <ScenarioFreshnessLabel scenario={activeScenario} />
+                    <span><strong>Temporal status:</strong> {scenarioTemporalStatusLabel(activeScenario, temporalState)}</span>
                     <span>
                       <strong>Freshness source:</strong>{" "}
                       {activeScenario.freshness
@@ -1388,6 +1415,61 @@ function formatScenarioType(eventType: ScenarioDescriptor["event_type"]) {
   return eventType.replace(/_/g, " ");
 }
 
+function scenarioTemporalStatusLabel(scenario: ScenarioDescriptor | null, state: ScenarioTemporalState) {
+  if (!scenario?.temporal) return "Unavailable for this legacy scenario";
+  if (state.kind === "future") return "Future scenario snapshot";
+  if (state.kind === "stale") return "Older timeline snapshot";
+  if (state.kind === "unavailable") return "Timeline status unavailable";
+  return scenario.temporal.kind === "timeline_snapshot"
+    ? "Latest eligible timeline snapshot"
+    : "Frozen single snapshot";
+}
+
+function ScenarioTemporalLabel({ scenario, state }: {
+  scenario: ScenarioDescriptor | null;
+  state: ScenarioTemporalState;
+}) {
+  const cutoff = formatEasternDateTime(scenario?.temporal?.as_of_at);
+  return (
+    <span className="scenario-temporal-label">
+      <strong>Scenario data as of:</strong> {cutoff ?? "Unavailable"}
+      {scenario?.temporal ? <span className="scenario-time-state">{scenarioTemporalStatusLabel(scenario, state)}</span> : null}
+    </span>
+  );
+}
+
+function ScenarioTemporalNotice({ scenario, state, onSelectScenario }: {
+  scenario: ScenarioDescriptor;
+  state: ScenarioTemporalState;
+  onSelectScenario: (scenarioId: string) => void;
+}) {
+  if (state.kind !== "future" && state.kind !== "stale" && state.kind !== "unavailable") return null;
+  const selectedCutoff = formatEasternDateTime(scenario.temporal?.as_of_at) ?? "an unavailable time";
+  const suggestedCutoff = formatEasternDateTime(state.suggestedScenario?.temporal?.as_of_at);
+  const heading = state.kind === "future"
+    ? "Future scenario snapshot"
+    : state.kind === "stale" ? "Older timeline snapshot" : "Timeline status unavailable";
+  const description = state.kind === "future"
+    ? `Selected data is as of ${selectedCutoff}, ahead of the current time. Treat this as a simulation preview.`
+    : state.kind === "stale"
+      ? `Selected data is as of ${selectedCutoff}. A later snapshot is eligible${suggestedCutoff ? ` as of ${suggestedCutoff}` : ""}.`
+      : "Sibling snapshot metadata could not be verified. Current timeline status is unavailable.";
+  const suggestedScenario = state.suggestedScenario;
+  return (
+    <div aria-live="polite" className={`scenario-temporal-notice ${state.kind}`} role="status">
+      <div>
+        <strong>{heading}</strong>
+        <p>{description}</p>
+      </div>
+      {suggestedScenario ? (
+        <button onClick={() => onSelectScenario(suggestedScenario.scenario_id)} type="button">
+          Select latest eligible: {suggestedScenario.name}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 function ScenarioFreshnessLabel({ scenario }: { scenario: ScenarioDescriptor | null }) {
   const freshness = scenario?.freshness;
   const provenance = freshness
@@ -1562,8 +1644,13 @@ function IncidentDetail({
         <div><dt>Critical facility</dt><dd>{incident.critical_facility ? "Yes" : "No"}</dd></div>
         {incident.critical_facility_level ? <div><dt>CF level</dt><dd>Level {incident.critical_facility_level}</dd></div> : null}
         {incident.ranking_status === "withheld" ? <div><dt>Ranking</dt><dd>Withheld — {incident.ranking_warning}</dd></div> : null}
+        <div><dt>Created</dt><dd>{formatEasternDateTime(incident.created_at) ?? "Unavailable"}</dd></div>
+        <div><dt>Creation source</dt><dd>{incidentCreationSource(incident)}</dd></div>
         <div><dt>Scenario snapshot age</dt><dd>{incident.age_minutes} min</dd></div>
         <div><dt>ETR</dt><dd>{incidentEtrLabel(incident)}</dd></div>
+        {incident.etr_source === "timeline_assessment_conversion" ? (
+          <div><dt>ETR update</dt><dd>Timeline assessment conversion{formatEasternDateTime(incident.etr_updated_at) ? ` · ${formatEasternDateTime(incident.etr_updated_at)}` : ""}</dd></div>
+        ) : null}
       </dl>
       {incident.matched_critical_facility_ids?.length ? (
         <div className="detail-section">

@@ -1,6 +1,6 @@
 # POC-049 — Incident time and ETR implementation plan
 
-**Status:** Phases 0–3 implemented as generator candidates, pending owner review. Phases 4–6 remain planned.
+**Status:** Phases 0–3 implemented as generator candidates. Phase 4 application presentation implemented as a candidate, pending owner review. Phases 5–6 remain planned.
 
 **Scope:** Standard single-snapshot generator, multi-snapshot timeline generator, scenario/API contracts, incident detail, and deterministic AI Copilot ETR questions.
 
@@ -129,7 +129,13 @@ The timeline CLI now uses the temporal contract by default with `4-24h=100` unle
 
 Optional `--assessing-conversion '10%@24h'` applies to continuing active Assessing Conditions incidents after clearances and before arrivals at each step. `--assessing-conversion-overrides '2=10%@12h,4=20%@24h'` replaces the baseline at named destination steps. Conversion is off by default; its seeded selection carries fractional rounding forward, and each selected incident records `etr_updated_at` and `etr_source: timeline_assessment_conversion`. Assignment alone leaves an intentional NULL ETR unchanged. Snapshot manifests retain timeline identity and the configured policy. The CLI dry run reports per-step arrivals, clearances, eligible and converted counts, ETR categories with examples, eligible/future/stale clock state, and a warning when a conversion horizon reaches or precedes the next cutoff.
 
-Isolated 1-, 5-, and 10-snapshot previews with varied intervals passed application preflight under `/private/tmp/poc049-phase3-preview/`. The 5-step sample with 80 initial incidents, 12-hour intervals, a 25%/25%/50% 8-hour/24-hour/NULL mix, and conversion overrides had 80, 75, 54, 31, and 20 active incidents. A separate 2,000-incident, 500-crew five-step preview also passed preflight. Its active Assessing Conditions counts were 500, 428, 296, 145, and 84, while valid future and due-soon ETRs together were 1,500, 1,017, 441, 287, and 143 as incidents aged and cleared. These are generator previews, not published fixtures. Phase 4 must still present the selected cutoff and temporal state in the application; Phase 5 must provide the deterministic current-time Copilot answers.
+Isolated 1-, 5-, and 10-snapshot previews with varied intervals passed application preflight under `/private/tmp/poc049-phase3-preview/`. The 5-step sample with 80 initial incidents, 12-hour intervals, a 25%/25%/50% 8-hour/24-hour/NULL mix, and conversion overrides had 80, 75, 54, 31, and 20 active incidents. A separate 2,000-incident, 500-crew five-step preview also passed preflight. Its active Assessing Conditions counts were 500, 428, 296, 145, and 84, while valid future and due-soon ETRs together were 1,500, 1,017, 441, 287, and 143 as incidents aged and cleared. These are generator previews, not published fixtures. Phase 5 must provide the deterministic current-time Copilot answers.
+
+### Phase 4 candidate (2026-10-26)
+
+The application now separates the selected scenario's Eastern **data-as-of cutoff** from its existing publication freshness time. It labels frozen single snapshots, latest eligible timeline snapshots, future snapshots, older selected timeline snapshots, and timelines whose sibling metadata cannot be verified. Future and older selections show a prominent notice; where an eligible sibling exists, the notice offers a direct selection action. The selected snapshot never advances automatically. Incident detail shows Eastern creation time and provenance, frozen scenario snapshot age, Eastern ETR, and timeline conversion provenance when present. All incident ETR surfaces share the distinction between intentional NULL **Assessing Conditions** and missing or malformed legacy **ETR unavailable**. Legacy creation time remains unavailable rather than being inferred.
+
+An isolated browser preview covered a Phase 2 single snapshot, the Phase 3 five-step timeline, a future single snapshot, and the checked-in legacy base scenario. It checked future and older notices, selecting the latest eligible sibling, intentional NULL and converted ETR details, legacy missing creation time, scenario switching, Eastern timezone labels, desktop layout, and a 390-pixel phone layout. These previews were loaded from temporary paths; no scenario fixture was published. Phase 5 still owns current-time ETR counts, five-bucket classifications, and Copilot gating. Phase 6 remains the owner release and fixture-publication decision.
 
 | Phase | Deliverable | Evidence needed before next phase |
 | --- | --- | --- |

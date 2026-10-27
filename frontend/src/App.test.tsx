@@ -289,6 +289,76 @@ describe("application states and scenario switching", () => {
     expect(await screen.findByText("Scenario Last Updated Unavailable")).toBeTruthy();
   });
 
+  it("shows future cutoff guidance and Eastern incident provenance without changing ETRs", async () => {
+    const futureScenario = {
+      ...stormScenario,
+      scenario_id: "future",
+      temporal: {
+        kind: "single_snapshot",
+        as_of_at: "2099-09-29T18:00:00-04:00",
+        time_zone: "America/New_York",
+        etr_distribution: [{ range: "null", percent: 100 }]
+      }
+    };
+    const assessing = {
+      ...baseIncident,
+      etr: null,
+      etr_status: "assessing_conditions",
+      created_at: "2099-09-29T10:30:00-04:00",
+      created_at_source: "synthetic_generator",
+      age_minutes: 450
+    };
+    apiMocks.scenarios.mockResolvedValue([futureScenario]);
+    apiMocks.activeScenario.mockResolvedValue(futureScenario);
+    apiMocks.incidents.mockResolvedValue([assessing]);
+    apiMocks.dashboard.mockResolvedValue({ ...dashboard("future"), top_incidents: [assessing] });
+    render(<App />);
+
+    expect(await screen.findByText((_, element) =>
+      element?.classList.contains("scenario-temporal-label") === true &&
+      Boolean(element.textContent?.includes("09/29/2099 18:00 EDT"))
+    )).toBeTruthy();
+    expect(screen.getByText(/Selected data is as of .*ahead of the current time/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Incidents" }));
+    fireEvent.click(await screen.findByRole("button", { name: "INC-1001" }));
+    const details = await screen.findByRole("complementary", { name: "Incident details INC-1001" });
+    expect(within(details).getByText("09/29/2099 10:30 EDT")).toBeTruthy();
+    expect(within(details).getByText("Synthetic scenario generator")).toBeTruthy();
+    expect(within(details).getByText("Assessing Conditions")).toBeTruthy();
+    expect(within(details).getByText("450 min")).toBeTruthy();
+  });
+
+  it("guides an older timeline snapshot to the latest eligible sibling after switching", async () => {
+    const timeline = [1, 2, 3].map((index) => ({
+      ...stormScenario,
+      scenario_id: `timeline_${String(index).padStart(2, "0")}`,
+      name: `Timeline step ${index}`,
+      temporal: {
+        kind: "timeline_snapshot",
+        as_of_at: `2026-09-${String(27 + index)}T08:00:00-04:00`,
+        time_zone: "America/New_York",
+        etr_distribution: [{ range: "null", percent: 100 }],
+        timeline_id: "timeline",
+        snapshot_index: index,
+        snapshot_count: 3
+      }
+    }));
+    apiMocks.auditEvents.mockResolvedValue([]);
+    apiMocks.scenarios.mockResolvedValue(timeline);
+    apiMocks.activeScenario.mockResolvedValue(timeline[0]);
+    apiMocks.activateScenario.mockResolvedValue(timeline[2]);
+    render(<App />);
+
+    expect(await screen.findByText(/A later snapshot is eligible as of 09\/30\/2026 08:00 EDT/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Select latest eligible: Timeline step 3" }));
+    await waitFor(() => expect(apiMocks.activateScenario).toHaveBeenCalledWith("timeline_03"));
+    expect(screen.queryByText(/A later snapshot is eligible/)).toBeNull();
+    expect(screen.getByText((_, element) =>
+      element?.classList.contains("scenario-temporal-label") === true &&
+      Boolean(element.textContent?.includes("09/30/2026 08:00 EDT"))
+    )).toBeTruthy();
+  });
+
   it("shows useful empty states instead of blank tables and panels", async () => {
     apiMocks.dashboard.mockResolvedValue(emptyDashboard("base"));
     apiMocks.incidents.mockResolvedValue([]);
