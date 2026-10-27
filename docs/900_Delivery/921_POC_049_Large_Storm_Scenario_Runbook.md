@@ -2,6 +2,15 @@
 
 Use this runbook to create a **new, large five-snapshot synthetic storm** with incident creation times, a configurable initial ETR mix, intentional NULL **Assessing Conditions** ETRs, and optional NULL-to-ETR conversions as the timeline advances. It uses the current `scripts/generate_scenario_timeline.py` CLI. The [POC-049 implementation plan](919_POC_049_Incident_Time_and_ETR_Implementation_Plan.md) defines the time contract; the [Phase 6 release review](920_POC_049_Phase_6_Release_Review.md) shows how a smaller historical set was reviewed and published.
 
+For general generator usage and parameter examples, see the README sections [Generate synthetic Long Island scenarios](../../README.md#generate-synthetic-long-island-scenarios) and [Generate a multi-snapshot storm timeline](../../README.md#generate-a-multi-snapshot-storm-timeline). The [multi-snapshot storm progression generator plan](AI_Dispatch_Advisor_Timeline_Generator_Plan.md) explains the timeline design and progression rules. From the repository root, either CLI lists its available flags with `--help`:
+
+```bash
+backend/.venv/bin/python scripts/generate_scenario.py --help
+backend/.venv/bin/python scripts/generate_scenario_timeline.py --help
+```
+
+The timeline generator also has an interactive parameter wizard when run without flags. The commands below use explicit flags so the example is repeatable.
+
 ## Choose the scenario clock first
 
 Pick a unique, versioned base ID, an Eastern local date and time for snapshot 1, and the number and spacing of snapshots. With **5 snapshots, 12 elapsed hours apart**, an October 27, 2026 8:00 AM Eastern start produces cutoffs at October 27 8:00 AM and 8:00 PM, October 28 8:00 AM and 8:00 PM, and October 29 8:00 AM. Set `--end-date` to the final local date so new incidents may arrive throughout the sequence. The start/end dates bound **incident creation**, while each snapshot cutoff bounds which incidents and updates are visible at that step. The CLI defaults to five 12-hour steps, but both settings can be changed.
