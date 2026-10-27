@@ -1,0 +1,7 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-20260928-0001,ESD-20260928-0001,WW-2932,active,2026-09-28T07:03:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260928-0002,ESD-20260928-0005,5312,active,2026-09-28T07:48:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260928-0004,ESD-20260928-0029,CNTR-3624,active,2026-09-28T07:36:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260928-0008,ESD-20260928-0067,CNTR-1434,active,2026-09-28T06:31:00-04:00,Repair crew assigned to primary restoration
+ASG-20260928-0009,ESD-20260928-0068,3630,active,2026-09-28T05:59:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260928-0010,ESD-20260928-0008,CNTR-2730,active,2026-09-28T20:00:00-04:00,Timeline reassignment using regional capability and remaining-shift rules

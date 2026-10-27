@@ -1,0 +1,9 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-QN-01,Oceanside Regional Medical Center,hospital,Queens-Nassau,Oceanside,FDR-QN-31,critical
+FAC-QN-02,Long Beach Emergency Services Center,emergency_services,Queens-Nassau,Long Beach,FDR-QN-49,critical
+FAC-CN-01,Glen Cove Regional Medical Center,hospital,Central-Nassau,Glen Cove,FDR-CN-84,critical
+FAC-CN-02,East Meadow Emergency Services Center,emergency_services,Central-Nassau,East Meadow,FDR-CN-81,critical
+FAC-WS-01,Deer Park Regional Medical Center,hospital,Western Suffolk,Deer Park,FDR-WS-55,critical
+FAC-WS-02,Bay Shore Private Health Device (LSE),healthcare,Western Suffolk,Bay Shore,FDR-WS-99,medium
+FAC-ES-01,Coram Regional Medical Center,hospital,Eastern Suffolk,Coram,FDR-ES-01,critical
+FAC-ES-02,Coram Emergency Services Center,emergency_services,Eastern Suffolk,Coram,FDR-ES-97,critical

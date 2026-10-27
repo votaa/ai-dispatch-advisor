@@ -1,6 +1,6 @@
 # POC-049 — Incident time and ETR implementation plan
 
-**Status:** Phases 0–4 implemented and committed. Phase 5 deterministic Copilot ETR assessment implemented as a candidate, pending owner review. Phase 6 remains planned.
+**Status:** Phases 0–5 implemented and committed. Phase 6's six versioned historical fixtures were published locally after owner approval and passed local Docker browser smoke. Owner commit and personal acceptance remain pending; POC-049 is open. See the [Phase 6 release review](920_POC_049_Phase_6_Release_Review.md).
 
 **Scope:** Standard single-snapshot generator, multi-snapshot timeline generator, scenario/API contracts, incident detail, and deterministic AI Copilot ETR questions.
 

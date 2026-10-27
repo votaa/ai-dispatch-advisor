@@ -1,0 +1,81 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+1227,Queens-Nassau Troubleshooter 1227,Queens-Nassau,assigned,general,Floral Park,16.0,true,13
+1272,Queens-Nassau Troubleshooter 1272,Queens-Nassau,available,general,Hewlett Service Center,14.0,true,52
+1393,Queens-Nassau Troubleshooter 1393,Queens-Nassau,assigned,general,Floral Park,16.0,true,15
+1544,Queens-Nassau Troubleshooter 1544,Queens-Nassau,available,general,Arverne,14.0,true,23
+1672,Queens-Nassau Troubleshooter 1672,Queens-Nassau,available,general,Rockaway Park,15.0,true,40
+2067,Central-Nassau Troubleshooter 2067,Central-Nassau,off_shift,general,Hicksville Operations Yard,0.0,true,55
+2134,Central-Nassau Troubleshooter 2134,Central-Nassau,available,general,Mineola,8.0,false,30
+2318,Central-Nassau Troubleshooter 2318,Central-Nassau,available,general,Uniondale,9.0,true,39
+2633,Central-Nassau Troubleshooter 2633,Central-Nassau,available,general,Hempstead,10.0,true,28
+2679,Central-Nassau Troubleshooter 2679,Central-Nassau,available,general,Hicksville,4.0,true,69
+3242,Western Suffolk Troubleshooter 3242,Western Suffolk,off_shift,general,Brentwood Operations Yard,0.0,true,59
+3453,Western Suffolk Troubleshooter 3453,Western Suffolk,off_shift,general,Ronkonkoma,0.0,true,50
+3485,Western Suffolk Troubleshooter 3485,Western Suffolk,off_shift,general,Deer Park,0.0,false,23
+3630,Western Suffolk Troubleshooter 3630,Western Suffolk,assigned,general,Huntington,16.0,false,75
+4113,Eastern Suffolk Troubleshooter 4113,Eastern Suffolk,available,general,Riverhead Operations Yard,13.0,true,18
+4179,Eastern Suffolk Troubleshooter 4179,Eastern Suffolk,off_shift,general,Calverton,0.0,false,63
+4740,Eastern Suffolk Troubleshooter 4740,Eastern Suffolk,available,general,Riverhead Operations Yard,5.0,true,35
+4962,Eastern Suffolk Troubleshooter 4962,Eastern Suffolk,available,general,Calverton,2.0,true,57
+5063,Western Suffolk Low Voltage Crew 5063,Western Suffolk,available,low_voltage,Amityville,15.0,true,75
+5312,Western Suffolk Low Voltage Crew 5312,Western Suffolk,assigned,low_voltage,Huntington,16.0,true,27
+5317,Western Suffolk Low Voltage Crew 5317,Western Suffolk,available,low_voltage,Babylon,2.0,true,62
+5376,Queens-Nassau Low Voltage Crew 5376,Queens-Nassau,available,low_voltage,Inwood,8.0,true,63
+5551,Queens-Nassau Low Voltage Crew 5551,Queens-Nassau,off_shift,low_voltage,Hewlett Service Center,0.0,true,40
+5803,Central-Nassau Low Voltage Crew 5803,Central-Nassau,available,low_voltage,Westbury,14.0,false,19
+5957,Queens-Nassau Low Voltage Crew 5957,Queens-Nassau,available,low_voltage,Inwood,15.0,true,46
+6111,Eastern Suffolk Line Crew 6111,Eastern Suffolk,off_shift,line,Wading River,0.0,true,56
+6143,Central-Nassau Line Crew 6143,Central-Nassau,available,line,Hicksville Operations Yard,15.0,true,12
+6180,Western Suffolk Line Crew 6180,Western Suffolk,available,line,Brentwood,16.0,true,15
+6190,Queens-Nassau Line Crew 6190,Queens-Nassau,assigned,line,Edgemere,16.0,true,59
+6215,Queens-Nassau Line Crew 6215,Queens-Nassau,available,line,Rockaway Park,11.0,true,30
+6337,Central-Nassau Line Crew 6337,Central-Nassau,available,line,Hicksville Operations Yard,15.0,true,17
+6639,Eastern Suffolk Line Crew 6639,Eastern Suffolk,off_shift,line,Center Moriches,0.0,true,47
+6640,Western Suffolk Line Crew 6640,Western Suffolk,available,line,Huntington,4.0,true,68
+6664,Western Suffolk Line Crew 6664,Western Suffolk,available,line,Brentwood Operations Yard,2.0,false,59
+6739,Queens-Nassau Line Crew 6739,Queens-Nassau,available,line,Elmont,13.0,true,26
+6776,Central-Nassau Line Crew 6776,Central-Nassau,off_shift,line,Hicksville Operations Yard,0.0,true,70
+7167,Eastern Suffolk Low Voltage Crew 7167,Eastern Suffolk,off_shift,low_voltage,Riverhead Operations Yard,0.0,false,19
+7431,Central-Nassau Low Voltage Crew 7431,Central-Nassau,available,low_voltage,Garden City,4.0,true,63
+7702,Eastern Suffolk Low Voltage Crew 7702,Eastern Suffolk,available,low_voltage,Riverhead Operations Yard,3.0,true,32
+7925,Central-Nassau Low Voltage Crew 7925,Central-Nassau,available,low_voltage,Uniondale,3.0,true,38
+CG-1769,Queens-Nassau Crew Guide 1769,Queens-Nassau,available,general,Hewlett Service Center,11.0,true,54
+CG-2203,Central-Nassau Crew Guide 2203,Central-Nassau,available,general,Wantagh,16.0,true,51
+CNTR-1305,Queens-Nassau Contractor Crew 1305,Queens-Nassau,available,line,Elmont,11.0,true,29
+CNTR-1434,Queens-Nassau Contractor Crew 1434,Queens-Nassau,assigned,line,RDA1 MUA Staging,16.0,true,11
+CNTR-1611,Queens-Nassau Contractor Crew 1611,Queens-Nassau,off_shift,line,Lawrence,0.0,true,68
+CNTR-2730,Central-Nassau Contractor Crew 2730,Central-Nassau,off_shift,line,East Meadow,0.0,true,69
+CNTR-2771,Central-Nassau Contractor Crew 2771,Central-Nassau,available,line,Levittown,16.0,true,9
+CNTR-3536,Western Suffolk Contractor Crew 3536,Western Suffolk,available,line,Copiague,8.0,true,35
+CNTR-3624,Western Suffolk Contractor Crew 3624,Western Suffolk,assigned,line,RDA10 MUA Staging,16.0,true,15
+CNTR-4129,Eastern Suffolk Contractor Crew 4129,Eastern Suffolk,off_shift,line,RDA16 MUA Staging,0.0,true,27
+CNTR-4607,Eastern Suffolk Contractor Crew 4607,Eastern Suffolk,available,line,RDA16 MUA Staging,7.0,false,67
+LKP-1045,Queens-Nassau Lookup Crew 1045,Queens-Nassau,available,general,Inwood,13.0,true,69
+LKP-1393,Queens-Nassau Lookup Crew 1393,Queens-Nassau,available,general,Hewlett Service Center,2.0,true,34
+LKP-1679,Queens-Nassau Lookup Crew 1679,Queens-Nassau,available,general,Inwood,2.0,true,27
+LKP-2312,Central-Nassau Lookup Crew 2312,Central-Nassau,available,general,Mineola,11.0,true,49
+LKP-2427,Central-Nassau Lookup Crew 2427,Central-Nassau,available,general,Merrick,16.0,true,12
+LKP-2544,Central-Nassau Lookup Crew 2544,Central-Nassau,available,general,Uniondale,15.0,true,13
+LKP-3112,Western Suffolk Lookup Crew 3112,Western Suffolk,available,general,Amityville,7.0,true,32
+LKP-3278,Western Suffolk Lookup Crew 3278,Western Suffolk,available,general,Brentwood Operations Yard,16.0,true,66
+LKP-4809,Eastern Suffolk Lookup Crew 4809,Eastern Suffolk,available,general,Riverhead Operations Yard,1.0,true,36
+LKP-4849,Eastern Suffolk Lookup Crew 4849,Eastern Suffolk,off_shift,general,Center Moriches,0.0,true,74
+MUA-1689,Queens-Nassau Mutual Aid Crew 1689,Queens-Nassau,available,line,Rockaway Park,13.0,true,53
+MUA-1707,Queens-Nassau Mutual Aid Crew 1707,Queens-Nassau,available,line,RDA1 MUA Staging,6.0,true,17
+MUA-1769,Queens-Nassau Mutual Aid Crew 1769,Queens-Nassau,available,line,Rockaway Park,3.0,false,72
+MUA-2241,Central-Nassau Mutual Aid Crew 2241,Central-Nassau,available,line,Hicksville,9.0,true,69
+MUA-2252,Central-Nassau Mutual Aid Crew 2252,Central-Nassau,available,line,Levittown,13.0,true,23
+MUA-3292,Western Suffolk Mutual Aid Crew 3292,Western Suffolk,available,line,Commack,16.0,true,48
+MUA-3636,Western Suffolk Mutual Aid Crew 3636,Western Suffolk,off_shift,line,Amityville,0.0,true,11
+MUA-4550,Eastern Suffolk Mutual Aid Crew 4550,Eastern Suffolk,available,line,Montauk,8.0,true,43
+MUA-4895,Eastern Suffolk Mutual Aid Crew 4895,Eastern Suffolk,available,line,Calverton,1.0,true,69
+TREE-1182,Queens-Nassau Tree Crew 1182,Queens-Nassau,available,vegetation,Hewlett Vegetation Staging Area,12.0,true,67
+TREE-2520,Central-Nassau Tree Crew 2520,Central-Nassau,off_shift,vegetation,Hicksville,0.0,false,43
+TREE-3484,Western Suffolk Tree Crew 3484,Western Suffolk,assigned,vegetation,Huntington,16.0,true,10
+TREE-4558,Eastern Suffolk Tree Crew 4558,Eastern Suffolk,available,vegetation,Riverhead Vegetation Staging Area,2.0,true,17
+WW-1335,Queens-Nassau Wire Watcher 1335,Queens-Nassau,available,general,Inwood,15.0,true,72
+WW-1585,Queens-Nassau Wire Watcher 1585,Queens-Nassau,available,general,Edgemere,10.0,true,61
+WW-2319,Central-Nassau Wire Watcher 2319,Central-Nassau,off_shift,general,Westbury,0.0,true,52
+WW-2932,Central-Nassau Wire Watcher 2932,Central-Nassau,assigned,general,Uniondale,16.0,true,30
+WW-3662,Western Suffolk Wire Watcher 3662,Western Suffolk,available,general,Smithtown,3.0,true,9
+WW-4141,Eastern Suffolk Wire Watcher 4141,Eastern Suffolk,off_shift,general,Manorville,0.0,true,57

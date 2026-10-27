@@ -1,0 +1,33 @@
+crew_id,crew_name,home_region,status,capability,current_location,shift_remaining_hours,storm_ready,travel_minutes_to_selected_incident
+5795,Queens-Nassau Low Voltage Crew 5795,Queens-Nassau,assigned,low_voltage,Hewlett Service Center,7,true,34
+TREE-1628,Queens-Nassau Tree Crew 1628,Queens-Nassau,available,vegetation,Hewlett Vegetation Staging Area,4,true,34
+TREE-2720,Central-Nassau Tree Crew 2720,Central-Nassau,assigned,vegetation,Merrick,9,true,64
+LKP-3588,Western Suffolk Lookup Crew 3588,Western Suffolk,available,general,Brentwood,11,false,8
+LKP-2486,Central-Nassau Lookup Crew 2486,Central-Nassau,available,general,Garden City,7,true,71
+2726,Central-Nassau Troubleshooter 2726,Central-Nassau,available,general,Hicksville Operations Yard,6,true,28
+MUA-3540,Western Suffolk Mutual Aid Crew 3540,Western Suffolk,available,line,Smithtown,3,true,8
+MUA-2997,Central-Nassau Mutual Aid Crew 2997,Central-Nassau,assigned,line,Hicksville,11,true,71
+MUA-1734,Queens-Nassau Mutual Aid Crew 1734,Queens-Nassau,available,line,Lawrence,3,true,65
+5702,Western Suffolk Low Voltage Crew 5702,Western Suffolk,available,low_voltage,Huntington,6,true,68
+WW-2377,Central-Nassau Wire Watcher 2377,Central-Nassau,available,general,Massapequa,8,true,44
+LKP-4004,Eastern Suffolk Lookup Crew 4004,Eastern Suffolk,assigned,general,Calverton,3,true,57
+6461,Western Suffolk Line Crew 6461,Western Suffolk,available,line,Lindenhurst,12,true,47
+WW-3938,Western Suffolk Wire Watcher 3938,Western Suffolk,available,general,Brentwood Operations Yard,9,true,56
+5858,Eastern Suffolk Low Voltage Crew 5858,Eastern Suffolk,available,low_voltage,Calverton,9,true,27
+1089,Queens-Nassau Troubleshooter 1089,Queens-Nassau,available,general,Hewlett Service Center,9,true,21
+6298,Central-Nassau Line Crew 6298,Central-Nassau,available,line,East Meadow,7,true,49
+CNTR-2094,Central-Nassau Contractor Crew 2094,Central-Nassau,available,line,Levittown,4,false,56
+3441,Western Suffolk Troubleshooter 3441,Western Suffolk,available,general,Brentwood Operations Yard,4,true,63
+WW-1274,Queens-Nassau Wire Watcher 1274,Queens-Nassau,available,general,Hewlett Service Center,5,true,59
+CG-1214,Queens-Nassau Crew Guide 1214,Queens-Nassau,assigned,general,Lawrence,7,true,12
+6167,Queens-Nassau Line Crew 6167,Queens-Nassau,available,line,Cedarhurst,6,true,30
+2809,Central-Nassau Troubleshooter 2809,Central-Nassau,available,general,Hicksville Operations Yard,12,false,60
+LKP-1055,Queens-Nassau Lookup Crew 1055,Queens-Nassau,available,general,Hewlett Service Center,3,false,39
+CNTR-1954,Queens-Nassau Contractor Crew 1954,Queens-Nassau,available,line,Elmont,11,true,42
+6793,Eastern Suffolk Line Crew 6793,Eastern Suffolk,assigned,line,Wading River,6,true,8
+MUA-4139,Eastern Suffolk Mutual Aid Crew 4139,Eastern Suffolk,available,line,RDA19 MUA Staging,9,true,23
+CNTR-3354,Western Suffolk Contractor Crew 3354,Western Suffolk,available,line,Huntington,12,true,38
+7795,Central-Nassau Low Voltage Crew 7795,Central-Nassau,available,low_voltage,Hicksville Operations Yard,5,true,42
+3711,Western Suffolk Troubleshooter 3711,Western Suffolk,assigned,general,Brentwood Operations Yard,6,false,39
+4511,Eastern Suffolk Troubleshooter 4511,Eastern Suffolk,available,general,Riverhead Operations Yard,6,true,47
+1979,Queens-Nassau Troubleshooter 1979,Queens-Nassau,available,general,Inwood,10,true,64

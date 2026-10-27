@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "poc049-single-20260929-v1",
+  "name": "POC-049 Single Snapshot \u2014 September 29, 2026",
+  "description": "Historical synthetic POC-049 review fixture. Scenario data as of 2026-09-29T18:00:00-04:00; use Scenario preview for simulated-time ETR categories.",
+  "event_type": "storm",
+  "freshness": {
+    "updated_at": "2026-10-26T13:35:34.610831-04:00",
+    "source": "scenario_generation",
+    "provenance": "AI Dispatch Advisor synthetic scenario generator"
+  },
+  "expected_conditions": [
+    "Synthetic Long Island incidents",
+    "Region-coded crews",
+    "Human dispatcher approval required"
+  ],
+  "files": {
+    "incidents": "PendingIncidents.csv",
+    "crews": "Crews.csv",
+    "assignments": "Assignments.csv",
+    "historical_repairs": "HistoricalRepairs.csv",
+    "weather": "Weather.csv",
+    "critical_facilities": "CriticalFacilities.csv",
+    "topology": "Topology.csv"
+  },
+  "temporal": {
+    "kind": "single_snapshot",
+    "as_of_at": "2026-09-29T18:00:00-04:00",
+    "time_zone": "America/New_York",
+    "etr_distribution": [
+      {
+        "range": "8h",
+        "percent": 25.0
+      },
+      {
+        "range": "24h",
+        "percent": 25.0
+      },
+      {
+        "range": "48h",
+        "percent": 25.0
+      },
+      {
+        "range": "null",
+        "percent": 25.0
+      }
+    ]
+  }
+}

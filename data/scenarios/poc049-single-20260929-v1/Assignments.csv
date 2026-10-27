@@ -1,0 +1,8 @@
+assignment_id,incident_id,crew_id,status,assigned_at,notes
+ASG-20260929-0001,ESD-20260928-0001,5795,active,2026-09-29T11:26:00-04:00,Internal low-voltage crew assigned to single-customer service repair
+ASG-20260928-0001,ESD-20260928-0002,CG-1214,active,2026-09-28T15:44:00-04:00,Crew guide assigned to lead repair resources to the incident
+ASG-20260929-0002,ESD-20260928-0010,3711,active,2026-09-29T04:19:00-04:00,ESD troubleshooter assigned as first responder
+ASG-20260929-0003,ESD-20260929-0001,MUA-2997,active,2026-09-29T13:49:00-04:00,Repair crew assigned for primary restoration after tree clearance
+ASG-20260929-0004,ESD-20260929-0001,TREE-2720,active,2026-09-29T16:29:00-04:00,Tree crew paired with repair crew to clear primary conductors
+ASG-20260929-0005,ESD-20260929-0005,LKP-4004,active,2026-09-29T12:28:00-04:00,Damage-assessment first responder assigned to wire hazard
+ASG-20260929-0006,ESD-20260929-0007,6793,active,2026-09-29T09:54:00-04:00,Internal line crew assigned to high-voltage repair

@@ -1,0 +1,9 @@
+facility_id,facility_name,facility_type,region,municipality,feeder,priority_level
+FAC-QN-01,Baldwin Regional Medical Center,hospital,Queens-Nassau,Baldwin,FDR-QN-10,critical
+FAC-QN-02,West Hempstead Private Health Device (LSE),healthcare,Queens-Nassau,West Hempstead,FDR-QN-99,medium
+FAC-CN-01,Hicksville Regional Medical Center,hospital,Central-Nassau,Hicksville,FDR-CN-96,critical
+FAC-CN-02,East Massapequa Emergency Services Center,emergency_services,Central-Nassau,East Massapequa,FDR-CN-32,critical
+FAC-WS-01,Central Islip Regional Medical Center,hospital,Western Suffolk,Central Islip,FDR-WS-16,critical
+FAC-WS-02,East Northport Emergency Services Center,emergency_services,Western Suffolk,East Northport,FDR-WS-69,critical
+FAC-ES-01,Shirley Regional Medical Center,hospital,Eastern Suffolk,Shirley,FDR-ES-60,critical
+FAC-ES-02,Riverhead Emergency Services Center,emergency_services,Eastern Suffolk,Riverhead,FDR-ES-91,critical

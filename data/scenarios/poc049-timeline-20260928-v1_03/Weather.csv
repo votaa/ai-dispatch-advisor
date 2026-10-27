@@ -1,0 +1,5 @@
+weather_id,region,condition,wind_mph,precipitation_inches,lightning_risk,updated_at
+WX-QN-01,Queens-Nassau,overcast,5,0.01,low,2026-09-29T08:00:00-04:00
+WX-CN-01,Central-Nassau,wind gusts,13,0.01,low,2026-09-29T08:00:00-04:00
+WX-WS-01,Western Suffolk,overcast,5,0.01,low,2026-09-29T08:00:00-04:00
+WX-ES-01,Eastern Suffolk,heavy rain,7,0.17,medium,2026-09-29T08:00:00-04:00
